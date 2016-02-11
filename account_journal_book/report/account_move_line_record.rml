@@ -91,7 +91,7 @@
       [[repeatIn(objects,'o')]]
       <blockTable colWidths="1.6cm,1.8cm,1.9cm,2.2cm,4.5cm,3.2cm,2cm,2cm" rowHeights="0.6cm" style="SubTabla">
         <tr>
-        <td><para style="DetailCenter"> [[o.name]]</para></td>
+        <td><para style="DetailCenter"> [[o.number_in_book]]</para></td>
         <td><para style="Detail"> [[formatLang(o.date, date=True)]]</para></td>
         <td><para style="Detail">[[o.period_id.name]]</para></td>
         <td><para style="Detail">[[o.journal_id.code]]</para></td>
