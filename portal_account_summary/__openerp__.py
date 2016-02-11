@@ -36,7 +36,8 @@ Portal Account Summary
     'depends': [
         'account_partner_account_summary',
         'portal',
-        'report_aeroo_portal_fix',
+        'report_aeroo',
+        # 'report_aeroo_portal_fix',
         'portal_partner_fix',
     ],
     'data': [

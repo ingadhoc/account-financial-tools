@@ -3,9 +3,11 @@
 # For copyright and license notices, see __openerp__.py file in root directory
 ##############################################################################
 from openerp.report import report_sxw
+# from openerp import models
 import time
 
 
+# class general_ledger(report_sxw.rml_parse, common_report_header):
 class JournalPrint(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context=None):
         super(JournalPrint, self).__init__(cr, uid, name, context=context)
@@ -14,13 +16,30 @@ class JournalPrint(report_sxw.rml_parse):
 
     def set_context(self, objects, data, ids, report_type=None):
         if data['model'] == 'ir.ui.menu':
-            period_ids = data['form']['period_ids']
-            journal_ids = data['form']['journal_ids']
+            form = data['form']
+            journal_ids = form['journal_ids']
+
+            domain = [('journal_id', 'in', journal_ids)]
+            if form['fiscalyear_id']:
+                domain.append(
+                    ('period_id.fiscalyear_id', '=', form['fiscalyear_id']))
+
+            if form['target_move'] == 'posted':
+                domain.append(('state', '=', 'posted'))
+
+            if form['filter'] == 'filter_period':
+                period_ids = self.pool.get('account.period').build_ctx_periods(
+                    self.cr, self.uid, form['period_from'], form['period_to'])
+                domain.append(('period_id', 'in', period_ids))
+            elif form['filter'] == 'filter_date':
+                if form['date_from']:
+                    domain.append(('date', '>=', form['date_from']))
+                if form['date_to']:
+                    domain.append(('date', '<', form['date_to']))
             move_ids = self.pool['account.move'].search(
-                self.cr, self.uid, [('period_id', 'in', period_ids),
-                                    ('journal_id', 'in', journal_ids),
-                                    ('state', '<>', 'draft')],
-                order=data['form']['sort_selection'] + ', id')
+                self.cr, self.uid, domain,
+                order=form['sort_selection'] + ', id'
+                )
         else:
             move_ids = []
             journalperiods = self.pool['account.journal.period'].browse(
@@ -34,6 +53,12 @@ class JournalPrint(report_sxw.rml_parse):
         objects = self.pool['account.move'].browse(self.cr, self.uid, move_ids)
         super(JournalPrint, self).set_context(objects, data, ids, report_type)
 
+# TODO migrar a nuevo formato
+# class report_generalledger(models.AbstractModel):
+#     _name = 'report.account.report_generalledger'
+#     _inherit = 'report.abstract_report'
+#     _template = 'account.report_generalledger'
+#     _wrapped_report_class = JournalPrint
 
 report_sxw.report_sxw(
     'report.account.journal.entries.report.wzd', 'account.journal.period',
