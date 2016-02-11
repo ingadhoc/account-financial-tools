@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="account.account_common_report_view" />
             <field name="arch" type="xml">
                 <!-- we make journals selection invisible -->
-                <page name="journal_ids" position="attrs">
+                <page name="journal_ids" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </page>
                 <xpath expr="//field[@name='target_move']" position="after">
