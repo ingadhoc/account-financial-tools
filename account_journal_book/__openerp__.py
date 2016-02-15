@@ -24,7 +24,7 @@
 ##############################################################################
 {
     'name': "Libro Diario Contable",
-    'version': "8.0.0.3.0",
+    'version': "8.0.0.3.1",
     'author': "Spanish Localization Team,"
               "Zikzakmedia SL,"
               "J. Gutierrez,"
