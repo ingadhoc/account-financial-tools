@@ -19,3 +19,5 @@ access_account_period_distributor,account.period.distributor,account.model_accou
 access_account_move_line_distributor,account.move.line.distributor,account.model_account_move_line,base.group_portal_distributor,1,0,0,0
 access_account_tax_code_distributor,account.tax_code.distributor,account.model_account_tax_code,base.group_portal_distributor,1,0,0,0
 access_account_move_distributor,account.move.distributor,account.model_account_move,base.group_portal_distributor,1,0,0,0
+access_account_payment_term_distributor,account.account.payment.term.distributor,account.model_account_payment_term,base.group_portal_distributor,1,0,0,0
+access_account_payment_term_line_distributor,account.account.payment.term.line.distributor,account.model_account_payment_term_line,base.group_portal_distributor,1,0,0,0
