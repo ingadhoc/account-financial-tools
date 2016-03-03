@@ -36,7 +36,7 @@ los intereses a aplicar
     'images': [
     ],
     'depends': [
-        'l10n_ar_invoice',
+        'account',
     ],
     'data': [
         'interest_view.xml',
