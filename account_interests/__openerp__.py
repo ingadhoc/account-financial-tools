@@ -47,7 +47,7 @@ los intereses a aplicar
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': True,
 }
