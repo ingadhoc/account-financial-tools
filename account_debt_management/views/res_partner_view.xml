@@ -1,0 +1,23 @@
+<openerp>
+    <data>
+
+        <!--Inherited view -->
+        <record id="view_partner_inherit_debt_form" model="ir.ui.view">
+            <field name="name">res.partner.debt.form.inherit</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="model">res.partner</field>
+            <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+            <field name="arch" type="xml" >
+                <page name="sales_purchases" position="after">
+                    <page string="Customer Debt" attrs="{'invisible': [('customer', '=', False)]}" groups="account.group_account_invoice" name="customer_debt">
+                        <field name="receivable_line_ids" context="{'tree_view_ref': 'account_debt_management.account_move_line_partner_debt_tree'}"/>
+                    </page>
+                    <page string="Supplier Debt" attrs="{'invisible': [('supplier', '=', False)]}" groups="account.group_account_invoice" name="supplier_debt">
+                        <field name="payable_line_ids" context="{'tree_view_ref': 'account_debt_management.account_move_line_partner_debt_tree'}"/>
+                    </page>
+                </page>
+            </field>
+        </record>
+
+    </data>
+</openerp>
