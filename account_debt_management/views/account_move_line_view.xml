@@ -1,0 +1,60 @@
+<openerp>
+    <data>
+
+        <record id="account_move_line_partner_debt_search" model="ir.ui.view">
+            <field name="name">account.move.line.partner.debt.search</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+            <field name="arch" type="xml">
+                <filter position="before">
+                    <filter string="Receivable" name="filter_receivable" domain="[('account_id.type','=','receivable')]" help="Receivable payments"/>
+                    <filter string="Payable" name="filter_payable" domain="[('account_id.type','=','payable')]" help="Payable payments"/>
+                </filter>
+                <group>
+                    <filter string="Journal Entry" domain="[]" context="{'group_by': 'move_id'}"/>
+                    <filter string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </field>
+        </record>
+
+        <record id="account_move_line_partner_debt_tree" model="ir.ui.view">
+            <field name="name">account.move.line.partner.debt.tree</field>
+            <field name="model">account.move.line</field>
+            <field eval="40" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Account Move line" editable="bottom" create="false" delete="false" colors="red:(not date_maturity or date_maturity&lt;=current_date) and debt&gt;0">
+                    <field name="date" readonly="True"/>
+                    <field name="company_id" readonly="True" groups="base.group_multi_company" />
+                    <field name="move_id" readonly="True"/>
+                    <field name="ref" readonly="True"/>
+                    <!-- <field name="blocked"/> -->
+                    <field name="date_maturity" readonly="True"/>
+                    <field name="debt" sum="Total"/>
+                    <field name="cumulative_debt"/>
+                    <field name="currency_debt" groups="base.group_multi_currency"/>
+                    <field name="currency_id" readonly="True" groups="base.group_multi_currency"/>
+                    <field name="financial_debt" groups="base.group_multi_currency" sum="Total"/>
+                    <field name="cumulative_financial_debt" groups="base.group_multi_currency"/>
+                    <!-- <field name="reconcile_partial_id" readonly="True" groups="base.group_no_one"/> -->
+                    <!-- <field name="amount_currency"/> -->
+                    <!-- <field name="amount_residual"/> -->
+                    <!-- <field name="amount_residual_currency"/> -->
+                    <!-- groups="base.group_multi_currency" -->
+                    <!-- <field name="followup_line_id" invisible='1'/> -->
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_account_move_line" model="ir.actions.act_window">
+            <field name="name">Account Debt Summary</field>
+            <field name="res_model">account.move.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="account_move_line_partner_debt_tree"/>
+            <field name="context">{'search_default_filter_receivable': 1, 'search_default_filter_payable': 1, 'debt_together': 1}</field>
+            <field name="domain">[('partner_id', '=', active_id)]</field>
+            <!-- <field name="search_view_id" ref="view_account_invoice_report_search"/> -->
+        </record>
+
+    </data>
+</openerp>
