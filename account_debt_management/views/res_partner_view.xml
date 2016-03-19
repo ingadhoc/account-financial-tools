@@ -16,6 +16,14 @@
                         <field name="payable_line_ids" context="{'tree_view_ref': 'account_debt_management.account_move_line_partner_debt_tree'}"/>
                     </page>
                 </page>
+                <xpath expr="//div[@name='buttons']" position="inside">
+                    <button type="action" class="oe_stat_button" id="debt_summary" icon="fa-list" name="%(account_debt_management.action_account_debt_summary)d" attrs="{'invisible': [('customer', '=', False), ('supplier', '=', False)]}">
+                        <div><strong><field name="debt_balance" widget="monetary"/></strong><br/>Debt Balance</div>
+                    </button>
+                    <button type="action" class="oe_stat_button" id="debt_summary" icon="fa-list" name="%(account_debt_management.action_account_move_line)d" attrs="{'invisible': [('customer', '=', False), ('supplier', '=', False)]}">
+                        <div><strong><field name="debt_balance2" widget="monetary"/></strong><br/>Debt Balance2</div>
+                    </button>
+                </xpath>
             </field>
         </record>
 

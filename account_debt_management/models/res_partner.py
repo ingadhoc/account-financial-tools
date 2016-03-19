@@ -27,3 +27,14 @@ class ResPartner(models.Model):
         'partner_id',
         domain=payable_domain,
         )
+    debt_balance = fields.Float(
+        compute='_get_debt_balance',
+        )
+    debt_balance2 = fields.Float(
+        related='debt_balance',
+        )
+
+    @api.one
+    @api.depends('debit', 'credit')
+    def _get_debt_balance(self):
+        self.debt_balance = self.credit - self.debit

@@ -29,18 +29,27 @@ class AccountMoveLine(models.Model):
     @api.multi
     @api.depends('debit', 'credit')
     def _get_debt(self):
-        payable_lines = self.search([
-            ('id', 'in', self.ids),
-            ('account_id.type', '=', 'payable'),
-            ])
-        receivable_lines = self.search([
-            ('id', 'in', self.ids),
-            ('account_id.type', '=', 'receivable'),
-            ])
-        for sign, lines in [(1.0, receivable_lines), (-1.0, payable_lines)]:
+        """
+        If debt_together in context then we discount payables and make
+        cumulative all together
+        """
+        if self._context.get('debt_together', False):
+            # we research to get right order
+            search_list = [(1.0, self.search([('id', 'in', self.ids)]))]
+        else:
+            payable_lines = self.search([
+                ('id', 'in', self.ids),
+                ('account_id.type', '=', 'payable'),
+                ])
+            receivable_lines = self.search([
+                ('id', 'in', self.ids),
+                ('account_id.type', '=', 'receivable'),
+                ])
+            search_list = [(1.0, receivable_lines), (-1.0, payable_lines)]
+        for sign, lines in search_list:
             cumulative_debt = 0.0
             cumulative_financial_debt = 0.0
-            for line in lines:
+            for line in reversed(lines):
                 debt = line.debit - line.credit
                 financial_debt = line.currency_id and line.currency_id.compute(
                     line.amount_currency,
