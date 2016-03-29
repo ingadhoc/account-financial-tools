@@ -45,7 +45,8 @@ class account_invoice_line(models.Model):
 class account_move(models.Model):
     _inherit = "account.move"
 
-    period_id = fields.Many2one(domain="[('company_id','=',company_id)]")
+    period_id = fields.Many2one(
+        domain="[('company_id','=',company_id), ('state', '=', 'draft')]")
 
     @api.model
     def create(self, vals):
@@ -81,7 +82,8 @@ class account_move(models.Model):
 class account_statement(models.Model):
     _inherit = "account.bank.statement"
 
-    period_id = fields.Many2one(domain="[('company_id','=',company_id)]")
+    period_id = fields.Many2one(
+        domain="[('company_id','=',company_id), ('state', '=', 'draft')]")
 
     @api.multi
     def onchange_journal_id(self, journal_id):
