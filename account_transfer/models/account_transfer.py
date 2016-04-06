@@ -32,6 +32,7 @@ class account_transfer(models.Model):
         help='If not period defined, a period for this date will be used',
         readonly=True,
         states={'draft': [('readonly', False)]},
+        domain="[('company_id','=',company_id), ('state', '=', 'draft')]",
         )
     company_id = fields.Many2one(
         'res.company',
