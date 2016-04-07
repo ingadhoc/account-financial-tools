@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_partner_tree" model="ir.ui.view">
+            <field name="name">view_partner_tree.tree</field>
+            <field name="model">res.partner</field>
+            <field name="mode">primary</field>
+            <field eval="90" name="priority"/>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <tree position="attributes">
+                    <attribute name="editable">top</attribute>
+                    <attribute name="create">false</attribute>
+                </tree>
+                <field name="phone" position="after">
+                    <field name="new_credit"/>
+                    <field name="new_debit"/>
+                </field>
+                <field name="phone" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </field>
+                <field name="display_name" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </field>
+            </field>
+        </record>
+
+        
+
+    </data>
+</openerp>
