@@ -23,35 +23,47 @@ class account_account(models.Model):
 
     @api.one
     def _set_balance(self):
-        balance_dif = self.balance - self.new_balance
-
         move_id = self._context.get('active_id', False)
-
-        if not balance_dif or not move_id:
-            return True
-        elif balance_dif > 0:
-            field = 'credit'
-        else:
-            field = 'debit'
-            balance_dif = -balance_dif
-
         move = self.env['account.move'].browse(move_id)
         if not move.journal_id.centralisation:
             raise Warning(_(
                 'You need a Journal with centralisation checked to '
                 'set the initial balance.'))
 
+        value_diff = self.new_balance - self.balance
+        if not value_diff or not move_id:
+            return True
         move_line = self.env['account.move.line'].search(
             [('move_id', '=', move_id), ('account_id', '=', self.id)], limit=1)
 
         if move_line:
-            move_line.write({field: balance_dif})
+            if move_line.debit:
+                value_diff += move_line.debit
+            elif move_line.credit:
+                value_diff -= move_line.credit
+
+        if value_diff > 0:
+            debit = value_diff
+            credit = 0.0
+        elif value_diff < 0:
+            debit = 0.0
+            credit = -value_diff
+
+        if move_line:
+            if value_diff:
+                move_line.write({
+                    'credit': credit,
+                    'debit': debit,
+                    })
+            else:
+                move_line.unlink()
         else:
             move_line.create({
                 'name': _('Opening Balance'),
                 'account_id': self.id,
                 'move_id': move_id,
-                field: balance_dif,
+                'credit': credit,
+                'debit': debit,
                 'journal_id': move.journal_id.id,
                 'period_id': move.period_id.id,
             })
