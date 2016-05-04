@@ -49,7 +49,7 @@ This fields are only seen by users with "access right management"
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

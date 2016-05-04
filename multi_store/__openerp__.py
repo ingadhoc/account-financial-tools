@@ -61,7 +61,7 @@ It is done with the same logic to journal. We do not limitate the "read" of this
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

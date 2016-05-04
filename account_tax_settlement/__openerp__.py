@@ -31,7 +31,7 @@ Add a model to manage tax settlements
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

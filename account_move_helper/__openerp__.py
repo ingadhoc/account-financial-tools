@@ -38,5 +38,5 @@ Account Move helper
     ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
 }

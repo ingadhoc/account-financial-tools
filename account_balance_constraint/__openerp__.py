@@ -20,7 +20,7 @@ Add constraint on account.move validation to check account min and max.
         ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'active': False,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

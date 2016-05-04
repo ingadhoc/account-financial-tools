@@ -45,7 +45,7 @@ Add a wizard to import moves on bank and cash statements
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

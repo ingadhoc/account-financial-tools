@@ -45,7 +45,7 @@ Statement Aeroo Report
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

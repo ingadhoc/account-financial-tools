@@ -31,7 +31,7 @@
 Account onchange Fix
 ====================
 ''',
-    'installable': True,
+    'installable': False,
     'name': 'Account onchange Fix',
     'test': [],
     'version': '8.0.1.2.0'}

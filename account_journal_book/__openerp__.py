@@ -45,5 +45,5 @@
         'views/account_view.xml',
         'data/sequence.xml',
     ],
-    "installable": True,
+    "installable": False,
 }

@@ -46,7 +46,7 @@ Adds a balance field on account.move.line. It also adds this field on account.mo
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

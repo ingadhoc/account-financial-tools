@@ -25,6 +25,6 @@ It makes the following modifications in security related to accounting:
     ],
     "demo_xml": [],
     "active": False,
-    "installable": True,
+    "installable": False,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

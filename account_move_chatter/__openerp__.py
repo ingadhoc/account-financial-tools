@@ -37,7 +37,7 @@ Account Move Chatter
     ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }
