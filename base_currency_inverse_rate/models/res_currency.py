@@ -11,18 +11,18 @@ _logger = logging.getLogger(__name__)
 class res_currency(models.Model):
     _inherit = "res.currency"
 
-    inverse_rate_silent = fields.Float(
+    inverse_rate = fields.Float(
         'Current Inverse Rate', digits=(12, 4),
-        compute='get_inverse_rate_silent',
+        compute='get_inverse_rate',
         help='The rate of the currency from the currency of rate 1 (0 if no '
                 'rate defined).'
-        )
+    )
 
     @api.one
-    @api.depends('rate_silent')
-    def get_inverse_rate_silent(self):
-        self.inverse_rate_silent = self.rate_silent and (
-            1.0 / (self.rate_silent))
+    @api.depends('rate')
+    def get_inverse_rate(self):
+        self.inverse_rate_ = self.rate and (
+            1.0 / (self.rate))
 
 
 class res_currency_rate(models.Model):
@@ -33,7 +33,7 @@ class res_currency_rate(models.Model):
         compute='get_inverse_rate',
         inverse='set_inverse_rate',
         help='The rate of the currency from the currency of rate 1',
-        )
+    )
 
     @api.one
     @api.depends('rate')
