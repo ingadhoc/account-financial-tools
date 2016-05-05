@@ -20,11 +20,13 @@ class account_transfer(models.Model):
         required=True,
         readonly=True,
         states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
         )
     date = fields.Date(
         'Date',
         readonly=True,
         states={'draft': [('readonly', False)]},
+        track_visibility='onchange'
         )
     period_id = fields.Many2one(
         'account.period',
@@ -33,6 +35,7 @@ class account_transfer(models.Model):
         readonly=True,
         states={'draft': [('readonly', False)]},
         domain="[('company_id','=',company_id), ('state', '=', 'draft')]",
+        track_visibility='onchange',
         )
     company_id = fields.Many2one(
         'res.company',
@@ -40,6 +43,7 @@ class account_transfer(models.Model):
         required=True,
         readonly=True,
         states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
         default=lambda self: self.env[
             'res.company']._company_default_get('account.transfer'),
         )
@@ -49,6 +53,7 @@ class account_transfer(models.Model):
         required=True,
         ondelete='cascade',
         readonly=True,
+        track_visibility='onchange',
         states={'draft': [('readonly', False)]},
         domain="[('type', 'in', ['bank', 'cash']), "
         "('allow_account_transfer', '=', True), "
@@ -60,6 +65,7 @@ class account_transfer(models.Model):
         required=True,
         ondelete='cascade',
         readonly=True,
+        track_visibility='onchange',
         states={'draft': [('readonly', False)]},
         domain="[('type', 'in', ['bank', 'cash']), "
         "('allow_account_transfer', '=', True), "
@@ -83,7 +89,8 @@ class account_transfer(models.Model):
         'State',
         required=True,
         readonly=True,
-        default='draft'
+        default='draft',
+        track_visibility='onchange',
         )
     note = fields.Html(
         'Notes'
@@ -94,6 +101,7 @@ class account_transfer(models.Model):
         digits=dp.get_precision('Account'),
         readonly=True,
         states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
         )
 
     @api.one
