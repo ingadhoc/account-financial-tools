@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-    'version': '8.0.1.0.0',
+    'version': '9.0.0.0.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -31,7 +31,7 @@ It creates a many2many field between journals and users. If you set users to jou
 Usually used for payroll journals.
 This fields are only seen by users with "access right management"
     """,
-    'author':  'ADHOC SA',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
@@ -41,15 +41,15 @@ This fields are only seen by users with "access right management"
         'account_voucher',
     ],
     'data': [
-            'res_users_view.xml',
-            'account_view.xml',
-            'security/journal_security_security.xml',
+        'res_users_view.xml',
+        'account_view.xml',
+        'security/journal_security_security.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }
