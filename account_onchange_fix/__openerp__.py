@@ -18,20 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{   'active': False,
-    'author':  'ADHOC SA',
+{
+    'active': False,
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
-    'data': [   
-                ],
+    'data': [
+    ],
     'demo': [],
     'depends': ['account'],
     'description': '''
 Account onchange Fix
 ====================
+We depreceate this module as we can not remember why it exists.
+It also has a very bad implementation as it overwrites some methods
 ''',
-    'installable': True,
+    'installable': False,
     'name': 'Account onchange Fix',
     'test': [],
     'version': '8.0.1.2.0'}
