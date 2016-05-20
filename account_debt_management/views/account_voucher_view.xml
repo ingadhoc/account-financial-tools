@@ -11,10 +11,14 @@
                 </field>
                 <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_original']" position="after">
                     <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                </xpath>
+                <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_unreconciled']" position="after">
                     <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
                 </xpath>
                 <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_original']" position="after">
                     <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                </xpath>
+                <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_unreconciled']" position="after">
                     <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
                 </xpath>
             </field>
@@ -30,10 +34,14 @@
                 </field>
                 <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_original']" position="after">
                     <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                </xpath>
+                <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_unreconciled']" position="after">
                     <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
                 </xpath>
                 <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_original']" position="after">
                     <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                </xpath>
+                <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_unreconciled']" position="after">
                     <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
                 </xpath>
             </field>
