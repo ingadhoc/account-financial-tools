@@ -21,18 +21,18 @@ class ResPartner(models.Model):
         'account.move.line',
         'partner_id',
         domain=receivable_domain,
-        )
+    )
     payable_line_ids = fields.One2many(
         'account.move.line',
         'partner_id',
         domain=payable_domain,
-        )
+    )
     debt_balance = fields.Float(
         compute='_get_debt_balance',
-        )
+    )
     debt_balance2 = fields.Float(
         related='debt_balance',
-        )
+    )
 
     @api.one
     @api.depends('debit', 'credit')
