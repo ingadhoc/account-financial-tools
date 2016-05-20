@@ -12,19 +12,19 @@ class AccountMoveLine(models.Model):
 
     debt = fields.Float(
         compute='_get_debt',
-        )
+    )
     currency_debt = fields.Float(
         compute='_get_debt',
-        )
+    )
     financial_debt = fields.Float(
         compute='_get_debt',
-        )
+    )
     cumulative_debt = fields.Float(
         compute='_get_debt',
-        )
+    )
     cumulative_financial_debt = fields.Float(
         compute='_get_debt',
-        )
+    )
 
     @api.multi
     @api.depends('debit', 'credit')
@@ -40,11 +40,11 @@ class AccountMoveLine(models.Model):
             payable_lines = self.search([
                 ('id', 'in', self.ids),
                 ('account_id.type', '=', 'payable'),
-                ])
+            ])
             receivable_lines = self.search([
                 ('id', 'in', self.ids),
                 ('account_id.type', '=', 'receivable'),
-                ])
+            ])
             search_list = [(1.0, receivable_lines), (-1.0, payable_lines)]
         for sign, lines in search_list:
             cumulative_debt = 0.0

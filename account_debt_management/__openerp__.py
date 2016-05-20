@@ -37,8 +37,8 @@ and cumulative amounts
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
-        'account',
-        ],
+        'account_voucher',
+    ],
     'data': [
         # 'wizard/account_summary_wizard_view.xml',
         # 'report/account_summary_report.xml'
@@ -46,11 +46,11 @@ and cumulative amounts
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
         'security/ir.model.access.csv',
-        ],
+    ],
     'demo': [
-        ],
+    ],
     'test': [
-        ],
+    ],
     'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
