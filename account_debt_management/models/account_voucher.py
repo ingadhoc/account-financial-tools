@@ -8,9 +8,9 @@ from openerp import models, api, fields
 class AccountVoucher(models.Model):
     _inherit = "account.voucher"
 
-    financial_amount_reconciled = fields.Float(
-        compute='_get_financial_amount',
-        string='Financial Amount Reconciled',
+    reconciled_financial_amount_ = fields.Float(
+        compute='_get_reconciled_financial_amount_',
+        string='Reconciled Financial Amount',
     )
 
     @api.one
@@ -20,7 +20,7 @@ class AccountVoucher(models.Model):
         'line_dr_ids.financial_amount_unreconciled',
         'line_dr_ids.amount_unreconciled',
     )
-    def _get_financial_amount(self):
+    def _get_reconciled_financial_amount_(self):
         # self.financial_amount = sum
         # debit = sum([x.amount for x in self.line_cr_ids])
         # credit = sum([x.amount for x in self.line_dr_ids])
@@ -40,14 +40,14 @@ class AccountVoucher(models.Model):
                     # self.currency_id.round
                     financial_amount += line.amount * perc
             return financial_amount
-        financial_amount_reconciled = (
+        reconciled_financial_amount_ = (
             get_lines_financial_amount(self.line_cr_ids) -
             get_lines_financial_amount(self.line_dr_ids))
         if self.type == 'payment':
-            financial_amount_reconciled = -1 * financial_amount_reconciled
+            reconciled_financial_amount_ = -1 * reconciled_financial_amount_
         # financial_amount = credit - debit + self.advance_amount
         # self.to_pay_amount = to_pay_amount
-        self.financial_amount_reconciled = financial_amount_reconciled
+        self.reconciled_financial_amount_ = reconciled_financial_amount_
 
 
 class AccountVoucherLine(models.Model):
