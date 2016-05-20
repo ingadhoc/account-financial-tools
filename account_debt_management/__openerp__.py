@@ -45,6 +45,7 @@ and cumulative amounts
         'report/account_debt_summary_view.xml',
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
+        'views/account_voucher_view.xml',
         'security/ir.model.access.csv',
     ],
     'demo': [

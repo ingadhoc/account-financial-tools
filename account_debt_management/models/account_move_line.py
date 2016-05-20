@@ -16,6 +16,9 @@ class AccountMoveLine(models.Model):
     currency_debt = fields.Float(
         compute='_get_debt',
     )
+    financial_amount_residual = fields.Float(
+        compute='_get_debt',
+    )
     financial_debt = fields.Float(
         compute='_get_debt',
     )
@@ -54,6 +57,9 @@ class AccountMoveLine(models.Model):
                 financial_debt = line.currency_id and line.currency_id.compute(
                     line.amount_currency,
                     line.account_id.company_id.currency_id) or debt
+                financial_amount_residual = line.currency_id and line.currency_id.compute(
+                    line.amount_residual_currency,
+                    line.account_id.company_id.currency_id) or line.amount_residual_currency
                 # so we dont display 0.0 when no amount_currency
                 cumulative_debt += debt
                 cumulative_financial_debt += financial_debt
@@ -62,6 +68,8 @@ class AccountMoveLine(models.Model):
                     line.currency_debt = sign * line.amount_currency
                 line.debt = sign * debt
                 line.financial_debt = sign * financial_debt
+                # no need for sign, already signed
+                line.financial_amount_residual = financial_amount_residual
                 line.cumulative_debt = sign * cumulative_debt
                 line.cumulative_financial_debt = (
                     sign * cumulative_financial_debt)
