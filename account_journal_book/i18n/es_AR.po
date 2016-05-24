@@ -3,7 +3,6 @@
 # * account_journal_book
 # 
 # Translators:
-# Hotellook, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
@@ -11,23 +10,23 @@ msgstr ""
 "POT-Creation-Date: 2016-05-20 18:58+0000\n"
 "PO-Revision-Date: 2016-03-01 20:10+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
-"Language-Team: Spanish (Ecuador) (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es_EC/)\n"
+"Language-Team: Spanish (Argentina) (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es_AR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: es_EC\n"
+"Language: es_AR\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_journal_book
 #: report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
 msgid "Account"
-msgstr ""
+msgstr "Cuenta"
 
 #. module: account_journal_book
 #: model:ir.model,name:account_journal_book.model_account_move
 msgid "Account Entry"
-msgstr ""
+msgstr "Asiento contable"
 
 #. module: account_journal_book
 #: model:ir.model,name:account_journal_book.model_account_move_book_move_renumber
@@ -89,7 +88,7 @@ msgstr ""
 #. module: account_journal_book
 #: view:account.move.book.move.renumber:account_journal_book.view_account_book_move_renumber_form
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #. module: account_journal_book
 #: field:account.journal.entries.report,chart_account_id:0
@@ -148,7 +147,7 @@ msgstr ""
 #. module: account_journal_book
 #: field:account.journal.entries.report,date_to:0
 msgid "End Date"
-msgstr "Fecha de finalización"
+msgstr ""
 
 #. module: account_journal_book
 #: field:account.journal.entries.report,period_to:0
@@ -386,7 +385,7 @@ msgstr ""
 #. module: account_journal_book
 #: field:account.journal.entries.report,date_from:0
 msgid "Start Date"
-msgstr "Fecha inicio"
+msgstr ""
 
 #. module: account_journal_book
 #: field:account.journal.entries.report,period_from:0

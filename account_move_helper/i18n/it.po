@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * account_move_helper
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: account-financial-tools (8.0)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-20 18:58+0000\n"
+"PO-Revision-Date: 2016-05-10 20:35+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
+"Language-Team: Italian (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/it/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_move_helper
+#: code:addons/account_move_helper/account.py:98
+#: model:ir.model,name:account_move_helper.model_account_account
+#, python-format
+msgid "Account"
+msgstr ""
+
+#. module: account_move_helper
+#: model:ir.model,name:account_move_helper.model_account_move
+msgid "Account Entry"
+msgstr ""
+
+#. module: account_move_helper
+#: field:account.account,new_balance:0
+msgid "Balance"
+msgstr ""
+
+#. module: account_move_helper
+#: code:addons/account_move_helper/account.py:62
+#: code:addons/account_move_helper/partner.py:74
+#, python-format
+msgid "Opening Balance"
+msgstr ""
+
+#. module: account_move_helper
+#: model:ir.model,name:account_move_helper.model_res_partner
+msgid "Partner"
+msgstr "Partner"
+
+#. module: account_move_helper
+#: code:addons/account_move_helper/account.py:122
+#, python-format
+msgid "Partners"
+msgstr ""
+
+#. module: account_move_helper
+#: view:account.move:account_move_helper.view_move_form
+msgid "Search Account"
+msgstr ""
+
+#. module: account_move_helper
+#: view:account.move:account_move_helper.view_move_form
+msgid "Search Partner"
+msgstr ""
+
+#. module: account_move_helper
+#: field:res.partner,new_debit:0
+msgid "Total Payable"
+msgstr ""
+
+#. module: account_move_helper
+#: field:res.partner,new_credit:0
+msgid "Total Receivable"
+msgstr ""
+
+#. module: account_move_helper
+#: view:account.account:account_move_helper.view_account_journal_tree
+#: view:res.partner:account_move_helper.view_partner_tree
+msgid "True"
+msgstr ""
+
+#. module: account_move_helper
+#: code:addons/account_move_helper/account.py:29
+#: code:addons/account_move_helper/partner.py:37
+#, python-format
+msgid ""
+"You need a Journal with centralisation checked to set the initial balance."
+msgstr ""
+
+#. module: account_move_helper
+#: view:account.account:account_move_helper.view_account_journal_tree
+#: view:res.partner:account_move_helper.view_partner_tree
+msgid "false"
+msgstr ""
+
+#. module: account_move_helper
+#: view:account.account:account_move_helper.view_account_journal_tree
+#: view:res.partner:account_move_helper.view_partner_tree
+msgid "top"
+msgstr ""

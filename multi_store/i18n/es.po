@@ -5,12 +5,12 @@
 # Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: odoo-addons (8.0)\n"
+"Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-05 13:55+0000\n"
-"PO-Revision-Date: 2015-11-11 15:53+0000\n"
-"Last-Translator: Juan Jose Scarafia <scarafia.juanjose@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-odoo-addons-8-0/language/es/)\n"
+"POT-Creation-Date: 2016-05-20 18:58+0000\n"
+"PO-Revision-Date: 2016-05-24 23:23+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -53,6 +53,11 @@ msgid "Created on"
 msgstr "Creadon en"
 
 #. module: multi_store
+#: field:res.store,display_name:0
+msgid "Display Name"
+msgstr "Nombre a Mostrar"
+
+#. module: multi_store
 #: constraint:res.store:0
 msgid "Error! You can not create recursive stores."
 msgstr "Error! No puede crear sucursales recursivas."
@@ -71,6 +76,11 @@ msgstr "Diario"
 #: field:res.store,journal_ids:0
 msgid "Journals"
 msgstr "Diarios"
+
+#. module: multi_store
+#: field:res.store,__last_update:0
+msgid "Last Modified on"
+msgstr "Última Modificación en"
 
 #. module: multi_store
 #: field:res.store,write_uid:0

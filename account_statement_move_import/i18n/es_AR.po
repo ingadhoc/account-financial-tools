@@ -3,7 +3,6 @@
 # * account_statement_move_import
 # 
 # Translators:
-# Ivan Todorovich <ivan.todorovich@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
@@ -11,17 +10,17 @@ msgstr ""
 "POT-Creation-Date: 2016-05-20 18:58+0000\n"
 "PO-Revision-Date: 2016-03-01 20:11+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
-"Language-Team: Galician (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/gl/)\n"
+"Language-Team: Spanish (Argentina) (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es_AR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: gl\n"
+"Language: es_AR\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_statement_move_import
 #: model:ir.model,name:account_statement_move_import.model_account_move
 msgid "Account Entry"
-msgstr ""
+msgstr "Asiento contable"
 
 #. module: account_statement_move_import
 #: model:ir.model,name:account_statement_move_import.model_account_bank_statement
@@ -36,7 +35,7 @@ msgstr ""
 #. module: account_statement_move_import
 #: view:account.statement.move.import.wizard:account_statement_move_import.account_statement_move_import_wizard_form_view
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #. module: account_statement_move_import
 #: view:account.statement.move.import.wizard:account_statement_move_import.account_statement_move_import_wizard_form_view
@@ -121,7 +120,7 @@ msgstr ""
 #: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:36
 #, python-format
 msgid "Journal"
-msgstr "Diario"
+msgstr ""
 
 #. module: account_statement_move_import
 #: field:account.statement.move.import.wizard,journal_account_ids:0
@@ -200,4 +199,4 @@ msgstr ""
 #. module: account_statement_move_import
 #: view:account.statement.move.import.wizard:account_statement_move_import.account_statement_move_import_wizard_form_view
 msgid "or"
-msgstr "ou"
+msgstr ""
