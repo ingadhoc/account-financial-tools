@@ -34,7 +34,7 @@ Account onchange Fix
 We depreceate this module as we can not remember why it exists.
 It also has a very bad implementation as it overwrites some methods
 ''',
-    'installable': False,
+    'installable': True,
     'name': 'Account onchange Fix',
     'test': [],
     'version': '8.0.1.2.0'}
