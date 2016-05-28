@@ -117,11 +117,11 @@ class res_partner(models.Model):
                 credit = 0.0
             elif line_balance < 0:
                 debit = 0.0
-                credit = line_balance
+                credit = -line_balance
             else:
                 # if no line balance, then we dont print it
                 continue
-            balance += debit - credit
+            balance += line_balance
             lines_vals.append({
                 'move': self.env['account.move'].browse(line[0]),
                 'date_maturity': line[1],
