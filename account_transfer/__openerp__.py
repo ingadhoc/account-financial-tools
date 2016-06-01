@@ -34,6 +34,7 @@ Make transfers between journals
     """,
     'depends': [
         'account',
+        'report_aeroo'
     ],
     'external_dependencies': {
     },
