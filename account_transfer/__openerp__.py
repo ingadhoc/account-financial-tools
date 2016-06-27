@@ -20,10 +20,10 @@
 ##############################################################################
 {
     'name': 'Account Journal Transfer',
-    'version': '8.0.1.0.1',
+    'version': '8.0.1.1.1',
     'category': 'Localization/Argentina',
     'sequence': 14,
-    'author':  'ADHOC SA',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'summary': '',
@@ -34,6 +34,7 @@ Make transfers between journals
     """,
     'depends': [
         'account',
+        'report_aeroo'
     ],
     'external_dependencies': {
     },
@@ -41,8 +42,9 @@ Make transfers between journals
         'views/res_company.xml',
         'views/account_transfer_view.xml',
         'views/account_journal_view.xml',
+        'reports/transfers_between_accounts_report.xml',
         'security/ir.model.access.csv',
-        'security/security.xml',
+        'security/security.xml'
     ],
     'demo': [
     ],
