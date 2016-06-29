@@ -3,7 +3,7 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import api, models, fields
+from openerp import api, models, fields, _
 # from openerp.exceptions import Warning
 
 
@@ -73,3 +73,29 @@ class AccountMoveLine(models.Model):
                 line.cumulative_debt = sign * cumulative_debt
                 line.cumulative_financial_debt = (
                     sign * cumulative_financial_debt)
+
+    @api.multi
+    def get_document(self):
+        voucher = self.env['account.voucher'].search(
+            [('move_id', '=', self.move_id.id)])
+        model = 'account.move'
+        res_id = self.move_id.id
+        view_id = False
+
+        if self.invoice:
+            res_id = self.invoice.id
+            model = 'account.invoice'
+        elif voucher:
+            res_id = voucher.id
+            model = 'account.voucher'
+            view_id = self.env['ir.model.data'].xmlid_to_res_id(
+                'account_voucher.view_vendor_receipt_form')
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': model,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': res_id,
+            'view_id': view_id,
+        }
