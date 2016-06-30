@@ -77,7 +77,7 @@ class AccountMoveLine(models.Model):
     @api.multi
     def get_document(self):
         voucher = self.env['account.voucher'].search(
-            [('move_id', '=', self.move_id.id)])
+            [('move_id', '=', self.move_id.id)], limit=1)
         model = 'account.move'
         res_id = self.move_id.id
         view_id = False
@@ -88,8 +88,12 @@ class AccountMoveLine(models.Model):
         elif voucher:
             res_id = voucher.id
             model = 'account.voucher'
-            view_id = self.env['ir.model.data'].xmlid_to_res_id(
-                'account_voucher.view_vendor_receipt_form')
+            if voucher.type == 'receipt':
+                view_id = self.env['ir.model.data'].xmlid_to_res_id(
+                    'account_voucher.view_vendor_receipt_form')
+            elif voucher.type == 'payment':
+                view_id = self.env['ir.model.data'].xmlid_to_res_id(
+                    'account_voucher.view_vendor_payment_form')
 
         return {
             'type': 'ir.actions.act_window',
