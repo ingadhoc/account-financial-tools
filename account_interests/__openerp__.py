@@ -27,10 +27,16 @@
     'description': """
 Interests Management
 ====================
-Se debe setear en las cuentas deseadas (pr ejemplo deudores por venta),
-los intereses a aplicar
+Se deben configurar los intereses en la compañía.
+
+TODO:
+ * ver si queremos que tambien se calcule interes proporcional para lo que
+ vencio en este ultimo periodo
+ * ver si agregamos una fecha en partner ultima fecha de intereses y que
+ completemos cuando creamos la factura asi podemos hacer un commit luego de
+ cada una y si se rompe podemos recuperar.
     """,
-    'author':  'ADHOC SA',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
@@ -39,8 +45,8 @@ los intereses a aplicar
         'account',
     ],
     'data': [
-        'interest_view.xml',
         'company_view.xml',
+        'cron_data.xml',
         'security/ir.model.access.csv',
     ],
     'demo': [
@@ -49,6 +55,6 @@ los intereses a aplicar
     ],
     'installable': True,
     'auto_install': False,
-    'application': True,
+    'application': False,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
