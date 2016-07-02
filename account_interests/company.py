@@ -61,10 +61,6 @@ class res_company(models.Model):
     def create_interest_invoices(self):
         _logger.info('Creating Interests for company %s' % self.name)
         interests_date = self.interests_next_date
-        interest_records = self.interest_ids.search([
-            ('date_from', '<=', interests_date),
-            '|', ('date_to', '>=', interests_date),
-            ('date_to', '=', False)])
 
         interests_rule_type = self.interests_rule_type
         interval = self.interests_interval
@@ -83,7 +79,7 @@ class res_company(models.Model):
         # lo que vencio en este ultimo periodo
         to_date = fields.Date.to_string(interests_date_date - delta)
 
-        interest_records.create_invoices(to_date)
+        self.interest_ids.create_invoices(to_date)
 
         # seteamos proxima corrida en hoy mas un periodo
         self.interests_next_date = fields.Date.to_string(
@@ -122,13 +118,6 @@ class res_company_interest(models.Model):
         'Interest',
         required=True,
         digits=(7, 4)
-    )
-    date_from = fields.Date(
-        'Date From',
-        required=True,
-    )
-    date_to = fields.Date(
-        'Date To'
     )
 
     @api.one

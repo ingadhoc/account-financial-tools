@@ -30,8 +30,6 @@
                             <field name="interest_product_id"/>
                             <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                             <field name="interest_rate"/>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
                         </tree>
                     </field>
                 </page>
