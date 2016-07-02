@@ -4,7 +4,7 @@
 # directory
 ##############################################################################
 from openerp import models, fields, api, _
-# from openerp.exceptions import UserError
+from openerp.exceptions import Warning
 from dateutil.relativedelta import relativedelta
 import logging
 _logger = logging.getLogger(__name__)
