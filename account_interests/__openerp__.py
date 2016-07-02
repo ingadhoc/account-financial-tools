@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Calculate interests for selected partners",
-    'version': '8.0.1.0.0',
+    'version': '8.0.1.1.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Quotations, Sales Orders, Invoicing',
