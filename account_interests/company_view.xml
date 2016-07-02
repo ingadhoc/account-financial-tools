@@ -8,11 +8,36 @@
         <record id="view_kinesis_athletics_company_form" model="ir.ui.view">
             <field name="name">kinesis_athletics.company.form</field>
             <field name="model">res.company</field>
-            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="inherit_id" ref="account.view_company_inherit_form"/>
             <field name="arch" type="xml">
-                <group name="account_grp" string="Accounting">  
-                        <field name="debt_interest_period" help="Number of months for imputation of default interest"/>
-                </group>
+                <page string="Overdue Payments">
+                    <group string="Interests">
+                        <field name="automatic_interests"/>
+                    </group>
+                    <group attrs="{'invisible': [('automatic_interests','!=',True)]}">
+                        <field name="interests_automatic_validation"/>
+                        <label for="interests_interval"/>
+                        <div>
+                            <field name="interests_interval" class="oe_inline" attrs="{'required': [('automatic_interests', '=', True)]}"/>
+                            <field name="interests_rule_type" class="oe_inline" attrs="{'required': [('automatic_interests', '=', True)]}"/>
+                        </div>
+                        <field name="interests_next_date"/>
+                    </group>
+                    <field name="interest_ids" context="{'default_company_id': id}" attrs="{'invisible': [('automatic_interests','!=',True)]}">
+                        <tree editable="bottom">
+                            <field name="company_id" invisible="1" required="0"/>
+                            <field name="receivable_account_ids" widget="many2many_tags"/>
+                            <field name="interest_product_id"/>
+                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                            <field name="interest_rate"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </tree>
+                    </field>
+                </page>
+                <!-- <group name="account_grp" string="Accounting">   -->
+                        <!-- <field name="debt_interest_period" help="Number of months for imputation of default interest"/> -->
+                <!-- </group> -->
             </field>
 
         </record>
