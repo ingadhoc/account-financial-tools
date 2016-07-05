@@ -19,71 +19,8 @@ class res_company(models.Model):
     interest_ids = fields.One2many(
         'res.company.interest',
         'company_id',
-        'Interest Rates'
+        'Interest',
     )
-    automatic_interests = fields.Boolean(
-    )
-    interests_automatic_validation = fields.Boolean(
-        'Automatic Validation?',
-        help='Automatic Invoice Validation?',
-        default=True,
-    )
-    interests_rule_type = fields.Selection([
-        ('daily', 'Day(s)'),
-        ('weekly', 'Week(s)'),
-        ('monthly', 'Month(s)'),
-        ('yearly', 'Year(s)'),
-    ],
-        'Interests Recurrency',
-        help="Interests Invoice automatically repeat at specified interval",
-        default='monthly',
-    )
-    interests_interval = fields.Integer(
-        'Repeat Every',
-        default=1,
-        help="Repeat every (Days/Week/Month/Year)"
-    )
-    interests_next_date = fields.Date(
-        'Date of Next Invoice',
-        default=fields.Date.today,
-    )
-
-    @api.model
-    def _cron_recurring_interests_invoices(self):
-        _logger.info('Running interests invoices cron')
-        current_date = fields.Date.today()
-        companies = self.search([
-            ('automatic_interests', '=', True),
-            ('interests_next_date', '<=', current_date)])
-        companies.create_interest_invoices()
-
-    @api.one
-    def create_interest_invoices(self):
-        _logger.info('Creating Interests for company %s' % self.name)
-        interests_date = self.interests_next_date
-
-        interests_rule_type = self.interests_rule_type
-        interval = self.interests_interval
-        # next_date = fields.Date.from_string(interests_date)
-        if interests_rule_type == 'daily':
-            delta = relativedelta(days=+interval)
-        elif interests_rule_type == 'weekly':
-            delta = relativedelta(weeks=+interval)
-        elif interests_rule_type == 'monthly':
-            delta = relativedelta(months=+interval)
-        else:
-            delta = relativedelta(years=+interval)
-        interests_date_date = fields.Date.from_string(interests_date)
-        # buscamos solo facturas que vencieron antes de hoy menos un periodo
-        # TODO ver si queremos que tambien se calcule interes proporcional para
-        # lo que vencio en este ultimo periodo
-        to_date = fields.Date.to_string(interests_date_date - delta)
-
-        self.interest_ids.create_invoices(to_date)
-
-        # seteamos proxima corrida en hoy mas un periodo
-        self.interests_next_date = fields.Date.to_string(
-            interests_date_date + delta)
 
 
 class res_company_interest(models.Model):
@@ -114,11 +51,80 @@ class res_company_interest(models.Model):
         'Analytic account',
         domain=[('type', '!=', 'view')]
     )
-    interest_rate = fields.Float(
+    rate = fields.Float(
         'Interest',
         required=True,
         digits=(7, 4)
     )
+    automatic_validation = fields.Boolean(
+        'Automatic Validation?',
+        help='Automatic Invoice Validation?',
+        default=True,
+    )
+    rule_type = fields.Selection([
+        ('daily', 'Day(s)'),
+        ('weekly', 'Week(s)'),
+        ('monthly', 'Month(s)'),
+        ('yearly', 'Year(s)'),
+    ],
+        'Recurrency',
+        help="Interests Invoice automatically repeat at specified interval",
+        default='monthly',
+    )
+    interval = fields.Integer(
+        'Repeat Every',
+        default=1,
+        help="Repeat every (Days/Week/Month/Year)"
+    )
+    tolerance_interval = fields.Integer(
+        'Tolerance',
+        default=1,
+        help="Number of periods of tolerance for dues. 0 = no tolerance"
+    )
+    next_date = fields.Date(
+        'Date of Next Invoice',
+        default=fields.Date.today,
+    )
+
+    @api.model
+    def _cron_recurring_interests_invoices(self):
+        _logger.info('Running interests invoices cron')
+        current_date = fields.Date.today()
+        self.search([
+            ('next_date', '<=', current_date)]).create_interest_invoices()
+
+    @api.one
+    def create_interest_invoices(self):
+        _logger.info('Creating Interests id %s' % self.id)
+        interests_date = self.next_date
+
+        rule_type = self.rule_type
+        interval = self.interval
+        tolerance_interval = self.tolerance_interval
+        # next_date = fields.Date.from_string(interests_date)
+        if rule_type == 'daily':
+            next_delta = relativedelta(days=+interval)
+            tolerance_delta = relativedelta(days=+tolerance_interval)
+        elif rule_type == 'weekly':
+            next_delta = relativedelta(weeks=+interval)
+            tolerance_delta = relativedelta(weeks=+tolerance_interval)
+        elif rule_type == 'monthly':
+            next_delta = relativedelta(months=+interval)
+            tolerance_delta = relativedelta(months=+tolerance_interval)
+        else:
+            next_delta = relativedelta(years=+interval)
+            tolerance_delta = relativedelta(years=+tolerance_interval)
+        interests_date_date = fields.Date.from_string(interests_date)
+        # buscamos solo facturas que vencieron antes de hoy menos un periodo
+        # TODO ver si queremos que tambien se calcule interes proporcional para
+        # lo que vencio en este ultimo periodo
+        to_date = fields.Date.to_string(interests_date_date - tolerance_delta)
+
+        self.create_invoices(to_date)
+
+        # seteamos proxima corrida en hoy mas un periodo
+        self.next_date = fields.Date.to_string(
+            interests_date_date + next_delta)
 
     @api.one
     def create_invoices(self, to_date):
@@ -160,7 +166,7 @@ class res_company_interest(models.Model):
             invoice = self.env['account.invoice'].create(invoice_vals)
             # update amounts for new invoice
             invoice.button_reset_taxes()
-            if self.company_id.interests_automatic_validation:
+            if self.automatic_validation:
                 invoice.signal_workflow('invoice_open')
 
     @api.multi
@@ -179,7 +185,7 @@ class res_company_interest(models.Model):
 
         comment = _(
             'Deuda Vencida al %s: %s\n'
-            'Tasa de interés: %s') % (to_date, debt, self.interest_rate)
+            'Tasa de interés: %s') % (to_date, debt, self.rate)
 
         invoice_vals = {
             'type': 'out_invoice',
@@ -196,7 +202,7 @@ class res_company_interest(models.Model):
             'currency_id': partner.property_product_pricelist.currency_id.id,
             'payment_term': partner.property_payment_term.id or False,
             'fiscal_position': partner.property_account_position.id,
-            'date_invoice': company.interests_next_date,
+            'date_invoice': self.next_date,
             'company_id': partner.company_id.id,
             'user_id': partner.user_id.id or False
         }
@@ -212,9 +218,9 @@ class res_company_interest(models.Model):
             'Deuda Vencida al %s: %s\n'
             'Tasa de interés: %s') % (
             self.interest_product_id.name,
-            to_date, debt, self.interest_rate)
+            to_date, debt, self.rate)
 
-        amount = self.interest_rate * debt
+        amount = self.rate * debt
         line_data = self.env['account.invoice.line'].with_context(
             force_company=company.id).product_id_change(
             self.interest_product_id.id,
