@@ -20,10 +20,10 @@
 ##############################################################################
 {
     "name": "Base Currency Inverse Rate",
-    'version': '8.0.0.0.0',
+    'version': '9.0.0.0.0',
     'category': 'Accounting',
     'sequence': 14,
-    'author':  'ADHOC SA',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'summary': '',
@@ -47,7 +47,7 @@ shows it. We show rate FROM base currency and not TO base currency. For eg.
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

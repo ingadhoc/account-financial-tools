@@ -6,8 +6,8 @@
             <field name="model">res.currency</field>
             <field name="inherit_id" ref="base.view_currency_form"/>
             <field name='arch' type='xml'>
-                <field name="company_id" position="after">
-                    <field name="inverse_rate_silent"/>
+                <field name="active" position="after">
+                    <field name="inverse_rate"/>
                 </field>
                 <field name="rate" position="after">
                     <field name="inverse_rate"/>
@@ -20,8 +20,8 @@
             <field name="model">res.currency</field>
             <field name="inherit_id" ref="base.view_currency_tree"/>
             <field name='arch' type='xml'>
-                <field name="rate_silent" position="after">
-                    <field name="inverse_rate_silent"/>
+                <field name="rate" position="after">
+                    <field name="inverse_rate"/>
                 </field>
             </field>
         </record>          
