@@ -98,7 +98,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_interests
-#: field:account.account.interest,interest_rate:0
+#: field:account.account.interest,rate:0
 msgid "Interest"
 msgstr ""
 
