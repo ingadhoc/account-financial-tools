@@ -5,12 +5,12 @@
 # Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: odoo-addons (8.0)\n"
+"Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-09 23:57+0000\n"
-"PO-Revision-Date: 2015-09-01 18:07+0000\n"
-"Last-Translator: Juan Jose Scarafia <scarafia.juanjose@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-odoo-addons-8-0/language/es/)\n"
+"POT-Creation-Date: 2016-05-20 18:58+0000\n"
+"PO-Revision-Date: 2016-05-24 23:23+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -86,6 +86,11 @@ msgid "Debt Interest Months"
 msgstr "Meses de interés de la deuda"
 
 #. module: account_interests
+#: field:account.account.interest,display_name:0
+msgid "Display Name"
+msgstr "Nombre a Mostrar"
+
+#. module: account_interests
 #: code:addons/account_interests/partner.py:51
 #: code:addons/account_interests/partner.py:137
 #, python-format
@@ -98,7 +103,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_interests
-#: field:account.account.interest,interest_rate:0
+#: field:account.account.interest,rate:0
 msgid "Interest"
 msgstr "Interés"
 
@@ -134,6 +139,11 @@ msgstr "Tasas de Interés"
 #: view:account.account.interest:account_interests.account_account_interest_list
 msgid "Intrest Rates"
 msgstr "Tasas de Interés"
+
+#. module: account_interests
+#: field:account.account.interest,__last_update:0
+msgid "Last Modified on"
+msgstr "Última Modificación en"
 
 #. module: account_interests
 #: field:account.account.interest,write_uid:0

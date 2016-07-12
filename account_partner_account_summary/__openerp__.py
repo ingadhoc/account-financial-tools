@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Partner Account Summary',
-    'version': '8.0.1.1.2',
+    'version': '8.0.1.1.3',
     'description': """Partner Account Summary""",
     'category': 'Aeroo Reporting',
     'author': 'ADHOC SA',
@@ -29,7 +29,7 @@
     'depends': [
         'account',
         'report_aeroo',
-        ],
+    ],
     'data': [
         'wizard/account_summary_wizard_view.xml',
         'report/account_summary_report.xml'],

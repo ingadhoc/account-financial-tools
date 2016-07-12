@@ -111,14 +111,22 @@ class res_partner(models.Model):
         lines_vals = []
         balance = self.get_summary_initial_amounts()['balance'] or 0.0
         for line in res:
-            debit = line[2]
-            credit = line[3]
-            balance += debit - credit
+            line_balance = line[2] - line[3]
+            if line_balance > 0:
+                debit = line_balance
+                credit = 0.0
+            elif line_balance < 0:
+                debit = 0.0
+                credit = -line_balance
+            else:
+                # if no line balance, then we dont print it
+                continue
+            balance += line_balance
             lines_vals.append({
                 'move': self.env['account.move'].browse(line[0]),
                 'date_maturity': line[1],
                 'debit': debit,
                 'credit': credit,
                 'balance': balance,
-                })
+            })
         return lines_vals

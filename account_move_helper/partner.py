@@ -82,13 +82,13 @@ class res_partner(models.Model):
             })
 
     new_credit = fields.Float(
-        'Credit',
+        'Total Receivable',
         compute='_get_credit_debit_get',
         inverse='_set_new_credit',
     )
 
     new_debit = fields.Float(
-        'Debit',
+        'Total Payable',
         compute='_get_credit_debit_get',
         inverse='_set_new_debit',
     )

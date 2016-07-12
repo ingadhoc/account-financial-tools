@@ -35,6 +35,7 @@
                     <field name="currency_id" readonly="True" groups="base.group_multi_currency"/>
                     <field name="financial_debt" groups="base.group_multi_currency" sum="Total"/>
                     <field name="cumulative_financial_debt" groups="base.group_multi_currency"/>
+                    <button type="object" string="Account Document" icon="STOCK_JUSTIFY_LEFT" help="Account Line Document" name="get_document"/>
                     <!-- <field name="reconcile_partial_id" readonly="True" groups="base.group_no_one"/> -->
                     <!-- <field name="amount_currency"/> -->
                     <!-- <field name="amount_residual"/> -->
