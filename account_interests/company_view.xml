@@ -28,6 +28,7 @@
                         <tree editable="bottom">
                             <field name="company_id" invisible="1" required="0"/>
                             <field name="receivable_account_ids" widget="many2many_tags"/>
+                            <field name="invoice_receivable_account_id"/>
                             <field name="interest_product_id"/>
                             <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                             <field name="rate"/>

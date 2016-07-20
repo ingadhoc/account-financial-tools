@@ -41,6 +41,13 @@ class res_company_interest(models.Model):
         required=True,
         domain="[('type', '=', 'receivable'),('company_id', '=', company_id)]",
     )
+    invoice_receivable_account_id = fields.Many2one(
+        'account.account',
+        string='Invoice Receivable Account',
+        help='If no account is sellected, then partner receivable account is '
+        'used',
+        domain="[('type', '=', 'receivable'),('company_id', '=', company_id)]",
+    )
     interest_product_id = fields.Many2one(
         'product.product',
         'Interest Product',
@@ -163,7 +170,9 @@ class res_company_interest(models.Model):
             partner = self.env['res.partner'].browse(partner_id)
             invoice_vals = self._prepare_interest_invoice(
                 partner, debt, to_date)
-            invoice = self.env['account.invoice'].create(invoice_vals)
+            # we send document type for compatibility with argentinian invoices
+            invoice = self.env['account.invoice'].with_context(
+                document_type='debit_note').create(invoice_vals)
             # update amounts for new invoice
             invoice.button_reset_taxes()
             if self.automatic_validation:
@@ -187,9 +196,14 @@ class res_company_interest(models.Model):
             'Deuda Vencida al %s: %s\n'
             'Tasa de interés: %s') % (to_date, debt, self.rate)
 
+        if self.invoice_receivable_account_id:
+            account_id = self.invoice_receivable_account_id.id
+        else:
+            account_id = partner.property_account_receivable.id
+
         invoice_vals = {
             'type': 'out_invoice',
-            'account_id': partner.property_account_receivable.id,
+            'account_id': account_id,
             'partner_id': partner.id,
             'journal_id': journal.id,
             'reference': self.interest_product_id.name,
@@ -199,11 +213,11 @@ class res_company_interest(models.Model):
             'invoice_line': [
                 (0, 0, self._prepare_interest_invoice_line(
                     partner, debt, to_date))],
-            'currency_id': partner.property_product_pricelist.currency_id.id,
+            'currency_id': self.company_id.currency_id.id,
             'payment_term': partner.property_payment_term.id or False,
             'fiscal_position': partner.property_account_position.id,
             'date_invoice': self.next_date,
-            'company_id': partner.company_id.id,
+            'company_id': self.company_id.id,
             'user_id': partner.user_id.id or False
         }
         return invoice_vals
