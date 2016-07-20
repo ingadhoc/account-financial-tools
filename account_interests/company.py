@@ -37,7 +37,8 @@ class res_company_interest(models.Model):
     )
     receivable_account_ids = fields.Many2many(
         'account.account',
-        string='Receivable Account',
+        string='Cuentas a Cobrar',
+        help='Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda',
         required=True,
         domain="[('type', '=', 'receivable'),('company_id', '=', company_id)]",
     )

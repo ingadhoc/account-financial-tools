@@ -24,6 +24,7 @@
                         <field name="next_date"/>
                     </group> -->
                     <!-- <field name="interest_ids" context="{'default_company_id': id}" attrs="{'invisible': [('automatic_interests','!=',True)]}"> -->
+                    <separator string="Interéses Automáticos"/>
                     <field name="interest_ids" context="{'default_company_id': id}">
                         <tree editable="bottom">
                             <field name="company_id" invisible="1" required="0"/>
