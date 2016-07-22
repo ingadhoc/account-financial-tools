@@ -24,6 +24,14 @@ class account_summary_wizard(models.TransientModel):
          ('supplier', 'Payable Accounts'),
          ('customer_supplier', 'Receivable and Payable Accounts')],
         "Account Type's", required=True, default='customer_supplier')
+    group_by_move = fields.Boolean(
+        'Group By Move',
+        default=True)
+    # secondary_currency_id = fields.Many2one(
+    secondary_currency = fields.Boolean(
+        # 'res.currency',
+        'Secondary Currency',
+        help='Add columns for secondary currency?')
 
     @api.multi
     def account_summary(self):
@@ -43,6 +51,9 @@ class account_summary_wizard(models.TransientModel):
         else:
             account_types = ['payable', 'receivable']
         return self.env['report'].with_context(
+            group_by_move=self.group_by_move,
+            secondary_currency=self.secondary_currency,
+            # secondary_currency_id=self.secondary_currency_id.id,
             from_date=self.from_date,
             to_date=self.to_date,
             company_id=self.company_id.id,
