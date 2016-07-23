@@ -21,23 +21,13 @@
 {
     'name': 'Account Debt Management',
     'version': '8.0.0.3.0',
-    'description': """
-Account Debt Management
-=======================
-It adds new ways to see partner debt:
-
-* Two new tabs (customer debt / supplier debt) on partner form showing the
-detail of all unreconciled lines with amount on currencies, financial amount
-and cumulative amounts
-* New button from partner to display all the history for a partner
-* ADd partner balance
-""",
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
         'account_voucher_payline',
+        'report_aeroo',
     ],
     'data': [
         # 'wizard/account_summary_wizard_view.xml',
