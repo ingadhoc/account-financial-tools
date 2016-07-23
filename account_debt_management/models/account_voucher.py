@@ -8,6 +8,10 @@ from openerp import models, api, fields
 class AccountVoucher(models.Model):
     _inherit = "account.voucher"
 
+    company_currency_id = fields.Many2one(
+        related='company_id.currency_id',
+        string='Company Currency',
+    )
     reconciled_financial_amount_ = fields.Float(
         compute='_get_reconciled_financial_amount_',
         string='Reconciled Financial Amount',

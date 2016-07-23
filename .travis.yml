@@ -50,7 +50,7 @@ env:
 
   matrix:
   # TODO enable lint check
-  #- LINT_CHECK="1"
+  - LINT_CHECK="1"
   - TRANSIFEX="1"
   - TESTS="1" ODOO_REPO="odoo/odoo" 
 # either use the two lines above or the two below. Don't change the default if

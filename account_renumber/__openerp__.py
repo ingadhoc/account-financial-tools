@@ -19,24 +19,21 @@
 #
 ##############################################################################
 {
-    'name': 'Partner Account Summary',
-    'version': '8.0.1.2.0',
-    'description': """Partner Account Summary""",
-    'category': 'Aeroo Reporting',
+    'name': 'Account Renumber',
+    'version': '8.0.1.0.0',
+    'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
         'account',
-        'report_aeroo',
     ],
     'data': [
-        'wizard/account_summary_wizard_view.xml',
-        'report/account_summary_report.xml'],
+    ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
