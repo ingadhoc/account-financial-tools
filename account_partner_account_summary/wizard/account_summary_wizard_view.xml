@@ -15,6 +15,9 @@
                             <field name="company_id" string="Company"/>
                         </group>
                         <group>
+                            <field name="secondary_currency"/>
+                            <!-- <field name="secondary_currency_id"/> -->
+                            <field name="group_by_move"/>
                             <field name="show_invoice_detail"/>
                             <field name="show_receipt_detail"/>
                         </group>

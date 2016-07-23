@@ -5,12 +5,12 @@
 # Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: odoo-addons (8.0)\n"
+"Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-03 15:00+0000\n"
-"PO-Revision-Date: 2015-09-01 18:07+0000\n"
-"Last-Translator: <>\n"
-"Language-Team: Finnish (http://www.transifex.com/adhoc/ingadhoc-odoo-addons-8-0/language/fi/)\n"
+"POT-Creation-Date: 2016-07-20 13:52+0000\n"
+"PO-Revision-Date: 2016-07-20 13:53+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
+"Language-Team: Finnish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -18,36 +18,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:99
+#: code:addons/account_interests/company.py:230
 #, python-format
-msgid " days. "
+msgid ""
+"%s.\n"
+"Deuda Vencida al %s: %s\n"
+"Tasa de interés: %s"
 msgstr ""
 
 #. module: account_interests
-#: field:account.account.interest,account_id:0
-#: model:ir.model,name:account_interests.model_account_account
-msgid "Account"
-msgstr ""
-
-#. module: account_interests
-#: model:ir.model,name:account_interests.model_account_account_interest
-msgid "Account Account Interest"
-msgstr ""
-
-#. module: account_interests
-#: view:res.company:account_interests.view_kinesis_athletics_company_form
-msgid "Accounting"
-msgstr ""
-
-#. module: account_interests
-#: field:account.account.interest,analytic_account_id:0
+#: field:res.company.interest,analytic_account_id:0
 msgid "Analytic account"
 msgstr ""
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:100
-#, python-format
-msgid "Base(ARS): "
+#: help:res.company.interest,automatic_validation:0
+msgid "Automatic Invoice Validation?"
+msgstr ""
+
+#. module: account_interests
+#: field:res.company.interest,automatic_validation:0
+msgid "Automatic Validation?"
 msgstr ""
 
 #. module: account_interests
@@ -56,125 +47,146 @@ msgid "Companies"
 msgstr ""
 
 #. module: account_interests
-#: help:res.company,debt_interest_period:0
-msgid "Create interest for debt greater than x months"
+#: field:res.company.interest,company_id:0
+msgid "Company"
 msgstr ""
 
 #. module: account_interests
-#: field:account.account.interest,create_uid:0
+#: field:res.company.interest,create_uid:0
 msgid "Created by"
 msgstr "Luonut"
 
 #. module: account_interests
-#: field:account.account.interest,create_date:0
+#: field:res.company.interest,create_date:0
 msgid "Created on"
 msgstr "Luotu"
 
 #. module: account_interests
-#: field:account.account.interest,date_from:0
-msgid "Date From"
+#: field:res.company.interest,next_date:0
+msgid "Date of Next Invoice"
 msgstr ""
 
 #. module: account_interests
-#: field:account.account.interest,date_to:0
-msgid "Date To"
+#: selection:res.company.interest,rule_type:0
+msgid "Day(s)"
 msgstr ""
 
 #. module: account_interests
-#: field:res.company,debt_interest_period:0
-msgid "Debt Interest Months"
-msgstr ""
-
-#. module: account_interests
-#: code:addons/account_interests/partner.py:51
-#: code:addons/account_interests/partner.py:137
+#: code:addons/account_interests/company.py:195
 #, python-format
-msgid "Error!"
-msgstr "Virhe!"
+msgid ""
+"Deuda Vencida al %s: %s\n"
+"Tasa de interés: %s"
+msgstr ""
 
 #. module: account_interests
-#: field:account.account.interest,id:0
+#: field:res.company.interest,display_name:0
+msgid "Display Name"
+msgstr ""
+
+#. module: account_interests
+#: field:res.company.interest,id:0
 msgid "ID"
 msgstr "ID"
 
 #. module: account_interests
-#: field:account.account.interest,rate:0
+#: help:res.company.interest,invoice_receivable_account_id:0
+msgid "If no account is sellected, then partner receivable account is used"
+msgstr ""
+
+#. module: account_interests
+#: field:res.company,interest_ids:0 field:res.company.interest,rate:0
 msgid "Interest"
 msgstr ""
 
 #. module: account_interests
-#: field:account.account.interest,interest_account_id:0
-msgid "Interest Account"
+#: field:res.company.interest,interest_product_id:0
+msgid "Interest Product"
 msgstr ""
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:101
-#, python-format
-msgid "Interest Rate(%): "
+#: help:res.company.interest,rule_type:0
+msgid "Interests Invoice automatically repeat at specified interval"
 msgstr ""
 
 #. module: account_interests
-#: view:account.account:account_interests.account_account_interest
-#: field:account.account,account_account_interest_ids:0
-msgid "Interest Rates"
+#: field:res.company.interest,invoice_receivable_account_id:0
+msgid "Invoice Receivable Account"
 msgstr ""
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:225
-#, python-format
-msgid "Interests "
+#: field:res.company.interest,__last_update:0
+msgid "Last Modified on"
 msgstr ""
 
 #. module: account_interests
-#: view:account.account.interest:account_interests.account_account_interest_form
-msgid "Interst Rates"
-msgstr ""
-
-#. module: account_interests
-#: view:account.account.interest:account_interests.account_account_interest_list
-msgid "Intrest Rates"
-msgstr ""
-
-#. module: account_interests
-#: field:account.account.interest,write_uid:0
+#: field:res.company.interest,write_uid:0
 msgid "Last Updated by"
 msgstr "Viimeksi päivittänyt"
 
 #. module: account_interests
-#: field:account.account.interest,write_date:0
+#: field:res.company.interest,write_date:0
 msgid "Last Updated on"
 msgstr "Viimeksi päivitetty"
 
 #. module: account_interests
+#: selection:res.company.interest,rule_type:0
+msgid "Month(s)"
+msgstr ""
+
+#. module: account_interests
+#: help:res.company.interest,tolerance_interval:0
+msgid "Number of periods of tolerance for dues. 0 = no tolerance"
+msgstr ""
+
+#. module: account_interests
 #: view:res.company:account_interests.view_kinesis_athletics_company_form
-msgid "Number of months for imputation of default interest"
+msgid "Overdue Payments"
 msgstr ""
 
 #. module: account_interests
-#: model:ir.model,name:account_interests.model_res_partner
-msgid "Partner"
-msgstr ""
-
-#. module: account_interests
-#: code:addons/account_interests/partner.py:98
+#: code:addons/account_interests/company.py:191
 #, python-format
-msgid "Period: "
+msgid "Please define sales journal for this company: \"%s\""
 msgstr ""
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:138
-#, python-format
-msgid "Please define sales journal for this company id = %d."
+#: field:res.company.interest,receivable_account_ids:0
+msgid "Receivable Account"
 msgstr ""
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:223
-#, python-format
-msgid "Punitive Interests "
+#: field:res.company.interest,rule_type:0
+msgid "Recurrency"
 msgstr ""
 
 #. module: account_interests
-#: code:addons/account_interests/partner.py:96
+#: field:res.company.interest,interval:0
+msgid "Repeat Every"
+msgstr ""
+
+#. module: account_interests
+#: help:res.company.interest,interval:0
+msgid "Repeat every (Days/Week/Month/Year)"
+msgstr ""
+
+#. module: account_interests
+#: code:addons/account_interests/company.py:258
 #, python-format
-msgid "Punitive Interests Invoice: "
+msgid "There is no income account defined as global property."
+msgstr ""
+
+#. module: account_interests
+#: field:res.company.interest,tolerance_interval:0
+msgid "Tolerance"
+msgstr ""
+
+#. module: account_interests
+#: selection:res.company.interest,rule_type:0
+msgid "Week(s)"
+msgstr ""
+
+#. module: account_interests
+#: selection:res.company.interest,rule_type:0
+msgid "Year(s)"
 msgstr ""
