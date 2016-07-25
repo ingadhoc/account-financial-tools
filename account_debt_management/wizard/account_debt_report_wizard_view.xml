@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="account_debt_report_wizard_form" model="ir.ui.view">
+            <field name="name">account_debt_report_wizard_form</field>
+            <field name="model">account.debt.report.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Account Summary">
+                    <group>
+                        <group>
+                            <!-- <field name="from_date"/> -->
+                            <field name="result_selection"/>
+                            <label for="company_id"/>
+                            <div class="oe_inline">
+                                <field name="company_id" string="Company" ref="base.main_company" class="oe_inline"/>
+                                <field name="company_type" attrs="{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}" class="oe_inline"/>
+                            </div>
+                        </group>
+                        <group>
+<!--                             <field name="secondary_currency"/>
+                            <field name="group_by_move"/>
+                            <field name="show_invoice_detail"/>
+                            <field name="show_receipt_detail"/> -->
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Confirm" name="confirm" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+             
+        <act_window name="Account Debt"
+            id="action_account_debt_report_wizard"
+            key2="client_action_multi"
+            src_model="res.partner"
+            res_model="account.debt.report.wizard"
+            view_mode="form" target="new" view_type="form"/>
+
+    </data>
+</openerp>

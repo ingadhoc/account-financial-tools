@@ -27,13 +27,17 @@
     'license': 'AGPL-3',
     'depends': [
         'account_voucher_payline',
+        # en v9 no depender de este y copiar algunas cosas
+        'account_followup',
         'report_aeroo',
     ],
     'data': [
         # 'wizard/account_summary_wizard_view.xml',
         # 'report/account_summary_report.xml'
         'report/account_debt_summary_view.xml',
-        'views/account_move_line_view.xml',
+        'report/account_debt_report.xml',
+        'wizard/account_debt_report_wizard_view.xml',
+        # 'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
         'views/account_voucher_view.xml',
         'security/ir.model.access.csv',

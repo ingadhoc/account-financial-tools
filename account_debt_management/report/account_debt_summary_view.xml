@@ -7,21 +7,26 @@
          <field name="arch" type="xml">
             <search string="Debt Summary">
                 <field name="date"/>
-                <field name="date_maturity"/>
-                <!-- if we came from partners no need to see partners -->
-                <!-- <field name="partner_id"/> -->
+                <field name="next_maturity_date"/>
+                <field name="last_maturity_date"/>
+                <field name="partner_id" invisible="context.get('show_balance', False)"/>
                 <field name="journal_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="move_id"/>
                 <filter string="Receivable" domain="[('type','=','receivable')]" help="Receivable payments"/>
                 <filter string="Payable" domain="[('type','=','payable')]" help="Payable payments"/>
+                <separator/>
+                <filter string="Unreconciled" domain="[('reconciled','=',False)]" help="Unreconciled Items" name="unreconciled"/>
                 <group expand="0" string="Group By...">
                     <!-- <filter string="Partner" context="{'group_by':'partner_id'}"/> -->
                     <filter string="Type" context="{'group_by': 'type'}"/>
                     <filter string="Date" context="{'group_by': 'date'}"/>
+                    <filter string="Partner" context="{'group_by': 'partner_id'}"/>
                     <filter string="Journal" context="{'group_by': 'journal_id'}"/>
+                    <filter string="Account" context="{'group_by': 'account_id'}"/>
                     <filter string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
-                    <filter string="Maturity Date" context="{'group_by': 'date_maturity'}"/>
+                    <filter string="Next Maturity Date" context="{'group_by': 'next_maturity_date'}"/>
+                    <filter string="Last Maturity Date" context="{'group_by': 'last_maturity_date'}"/>
                </group>
             </search>
          </field>
@@ -31,24 +36,80 @@
          <field name="name">account.debt.summary.tree</field>
          <field name="model">account.debt.summary</field>
          <field name="arch" type="xml">
-            <tree string="Debt Summary">
+            <tree string="Debt Summary" colors="red:(not next_maturity_date or next_maturity_date&lt;=current_date) and debt&gt;0">
                 <field name="date"/>
-                <!-- <field name="partner_id"/> -->
+                <field name="partner_id" invisible="context.get('show_balance', False)"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-                <field name="account_id"/>
-                <field name="move_id"/>
-                <field name="ref"/>
-                <!-- <field name="date_maturity"/> -->
-                <field name="maturity_dates"/>
-                <!-- <field name="debit"/> -->
-                <!-- <field name="credit"/> -->
+                <!-- only important when grouping -->
+                <!-- <field name="account_id"/> -->
+                <field name="display_name"/>
+                <!-- <field name="move_id"/> -->
+                <!-- <field name="ref"/> -->
+                <!-- <field name="reconciled"/> -->
+                <field name="next_maturity_date"/>
+                <!-- <field name="last_maturity_date"/> -->
+                <!-- <field name="maturity_dates"/> -->
                 <field name="debt" sum="Total"/>
-                <field name="cumulative_debt"/>
+                <field name="cumulative_debt" invisible="not context.get('show_balance', False)"/>
                 <field name="amount_currency"/>
                 <field name="currency_id"/>
                 <field name="financial_debt" sum="Total"/>
-                <field name="cumulative_financial_debt"/>
+                <field name="cumulative_financial_debt" invisible="not context.get('show_balance', False)"/>
+                <field name="reconciled" string="Rec." invisible="context.get('hide_reconciled', False)"/>
+                <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Accounting Document" name="action_open_related_document"/>
             </tree>
+         </field>
+    </record>
+
+    <record id="view_account_debt_summary_form" model="ir.ui.view">
+         <field name="name">account.debt.summary.form</field>
+         <field name="model">account.debt.summary</field>
+         <field name="arch" type="xml">
+            <form string="Debt Summary">
+                <header>
+                    <button type="object" string="Open Document" help="Open Related Accounting Document" name="action_open_related_document"/>
+                </header>
+                <sheet>
+                    <field name="company_currency_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <h1 class="oe_inline">
+                        <field name="move_id" class="oe_inline"/> / 
+                        <field name="ref" class="oe_inline"/>
+                    </h1>
+<!--                     <h2>
+                        <label for="debt" class="oe_inline"/>: 
+                        <field name="debt" widget="monetary" options="{'currency_field': 'company_currency_id'}" class="oe_inline"/>
+                        <label for="amount_currency" class="oe_inline" string=" / " attrs="{'invisible': [('currency_id', '=', False)]}"/>
+                        <field name="amount_currency" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" class="oe_inline"/>
+                    </h2>
+                    <h2 attrs="{'invisible': [('currency_id', '=', False)]}" >
+                        <label for="financial_debt" class="oe_inline"/>: 
+                        <field name="financial_debt" widget="monetary" options="{'currency_field': 'company_currency_id'}" class="oe_inline"/>
+                    </h2> -->
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="account_id"/>
+                            <label for="debt" class="oe_inline"/>
+                            <div>
+                                <field name="debt" widget="monetary" options="{'currency_field': 'company_currency_id'}" class="oe_inline"/>
+                                <label for="amount_currency" class="oe_inline" string=" / " attrs="{'invisible': [('currency_id', '=', False)]}"/>
+                                <field name="amount_currency" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" class="oe_inline"/>
+                            </div>
+                            <field name="financial_debt" widget="monetary" options="{'currency_field': 'company_currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}"/>
+                            <field name="reconciled"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="next_maturity_date"/>
+                            <field name="last_maturity_date"/>
+                            <field name="maturity_dates"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="move_line_ids"/>
+                </sheet>
+            </form>
          </field>
     </record>
 
@@ -68,11 +129,17 @@
         <field name="name">Account Debt Summary</field>
         <field name="res_model">account.debt.summary</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
-        <field name="domain">[('partner_id', '=', active_id)]</field>
+        <!-- <field name="domain">[('partner_id', '=', active_id)]</field> -->
         <!-- <field name="search_view_id" ref="view_account_invoice_report_search"/> -->
     </record>
+
+
+    <menuitem id="menu_current_account" parent="account_followup.menu_finance_followup" sequence="10" action="action_account_debt_summary" name="Current Account"/>
+
+    <!-- <menuitem id="menu_per_document_cc" parent="account_followup.menu_finance_followup" sequence="10" action="action_account_debt_summary" name="CC por documento"/> -->
+
 
 <!--     <menuitem action="action_account_debt_summary" id="menu_account_debt_summary" parent="account.menu_finance_reporting" sequence="20"/> -->
 

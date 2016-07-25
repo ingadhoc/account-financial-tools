@@ -12,21 +12,27 @@ class AccountMoveLine(models.Model):
 
     debt = fields.Float(
         compute='_get_debt',
+        string='Amount',
     )
     currency_debt = fields.Float(
         compute='_get_debt',
+        string='Currency Amount',
     )
     financial_amount_residual = fields.Float(
         compute='_get_debt',
+        string='Residual Financial Amount',
     )
     financial_debt = fields.Float(
         compute='_get_debt',
+        string='Financial Amount',
     )
     cumulative_debt = fields.Float(
         compute='_get_debt',
+        string='Balance',
     )
     cumulative_financial_debt = fields.Float(
         compute='_get_debt',
+        string='Financial Balance',
     )
 
     @api.multi
