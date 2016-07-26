@@ -3,7 +3,7 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, fields, api
+from openerp import models, fields, api, _
 from openerp.exceptions import Warning
 import logging
 
@@ -116,13 +116,13 @@ class ResCompany(models.Model):
                     # no imprimimos el nombre del padre porque al estar
                     # en cache nos da error
                     if parent_c_account.name != child_c_account.name:
-                        raise Warning(
+                        raise Warning(_(
                             'El código (%s) de la cuenta "%s" de la compania '
                             '"%s" ya existe en la compañía padre pero no tiene'
-                            ' el mismo nombre' % (
+                            ' el mismo nombre') % (
                                 child_c_account.code,
                                 child_c_account.name,
-                                child_company.name,))
+                                child_company.name))
                     # si el nombre es igual la agregamos como hijas consol
                     else:
                         parent_c_account.write({
