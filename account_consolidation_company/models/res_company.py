@@ -113,15 +113,16 @@ class ResCompany(models.Model):
                 # si ya existe cuenta con mismo codigo en cia padre
                 if parent_c_account:
                     # verificamos si el nombre es el mismo
+                    # no imprimimos el nombre del padre porque al estar
+                    # en cache nos da error
                     if parent_c_account.name != child_c_account.name:
                         raise Warning(
                             'El código (%s) de la cuenta "%s" de la compania '
                             '"%s" ya existe en la compañía padre pero no tiene'
-                            ' el mismo nombre (id en padre "%s")' % (
+                            ' el mismo nombre' % (
                                 child_c_account.code,
                                 child_c_account.name,
-                                child_company.name,
-                                parent_c_account.id))
+                                child_company.name,))
                     # si el nombre es igual la agregamos como hijas consol
                     else:
                         parent_c_account.write({
