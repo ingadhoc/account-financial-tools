@@ -3,7 +3,8 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import api, fields, models
+from openerp import api, fields, models, _
+from openerp.exceptions import Warning
 
 
 class account_debt_report_wizard(models.TransientModel):
@@ -31,52 +32,48 @@ class account_debt_report_wizard(models.TransientModel):
         default='all'
     )
     from_date = fields.Date('From')
-    to_date = fields.Date('To')
+    # to_date = fields.Date('To')
     show_invoice_detail = fields.Boolean('Show Invoice Detail')
     show_receipt_detail = fields.Boolean('Show Receipt Detail')
     # TODO ver si implementamos esta opcion imprimiendo subilistado de o2m
     group_by_move = fields.Boolean(
         'Group By Move',
         default=True)
-    # secondary_currency_id = fields.Many2one(
+    unreconciled_lines = fields.Boolean(
+        help='Only Unreconciled Lines?')
+    financial_amounts = fields.Boolean(
+        help='Add columns for financial amounts?')
     secondary_currency = fields.Boolean(
-        # 'res.currency',
-        'Secondary Currency',
         help='Add columns for secondary currency?')
+
+    @api.constrains
+    def check_company_type(self):
+        if self.company_type == 'consolidate' and self.company_id:
+            raise Warning(_(
+                'You can only select "Consolidate all Companies if no company '
+                'is selected'))
 
     @api.multi
     def confirm(self):
-        # active_id = self._context.get('active_id', False)
         active_ids = self._context.get('active_ids', False)
         if not active_ids:
             return True
-            # active_ids = [self.env.user.partner_id]
         partners = self.env['res.partner'].browse(active_ids)
-        # if not active_id:
-        #     partner = self.env.user.partner_id
-        #     active_id = partner.id
-        # else:
-        #     partner = self.env['res.partner'].browse(active_id)
-        # if self.result_selection == 'customer':
-        #     account_types = ['receivable']
-        # elif self.result_selection == 'supplier':
-        #     account_types = ['payable']
-        # else:
-        #     account_types = ['payable', 'receivable']
         return self.env['report'].with_context(
-            # group_by_move=self.group_by_move,
-            # secondary_currency=self.secondary_currency,
-            # # secondary_currency_id=self.secondary_currency_id.id,
+            group_by_move=self.group_by_move,
+            secondary_currency=self.secondary_currency,
+            financial_amounts=self.financial_amounts,
             result_selection=self.result_selection,
             company_type=self.company_type,
             company_id=self.company_id.id,
             from_date=self.from_date,
+            unreconciled_lines=self.unreconciled_lines,
             # to_date=self.to_date,
             # company_id=self.company_id.id,
             # active_id=active_id,
             # active_ids=active_ids,
-            # show_invoice_detail=self.show_invoice_detail,
-            # show_receipt_detail=self.show_receipt_detail,
+            show_invoice_detail=self.show_invoice_detail,
+            show_receipt_detail=self.show_receipt_detail,
             # account_types=account_types
         ).get_action(
             partners, 'account_debt_report')

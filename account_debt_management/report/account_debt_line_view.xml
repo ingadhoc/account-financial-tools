@@ -10,6 +10,7 @@
                 <field name="date_maturity"/>
                 <field name="partner_id"/>
                 <field name="journal_id"/>
+                <field name="user_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="move_id"/>
                 <filter string="Receivable" domain="[('type','=','receivable')]" help="Receivable payments"/>
@@ -25,6 +26,7 @@
                     <filter string="Account" context="{'group_by': 'account_id'}"/>
                     <filter string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
                     <filter string="Date Maturity" context="{'group_by': 'date_maturity'}"/>
+                    <filter string="Commercial" context="{'group_by': 'user_id'}"/>
                </group>
             </search>
          </field>

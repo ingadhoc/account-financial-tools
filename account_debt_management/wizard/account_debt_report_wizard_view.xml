@@ -9,18 +9,19 @@
                 <form string="Account Summary">
                     <group>
                         <group>
-                            <!-- <field name="from_date"/> -->
                             <field name="from_date"/>
-                            <field name="to_date"/>
+                            <!-- <field name="to_date"/> -->
                             <field name="result_selection"/>
                             <field name="company_id" string="Company" ref="base.main_company"/>
                             <field name="company_type" attrs="{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}" ref="base.main_company"/>
                         </group>
                         <group>
+                            <field name="unreconciled_lines"/>
                             <field name="secondary_currency"/>
+                            <field name="financial_amounts"/>
                             <field name="group_by_move"/>
-                            <field name="show_invoice_detail"/>
-                            <field name="show_receipt_detail"/>
+                            <field name="show_invoice_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/>
+                            <field name="show_receipt_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/>
                         </group>
                     </group>
                     <footer>

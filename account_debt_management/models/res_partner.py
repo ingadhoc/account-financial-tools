@@ -10,38 +10,69 @@ from openerp import api, models, fields, _
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    gral_domain = [('reconcile_id', '=', False)]
-    receivable_domain = gral_domain + [('type', '=', 'receivable')]
-    payable_domain = gral_domain + [('type', '=', 'payable')]
+    unreconciled_domain = [('reconcile_id', '=', False)]
+    receivable_domain = [('type', '=', 'receivable')]
+    payable_domain = [('type', '=', 'payable')]
 
     receivable_debt_ids = fields.One2many(
         'account.debt.line',
         'partner_id',
-        domain=receivable_domain,
+        domain=unreconciled_domain + receivable_domain,
     )
     payable_debt_ids = fields.One2many(
         'account.debt.line',
         'partner_id',
-        domain=payable_domain,
+        domain=unreconciled_domain + payable_domain,
     )
     debt_balance = fields.Float(
         compute='_get_debt_balance',
     )
 
     @api.multi
-    def _get_debt_lines2(self):
+    def _get_debt_report_companies(self):
+        """
+        Si se especifica una compañia devolvemos esa, si no, si:
+        * se agrupa por compania, entonces devolvemos cia del usuario para
+        simlemente devolver algo
+        * si no se agrupa, devolvemos todas las cias que podemos ver
+        """
+        self.ensure_one()
+        company_type = self._context.get('company_type', False)
+        company_id = self._context.get('company_id', False)
+        company = self.env['res.company'].browse(company_id)
+        if company:
+            return company
+        else:
+            if company_type == 'consolidate':
+                return self.env.user.company_id
+            # group_by_company
+            else:
+                return self.env['res.company'].search([])
+
+    @api.multi
+    def _get_debt_report_lines(self, company):
         self.ensure_one()
 
         result_selection = self._context.get('result_selection', False)
         group_by_move = self._context.get('group_by_move', False)
         from_date = self._context.get('from_date', False)
+        unreconciled_lines = self._context.get('unreconciled_lines', False)
+        company_type = self._context.get('company_type', False)
+
+        domain = []
+
+        # si no se consolida, entonces buscamos los de la cia que se pasa
+        if not company_type == 'consolidate':
+            domain += [('company_id', '=', company.id)]
+
+        if unreconciled_lines:
+            domain += self.unreconciled_domain
 
         if result_selection == 'receivable':
-            domain = self.receivable_domain
+            domain += self.receivable_domain
         elif result_selection == 'payable':
-            domain = self.payable_domain
-        else:
-            domain = self.gral_domain
+            domain += self.payable_domain
+
         domain += [('partner_id', '=', self.id)]
 
         if from_date:
@@ -59,6 +90,8 @@ class ResPartner(models.Model):
                 'balance': balance,
                 'financial_amount': False,
                 'financial_balance': financial_balance,
+                'amount_currency': False,
+                'currency_name': False,
             }]
             domain.append(('date', '>=', from_date))
         else:
@@ -85,12 +118,17 @@ class ResPartner(models.Model):
                 move = self.env['account.move'].browse(
                     record.get('move_id')[0])
                 date_maturity = move_lines[0].date_maturity
+                # TODO podrian existir distintas monedas en asientos manuales
+                # arreglar
+                currency = move_lines[0].currency_id
             else:
                 move_lines = record
                 date_maturity = record.date_maturity
                 move = record.move_id
+                currency = record.currency_id
             amount = sum(move_lines.mapped('amount'))
             financial_amount = sum(move_lines.mapped('financial_amount'))
+            amount_currency = sum(move_lines.mapped('amount_currency'))
             balance += amount
             financial_balance += financial_amount
             res.append({
@@ -102,56 +140,23 @@ class ResPartner(models.Model):
                 'balance': balance,
                 'financial_amount': financial_amount,
                 'financial_balance': financial_balance,
+                'amount_currency': amount_currency,
+                'currency_name': currency.name,
             })
-        # print 'grouped_lines', grouped_lines
-        print 'res', res
+        # append final balance line
+        # res.append({
+        #         # 'move_id': False,
+        #         'date': False,
+        #         'name': _('FINAL BALANCE'),
+        #         'date_maturity': False,
+        #         'amount': False,
+        #         'balance': balance,
+        #         'financial_amount': False,
+        #         'financial_balance': financial_balance,
+        #         'amount_currency': False,
+        #         'currency_name': False,
+        #     }]
         return res
-
-    @api.multi
-    def _get_grouped_debt_lines(self):
-        self.ensure_one()
-        lines = self._get_debt_lines()
-        grouped_lines = lines.read_group(
-            domain=[('id', 'in', lines.ids)],
-            fields=['move_id', 'display_name', 'name'],
-            groupby=['move_id'],
-        )
-        res = []
-        # construimos una nueva lista con los valores que queremos y de
-        # manera mas facil
-        balance = 0.0
-        financial_balance = 0.0
-        for group in grouped_lines:
-            lines = self.env['account.debt.line'].search(group.get('__domain'))
-            amount = sum(lines.mapped('amount'))
-            financial_amount = sum(lines.mapped('financial_amount'))
-            balance += amount
-            financial_balance += financial_amount
-            res.append({
-                'move_id': self.env['account.move'].browse(
-                    group.get('move_id')[0]),
-                'lines': lines,
-                'amount': amount,
-                'balance': balance,
-                'financial_amount': financial_amount,
-                'financial_balance': financial_balance,
-            })
-        print 'grouped_lines', grouped_lines
-        print 'res', res
-        return res
-
-    @api.multi
-    def _get_debt_lines(self):
-        self.ensure_one()
-        result_selection = self._context.get('result_selection', False)
-        if result_selection == 'receivable':
-            domain = self.receivable_domain
-        elif result_selection == 'payable':
-            domain = self.payable_domain
-        else:
-            domain = self.gral_domain
-        domain += [('partner_id', '=', self.id)]
-        return self.env['account.debt.line'].search(domain)
 
     @api.one
     @api.depends('debit', 'credit')

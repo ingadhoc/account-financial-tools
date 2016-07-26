@@ -9,8 +9,12 @@ class AccountDebtLine(models.Model):
     _description = "Account Debt Line"
     _auto = False
     # we need id on order so we can get right amount when accumulating
-    _order = 'date desc, date_maturity desc, move_id, id'
+    _order = 'date asc, date_maturity asc, move_id, id'
+    # _order = 'date desc, date_maturity desc, move_id, id'
     _depends = {
+        'res.partner': [
+            'user_id',
+        ],
         'account.move.line': [
             'account_id', 'debit', 'credit', 'date_maturity', 'partner_id',
             'amount_currency',
@@ -33,6 +37,11 @@ class AccountDebtLine(models.Model):
     currency_id = fields.Many2one(
         'res.currency',
         'Currency',
+        readonly=True
+    )
+    user_id = fields.Many2one(
+        'res.users',
+        'Commercial',
         readonly=True
     )
     amount_currency = fields.Float(
@@ -145,8 +154,9 @@ class AccountDebtLine(models.Model):
         balance = 0.0
         financial_balance = 0.0
         # we need to reorder records
-        for line in reversed(self.search(
-                [('id', 'in', self.ids)], order=self._order)):
+        # for line in reversed(self.search(
+        #         [('id', 'in', self.ids)], order=self._order)):
+        for line in self.search([('id', 'in', self.ids)], order=self._order):
             balance += line.amount
             line.balance = balance
             financial_amount = line.currency_id and line.currency_id.compute(
@@ -180,14 +190,16 @@ class AccountDebtLine(models.Model):
                 a.user_type as account_type,
                 l.currency_id as currency_id,
                 l.amount_currency as amount_currency,
+                pa.user_id as user_id,
                 coalesce(l.debit, 0.0) - coalesce(l.credit, 0.0) as amount
             FROM
                 account_move_line l
                 left join account_account a on (l.account_id = a.id)
                 left join account_move am on (am.id=l.move_id)
                 left join account_period p on (am.period_id=p.id)
+                left join res_partner pa on (l.partner_id=pa.id)
             WHERE
-                l.state != 'draft' and type IN ('payable', 'receivable')
+                l.state != 'draft' and a.type IN ('payable', 'receivable')
         """
         cr.execute("""CREATE or REPLACE VIEW %s as (%s
         )""" % (self._table, query))
