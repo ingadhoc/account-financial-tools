@@ -18,7 +18,7 @@ class ResCompany(models.Model):
     )
 
     @api.one
-    def _recreate_properties(self):
+    def _recreate_properties(self, from_companies):
         _logger.info('Re creating properties')
         todo_list = [
             ('property_account_receivable', 'res.partner', 'account.account'),
@@ -81,13 +81,19 @@ class ResCompany(models.Model):
         # TODO clean or use existing module
         # we copy reset function from account_reset_chart and call it only
         # for accounts
+        from_companies = self.search([
+            ('id', 'child_of', self.id),
+            ('consolidation_company', '=', False),
+        ])
         self._remove_accounts()
-        self._recreate_chart_of_account()
-        self._recreate_properties()
+        self._recreate_chart_of_account(from_companies)
+        self._recreate_properties(from_companies)
 
     @api.one
-    def _recreate_chart_of_account(self):
+    def _recreate_chart_of_account(self, from_companies):
         _logger.info('Creating parent consolidated chart of account')
+        if not self.consolidation_company:
+            raise Warning('Company must be of type "consolidated"')
         account_chart_account = self.env['account.account'].create({
             'name': self.name,
             'code': self.name,
@@ -96,7 +102,7 @@ class ResCompany(models.Model):
             'company_id': self.id,
             'user_type': self.env.ref('account.data_account_type_view').id,
         })
-        for child_company in self.child_ids:
+        for child_company in from_companies:
             # recorremos el plan de cuentas de la cia hija
             for child_c_account in self.env['account.account'].search([
                     ('company_id', '=', child_company.id),
