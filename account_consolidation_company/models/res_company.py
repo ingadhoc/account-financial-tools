@@ -119,9 +119,9 @@ class ResCompany(models.Model):
                             '"%s" ya existe en la compañía padre pero no tiene'
                             ' el mismo nombre (nombre en padre "%s")' % (
                                 child_c_account.code,
-                                child_c_account.name,
+                                unicode(child_c_account.name, 'utf-8'),
                                 child_company.name,
-                                parent_c_account.name))
+                                unicode(parent_c_account.name, 'utf-8')))
                     # si el nombre es igual la agregamos como hijas consol
                     else:
                         parent_c_account.write({
