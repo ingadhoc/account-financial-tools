@@ -96,8 +96,7 @@ class ResCompany(models.Model):
             raise Warning(_('Company must be of type "consolidated"'))
         account_chart_account = self.env['account.account'].create({
             'name': self.name,
-            'code': self.name,
-            # 'code': '0.0.0.0.0.0',
+            'code': '0',
             'type': 'view',
             'company_id': self.id,
             'user_type': self.env.ref('account.data_account_type_view').id,
