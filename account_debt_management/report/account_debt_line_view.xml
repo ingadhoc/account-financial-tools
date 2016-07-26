@@ -46,8 +46,8 @@
                 <field name="balance" invisible="not context.get('show_balance', False)"/>
                 <field name="amount_currency" groups="base.group_multi_currency"/>
                 <field name="currency_id" groups="base.group_multi_currency"/>
-                <field name="financial_amount" sum="Total" groups="base.group_multi_currency"/>
-                <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="base.group_multi_currency"/>
+                <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
+                <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/>
                 <field name="reconcile_id" string="Rec." invisible="context.get('hide_reconciled', False)"/>
                 <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Accounting Document" name="action_open_related_document"/>
             </tree>
@@ -84,7 +84,7 @@
                                 <label for="amount_currency" class="oe_inline" string=" / " attrs="{'invisible': [('currency_id', '=', False)]}" groups="base.group_multi_currency"/>
                                 <field name="amount_currency" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" class="oe_inline" groups="base.group_multi_currency"/>
                             </div>
-                            <field name="financial_amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" groups="base.group_multi_currency"/>
+                            <field name="financial_amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/>
                             <field name="date"/>
                             <field name="date_maturity"/>
                             <field name="company_id" groups="base.group_multi_company"/>

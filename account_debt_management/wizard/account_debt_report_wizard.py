@@ -34,7 +34,8 @@ class account_debt_report_wizard(models.TransientModel):
     from_date = fields.Date('From')
     # to_date = fields.Date('To')
     show_invoice_detail = fields.Boolean('Show Invoice Detail')
-    show_receipt_detail = fields.Boolean('Show Receipt Detail')
+    # TODO implementar
+    # show_receipt_detail = fields.Boolean('Show Receipt Detail')
     # TODO ver si implementamos esta opcion imprimiendo subilistado de o2m
     group_by_move = fields.Boolean(
         'Group By Move',
@@ -68,12 +69,7 @@ class account_debt_report_wizard(models.TransientModel):
             company_id=self.company_id.id,
             from_date=self.from_date,
             unreconciled_lines=self.unreconciled_lines,
-            # to_date=self.to_date,
-            # company_id=self.company_id.id,
-            # active_id=active_id,
-            # active_ids=active_ids,
             show_invoice_detail=self.show_invoice_detail,
-            show_receipt_detail=self.show_receipt_detail,
-            # account_types=account_types
+            # show_receipt_detail=self.show_receipt_detail,
         ).get_action(
             partners, 'account_debt_report')

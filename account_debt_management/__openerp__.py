@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '8.0.0.3.0',
+    'version': '8.0.1.0.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
@@ -38,7 +38,9 @@
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
         'views/account_voucher_view.xml',
+        'res_config_view.xml',
         'security/ir.model.access.csv',
+        'security/security.xml',
     ],
     'demo': [
     ],

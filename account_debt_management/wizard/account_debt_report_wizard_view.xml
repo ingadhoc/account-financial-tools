@@ -18,10 +18,10 @@
                         <group>
                             <field name="unreconciled_lines"/>
                             <field name="secondary_currency"/>
-                            <field name="financial_amounts"/>
+                            <field name="financial_amounts" groups="account_debt_management.account_use_financial_amounts"/>
                             <field name="group_by_move"/>
                             <field name="show_invoice_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/>
-                            <field name="show_receipt_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/>
+                            <!-- <field name="show_receipt_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/> -->
                         </group>
                     </group>
                     <footer>

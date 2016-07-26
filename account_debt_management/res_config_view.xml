@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<!-- Base Config Settings Form View -->
+		<record id="view_account_config_settings" model="ir.ui.view">
+            <field name="name">account settings</field>
+            <field name="model">account.config.settings</field>
+			<field name="inherit_id" ref="account.view_account_config_settings"/>
+			<field name="arch" type="xml">
+				<label for="group_multi_currency" position="after">
+                    <div>
+                        <field name="group_account_use_financial_amounts" class="oe_inline" attrs="{'invisible': [('group_multi_currency', '&lt;&gt;', True)]}"/>
+                        <label for="group_account_use_financial_amounts" attrs="{'invisible': [('group_multi_currency', '&lt;&gt;', True)]}"/>
+                    </div>
+                </label>
+			</field>
+		</record>
+
+	</data>
+</openerp>

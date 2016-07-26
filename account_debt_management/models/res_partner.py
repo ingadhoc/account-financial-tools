@@ -58,6 +58,9 @@ class ResPartner(models.Model):
         from_date = self._context.get('from_date', False)
         unreconciled_lines = self._context.get('unreconciled_lines', False)
         company_type = self._context.get('company_type', False)
+        show_invoice_detail = self._context.get('show_invoice_detail', False)
+        # TODO implementar
+        # show_receipt_detail = self._context.get('show_receipt_detail', False)
 
         domain = []
 
@@ -87,6 +90,7 @@ class ResPartner(models.Model):
                 'name': _('INITIAL BALANCE'),
                 'date_maturity': False,
                 'amount': False,
+                'detail': False,
                 'balance': balance,
                 'financial_amount': False,
                 'financial_balance': financial_balance,
@@ -112,6 +116,7 @@ class ResPartner(models.Model):
         # manera mas facil
         for record in records:
             print 'record', record
+            detail_lines = []
             if group_by_move:
                 move_lines = self.env['account.debt.line'].search(
                     record.get('__domain'))
@@ -121,6 +126,15 @@ class ResPartner(models.Model):
                 # TODO podrian existir distintas monedas en asientos manuales
                 # arreglar
                 currency = move_lines[0].currency_id
+                if show_invoice_detail:
+                    for inv_line in move_lines.mapped(
+                            'move_line_id.invoice.invoice_line'):
+                        detail_lines.append(
+                            ("* %s x %s %s" % (
+                                inv_line.name.replace(
+                                    '\n', ' ').replace('\r', ''),
+                                inv_line.quantity,
+                                inv_line.uos_id.name)))
             else:
                 move_lines = record
                 date_maturity = record.date_maturity
@@ -135,6 +149,7 @@ class ResPartner(models.Model):
                 # 'move_id': move,
                 'date': move.date,
                 'name': move.display_name,
+                'detail_lines': detail_lines,
                 'date_maturity': date_maturity,
                 'amount': amount,
                 'balance': balance,
