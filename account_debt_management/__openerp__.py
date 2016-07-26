@@ -32,13 +32,10 @@
         'report_aeroo',
     ],
     'data': [
-        # 'wizard/account_summary_wizard_view.xml',
-        # 'report/account_summary_report.xml'
-        'report/account_debt_summary_view.xml',
         'report/account_debt_report.xml',
         'report/account_debt_line_view.xml',
         'wizard/account_debt_report_wizard_view.xml',
-        # 'views/account_move_line_view.xml',
+        'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
         'views/account_voucher_view.xml',
         'security/ir.model.access.csv',

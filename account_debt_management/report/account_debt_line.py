@@ -8,7 +8,8 @@ class AccountDebtLine(models.Model):
     _name = "account.debt.line"
     _description = "Account Debt Line"
     _auto = False
-    _order = 'date desc, date_maturity desc, move_id'
+    # we need id on order so we can get right amount when accumulating
+    _order = 'date desc, date_maturity desc, move_id, id'
     _depends = {
         'account.move.line': [
             'account_id', 'debit', 'credit', 'date_maturity', 'partner_id',
@@ -75,7 +76,12 @@ class AccountDebtLine(models.Model):
     )
     reconcile_id = fields.Many2one(
         'account.move.reconcile',
-        'Reconciliation number',
+        'Reconciliation',
+        readonly=True
+    )
+    reconcile_partial_id = fields.Many2one(
+        'account.move.reconcile',
+        'Partial Reconciliation',
         readonly=True
     )
     partner_id = fields.Many2one(
@@ -161,6 +167,7 @@ class AccountDebtLine(models.Model):
                 am.ref as ref,
                 am.state as move_state,
                 l.reconcile_id as reconcile_id,
+                l.reconcile_partial_id as reconcile_partial_id,
                 l.move_id as move_id,
                 l.partner_id as partner_id,
                 am.company_id as company_id,

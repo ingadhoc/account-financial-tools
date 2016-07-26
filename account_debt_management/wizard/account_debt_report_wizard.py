@@ -70,6 +70,7 @@ class account_debt_report_wizard(models.TransientModel):
             result_selection=self.result_selection,
             company_type=self.company_type,
             company_id=self.company_id.id,
+            from_date=self.from_date,
             # to_date=self.to_date,
             # company_id=self.company_id.id,
             # active_id=active_id,

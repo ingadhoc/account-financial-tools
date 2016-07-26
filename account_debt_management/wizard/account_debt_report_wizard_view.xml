@@ -32,7 +32,7 @@
             </field>
         </record>
              
-        <act_window name="Account Debt"
+        <act_window name="Account Deb Report"
             id="action_account_debt_report_wizard"
             key2="client_action_multi"
             src_model="res.partner"
