@@ -10,18 +10,17 @@
                     <group>
                         <group>
                             <!-- <field name="from_date"/> -->
+                            <field name="from_date"/>
+                            <field name="to_date"/>
                             <field name="result_selection"/>
-                            <label for="company_id"/>
-                            <div class="oe_inline">
-                                <field name="company_id" string="Company" ref="base.main_company" class="oe_inline"/>
-                                <field name="company_type" attrs="{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}" class="oe_inline"/>
-                            </div>
+                            <field name="company_id" string="Company" ref="base.main_company"/>
+                            <field name="company_type" attrs="{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}" ref="base.main_company"/>
                         </group>
                         <group>
-<!--                             <field name="secondary_currency"/>
+                            <field name="secondary_currency"/>
                             <field name="group_by_move"/>
                             <field name="show_invoice_detail"/>
-                            <field name="show_receipt_detail"/> -->
+                            <field name="show_receipt_detail"/>
                         </group>
                     </group>
                     <footer>

@@ -30,13 +30,19 @@ class account_debt_report_wizard(models.TransientModel):
         required=True,
         default='all'
     )
-    # group_by_move = fields.Boolean(
-    #     'Group By Move',
-    #     default=True)
-    # secondary_currency = fields.Boolean(
-    #     # 'res.currency',
-    #     'Secondary Currency',
-    #     help='Add columns for secondary currency?')
+    from_date = fields.Date('From')
+    to_date = fields.Date('To')
+    show_invoice_detail = fields.Boolean('Show Invoice Detail')
+    show_receipt_detail = fields.Boolean('Show Receipt Detail')
+    # TODO ver si implementamos esta opcion imprimiendo subilistado de o2m
+    group_by_move = fields.Boolean(
+        'Group By Move',
+        default=True)
+    # secondary_currency_id = fields.Many2one(
+    secondary_currency = fields.Boolean(
+        # 'res.currency',
+        'Secondary Currency',
+        help='Add columns for secondary currency?')
 
     @api.multi
     def confirm(self):

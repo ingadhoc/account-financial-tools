@@ -40,7 +40,6 @@
                         groups="account.group_account_invoice"
                         >
                         <field name="receivable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
-                        <!-- <field name="receivable_line_ids" context="{'tree_view_ref': 'account_debt_management.account_move_line_partner_debt_tree', 'show_balance': 1}"/> -->
                     </page>
                     <page
                         name="supplier_debt"
@@ -49,32 +48,20 @@
                         groups="account.group_account_invoice"
                         >
                         <field name="payable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
-                        <!-- <field name="payable_line_ids" context="{'tree_view_ref': 'account_debt_management.account_move_line_partner_debt_tree', 'show_balance': 1}"/> -->
                     </page>
                 </page>
                 <xpath expr="//div[@name='buttons']" position="inside">
                     <button
                         type="action"
                         class="oe_stat_button"
-                        id="debt_summary"
+                        id="debt_detail"
                         icon="fa-list"
                         context="{'show_balance': 1, 'search_default_partner_id': active_id}"
-                        name="%(account_debt_management.action_account_debt_summary)d"
+                        name="%(account_debt_management.action_account_debt_line)d"
                         attrs="{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
                         >
-                        <div><strong><field name="debt_balance" widget="monetary"/></strong><br/>Current Account</div>
+                        <div><strong><field name="debt_balance" widget="monetary"/></strong><br/>Debt Detail</div>
                     </button>
-<!--                     <button
-                        type="action"
-                        class="oe_stat_button"
-                        id="debt_summary"
-                        icon="fa-list"
-                        context="{'show_balance': 1, 'search_default_partner_id': active_id}"
-                        name="(account_debt_management.action_account_move_line)"
-                        attrs="{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
-                        >
-                        <div><strong><field name="debt_balance2" widget="monetary"/></strong><br/>CC detallada</div>
-                    </button> -->
                 </xpath>
             </field>
         </record>
