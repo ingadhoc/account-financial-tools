@@ -88,10 +88,19 @@ class ResCompany(models.Model):
     @api.one
     def _recreate_chart_of_account(self):
         _logger.info('Creating parent consolidated chart of account')
+        account_chart_account = self.env['account.account'].create({
+            'name': self.name,
+            'code': self.name,
+            # 'code': '0.0.0.0.0.0',
+            'type': 'view',
+            'company_id': self.id,
+            'user_type': self.env.ref('account.data_account_type_view').id,
+        })
         for child_company in self.child_ids:
             # recorremos el plan de cuentas de la cia hija
-            for child_c_account in self.env['account.account'].search(
-                    [('company_id', '=', child_company.id)]):
+            for child_c_account in self.env['account.account'].search([
+                    ('company_id', '=', child_company.id),
+                    ('parent_id', '!=', False)]):
                 parent_c_account = self.env['account.account'].search([
                     ('code', '=', child_c_account.code),
                     ('company_id', '=', self.id)], limit=1)
@@ -115,10 +124,11 @@ class ResCompany(models.Model):
                         })
                 # si todavía no existe cuenta con ese codigo, la creamos
                 else:
-                    # si la cuenta tiene padre, buscamos uno en el plan de
-                    # la cia padre
-                    parent_c_parent_account_id = False
-                    if child_c_account.parent_id:
+                    # si la cuenta padre es la root, entonces lo ligamos a
+                    # la root que creamos nosotros
+                    if not child_c_account.parent_id.parent_id:
+                        parent_c_parent_account = account_chart_account
+                    else:
                         parent_c_parent_account = parent_c_account.search([
                             ('company_id', '=', self.id),
                             ('code', '=', child_c_account.parent_id.code)],
@@ -130,7 +140,7 @@ class ResCompany(models.Model):
                                 'compania padre' % (
                                     child_c_account.code,
                                     child_c_account.name))
-                        parent_c_parent_account_id = parent_c_parent_account.id
+
                     # si la cuenta es vista, setamos vista
                     if child_c_account.type == 'view':
                         parent_type = 'view'
@@ -144,7 +154,7 @@ class ResCompany(models.Model):
                         'type': parent_type,
                         'company_id': self.id,
                         'user_type': child_c_account.user_type.id,
-                        'parent_id': parent_c_parent_account_id,
+                        'parent_id': parent_c_parent_account.id,
                         'child_consol_ids': child_consol,
                     })
 
