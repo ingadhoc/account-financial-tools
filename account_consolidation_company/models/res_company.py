@@ -47,23 +47,23 @@ class ResCompany(models.Model):
                 ('company_id', 'in', self.child_ids.ids),
             ], limit=1)
             if not prop:
-                raise Warning(
+                raise Warning(_(
                     'No encontramos ninguna property en las cias hijas para'
-                    '%s' % (record[0]))
+                    '%s') % (record[0]))
             else:
                 # obtenemos value para nueva propertie
                 model, resource_id = prop.value_reference.split(',')
                 if model != 'account.account':
-                    raise Warning(
-                        'La property encontrada no es de account.account')
+                    raise Warning(_(
+                        'La property encontrada no es de account.account'))
                 child_c_account = self.env[model].browse(int(resource_id))
                 parent_c_account = self.env[model].search([
                     ('code', '=', child_c_account.code),
                     ('company_id', '=', self.id)], limit=1)
                 if not parent_c_account:
-                    raise Warning(
+                    raise Warning(_(
                         'No encontramos cuenta en la cia padre para cuenta '
-                        'property "%s"' % (child_c_account.code))
+                        'property "%s"') % (child_c_account.code))
                 value = 'account.account,' + str(parent_c_account.id)
 
                 # creamos la property
@@ -93,7 +93,7 @@ class ResCompany(models.Model):
     def _recreate_chart_of_account(self, from_companies):
         _logger.info('Creating parent consolidated chart of account')
         if not self.consolidation_company:
-            raise Warning('Company must be of type "consolidated"')
+            raise Warning(_('Company must be of type "consolidated"'))
         account_chart_account = self.env['account.account'].create({
             'name': self.name,
             'code': self.name,
@@ -141,10 +141,10 @@ class ResCompany(models.Model):
                             ('code', '=', child_c_account.parent_id.code)],
                             limit=1)
                         if not parent_c_parent_account:
-                            raise Warning(
+                            raise Warning(_(
                                 'No encontramos una cuenta padre para la '
                                 'cuenta "%s-%s" en el plan de cuentas de la '
-                                'compania padre' % (
+                                'compania padre') % (
                                     child_c_account.code,
                                     child_c_account.name))
 
