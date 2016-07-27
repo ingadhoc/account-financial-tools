@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'Account Renumber',
+    'name': 'Account Allow Code Change',
     'version': '8.0.1.0.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
