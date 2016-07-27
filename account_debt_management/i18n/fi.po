@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-05-20 18:32+0000\n"
+"POT-Creation-Date: 2016-07-27 00:54+0000\n"
+"PO-Revision-Date: 2016-07-27 00:51+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Finnish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/fi/)\n"
 "MIME-Version: 1.0\n"
@@ -18,20 +18,49 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_debt_management
-#: field:account.debt.summary,account_id:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,account_id:0
 msgid "Account"
 msgstr ""
 
 #. module: account_debt_management
-#: model:ir.actions.act_window,name:account_debt_management.action_account_debt_summary
-#: model:ir.actions.act_window,name:account_debt_management.action_account_move_line
-#: model:ir.model,name:account_debt_management.model_account_debt_summary
-msgid "Account Debt Summary"
+#: model:ir.actions.act_window,name:account_debt_management.action_account_debt_report_wizard
+msgid "Account Deb Report"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.move.line:account_debt_management.account_move_line_partner_debt_tree
-msgid "Account Move line"
+#: model:ir.model,name:account_debt_management.model_account_debt_line
+msgid "Account Debt Line"
+msgstr ""
+
+#. module: account_debt_management
+#: model:ir.actions.act_window,name:account_debt_management.action_account_debt_line
+msgid "Account Debt Lines"
+msgstr ""
+
+#. module: account_debt_management
+#: model:ir.actions.report.xml,name:account_debt_management.account_debt_report
+msgid "Account Debt Report"
+msgstr ""
+
+#. module: account_debt_management
+#: model:ir.model,name:account_debt_management.model_account_debt_report_wizard
+msgid "Account Debt Report Wizard"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "Account Summary"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,account_type:0
+msgid "Account Type"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,result_selection:0
+msgid "Account Type's"
 msgstr ""
 
 #. module: account_debt_management
@@ -40,43 +69,89 @@ msgid "Accounting Voucher"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,amount_currency:0
+#: help:account.debt.report.wizard,financial_amounts:0
+msgid "Add columns for financial amounts?"
+msgstr ""
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,secondary_currency:0
+msgid "Add columns for secondary currency?"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,amount:0
+msgid "Amount"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,amount_currency:0
 msgid "Amount currency"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: field:account.debt.summary,company_id:0
-#: field:account.debt.summary,journal_id:0
+#: field:account.debt.line,analytic_account_id:0
+msgid "Analytic Account"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,balance:0
+msgid "Balance"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "Cancel"
+msgstr "Peruuta"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,user_id:0
+msgid "Commercial"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,company_id:0
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+#: field:account.debt.report.wizard,company_id:0
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Company"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,credit:0
-msgid "Credit"
+#: field:account.voucher,company_currency_id:0
+msgid "Company Currency"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,cumulative_debt:0
-#: field:account.move.line,cumulative_debt:0
-msgid "Cumulative debt"
+#: field:account.debt.report.wizard,company_type:0
+msgid "Company type"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,cumulative_financial_debt:0
-#: field:account.move.line,cumulative_financial_debt:0
-msgid "Cumulative financial debt"
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "Confirm"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,currency_id:0
+#: selection:account.debt.report.wizard,company_type:0
+msgid "Consolidate all Companies"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,create_uid:0
+msgid "Created by"
+msgstr "Luonut"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,create_date:0
+msgid "Created on"
+msgstr "Luotu"
+
+#. module: account_debt_management
+#: field:account.debt.line,company_currency_id:0
+#: field:account.debt.line,currency_id:0
 msgid "Currency"
-msgstr ""
-
-#. module: account_debt_management
-#: field:account.move.line,currency_debt:0
-msgid "Currency debt"
 msgstr ""
 
 #. module: account_debt_management
@@ -85,50 +160,79 @@ msgid "Customer Debt"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: field:account.debt.summary,date:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,date:0
 msgid "Date"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,date_maturity:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+msgid "Date Maturity"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,date_maturity:0
 msgid "Date maturity"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,debit:0
-msgid "Debit"
-msgstr ""
-
-#. module: account_debt_management
-#: field:account.debt.summary,debt:0 field:account.move.line,debt:0
-msgid "Debt"
-msgstr ""
-
-#. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
-msgid "Debt Balance"
+msgid "Debt Detail"
 msgstr ""
 
 #. module: account_debt_management
-#: view:res.partner:account_debt_management.view_partner_inherit_debt_form
-msgid "Debt Balance2"
+#: view:account.debt.line:account_debt_management.view_account_debt_line_form
+msgid "Debt Line"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_tree
-msgid "Debt Summary"
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+#: model:ir.ui.menu,name:account_debt_management.menu_current_account
+msgid "Debt Lines"
 msgstr ""
 
 #. module: account_debt_management
-#: field:res.partner,debt_balance:0 field:res.partner,debt_balance2:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_graph
+msgid "Debt Lines Analysis"
+msgstr ""
+
+#. module: account_debt_management
+#: field:res.partner,debt_balance:0
 msgid "Debt balance"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,display_name:0
+#: help:account.config.settings,group_account_use_financial_amounts:0
+msgid ""
+"Display Financial amounts on partner debts views and reports.\n"
+"Financial amounts are amounts on other currency converted to company currency on todays exchange."
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,display_name:0
 msgid "Display Name"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,display_name:0
+msgid "Display name"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,move_id:0
+msgid "Entry"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,move_line_id:0
+msgid "Entry line"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.move.line,financial_amount:0
+msgid "Financial Amount"
 msgstr ""
 
 #. module: account_debt_management
@@ -142,28 +246,65 @@ msgid "Financial Original Amount"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.move.line,financial_amount_residual:0
-msgid "Financial amount residual"
+#: field:account.debt.line,financial_amount:0
+msgid "Financial amount"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,financial_debt:0
-#: field:account.move.line,financial_debt:0
-msgid "Financial debt"
+#: field:account.debt.report.wizard,financial_amounts:0
+msgid "Financial amounts"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: field:account.debt.line,financial_balance:0
+msgid "Financial balance"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,fiscalyear_id:0
+msgid "Fiscal Year"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,from_date:0
+msgid "From"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,group_by_move:0
+msgid "Group By Move"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
 msgid "Group By..."
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,id:0
+#: selection:account.debt.report.wizard,company_type:0
+msgid "Group by Company"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,id:0 field:account.debt.report.wizard,id:0
 msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: code:addons/account_debt_management/models/res_partner.py:90
+#, python-format
+msgid "INITIAL BALANCE"
+msgstr ""
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,company_id:0
+msgid ""
+"If you don't select a company, debt for all companies will be exported."
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,journal_id:0
 msgid "Journal"
 msgstr ""
 
@@ -178,63 +319,117 @@ msgid "Journal Items"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,__last_update:0
+#: field:account.debt.line,__last_update:0
+#: field:account.debt.report.wizard,__last_update:0
 msgid "Last Modified on"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-msgid "Maturity Date"
+#: field:account.debt.report.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr "Viimeksi päivittänyt"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Viimeksi päivitetty"
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,unreconciled_lines:0
+msgid "Only Unreconciled Lines?"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,maturity_dates:0
-msgid "Maturity dates"
+#: view:account.debt.line:account_debt_management.view_account_debt_line_form
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+msgid "Open Document"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,move_id:0
-msgid "Move"
+#: view:account.debt.line:account_debt_management.view_account_debt_line_form
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+msgid "Open Related Accounting Document"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,partner_id:0
+#: field:account.debt.line,reconcile_partial_id:0
+msgid "Partial Reconciliation"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,partner_id:0
 #: model:ir.model,name:account_debt_management.model_res_partner
 msgid "Partner"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: selection:account.debt.summary,type:0
+#: view:res.partner:account_debt_management.view_res_partner_filter
+msgid "Partners with receivable or payable balance different from 0"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: selection:account.debt.line,type:0
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Payable"
 msgstr ""
 
 #. module: account_debt_management
-#: field:res.partner,payable_line_ids:0
-msgid "Payable line ids"
+#: selection:account.debt.report.wizard,result_selection:0
+msgid "Payable Accounts"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: field:res.partner,payable_debt_ids:0
+msgid "Payable debt ids"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Payable payments"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: selection:account.debt.summary,type:0
+#: field:account.debt.line,period_id:0
+msgid "Period"
+msgstr ""
+
+#. module: account_debt_management
+#: selection:account.debt.line,move_state:0
+msgid "Posted"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+msgid "Rec."
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: selection:account.debt.line,type:0
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Receivable"
 msgstr ""
 
 #. module: account_debt_management
-#: field:res.partner,receivable_line_ids:0
-msgid "Receivable line ids"
+#: selection:account.debt.report.wizard,result_selection:0
+msgid "Receivable Accounts"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: selection:account.debt.report.wizard,result_selection:0
+msgid "Receivable and Payable Accounts"
+msgstr ""
+
+#. module: account_debt_management
+#: field:res.partner,receivable_debt_ids:0
+msgid "Receivable debt ids"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Receivable payments"
 msgstr ""
@@ -245,8 +440,33 @@ msgid "Reconciled Financial Amount"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,ref:0
-msgid "Ref"
+#: field:account.debt.line,reconcile_id:0
+msgid "Reconciliation"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,ref:0
+msgid "Reference"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.move.line,financial_amount_residual:0
+msgid "Residual Financial Amount"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,secondary_currency:0
+msgid "Secondary currency"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,show_invoice_detail:0
+msgid "Show Invoice Detail"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.line,move_state:0
+msgid "Status"
 msgstr ""
 
 #. module: account_debt_management
@@ -255,18 +475,61 @@ msgid "Supplier Debt"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_tree
-#: view:account.move.line:account_debt_management.account_move_line_partner_debt_tree
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
 msgid "Total"
 msgstr ""
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: field:account.debt.summary,type:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,type:0
+#: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Type"
+msgstr ""
+
+#. module: account_debt_management
+#: selection:account.debt.line,move_state:0
+msgid "Unposted"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+msgid "Unreconciled"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+msgid "Unreconciled Items"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,unreconciled_lines:0
+msgid "Unreconciled lines"
+msgstr ""
+
+#. module: account_debt_management
+#: field:account.config.settings,group_account_use_financial_amounts:0
+#: model:res.groups,name:account_debt_management.account_use_financial_amounts
+msgid "Use Financial Amounts"
 msgstr ""
 
 #. module: account_debt_management
 #: model:ir.model,name:account_debt_management.model_account_voucher_line
 msgid "Voucher Lines"
 msgstr ""
+
+#. module: account_debt_management
+#: view:res.partner:account_debt_management.view_res_partner_filter
+msgid "With Balance"
+msgstr ""
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:53
+#, python-format
+msgid ""
+"You can only select \"Consolidate all Companies if no company is selected"
+msgstr ""
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "or"
+msgstr "tai"

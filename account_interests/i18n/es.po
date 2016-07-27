@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-20 13:52+0000\n"
-"PO-Revision-Date: 2016-07-20 14:03+0000\n"
+"POT-Creation-Date: 2016-07-27 00:54+0000\n"
+"PO-Revision-Date: 2016-07-20 15:52+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_interests
-#: code:addons/account_interests/company.py:230
+#: code:addons/account_interests/company.py:231
 #, python-format
 msgid ""
 "%s.\n"
@@ -63,6 +63,16 @@ msgid "Created on"
 msgstr "Created on"
 
 #. module: account_interests
+#: field:res.company.interest,receivable_account_ids:0
+msgid "Cuentas a Cobrar"
+msgstr ""
+
+#. module: account_interests
+#: help:res.company.interest,receivable_account_ids:0
+msgid "Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda"
+msgstr ""
+
+#. module: account_interests
 #: field:res.company.interest,next_date:0
 msgid "Date of Next Invoice"
 msgstr "Fecha de Próxima Factura"
@@ -73,7 +83,7 @@ msgid "Day(s)"
 msgstr "Día(s)"
 
 #. module: account_interests
-#: code:addons/account_interests/company.py:195
+#: code:addons/account_interests/company.py:196
 #, python-format
 msgid ""
 "Deuda Vencida al %s: %s\n"
@@ -111,6 +121,11 @@ msgid "Interests Invoice automatically repeat at specified interval"
 msgstr "Las Facturas de Interés se repiten a un intervalo específico automáticamente "
 
 #. module: account_interests
+#: view:res.company:account_interests.view_kinesis_athletics_company_form
+msgid "Interéses Automáticos"
+msgstr ""
+
+#. module: account_interests
 #: field:res.company.interest,invoice_receivable_account_id:0
 msgid "Invoice Receivable Account"
 msgstr "Cuenta a Cobrar en Factura"
@@ -146,15 +161,10 @@ msgid "Overdue Payments"
 msgstr "Pagos Vencidos"
 
 #. module: account_interests
-#: code:addons/account_interests/company.py:191
+#: code:addons/account_interests/company.py:192
 #, python-format
 msgid "Please define sales journal for this company: \"%s\""
 msgstr "Por favor defina un diario de ventas para la compañía: \"%s\""
-
-#. module: account_interests
-#: field:res.company.interest,receivable_account_ids:0
-msgid "Receivable Account"
-msgstr "Cuenta a Cobrar"
 
 #. module: account_interests
 #: field:res.company.interest,rule_type:0
@@ -172,7 +182,7 @@ msgid "Repeat every (Days/Week/Month/Year)"
 msgstr "Repetir cada (Día/Semana/Mes/Año)"
 
 #. module: account_interests
-#: code:addons/account_interests/company.py:258
+#: code:addons/account_interests/company.py:259
 #, python-format
 msgid "There is no income account defined as global property."
 msgstr "No hay una cuenta de ingreso definida como propiedad global"
