@@ -27,7 +27,7 @@ msgstr "Cuenta"
 #. module: account_debt_management
 #: model:ir.actions.act_window,name:account_debt_management.action_account_debt_report_wizard
 msgid "Account Deb Report"
-msgstr "Reporte de Deuda"
+msgstr "Resumen de Cuenta"
 
 #. module: account_debt_management
 #: model:ir.model,name:account_debt_management.model_account_debt_line
@@ -42,7 +42,7 @@ msgstr "Líneas de Deuda"
 #. module: account_debt_management
 #: model:ir.actions.report.xml,name:account_debt_management.account_debt_report
 msgid "Account Debt Report"
-msgstr "reporte de Deuda"
+msgstr "Resumen de Cuenta"
 
 #. module: account_debt_management
 #: model:ir.model,name:account_debt_management.model_account_debt_report_wizard
@@ -158,7 +158,7 @@ msgstr "Moneda"
 #. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
 msgid "Customer Debt"
-msgstr "Deuda de Cliente"
+msgstr "CC Cliente"
 
 #. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_search
@@ -179,7 +179,7 @@ msgstr "Fecha de Vencimiento"
 #. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
 msgid "Debt Detail"
-msgstr "Detalle de Deuda"
+msgstr "Res de Cuenta"
 
 #. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_form
@@ -191,7 +191,7 @@ msgstr "Línea de Deuda"
 #: view:account.debt.line:account_debt_management.view_account_debt_line_tree
 #: model:ir.ui.menu,name:account_debt_management.menu_current_account
 msgid "Debt Lines"
-msgstr "Líneas de Deuda"
+msgstr "Resumen de Cuenta"
 
 #. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_graph
@@ -336,11 +336,6 @@ msgid "Last Updated on"
 msgstr "Last Updated on"
 
 #. module: account_debt_management
-#: help:account.debt.report.wizard,unreconciled_lines:0
-msgid "Only Unreconciled Lines?"
-msgstr "Solo Líneas Desconciliadas?"
-
-#. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_form
 #: view:account.debt.line:account_debt_management.view_account_debt_line_tree
 msgid "Open Document"
@@ -473,7 +468,7 @@ msgstr "Estado"
 #. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
 msgid "Supplier Debt"
-msgstr "Deuda de Proveedor"
+msgstr "CC Proveedor"
 
 #. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_tree
@@ -501,11 +496,6 @@ msgstr "Desconciliado"
 #: view:account.debt.line:account_debt_management.view_account_debt_line_search
 msgid "Unreconciled Items"
 msgstr "Items Desconciliados"
-
-#. module: account_debt_management
-#: field:account.debt.report.wizard,unreconciled_lines:0
-msgid "Unreconciled lines"
-msgstr "Líneas Desconciliadas"
 
 #. module: account_debt_management
 #: field:account.config.settings,group_account_use_financial_amounts:0

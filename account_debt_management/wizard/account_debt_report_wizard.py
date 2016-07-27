@@ -32,7 +32,7 @@ class account_debt_report_wizard(models.TransientModel):
         default='all'
     )
     from_date = fields.Date('From')
-    # to_date = fields.Date('To')
+    to_date = fields.Date('To')
     show_invoice_detail = fields.Boolean('Show Invoice Detail')
     # TODO implementar
     # show_receipt_detail = fields.Boolean('Show Receipt Detail')
@@ -40,8 +40,9 @@ class account_debt_report_wizard(models.TransientModel):
     group_by_move = fields.Boolean(
         'Group By Move',
         default=True)
-    unreconciled_lines = fields.Boolean(
-        help='Only Unreconciled Lines?')
+    historical_full = fields.Boolean(
+        help='If true, then it will show all partner history. If not, only '
+        'unreconciled items will be shown.')
     financial_amounts = fields.Boolean(
         help='Add columns for financial amounts?')
     secondary_currency = fields.Boolean(
@@ -68,7 +69,8 @@ class account_debt_report_wizard(models.TransientModel):
             company_type=self.company_type,
             company_id=self.company_id.id,
             from_date=self.from_date,
-            unreconciled_lines=self.unreconciled_lines,
+            to_date=self.to_date,
+            historical_full=self.historical_full,
             show_invoice_detail=self.show_invoice_detail,
             # show_receipt_detail=self.show_receipt_detail,
         ).get_action(

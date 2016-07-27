@@ -335,7 +335,7 @@ msgid "Last Updated on"
 msgstr "Viimeksi päivitetty"
 
 #. module: account_debt_management
-#: help:account.debt.report.wizard,unreconciled_lines:0
+#: help:account.debt.report.wizard,historical_full:0
 msgid "Only Unreconciled Lines?"
 msgstr ""
 
@@ -502,7 +502,7 @@ msgid "Unreconciled Items"
 msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.report.wizard,unreconciled_lines:0
+#: field:account.debt.report.wizard,historical_full:0
 msgid "Unreconciled lines"
 msgstr ""
 

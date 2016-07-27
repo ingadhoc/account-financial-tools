@@ -47,16 +47,44 @@ class ResPartner(models.Model):
                 return self.env.user.company_id
             # group_by_company
             else:
-                return self.env['res.company'].search([])
+                # we only want companies that have moves for this partner
+                records = self.env['account.debt.line'].read_group(
+                    domain=[('partner_id', '=', self.id)],
+                    fields=['company_id'],
+                    groupby=['company_id'],
+                )
+                company_ids = []
+                for record in records:
+                    company_ids.append(record['company_id'][0])
+                return self.env['res.company'].browse(company_ids)
 
     @api.multi
     def _get_debt_report_lines(self, company):
+        def get_line_vals(
+                date=False, name=False, detail_lines=[], date_maturity=False,
+                amount=False, balance=False, financial_amount=False,
+                financial_balance=False, amount_currency=False,
+                currency_name=False):
+            return {
+                'date': date,
+                'name': name,
+                'detail_lines': detail_lines,
+                'date_maturity': date_maturity,
+                'amount': amount,
+                'balance': balance,
+                'financial_amount': financial_amount,
+                'financial_balance': financial_balance,
+                'amount_currency': amount_currency,
+                'currency_name': currency_name,
+            }
+
         self.ensure_one()
 
         result_selection = self._context.get('result_selection', False)
         group_by_move = self._context.get('group_by_move', False)
         from_date = self._context.get('from_date', False)
-        unreconciled_lines = self._context.get('unreconciled_lines', False)
+        to_date = self._context.get('to_date', False)
+        historical_full = self._context.get('historical_full', False)
         company_type = self._context.get('company_type', False)
         show_invoice_detail = self._context.get('show_invoice_detail', False)
         # TODO implementar
@@ -68,7 +96,7 @@ class ResPartner(models.Model):
         if not company_type == 'consolidate':
             domain += [('company_id', '=', company.id)]
 
-        if unreconciled_lines:
+        if not historical_full:
             domain += self.unreconciled_domain
 
         if result_selection == 'receivable':
@@ -78,30 +106,34 @@ class ResPartner(models.Model):
 
         domain += [('partner_id', '=', self.id)]
 
+        without_date_domain = domain[:]
+
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
             intitial_moves = self.env['account.debt.line'].search(
                 initial_domain)
             balance = sum(intitial_moves.mapped('amount'))
             financial_balance = sum(intitial_moves.mapped('financial_amount'))
-            res = [{
-                # 'move_id': False,
-                'date': False,
-                'name': _('INITIAL BALANCE'),
-                'date_maturity': False,
-                'amount': False,
-                'detail': False,
-                'balance': balance,
-                'financial_amount': False,
-                'financial_balance': financial_balance,
-                'amount_currency': False,
-                'currency_name': False,
-            }]
+            res = [get_line_vals(
+                name=_('INITIAL BALANCE'), balance=balance,
+                financial_balance=financial_balance)]
             domain.append(('date', '>=', from_date))
         else:
             balance = 0.0
             financial_balance = 0.0
             res = []
+
+        if to_date:
+            all_moves = self.env['account.debt.line'].search(
+                without_date_domain)
+            balance = sum(all_moves.mapped('amount'))
+            financial_balance = sum(all_moves.mapped('financial_amount'))
+            final_line = [get_line_vals(
+                name=_('FINAL BALANCE'), balance=balance,
+                financial_balance=financial_balance)]
+            domain.append(('date', '<=', to_date))
+        else:
+            final_line = []
 
         if group_by_move:
             records = self.env['account.debt.line'].read_group(
@@ -115,7 +147,6 @@ class ResPartner(models.Model):
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
         for record in records:
-            print 'record', record
             detail_lines = []
             if group_by_move:
                 move_lines = self.env['account.debt.line'].search(
@@ -145,32 +176,18 @@ class ResPartner(models.Model):
             amount_currency = sum(move_lines.mapped('amount_currency'))
             balance += amount
             financial_balance += financial_amount
-            res.append({
-                # 'move_id': move,
-                'date': move.date,
-                'name': move.display_name,
-                'detail_lines': detail_lines,
-                'date_maturity': date_maturity,
-                'amount': amount,
-                'balance': balance,
-                'financial_amount': financial_amount,
-                'financial_balance': financial_balance,
-                'amount_currency': amount_currency,
-                'currency_name': currency.name,
-            })
-        # append final balance line
-        # res.append({
-        #         # 'move_id': False,
-        #         'date': False,
-        #         'name': _('FINAL BALANCE'),
-        #         'date_maturity': False,
-        #         'amount': False,
-        #         'balance': balance,
-        #         'financial_amount': False,
-        #         'financial_balance': financial_balance,
-        #         'amount_currency': False,
-        #         'currency_name': False,
-        #     }]
+            res.append(get_line_vals(
+                date=move.date,
+                name=move.display_name,
+                detail_lines=detail_lines,
+                date_maturity=date_maturity,
+                amount=amount, balance=balance,
+                financial_amount=financial_amount,
+                financial_balance=financial_balance,
+                amount_currency=amount_currency,
+                currency_name=currency.name,
+            ))
+        res += final_line
         return res
 
     @api.one
