@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '8.0.1.0.0',
+    'version': '8.0.0.4.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
