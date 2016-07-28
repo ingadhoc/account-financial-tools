@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-27 00:54+0000\n"
-"PO-Revision-Date: 2016-07-27 12:12+0000\n"
+"POT-Creation-Date: 2016-07-28 19:58+0000\n"
+"PO-Revision-Date: 2016-07-28 23:36+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -232,6 +232,12 @@ msgid "Entry line"
 msgstr "Apunte Contable"
 
 #. module: account_debt_management
+#: code:addons/account_debt_management/models/res_partner.py:132
+#, python-format
+msgid "FINAL BALANCE"
+msgstr "SALDO FINAL"
+
+#. module: account_debt_management
 #: field:account.move.line,financial_amount:0
 msgid "Financial Amount"
 msgstr "Importe Financiero"
@@ -287,15 +293,27 @@ msgid "Group by Company"
 msgstr "Agrupar por Compañía"
 
 #. module: account_debt_management
+#: field:account.debt.report.wizard,historical_full:0
+msgid "Historical full"
+msgstr "Historial Completo"
+
+#. module: account_debt_management
 #: field:account.debt.line,id:0 field:account.debt.report.wizard,id:0
 msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/models/res_partner.py:90
+#: code:addons/account_debt_management/models/res_partner.py:118
 #, python-format
 msgid "INITIAL BALANCE"
 msgstr "SALDO INICIAL"
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,historical_full:0
+msgid ""
+"If true, then it will show all partner history. If not, only unreconciled "
+"items will be shown."
+msgstr "Si verdadero, entonces va a mostrar todo el historial. Si no, solo los items no conciliados van a ser mostrados."
 
 #. module: account_debt_management
 #: help:account.debt.report.wizard,company_id:0
@@ -471,6 +489,11 @@ msgid "Supplier Debt"
 msgstr "CC Proveedor"
 
 #. module: account_debt_management
+#: field:account.debt.report.wizard,to_date:0
+msgid "To"
+msgstr "Hasta"
+
+#. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_tree
 msgid "Total"
 msgstr "Total"
@@ -514,7 +537,7 @@ msgid "With Balance"
 msgstr "Con Saldo"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:53
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:54
 #, python-format
 msgid ""
 "You can only select \"Consolidate all Companies if no company is selected"
