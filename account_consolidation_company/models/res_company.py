@@ -111,6 +111,10 @@ class ResCompany(models.Model):
                     ('company_id', '=', self.id)], limit=1)
                 # si ya existe cuenta con mismo codigo en cia padre
                 if parent_c_account:
+                    # si la cuenta es vista, como ya haya una continuamos
+                    # y no la asignamos como hija consol
+                    if child_c_account.type == 'view':
+                        continue
                     # verificamos si el nombre es el mismo
                     # no imprimimos el nombre del padre porque al estar
                     # en cache nos da error
