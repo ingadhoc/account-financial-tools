@@ -153,6 +153,14 @@ class ResPartner(models.Model):
                     record.get('__domain'))
                 move = self.env['account.move'].browse(
                     record.get('move_id')[0])
+                display_names = move_lines.mapped('display_name')
+                display_names = list(set(display_names))
+                # si todos los display names de lineas son iguales, mostramos
+                # eso, si no, el del move
+                if len(display_names) == 1:
+                    display_name = display_names[0]
+                else:
+                    display_name = move.display_name
                 date_maturity = move_lines[0].date_maturity
                 # TODO podrian existir distintas monedas en asientos manuales
                 # arreglar
@@ -168,6 +176,7 @@ class ResPartner(models.Model):
                                 inv_line.uos_id.name)))
             else:
                 move_lines = record
+                display_name = record.display_name
                 date_maturity = record.date_maturity
                 move = record.move_id
                 currency = record.currency_id
@@ -178,7 +187,7 @@ class ResPartner(models.Model):
             financial_balance += financial_amount
             res.append(get_line_vals(
                 date=move.date,
-                name=move.display_name,
+                name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
                 amount=amount, balance=balance,

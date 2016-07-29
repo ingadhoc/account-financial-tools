@@ -140,9 +140,24 @@ class AccountDebtLine(models.Model):
 
     @api.one
     def get_display_name(self):
-        self.display_name = '%s%s' % (
-            self.move_id.display_name,
-            self.move_id.display_name != self.ref and ' (%s)' % self.ref or '')
+        # usamos display_name para que contenga doc number o name
+        # luego si el ref es igual al name del move no lo mostramos
+        display_name = self.move_id.display_name
+        ref = False
+        # because account voucher replace / with ''
+        move_names = [self.move_id.name, self.move_id.name.replace('/', '')]
+        # solo agregamos el ref del asiento o el name del line si son distintos
+        # a el name del asiento
+        if self.ref and self.ref not in move_names:
+            ref = self.ref
+        elif (
+                self.move_line_id.name and
+                self.move_line_id.name != '/' and
+                self.move_line_id.name not in move_names):
+            ref = self.move_line_id.name
+        if ref:
+            display_name = '%s (%s)' % (display_name, ref)
+        self.display_name = display_name
 
     @api.multi
     @api.depends('amount', 'amount_currency')
