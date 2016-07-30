@@ -25,7 +25,7 @@ msgstr "Compte"
 
 #. module: account_debt_management
 #: model:ir.actions.act_window,name:account_debt_management.action_account_debt_report_wizard
-msgid "Account Deb Report"
+msgid "Account Debt Report"
 msgstr ""
 
 #. module: account_debt_management

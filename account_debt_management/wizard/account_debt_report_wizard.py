@@ -75,3 +75,42 @@ class account_debt_report_wizard(models.TransientModel):
             # show_receipt_detail=self.show_receipt_detail,
         ).get_action(
             partners, 'account_debt_report')
+
+    @api.multi
+    def send_by_email(self):
+        active_ids = self._context.get('active_ids', [])
+        active_id = self._context.get('active_id', False)
+        context = {
+            # report keys
+            'group_by_move': self.group_by_move,
+            'secondary_currency': self.secondary_currency,
+            'financial_amounts': self.financial_amounts,
+            'result_selection': self.result_selection,
+            'company_type': self.company_type,
+            'company_id': self.company_id.id,
+            'from_date': self.from_date,
+            'to_date': self.to_date,
+            'historical_full': self.historical_full,
+            'show_invoice_detail': self.show_invoice_detail,
+            # email keys
+            'active_ids': active_ids,
+            'active_id': active_id,
+            'active_model': 'res.partner',
+            'default_composition_mode': 'mass_mail',
+            'default_use_template': True,
+            'default_template_id': self.env.ref(
+                'account_debt_management.email_template_debt_detail').id,
+            'default_partner_to': '${object.id or \'\'}',
+        }
+        self = self.with_context(context)
+        return {
+            'name': _('Send by Email'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'mail.compose.message',
+            'src_model': 'res.partner',
+            'view_type': 'form',
+            'context': context,
+            'view_mode': 'form',
+            'target': 'new',
+            'auto_refresh': 1
+        }

@@ -27,13 +27,15 @@
                     <footer>
                         <button string="Confirm" name="confirm" type="object" class="oe_highlight"/>
                         or
+                        <button string="Send by Email" name="send_by_email" type="object" class="oe_highlight"/>
+                        or
                         <button string="Cancel" class="oe_link" special="cancel"/>
                     </footer>
                 </form>
             </field>
         </record>
              
-        <act_window name="Account Deb Report"
+        <act_window name="Account Debt Report"
             id="action_account_debt_report_wizard"
             key2="client_action_multi"
             src_model="res.partner"
