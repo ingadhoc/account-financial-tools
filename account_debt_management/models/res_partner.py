@@ -155,7 +155,12 @@ class ResPartner(models.Model):
                     record.get('move_id')[0])
                 display_names = move_lines.mapped('display_name')
                 display_names = list(set(display_names))
-                date = move.date
+                # lo hacemos asi por la misma razon de sin grou_by_mov
+                dates = list(set(move_lines.mapped('date')))
+                if len(dates) == 1:
+                    date = dates[0]
+                else:
+                    date = move.date
                 # si todos los display names de lineas son iguales, mostramos
                 # eso, si no, el del move
                 if len(display_names) == 1:
@@ -181,7 +186,9 @@ class ResPartner(models.Model):
                 date_maturity = record.date_maturity
                 # no tomamos el date del move, si bien este es un campo
                 # related, porque algunas veces hacen el artilugio de cambiar
-                # esta fecha en el move line
+                # esta fecha en el move line, en realidad verificamos que si
+                # actualizas uno se actualiza el otro, lo dejamos por si a
+                # futuro se cambia ese campo para que no sea related
                 date = record.date
                 move = record.move_id
                 currency = record.currency_id
