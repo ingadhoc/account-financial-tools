@@ -155,6 +155,7 @@ class ResPartner(models.Model):
                     record.get('move_id')[0])
                 display_names = move_lines.mapped('display_name')
                 display_names = list(set(display_names))
+                date = move.date
                 # si todos los display names de lineas son iguales, mostramos
                 # eso, si no, el del move
                 if len(display_names) == 1:
@@ -178,6 +179,10 @@ class ResPartner(models.Model):
                 move_lines = record
                 display_name = record.display_name
                 date_maturity = record.date_maturity
+                # no tomamos el date del move, si bien este es un campo
+                # related, porque algunas veces hacen el artilugio de cambiar
+                # esta fecha en el move line
+                date = record.date
                 move = record.move_id
                 currency = record.currency_id
             amount = sum(move_lines.mapped('amount'))
@@ -186,7 +191,7 @@ class ResPartner(models.Model):
             balance += amount
             financial_balance += financial_amount
             res.append(get_line_vals(
-                date=move.date,
+                date=date,
                 name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
