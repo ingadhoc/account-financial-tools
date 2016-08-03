@@ -40,7 +40,9 @@ class res_partner(models.Model):
 
         new_value = getattr(self, 'new_%s' % field)
         value_diff = new_value - getattr(self, field)
-        account = getattr(self, account_field)
+        account = getattr(
+            self.with_context(force_company=move.company_id.id),
+            account_field)
         move_line = self.env['account.move.line'].search([
             ('move_id', '=', move_id),
             ('partner_id', '=', self.id),
@@ -66,7 +68,7 @@ class res_partner(models.Model):
                 move_line.write({
                     'credit': credit,
                     'debit': debit,
-                    })
+                })
             else:
                 move_line.unlink()
         elif value_diff:
