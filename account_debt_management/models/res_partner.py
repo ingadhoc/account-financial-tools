@@ -135,24 +135,42 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
+        # no usamos mas este group porque usa el orden de move_id
+        # records = self.env['account.debt.line'].read_group(
+        #     domain=domain,
+        #     fields=['move_id'],
+        #     groupby=['move_id'],
+        # )
+        records = self.env['account.debt.line'].search(domain)
         if group_by_move:
-            records = self.env['account.debt.line'].read_group(
-                domain=domain,
-                fields=['move_id'],
-                groupby=['move_id'],
-            )
-        else:
-            records = self.env['account.debt.line'].search(domain)
+            moves = []
+            # no podemos hacer sorted porque ordena por criterio de move_id
+            # TODO analizar otras alternativas para que esto quede mas lindo
+            # y tmb para que en la vista, si agrupo por move, se agrupe bien
+            # se me ocurre:
+            # 1. cambiar criterio de orden a move y de ultima en vista
+            # corregir con "default_order="id desc""
+            # 2. hacer que las debt lines se crean con una agrupacion
+            # de otra vista que se cree y a la cual si definamos el orden
+            # o que sea un campo str que se ordene por ej
+            # para esta ultima deberiamos ahcer algo tipo esto
+            # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR) || ' ' || m.name as juan from account_move as m;
+            for line in records:
+                move = line.move_id
+                if move not in moves:
+                    moves.append(move)
+            records = moves
+            # records = records.mapped('move_id').sorted(
+            #     lambda x: x.date)
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
         for record in records:
             detail_lines = []
             if group_by_move:
+                move = record
                 move_lines = self.env['account.debt.line'].search(
-                    record.get('__domain'))
-                move = self.env['account.move'].browse(
-                    record.get('move_id')[0])
+                    domain + [('move_id', '=', move.id)])
                 display_names = move_lines.mapped('display_name')
                 display_names = list(set(display_names))
                 # lo hacemos asi por la misma razon de sin grou_by_mov
