@@ -27,7 +27,9 @@
     'description': """
 Journal Security
 ================
-It creates a many2many field between journals and users. If you set users to journal or viceversa, then this journals and the related moves, will be only seen by selected users.
+It creates a many2many field between journals and users. If you set users to
+journal or viceversa, then this journals and the related moves, will be only
+seen by selected users.
 Usually used for payroll journals.
 This fields are only seen by users with "access right management"
     """,
