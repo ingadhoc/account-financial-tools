@@ -40,7 +40,7 @@ Portal Distributor Account
         'account_view.xml',
     ],
     'auto_install': False,
-    'application': True,
+    'application': False,
     'category': 'Hidden',
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
