@@ -3,13 +3,17 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp.osv import osv, fields
+from openerp import fields, models
 
-class account_journal(osv.osv):
-    _name = 'account.journal'
+
+class account_journal(models.Model):
     _inherit = 'account.journal'
-    
-    _columns = {
-        'user_ids': fields.many2many('res.users', 'journal_security_journal_users', 'journal_id', 
-    		'user_id', string='Restricted to Users', help='If choose some users, then this journal and the information related to it will be only visible for those users.'),
-    }
+
+    user_ids = fields.Many2many(
+        'res.users',
+        'journal_security_journal_users',
+        'journal_id',
+        'user_id',
+        string='Restricted to Users',
+        help='If choose some users, then this journal and the information'
+        ' related to it will be only visible for those users.')
