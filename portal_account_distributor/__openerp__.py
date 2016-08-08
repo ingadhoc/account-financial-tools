@@ -39,6 +39,7 @@ Portal Distributor Account
         'security/ir.model.access.csv',
         'account_view.xml',
     ],
+    'installable': False,
     'auto_install': False,
     'application': False,
     'category': 'Hidden',

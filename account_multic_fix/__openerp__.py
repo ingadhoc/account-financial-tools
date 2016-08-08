@@ -33,6 +33,9 @@
     'description': '''
 Account Multi Company Fixes
 ===========================
+1. Filter taxes while loading in invoice for taxes of invoice company
+2. Do not allow to change company (we should change taxes and accounts)
+3. Filters on moves, statements, etc
 ''',
     'installable': False,
     'name': 'Account Multi Company Fixes',

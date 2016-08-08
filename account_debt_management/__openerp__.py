@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '8.0.0.0.0',
+    'version': '8.0.0.3.0',
     'description': """
 Account Debt Management
 =======================
@@ -37,20 +37,21 @@ and cumulative amounts
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
-        'account',
-        ],
+        'account_voucher_payline',
+    ],
     'data': [
         # 'wizard/account_summary_wizard_view.xml',
         # 'report/account_summary_report.xml'
         'report/account_debt_summary_view.xml',
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
+        'views/account_voucher_view.xml',
         'security/ir.model.access.csv',
-        ],
+    ],
     'demo': [
-        ],
+    ],
     'test': [
-        ],
+    ],
     'installable': False,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

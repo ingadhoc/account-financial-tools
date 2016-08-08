@@ -21,72 +21,72 @@ class AccountDebtSummary(models.Model):
         'res.partner',
         'Partner',
         readonly=True,
-        )
+    )
     company_id = fields.Many2one(
         'res.company',
         'Company',
         readonly=True,
-        )
+    )
     currency_id = fields.Many2one(
         'res.currency',
         'Currency',
         readonly=True,
-        )
+    )
     amount_currency = fields.Float(
         readonly=True,
-        )
+    )
     journal_id = fields.Many2one(
         'account.journal',
         'Company',
         readonly=True,
-        )
+    )
     ref = fields.Char(
         readonly=True,
-        )
+    )
     move_id = fields.Many2one(
         'account.move',
         'Move',
         readonly=True,
-        )
+    )
     account_id = fields.Many2one(
         'account.account',
         'Account',
         readonly=True,
-        )
+    )
     type = fields.Selection([
         ('receivable', 'Receivable'),
         ('payable', 'Payable'),
-        ])
+    ])
     maturity_dates = fields.Char(
         compute='get_date'
-        )
+    )
     date = fields.Date(
         readonly=True,
-        )
+    )
     date_maturity = fields.Date(
         readonly=True,
-        )
+    )
     debit = fields.Float(
         readonly=True,
-        )
+    )
     credit = fields.Float(
         readonly=True,
-        )
+    )
     debt = fields.Float(
         readonly=True,
-        )
+    )
     cumulative_debt = fields.Float(
         readonly=True,
         compute='_get_cumulative_debts'
-        )
+    )
     financial_debt = fields.Float(
         readonly=True,
         compute='_get_cumulative_debts'
-        )
+    )
     cumulative_financial_debt = fields.Float(
         readonly=True,
         compute='_get_cumulative_debts'
-        )
+    )
 
     @api.multi
     def _get_cumulative_debts(self):
@@ -106,8 +106,8 @@ class AccountDebtSummary(models.Model):
             cumulative_debt += line.debt
             line.cumulative_debt = cumulative_debt
             financial_debt = line.currency_id and line.currency_id.compute(
-                    line.amount_currency,
-                    line.company_id.currency_id) or line.debt
+                line.amount_currency,
+                line.company_id.currency_id) or line.debt
             line.financial_debt = financial_debt
             cumulative_financial_debt += financial_debt
             line.cumulative_financial_debt = cumulative_financial_debt

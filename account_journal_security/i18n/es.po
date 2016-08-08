@@ -1,20 +1,32 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_journal_security
-#
+# * account_journal_security
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 8.0\n"
+"Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-29 16:03+0000\n"
-"PO-Revision-Date: 2014-09-29 13:16-0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2016-05-20 18:58+0000\n"
+"PO-Revision-Date: 2016-05-24 23:24+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: \n"
-"X-Generator: Poedit 1.5.4\n"
+"Content-Transfer-Encoding: \n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_journal_security
+#: field:res.users,property_account_payable:0
+msgid "Account Payable"
+msgstr "A pagar"
+
+#. module: account_journal_security
+#: field:res.users,property_account_receivable:0
+msgid "Account Receivable"
+msgstr "A Cobrar"
 
 #. module: account_journal_security
 #: view:account.journal:account_journal_security.view_journal_security_account_journal_form
@@ -27,18 +39,80 @@ msgid "Allowed Companies"
 msgstr "Compañías permitidas"
 
 #. module: account_journal_security
+#: field:res.users,balance:0
+msgid "Balance"
+msgstr "Saldo"
+
+#. module: account_journal_security
+#: help:res.users,vat_subjected:0
+msgid ""
+"Check this box if the partner is subjected to the VAT. It will be used for "
+"the VAT legal statement."
+msgstr ""
+
+#. module: account_journal_security
+#: field:res.users,ref_companies:0
+msgid "Companies that refers to partner"
+msgstr ""
+
+#. module: account_journal_security
+#: field:res.users,contract_ids:0 field:res.users,contracts_count:0
+msgid "Contracts"
+msgstr "Contratos"
+
+#. module: account_journal_security
+#: field:res.users,property_payment_term:0
+msgid "Customer Payment Term"
+msgstr ""
+
+#. module: account_journal_security
+#: help:res.users,last_reconciliation_date:0
+msgid ""
+"Date on which the partner accounting entries were fully reconciled last "
+"time. It differs from the last date where a reconciliation has been made for"
+" this partner, as here we depict the fact that nothing more was to be "
+"reconciled at this date. This can be achieved in 2 different ways: either "
+"the last unreconciled debit/credit entry of this partner was reconciled, "
+"either the user pressed the button \"Nothing more to reconcile\" during the "
+"manual reconciliation process."
+msgstr ""
+
+#. module: account_journal_security
+#: field:res.users,property_account_position:0
+msgid "Fiscal Position"
+msgstr ""
+
+#. module: account_journal_security
 #: help:account.journal,user_ids:0
 msgid ""
 "If choose some users, then this journal and the information related to it "
 "will be only visible for those users."
+msgstr "Si elegis algunos usuarios , entonces este diario y la información relativa al mismo serán accesibles solamente a los usuarios ."
+
+#. module: account_journal_security
+#: field:res.users,invoice_ids:0
+msgid "Invoices"
 msgstr ""
-"Si elegis algunos usuarios , entonces este diario y la información relativa "
-"al mismo serán accesibles solamente a los usuarios ."
 
 #. module: account_journal_security
 #: model:ir.model,name:account_journal_security.model_account_journal
 msgid "Journal"
 msgstr "Diario"
+
+#. module: account_journal_security
+#: field:res.users,journal_item_count:0
+msgid "Journal Items"
+msgstr "Apuntes Contable"
+
+#. module: account_journal_security
+#: field:res.users,last_reconciliation_date:0
+msgid "Latest Full Reconciliation Date"
+msgstr ""
+
+#. module: account_journal_security
+#: field:res.users,debit_limit:0
+msgid "Payable Limit"
+msgstr ""
 
 #. module: account_journal_security
 #: view:res.users:account_journal_security.view_journal_security_users_form
@@ -52,16 +126,82 @@ msgid "Restricted to Users"
 msgstr "Restringido a usuarios"
 
 #. module: account_journal_security
+#: field:res.users,property_supplier_payment_term:0
+msgid "Supplier Payment Term"
+msgstr ""
+
+#. module: account_journal_security
+#: help:res.users,property_account_position:0
+msgid ""
+"The fiscal position will determine taxes and accounts used for the partner."
+msgstr ""
+
+#. module: account_journal_security
+#: help:res.users,property_account_payable:0
+msgid ""
+"This account will be used instead of the default one as the payable account "
+"for the current partner"
+msgstr ""
+
+#. module: account_journal_security
+#: help:res.users,property_account_receivable:0
+msgid ""
+"This account will be used instead of the default one as the receivable "
+"account for the current partner"
+msgstr ""
+
+#. module: account_journal_security
 #: help:res.users,journal_ids:0
 msgid ""
 "This journals and the information related to it will be only visible for "
 "users where you specify that they can see them setting this same field."
+msgstr "Este diarios y la información relativa al mismo serán accesibles solamente a los usuarios donde se especifica que pueden verlos establecer este mismo campo."
+
+#. module: account_journal_security
+#: help:res.users,property_supplier_payment_term:0
+msgid ""
+"This payment term will be used instead of the default one for purchase "
+"orders and supplier invoices"
 msgstr ""
-"Este diarios y la información relativa al mismo serán accesibles solamente a "
-"los usuarios donde se especifica que pueden verlos establecer este mismo "
-"campo."
+
+#. module: account_journal_security
+#: help:res.users,property_payment_term:0
+msgid ""
+"This payment term will be used instead of the default one for sale orders "
+"and customer invoices"
+msgstr ""
+
+#. module: account_journal_security
+#: field:res.users,total_invoiced:0
+msgid "Total Invoiced"
+msgstr ""
+
+#. module: account_journal_security
+#: field:res.users,debit:0 field:res.users,new_debit:0
+msgid "Total Payable"
+msgstr "Total a Pagar"
+
+#. module: account_journal_security
+#: field:res.users,credit:0 field:res.users,new_credit:0
+msgid "Total Receivable"
+msgstr "Total a Cobrar"
+
+#. module: account_journal_security
+#: help:res.users,credit:0
+msgid "Total amount this customer owes you."
+msgstr ""
+
+#. module: account_journal_security
+#: help:res.users,debit:0
+msgid "Total amount you have to pay to this supplier."
+msgstr ""
 
 #. module: account_journal_security
 #: model:ir.model,name:account_journal_security.model_res_users
 msgid "Users"
 msgstr "Usuarios"
+
+#. module: account_journal_security
+#: field:res.users,vat_subjected:0
+msgid "VAT Legal Statement"
+msgstr ""
