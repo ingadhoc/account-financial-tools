@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-05-24 23:23+0000\n"
+"POT-Creation-Date: 2016-07-30 00:26+0000\n"
+"PO-Revision-Date: 2016-07-31 20:18+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -19,21 +19,94 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_debt_management
-#: field:account.debt.summary,account_id:0
+#: model:email.template,body_html:account_debt_management.email_template_debt_detail
+msgid ""
+"\n"
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\n"
+"    <p>Hello ${object.name},</p>\n"
+"\n"
+"    <p>Please find attached your debt detail from ${object.company_id.name}: </p>\n"
+"    <br/>\n"
+"    <p>If you have any question, do not hesitate to contact us.</p>\n"
+"    <p>Thank you for choosing ${object.company_id.name or 'us'}!</p>\n"
+"    <br/>\n"
+"    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
+"        <h3 style=\"margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n"
+"            <strong style=\"text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n"
+"    </div>\n"
+"    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n"
+"        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n"
+"        % if object.company_id.street:\n"
+"            ${object.company_id.street}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.street2:\n"
+"            ${object.company_id.street2}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.city or object.company_id.zip:\n"
+"            ${object.company_id.zip} ${object.company_id.city}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.country_id:\n"
+"            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>\n"
+"        % endif\n"
+"        </span>\n"
+"        % if object.company_id.phone:\n"
+"            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n"
+"                Phone:&nbsp; ${object.company_id.phone}\n"
+"            </div>\n"
+"        % endif\n"
+"        % if object.company_id.website:\n"
+"            <div>\n"
+"                Web :&nbsp;<a href=\"${object.company_id.website}\">${object.company_id.website}</a>\n"
+"            </div>\n"
+"        % endif\n"
+"        <p></p>\n"
+"    </div>\n"
+"</div>\n"
+"            "
+msgstr "\n<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n\n    <p>Hola ${object.name},</p>\n\n    <p>Puede encontrar adjunto sus resumen de cuenta de ${object.company_id.name}: </p>\n    <br/>\n    <p>Si tiene cualquier consulta, no ude en contactarnos.</p>\n    <p>Gracias por elegir ${object.company_id.name or 'us'}!</p>\n    <br/>\n    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n        <h3 style=\"margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n            <strong style=\"text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n    </div>\n    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n        % if object.company_id.street:\n            ${object.company_id.street}<br/>\n        % endif\n        % if object.company_id.street2:\n            ${object.company_id.street2}<br/>\n        % endif\n        % if object.company_id.city or object.company_id.zip:\n            ${object.company_id.zip} ${object.company_id.city}<br/>\n        % endif\n        % if object.company_id.country_id:\n            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>\n        % endif\n        </span>\n        % if object.company_id.phone:\n            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n                Phone:&nbsp; ${object.company_id.phone}\n            </div>\n        % endif\n        % if object.company_id.website:\n            <div>\n                Web :&nbsp;<a href=\"${object.company_id.website}\">${object.company_id.website}</a>\n            </div>\n        % endif\n        <p></p>\n    </div>\n</div>\n            "
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,account_id:0
 msgid "Account"
 msgstr "Cuenta"
 
 #. module: account_debt_management
-#: model:ir.actions.act_window,name:account_debt_management.action_account_debt_summary
-#: model:ir.actions.act_window,name:account_debt_management.action_account_move_line
-#: model:ir.model,name:account_debt_management.model_account_debt_summary
-msgid "Account Debt Summary"
-msgstr "Resúmen de Cuenta"
+#: model:ir.model,name:account_debt_management.model_account_debt_line
+msgid "Account Debt Line"
+msgstr "Línea de Deuda"
 
 #. module: account_debt_management
-#: view:account.move.line:account_debt_management.account_move_line_partner_debt_tree
-msgid "Account Move line"
-msgstr "Apunte Contable"
+#: model:ir.actions.act_window,name:account_debt_management.action_account_debt_line
+msgid "Account Debt Lines"
+msgstr "Líneas de Deuda"
+
+#. module: account_debt_management
+#: model:ir.actions.act_window,name:account_debt_management.action_account_debt_report_wizard
+#: model:ir.actions.report.xml,name:account_debt_management.account_debt_report
+msgid "Account Debt Report"
+msgstr "Resumen de Cuenta"
+
+#. module: account_debt_management
+#: model:ir.model,name:account_debt_management.model_account_debt_report_wizard
+msgid "Account Debt Report Wizard"
+msgstr "Asistente de Reporte de Deuda"
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "Account Summary"
+msgstr "Resumen de Cuenta"
+
+#. module: account_debt_management
+#: field:account.debt.line,account_type:0
+msgid "Account Type"
+msgstr "Tipo de Cuenta"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,result_selection:0
+msgid "Account Type's"
+msgstr "Tipo de Cuentas"
 
 #. module: account_debt_management
 #: model:ir.model,name:account_debt_management.model_account_voucher
@@ -41,96 +114,187 @@ msgid "Accounting Voucher"
 msgstr "Comprobante de contabilidad"
 
 #. module: account_debt_management
-#: field:account.debt.summary,amount_currency:0
+#: help:account.debt.report.wizard,financial_amounts:0
+msgid "Add columns for financial amounts?"
+msgstr "Agregar colmnas para importes financieros?"
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,secondary_currency:0
+msgid "Add columns for secondary currency?"
+msgstr "Agregar colmnas para monedas secundarias?"
+
+#. module: account_debt_management
+#: field:account.debt.line,amount:0
+msgid "Amount"
+msgstr "Importe"
+
+#. module: account_debt_management
+#: field:account.debt.line,amount_currency:0
 msgid "Amount currency"
 msgstr "Importe en moneda"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: field:account.debt.summary,company_id:0
-#: field:account.debt.summary,journal_id:0
+#: field:account.debt.line,analytic_account_id:0
+msgid "Analytic Account"
+msgstr "Cuenta Analítica"
+
+#. module: account_debt_management
+#: field:account.debt.line,balance:0
+msgid "Balance"
+msgstr "Saldo"
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,user_id:0
+msgid "Commercial"
+msgstr "Comercial"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,company_id:0
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+#: field:account.debt.report.wizard,company_id:0
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Company"
 msgstr "Compañía"
 
 #. module: account_debt_management
-#: field:account.debt.summary,credit:0
-msgid "Credit"
-msgstr "Haber"
+#: field:account.voucher,company_currency_id:0
+msgid "Company Currency"
+msgstr "Moneda de Copañía"
 
 #. module: account_debt_management
-#: field:account.debt.summary,cumulative_debt:0
-#: field:account.move.line,cumulative_debt:0
-msgid "Cumulative debt"
-msgstr "Deuda Acumulada"
+#: field:account.debt.report.wizard,company_type:0
+msgid "Company type"
+msgstr ""
 
 #. module: account_debt_management
-#: field:account.debt.summary,cumulative_financial_debt:0
-#: field:account.move.line,cumulative_financial_debt:0
-msgid "Cumulative financial debt"
-msgstr "Deuda Financiera Acumulada"
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "Confirm"
+msgstr "Confirmar"
 
 #. module: account_debt_management
-#: field:account.debt.summary,currency_id:0
+#: selection:account.debt.report.wizard,company_type:0
+msgid "Consolidate all Companies"
+msgstr "Consolidar todas las Compañías"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,create_uid:0
+msgid "Created by"
+msgstr "Created by"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,create_date:0
+msgid "Created on"
+msgstr "Created on"
+
+#. module: account_debt_management
+#: field:account.debt.line,company_currency_id:0
+#: field:account.debt.line,currency_id:0
 msgid "Currency"
 msgstr "Moneda"
 
 #. module: account_debt_management
-#: field:account.move.line,currency_debt:0
-msgid "Currency debt"
-msgstr "Dueda en Moneda"
-
-#. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
 msgid "Customer Debt"
-msgstr "Deuda de Cliente"
+msgstr "CC Cliente"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: field:account.debt.summary,date:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,date:0
 msgid "Date"
 msgstr "Fecha"
 
 #. module: account_debt_management
-#: field:account.debt.summary,date_maturity:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+msgid "Date Maturity"
+msgstr "Fecha de Vencimiento"
+
+#. module: account_debt_management
+#: field:account.debt.line,date_maturity:0
 msgid "Date maturity"
 msgstr "Fecha de Vencimiento"
 
 #. module: account_debt_management
-#: field:account.debt.summary,debit:0
-msgid "Debit"
-msgstr "Debe"
-
-#. module: account_debt_management
-#: field:account.debt.summary,debt:0 field:account.move.line,debt:0
-msgid "Debt"
-msgstr "Deuda"
-
-#. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
-msgid "Debt Balance"
-msgstr "Saldo de Deuda"
+msgid "Debt Detail"
+msgstr "Res de Cuenta"
 
 #. module: account_debt_management
-#: view:res.partner:account_debt_management.view_partner_inherit_debt_form
-msgid "Debt Balance2"
-msgstr "Saldo de Deuda 2"
+#: model:email.template,subject:account_debt_management.email_template_debt_detail
+msgid "Debt Detail ${object.company_id.name|safe}"
+msgstr "Resumen de Cuenta ${object.company_id.name|safe}"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_tree
-msgid "Debt Summary"
-msgstr "Resumen de Deuda"
+#: view:account.debt.line:account_debt_management.view_account_debt_line_form
+msgid "Debt Line"
+msgstr "Línea de Deuda"
 
 #. module: account_debt_management
-#: field:res.partner,debt_balance:0 field:res.partner,debt_balance2:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+#: model:ir.ui.menu,name:account_debt_management.menu_current_account
+msgid "Debt Lines"
+msgstr "Resumen de Cuenta"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_graph
+msgid "Debt Lines Analysis"
+msgstr "Análisis de Líneas de Deuda"
+
+#. module: account_debt_management
+#: field:res.partner,debt_balance:0
 msgid "Debt balance"
 msgstr "Saldo de Deuda"
 
 #. module: account_debt_management
-#: field:account.debt.summary,display_name:0
+#: model:email.template,report_name:account_debt_management.email_template_debt_detail
+msgid "Debt_Detail_${(object.name or '').replace('/','_')}"
+msgstr "Resumen_de_Cuenta_${(object.name or '').replace('/','_')}"
+
+#. module: account_debt_management
+#: help:account.config.settings,group_account_use_financial_amounts:0
+msgid ""
+"Display Financial amounts on partner debts views and reports.\n"
+"Financial amounts are amounts on other currency converted to company currency on todays exchange."
+msgstr "Mostrar importes financieros en las vistas y reportes de deuda de partners.\nLos importes financieros son importes en otra moneda convertidos a la moneda de la compañía a la tasa de cambio del día."
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,display_name:0
 msgid "Display Name"
 msgstr "Nombre a Mostrar"
+
+#. module: account_debt_management
+#: field:account.debt.line,display_name:0
+msgid "Display name"
+msgstr "Nombre a Mostrar"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,move_id:0
+msgid "Entry"
+msgstr "Asiento"
+
+#. module: account_debt_management
+#: field:account.debt.line,move_line_id:0
+msgid "Entry line"
+msgstr "Apunte Contable"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/models/res_partner.py:132
+#, python-format
+msgid "FINAL BALANCE"
+msgstr "SALDO FINAL"
+
+#. module: account_debt_management
+#: field:account.move.line,financial_amount:0
+msgid "Financial Amount"
+msgstr "Importe Financiero"
 
 #. module: account_debt_management
 #: field:account.voucher.line,financial_amount_unreconciled:0
@@ -143,28 +307,77 @@ msgid "Financial Original Amount"
 msgstr "Importe Financiero Original"
 
 #. module: account_debt_management
-#: field:account.move.line,financial_amount_residual:0
-msgid "Financial amount residual"
-msgstr "Importe Financiero Residual"
+#: field:account.debt.line,financial_amount:0
+msgid "Financial amount"
+msgstr "Importe financiero"
 
 #. module: account_debt_management
-#: field:account.debt.summary,financial_debt:0
-#: field:account.move.line,financial_debt:0
-msgid "Financial debt"
-msgstr "Deuda Financiera"
+#: field:account.debt.report.wizard,financial_amounts:0
+msgid "Financial amounts"
+msgstr "Importes financieros"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: field:account.debt.line,financial_balance:0
+msgid "Financial balance"
+msgstr "Saldo financiero"
+
+#. module: account_debt_management
+#: field:account.debt.line,fiscalyear_id:0
+msgid "Fiscal Year"
+msgstr "Año Fiscal"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,from_date:0
+msgid "From"
+msgstr "Desde"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,group_by_move:0
+msgid "Group By Move"
+msgstr "Agrupar por Asiento"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
 msgid "Group By..."
 msgstr "Agrupar Por..."
 
 #. module: account_debt_management
-#: field:account.debt.summary,id:0
+#: selection:account.debt.report.wizard,company_type:0
+msgid "Group by Company"
+msgstr "Agrupar por Compañía"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,historical_full:0
+msgid "Historical full"
+msgstr "Historial Completo"
+
+#. module: account_debt_management
+#: field:account.debt.line,id:0 field:account.debt.report.wizard,id:0
 msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: code:addons/account_debt_management/models/res_partner.py:118
+#, python-format
+msgid "INITIAL BALANCE"
+msgstr "SALDO INICIAL"
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,historical_full:0
+msgid ""
+"If true, then it will show all partner history. If not, only unreconciled "
+"items will be shown."
+msgstr "Si verdadero, entonces va a mostrar todo el historial. Si no, solo los items no conciliados van a ser mostrados."
+
+#. module: account_debt_management
+#: help:account.debt.report.wizard,company_id:0
+msgid ""
+"If you don't select a company, debt for all companies will be exported."
+msgstr "Si no selecciona una compañía, la deuda de todas las compañías será exportada."
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,journal_id:0
 msgid "Journal"
 msgstr "Diario"
 
@@ -179,63 +392,112 @@ msgid "Journal Items"
 msgstr "Apuntes Contable"
 
 #. module: account_debt_management
-#: field:account.debt.summary,__last_update:0
+#: field:account.debt.line,__last_update:0
+#: field:account.debt.report.wizard,__last_update:0
 msgid "Last Modified on"
 msgstr "Última Modificación en"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-msgid "Maturity Date"
-msgstr "Fecha de Vencimiento"
+#: field:account.debt.report.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr "Last Updated by"
 
 #. module: account_debt_management
-#: field:account.debt.summary,maturity_dates:0
-msgid "Maturity dates"
-msgstr "Fechas de vencimiento"
+#: field:account.debt.report.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Last Updated on"
 
 #. module: account_debt_management
-#: field:account.debt.summary,move_id:0
-msgid "Move"
-msgstr "Asiento"
+#: view:account.debt.line:account_debt_management.view_account_debt_line_form
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+msgid "Open Document"
+msgstr "Abrir Documento"
 
 #. module: account_debt_management
-#: field:account.debt.summary,partner_id:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_form
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+msgid "Open Related Accounting Document"
+msgstr "Abrir Documento Contable Relacionado"
+
+#. module: account_debt_management
+#: field:account.debt.line,reconcile_partial_id:0
+msgid "Partial Reconciliation"
+msgstr "Conciliación Parcial"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,partner_id:0
 #: model:ir.model,name:account_debt_management.model_res_partner
 msgid "Partner"
 msgstr "Partner"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: selection:account.debt.summary,type:0
+#: view:res.partner:account_debt_management.view_res_partner_filter
+msgid "Partners with receivable or payable balance different from 0"
+msgstr "Empresas con saldo a cobrar o pagar distinto de 0"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: selection:account.debt.line,type:0
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Payable"
 msgstr "Cuenta por Pagar"
 
 #. module: account_debt_management
-#: field:res.partner,payable_line_ids:0
-msgid "Payable line ids"
-msgstr "Líneas a Pagar"
+#: selection:account.debt.report.wizard,result_selection:0
+msgid "Payable Accounts"
+msgstr "Cuentas a Pagar"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: field:res.partner,payable_debt_ids:0
+msgid "Payable debt ids"
+msgstr "Ids de deudas a pagar"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Payable payments"
 msgstr "Pagos  a Pagar"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: selection:account.debt.summary,type:0
+#: field:account.debt.line,period_id:0
+msgid "Period"
+msgstr "Período"
+
+#. module: account_debt_management
+#: selection:account.debt.line,move_state:0
+msgid "Posted"
+msgstr "Asentado"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+msgid "Rec."
+msgstr "Con."
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: selection:account.debt.line,type:0
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Receivable"
 msgstr "Cuenta por Cobrar"
 
 #. module: account_debt_management
-#: field:res.partner,receivable_line_ids:0
-msgid "Receivable line ids"
-msgstr "Lineas a Cobrar"
+#: selection:account.debt.report.wizard,result_selection:0
+msgid "Receivable Accounts"
+msgstr "Cuentas a Cobrar"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
+#: selection:account.debt.report.wizard,result_selection:0
+msgid "Receivable and Payable Accounts"
+msgstr "Cuentas a Cobrar y a Pagar"
+
+#. module: account_debt_management
+#: field:res.partner,receivable_debt_ids:0
+msgid "Receivable debt ids"
+msgstr "Ids de deudas a cobrar"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
 #: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Receivable payments"
 msgstr "Pagos a Recibir"
@@ -246,28 +508,103 @@ msgid "Reconciled Financial Amount"
 msgstr "Importe Financiero Conciliado"
 
 #. module: account_debt_management
-#: field:account.debt.summary,ref:0
-msgid "Ref"
-msgstr "Ref"
+#: field:account.debt.line,reconcile_id:0
+msgid "Reconciliation"
+msgstr "Conciliación"
+
+#. module: account_debt_management
+#: field:account.debt.line,ref:0
+msgid "Reference"
+msgstr "Referencia"
+
+#. module: account_debt_management
+#: field:account.move.line,financial_amount_residual:0
+msgid "Residual Financial Amount"
+msgstr "Importe Financiero Residual"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,secondary_currency:0
+msgid "Secondary currency"
+msgstr "Moneda Secundaria"
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:107
+#, python-format
+msgid "Send by Email"
+msgstr "Enviar por Email"
+
+#. module: account_debt_management
+#: field:account.debt.report.wizard,show_invoice_detail:0
+msgid "Show Invoice Detail"
+msgstr "Mostrar Detalle de Facturas"
+
+#. module: account_debt_management
+#: field:account.debt.line,move_state:0
+msgid "Status"
+msgstr "Estado"
 
 #. module: account_debt_management
 #: view:res.partner:account_debt_management.view_partner_inherit_debt_form
 msgid "Supplier Debt"
-msgstr "Deuda de Proveedor"
+msgstr "CC Proveedor"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_tree
-#: view:account.move.line:account_debt_management.account_move_line_partner_debt_tree
+#: field:account.debt.report.wizard,to_date:0
+msgid "To"
+msgstr "Hasta"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_tree
 msgid "Total"
 msgstr "Total"
 
 #. module: account_debt_management
-#: view:account.debt.summary:account_debt_management.view_account_debt_summary_search
-#: field:account.debt.summary,type:0
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+#: field:account.debt.line,type:0
+#: view:account.move.line:account_debt_management.account_move_line_partner_debt_search
 msgid "Type"
 msgstr "Tipo"
+
+#. module: account_debt_management
+#: selection:account.debt.line,move_state:0
+msgid "Unposted"
+msgstr "No Asentado"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+msgid "Unreconciled"
+msgstr "Desconciliado"
+
+#. module: account_debt_management
+#: view:account.debt.line:account_debt_management.view_account_debt_line_search
+msgid "Unreconciled Items"
+msgstr "Items Desconciliados"
+
+#. module: account_debt_management
+#: field:account.config.settings,group_account_use_financial_amounts:0
+#: model:res.groups,name:account_debt_management.account_use_financial_amounts
+msgid "Use Financial Amounts"
+msgstr "Usar Importes Financieros"
 
 #. module: account_debt_management
 #: model:ir.model,name:account_debt_management.model_account_voucher_line
 msgid "Voucher Lines"
 msgstr "Líneas de Comprobante"
+
+#. module: account_debt_management
+#: view:res.partner:account_debt_management.view_res_partner_filter
+msgid "With Balance"
+msgstr "Con Saldo"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:54
+#, python-format
+msgid ""
+"You can only select \"Consolidate all Companies if no company is selected"
+msgstr "Solo puede seleccionar \"Consolidar todas las compañías\" si no hay ninguna compañía seleccionada"
+
+#. module: account_debt_management
+#: view:account.debt.report.wizard:account_debt_management.account_debt_report_wizard_form
+msgid "or"
+msgstr "o"

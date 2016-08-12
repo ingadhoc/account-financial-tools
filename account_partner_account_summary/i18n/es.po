@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-05-24 23:32+0000\n"
+"POT-Creation-Date: 2016-07-27 00:54+0000\n"
+"PO-Revision-Date: 2016-07-27 12:10+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -33,10 +33,15 @@ msgstr "Tipo de Cuentas"
 #. module: account_partner_account_summary
 #: code:addons/account_partner_account_summary/res_partner.py:25
 #: code:addons/account_partner_account_summary/res_partner.py:56
-#: code:addons/account_partner_account_summary/res_partner.py:87
+#: code:addons/account_partner_account_summary/res_partner.py:90
 #, python-format
 msgid "Account_types not in context!"
 msgstr "Account_types not in context!"
+
+#. module: account_partner_account_summary
+#: help:account_summary_wizard,secondary_currency:0
+msgid "Add columns for secondary currency?"
+msgstr "Agregar colmnas para monedas secundarias?"
 
 #. module: account_partner_account_summary
 #: view:account_summary_wizard:account_partner_account_summary.account_summary_wizard_form
@@ -77,6 +82,11 @@ msgstr "Nombre a Mostrar"
 #: field:account_summary_wizard,from_date:0
 msgid "From"
 msgstr "Desde"
+
+#. module: account_partner_account_summary
+#: field:account_summary_wizard,group_by_move:0
+msgid "Group By Move"
+msgstr "Agrupar por Asiento"
 
 #. module: account_partner_account_summary
 #: field:account_summary_wizard,id:0
@@ -129,6 +139,11 @@ msgstr "Cuentas a Cobrar"
 #: selection:account_summary_wizard,result_selection:0
 msgid "Receivable and Payable Accounts"
 msgstr "Cuentas a Cobrar y a Pagar"
+
+#. module: account_partner_account_summary
+#: field:account_summary_wizard,secondary_currency:0
+msgid "Secondary Currency"
+msgstr ""
 
 #. module: account_partner_account_summary
 #: field:account_summary_wizard,show_invoice_detail:0

@@ -19,9 +19,9 @@
 #
 ##############################################################################
 {
-    'name': 'Account Renumber',
+    'name': 'Account Consolidation Company',
     'version': '8.0.1.0.0',
-    'category': 'Account Reporting',
+    'category': 'Accounting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -29,6 +29,7 @@
         'account',
     ],
     'data': [
+        'views/res_company_view.xml',
     ],
     'demo': [
     ],

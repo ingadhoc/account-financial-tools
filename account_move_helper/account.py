@@ -88,7 +88,8 @@ class account_move(models.Model):
             # we send company in context so it filters taxes
             context['company_id'] = self.company_id.id
             action_read['domain'] = [
-                ('type', 'in', ['liquidity', 'other']), ('company_id', '=', 1)]
+                ('type', 'in', ['liquidity', 'other']),
+                ('company_id', '=', self.company_id.id)]
             # this search view removes pricelist
             action_read.pop("search_view", None)
             action_read['search_view_id'] = (search_view_id, False)
