@@ -11,6 +11,7 @@ class AccountVoucher(models.Model):
     company_currency_id = fields.Many2one(
         related='company_id.currency_id',
         string='Company Currency',
+        readonly=True,
     )
     reconciled_financial_amount_ = fields.Float(
         compute='_get_reconciled_financial_amount_',
@@ -25,15 +26,7 @@ class AccountVoucher(models.Model):
         'line_dr_ids.amount_unreconciled',
     )
     def _get_reconciled_financial_amount_(self):
-        # self.financial_amount = sum
-        # debit = sum([x.amount for x in self.line_cr_ids])
-        # credit = sum([x.amount for x in self.line_dr_ids])
-        # for line in self.line_cr_ids:
-        #     line_currency = line.move_line_id.currency_id
-        #     if line_currency:
-        #         line_currency.compute(
-        #             line.amount_residual_currency,
-        #             line.account_id.company_id.currency_id)
+
         def get_lines_financial_amount(lines):
             financial_amount = 0.0
             for line in lines:
@@ -44,13 +37,12 @@ class AccountVoucher(models.Model):
                     # self.currency_id.round
                     financial_amount += line.amount * perc
             return financial_amount
+
         reconciled_financial_amount_ = (
             get_lines_financial_amount(self.line_cr_ids) -
             get_lines_financial_amount(self.line_dr_ids))
         if self.type == 'payment':
             reconciled_financial_amount_ = -1 * reconciled_financial_amount_
-        # financial_amount = credit - debit + self.advance_amount
-        # self.to_pay_amount = to_pay_amount
         self.reconciled_financial_amount_ = reconciled_financial_amount_
 
 
@@ -58,7 +50,7 @@ class AccountVoucherLine(models.Model):
     _inherit = "account.voucher.line"
 
     financial_amount_original = fields.Float(
-        related='move_line_id.financial_debt',
+        related='move_line_id.financial_amount',
         string='Financial Original Amount',
         # store=True,
     )

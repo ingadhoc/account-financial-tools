@@ -37,4 +37,5 @@ It also has a very bad implementation as it overwrites some methods
     'installable': False,
     'name': 'Account onchange Fix',
     'test': [],
-    'version': '8.0.1.2.0'}
+    'version': '9.0.1.0.0',
+}

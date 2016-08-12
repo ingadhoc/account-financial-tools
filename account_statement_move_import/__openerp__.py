@@ -20,16 +20,16 @@
 ##############################################################################
 {
     'name': 'Account Statement Move Import',
-    'version': '8.0.1.2.2',
+    'version': '9.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
-    'description': """
+    'description': '''
 Account Statement Move Import
 =============================
 Add a wizard to import moves on bank and cash statements
-    """,
-    'author':  'ADHOC SA',
+    ''',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
@@ -49,4 +49,3 @@ Add a wizard to import moves on bank and cash statements
     'auto_install': False,
     'application': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

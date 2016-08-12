@@ -19,12 +19,12 @@
 #
 ##############################################################################
 {
-    "name": "Calculate interests for selected partners",
-    'version': '8.0.1.2.0',
+    'name': 'Calculate interests for selected partners',
+    'version': '9.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Quotations, Sales Orders, Invoicing',
-    'description': """
+    'description': '''
 Interests Management
 ====================
 Se deben configurar los intereses en la compañía.
@@ -35,7 +35,7 @@ TODO:
  * ver si agregamos una fecha en partner ultima fecha de intereses y que
  completemos cuando creamos la factura asi podemos hacer un commit luego de
  cada una y si se rompe podemos recuperar.
-    """,
+    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -57,4 +57,3 @@ TODO:
     'auto_install': False,
     'application': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

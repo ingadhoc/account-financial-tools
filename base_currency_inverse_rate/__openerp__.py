@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    "name": "Base Currency Inverse Rate",
+    'name': 'Base Currency Inverse Rate',
     'version': '9.0.0.0.0',
     'category': 'Accounting',
     'sequence': 14,
@@ -27,27 +27,27 @@
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'summary': '',
-    "description": """
+    'description': '''
 Base Currency Inverse Rate
 ==========================
 In some countries we are use to see exchange rate in the inverse way as odoo
 shows it. We show rate FROM base currency and not TO base currency. For eg.
 * Base Currency ARS: 1.0
 * USD rate: 12.0 (in odoo way 1 / 12.0 = 0.0833)
-    """,
-    "depends": [
-        "base",
+    ''',
+    'depends': [
+        'base',
     ],
     'external_dependencies': {
     },
-    "data": [
+    'data': [
         'views/res_currency_view.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

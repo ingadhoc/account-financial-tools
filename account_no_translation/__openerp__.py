@@ -19,9 +19,9 @@
 #
 ##############################################################################
 {
-    'name': 'Account Renumber',
-    'version': '8.0.1.0.0',
-    'category': 'Account Reporting',
+    'name': 'Account no Translation',
+    'version': '9.0.1.0.0',
+    'category': 'Accounting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -34,6 +34,6 @@
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

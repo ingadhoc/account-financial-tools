@@ -20,13 +20,13 @@
 ##############################################################################
 {
     'name': 'Portal Distributor Account',
-    'version': '8.0.1.1.0',
+    'version': '9.0.1.0.0',
     'category': 'Tools',
     'complexity': 'easy',
-    'description': """
+    'description': '''
 Portal Distributor Account
 ==========================
-    """,
+    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -44,4 +44,3 @@ Portal Distributor Account
     'application': False,
     'category': 'Hidden',
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -10,19 +10,19 @@
                     <field name="company_currency_id" invisible="1"/>
                 </form>
                 <field name="reconciled_amount" position="after">
-                    <field name="reconciled_financial_amount_" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
+                    <field name="reconciled_financial_amount_" widget="monetary" options="{'currency_field': 'company_currency_id'}" groups="account_debt_management.account_use_financial_amounts"/>
                 </field>
                 <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_original']" position="after">
-                    <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_original" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
                 <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_unreconciled']" position="after">
-                    <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_unreconciled" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
                 <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_original']" position="after">
-                    <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_original" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
                 <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_unreconciled']" position="after">
-                    <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_unreconciled" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
             </field>
         </record>
@@ -36,19 +36,19 @@
                     <field name="company_currency_id" invisible="1"/>
                 </form>
                 <field name="reconciled_amount" position="after">
-                    <field name="reconciled_financial_amount_" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
+                    <field name="reconciled_financial_amount_" widget="monetary" options="{'currency_field': 'company_currency_id'}" groups="account_debt_management.account_use_financial_amounts"/>
                 </field>
                 <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_original']" position="after">
-                    <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_original" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
                 <xpath expr="//field[@name='line_cr_ids']/tree/field[@name='amount_unreconciled']" position="after">
-                    <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_unreconciled" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
                 <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_original']" position="after">
-                    <field name="financial_amount_original" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_original" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
                 <xpath expr="//field[@name='line_dr_ids']/tree/field[@name='amount_unreconciled']" position="after">
-                    <field name="financial_amount_unreconciled" readonly="1" groups="account.group_account_user"/>
+                    <field name="financial_amount_unreconciled" readonly="1" groups="account_debt_management.account_use_financial_amounts"/>
                 </xpath>
             </field>
         </record>

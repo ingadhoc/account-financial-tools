@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'author':  'ADHOC SA',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
@@ -40,4 +40,5 @@ Account Multi Company Fixes
     'installable': False,
     'name': 'Account Multi Company Fixes',
     'test': [],
-    'version': '8.0.1.4.1'}
+    'version': '9.0.1.0.0',
+}

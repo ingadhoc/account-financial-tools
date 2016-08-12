@@ -19,25 +19,24 @@
 #
 ##############################################################################
 {
-    "name": "Account Journal Sequence",
-    "version": "8.0.1.0.0",
-    'author':  'ADHOC SA',
+    'name': 'Account Journal Sequence',
+    'version': '9.0.1.0.0',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    "category": "Accounting",
-    "description": """ 
+    'category': 'Accounting',
+    'description': '''
 Account Journal Sequence
 ========================
 Adds sequence field on account journal and it is going to be considered when choosing journals in differents models.
-    """,
+    ''',
     'depends': [
-		'account',
-	],
+                'account',
+    ],
     'data': [
         'account_journal_view.xml',
-        ],
+    ],
     'demo': [],
     'test': [],
     'installable': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
