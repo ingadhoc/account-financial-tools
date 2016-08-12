@@ -36,9 +36,10 @@ fix that.
 
 IMPORTANI: It wont works with oca webkit financial reports. If you use oca
 reports, you can have initial balance if you get report by period or no filter
-and account user type close method is not "none".
+and account user type close method is not 'none'.
 ''',
     'installable': False,
     'name': 'Account General Ledger Fix',
     'test': [],
-    'version': '8.0.0.0.0'}
+    'version': '9.0.1.0.0',
+}

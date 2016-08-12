@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 {
-    "name": "Account Security Modifications",
-    "version": "8.0.1.0.0",
-    "description": """
+    'name': 'Account Security Modifications',
+    'version': '9.0.1.0.0',
+    'description': '''
 Account Security Modifications
 ==============================
 It makes the following modifications in security related to accounting:
@@ -11,20 +11,19 @@ It makes the following modifications in security related to accounting:
     * Allow to choose journals on invoices
     * Show move and unreconile ammount on vouchers lines 
 
-    """,
-    "author": "ADHOC SA",
-    "website": "www.adhoc.com.ar",
+    ''',
+    'author': 'ADHOC SA',
+    'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    "category": "Financial",
-    "depends": [
-        "account_voucher",
+    'category': 'Financial',
+    'depends': [
+        'account_voucher',
     ],
-    "data": [
+    'data': [
         'invoice_view.xml',
         'voucher_view.xml',
     ],
-    "demo_xml": [],
-    "active": False,
-    "installable": False,
+    'demo_xml': [],
+    'active': False,
+    'installable': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

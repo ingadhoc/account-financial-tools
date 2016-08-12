@@ -20,15 +20,15 @@
 ##############################################################################
 {
     'name': 'Statement Aeroo Report',
-    'version': '8.0.1.0.1',
+    'version': '9.0.1.0.0',
     'category': 'Aeroo Reporting',
     'sequence': 14,
     'summary': '',
-    'description': """
+    'description': '''
 Statement Aeroo Report
 =======================
-    """,
-    'author':  'ADHOC SA',
+    ''',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
@@ -49,4 +49,3 @@ Statement Aeroo Report
     'auto_install': False,
     'application': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

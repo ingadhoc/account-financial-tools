@@ -24,15 +24,15 @@
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
-    'description': """
+    'description': '''
 Journal Security
 ================
 It creates a many2many field between journals and users. If you set users to
 journal or viceversa, then this journals and the related moves, will be only
 seen by selected users.
 Usually used for payroll journals.
-This fields are only seen by users with "access right management"
-    """,
+This fields are only seen by users with 'access right management'
+    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -51,8 +51,7 @@ This fields are only seen by users with "access right management"
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

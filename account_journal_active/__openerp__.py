@@ -19,28 +19,27 @@
 #
 ##############################################################################
 {
-    "name": "Account Journal Active",
-    "version": "8.0.1.2.0",
-    'author':  'ADHOC SA',
+    'name': 'Account Journal Active',
+    'version': '9.0.1.0.0',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    "category": "Accounting",
-    "description": """
+    'category': 'Accounting',
+    'description': '''
 Account Journal Active Field
 ============================
 Adds active field on account journal
-    """,
+    ''',
     'depends': [
         # we add dependency of account_voucher because we change voucher
         # action views to make voucher visible when journal inactive
         'account_voucher'
-        ],
+    ],
     'data': [
         'account_journal_view.xml',
         'account_voucher_view.xml',
-        ],
+    ],
     'demo': [],
     'test': [],
     'installable': False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
