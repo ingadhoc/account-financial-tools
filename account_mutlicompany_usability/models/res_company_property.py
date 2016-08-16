@@ -28,7 +28,7 @@ class ResCompanyProperty(models.Model):
         ],
     }
 
-    company_id = fields.Many2one('res.company', 'Company')
+    company_id = fields.Many2one('res.company', 'Company', required=True,)
 
     def init(self, cr):
         tools.drop_view_if_exists(cr, self._table)
@@ -72,6 +72,12 @@ class ResCompanyProperty(models.Model):
     display_name = fields.Char(
         compute='_get_display_name'
     )
+
+    @api.model
+    def _get_companies(self):
+        return self.search([
+            ('company_id.consolidation_company', '=', False),
+        ])
 
     @api.model
     def _get_property_comodel(self):

@@ -30,7 +30,7 @@ class ProductTemplate(models.Model):
 
     @api.one
     def _get_properties(self):
-        company_properties = self.env['res.company.property'].search([])
+        company_properties = self.env['res.company.property']._get_companies()
         self.property_account_income_ids = company_properties
         self.property_account_expense_ids = company_properties
 
@@ -58,6 +58,6 @@ class ProductCategory(models.Model):
 
     @api.one
     def _get_properties(self):
-        company_properties = self.env['res.company.property'].search([])
+        company_properties = self.env['res.company.property']._get_companies()
         self.property_account_income_categ_ids = company_properties
         self.property_account_expense_categ_ids = company_properties

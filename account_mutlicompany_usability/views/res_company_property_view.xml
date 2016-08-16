@@ -6,7 +6,7 @@
             <field name="name">res.company.property.form</field>
             <field name="model">res.company.property</field>
             <field name="arch" type="xml">
-                <tree string="sda" editable="top" delete="false" create="false">
+                <tree string="Company Properties" editable="top" delete="false" create="false">
                     <field name="company_id" readonly="1"/>
                     <field name="property_account_id" invisible="1"/>
                     <field name="property_position_id" invisible="1"/>
@@ -16,10 +16,11 @@
             </field>
         </record>
 
-        <act_window name="Company Property"
+        <act_window name="Company Properties"
             id="action_res_company_property"
             res_model="res.company.property"
             view_mode="tree"
+            domain="[('company_id.consolidation_company', '=', False)]"
             />
 
     </data>

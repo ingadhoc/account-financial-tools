@@ -19,22 +19,25 @@
 #
 ##############################################################################
 {
-    'name': 'Account Consolidation Company',
-    'version': '8.0.1.0.0',
-    'category': 'Accounting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'depends': [
-        'account',
-    ],
+    'category': 'Accounting & Finance',
     'data': [
-        'views/res_company_view.xml',
     ],
-    'demo': [
+    'depends': [
+        'account_voucher_withholding',
+        'account_mutlicompany_usability',
     ],
-    'test': [
-    ],
-    'installable': False,
+    'description': '''
+Account Multicompany Usability for Withholdings
+===============================================
+Integration between account_voucher_withholding and
+account_mutlicompany_usability
+''',
+    'installable': True,
+    'auto_install': True,
+    'name': 'Account Multicompany Usability for Withholdings',
+    'test': [],
+    'version': '8.0.1.0.0',
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

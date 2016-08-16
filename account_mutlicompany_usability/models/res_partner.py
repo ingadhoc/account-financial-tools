@@ -54,7 +54,7 @@ class ResPartner(models.Model):
 
     @api.one
     def _get_properties(self):
-        company_properties = self.env['res.company.property'].search([])
+        company_properties = self.env['res.company.property']._get_companies()
         self.property_account_receivable_ids = company_properties
         self.property_account_payable_ids = company_properties
         self.property_account_position_ids = company_properties
