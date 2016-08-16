@@ -29,10 +29,10 @@
         'web_widget_one2many_tags',
     ],
     'data': [
+        'views/res_company_property_view.xml',
         'views/res_company_view.xml',
         'views/res_partner_view.xml',
         'views/product_view.xml',
-        'views/res_company_property_view.xml',
         'security/security.xml',
         'security/ir.model.access.csv',
     ],
