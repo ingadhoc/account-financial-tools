@@ -26,7 +26,6 @@
     'license': 'AGPL-3',
     'depends': [
         'account',
-        'web_widget_one2many_tags',
     ],
     'data': [
         'views/res_company_property_view.xml',

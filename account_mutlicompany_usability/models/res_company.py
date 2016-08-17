@@ -20,8 +20,10 @@ class ResCompany(models.Model):
 
     @api.multi
     def get_company_sufix(self):
-        self.ensure_one()
+        # cuando pedimos para unr registro que no tiene sia no queremos
+        # que ensure_one arroje error
         if (
+                len(self) != 1 or
                 self._context.get('no_company_sufix') or
                 not self.env.user.has_group('base.group_multi_company')):
             return ''
