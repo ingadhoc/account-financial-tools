@@ -21,10 +21,12 @@ class ResCompany(models.Model):
     @api.multi
     def get_company_sufix(self):
         self.ensure_one()
-        if self.env.user.has_group('base.group_multi_company'):
-            return ' (%s)' % (self.short_name or self.name)
-        else:
+        if (
+                self._context.get('no_company_sufix') or
+                not self.env.user.has_group('base.group_multi_company')):
             return ''
+        else:
+            return ' (%s)' % (self.short_name or self.name)
 
     consolidation_company = fields.Boolean(
         'Consolidation Company',

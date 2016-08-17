@@ -20,6 +20,25 @@ class AccountMove(models.Model):
                 'You can not create entries on a consolidtion company')
 
 
+class AccountAnalyticAccount(models.Model):
+
+    _inherit = 'account.analytic.account'
+
+    @api.multi
+    def name_get(self):
+        """
+        No llamamos a super porque tendriamos que igualmente hacer un read
+        para obtener la compania y no queremos disminuir la performance
+        """
+        res = []
+        for record in self:
+            record_name = '%s%s' % (
+                record._get_one_full_name(record),
+                record.company_id.get_company_sufix())
+            res.append((record.id, record_name))
+        return res
+
+
 class AccountAccount(models.Model):
 
     _inherit = 'account.account'

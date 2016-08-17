@@ -165,9 +165,12 @@ class ResCompanyProperty(models.Model):
         para obtener la compania y no queremos disminuir la performance
         """
         company_field = getattr(
-            self, self._get_company_property_field())
-        self.display_name = (
-            company_field and company_field.display_name or _('None'))
+            self.with_context(no_company_sufix=True),
+            self._get_company_property_field())
+        display_name = '%s%s' % (
+            company_field.display_name or _('None'),
+            self.company_id.get_company_sufix())
+        self.display_name = display_name
 
     @api.one
     def _get_property_field(self):
