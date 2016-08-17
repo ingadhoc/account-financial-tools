@@ -41,4 +41,4 @@ Account Multi Company Fixes
     'installable': True,
     'name': 'Account Multi Company Fixes',
     'test': [],
-    'version': '8.0.1.4.1'}
+    'version': '8.0.1.5.0'}
