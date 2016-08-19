@@ -78,16 +78,17 @@ def sync_field(cr, uid, lang_code, model_name, field_name):
         value = translation['value']
         res_id = translation['res_id']
         # just in case some constraint block de renaiming
-        try:
-            cr.execute(
-                "UPDATE %s SET %s='%s' WHERE id=%s" % (
-                    table,
-                    field_name,
-                    value,
-                    res_id
-                ))
-        except Exception, e:
-            _logger.warning(
-                'Could not update translation on table %s for res_id %s, '
-                'field %s, with value %s. This is what we get %s' % (
-                    table, res_id, field_name, value, e))
+        # try:
+        # no nos anduvo, arrojamos el error y listo
+        cr.execute(
+            "UPDATE %s SET %s='%s' WHERE id=%s" % (
+                table,
+                field_name,
+                value,
+                res_id
+            ))
+        # except Exception, e:
+        #     _logger.warning(
+        #         'Could not update translation on table %s for res_id %s, '
+        #         'field %s, with value %s. This is what we get %s' % (
+        #             table, res_id, field_name, value, e))
