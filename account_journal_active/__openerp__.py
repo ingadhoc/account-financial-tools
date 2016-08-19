@@ -19,27 +19,23 @@
 #
 ##############################################################################
 {
-    'name': 'Account Journal Active',
-    'version': '9.0.1.0.0',
-    'author': 'ADHOC SA',
+    "name": "Account Journal Active",
+    "version": "9.0.1.0.0",
+    'author':  'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'category': 'Accounting',
-    'description': '''
+    "category": "Accounting",
+    "description": """ This module is to desactivate unused Daily more.
 Account Journal Active Field
 ============================
 Adds active field on account journal
-    ''',
-    'depends': [
-        # we add dependency of account_voucher because we change voucher
-        # action views to make voucher visible when journal inactive
-        'account_voucher'
-    ],
+    """,
+    'depends': ['account'],
     'data': [
         'account_journal_view.xml',
-        'account_voucher_view.xml',
-    ],
+        ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
 }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
