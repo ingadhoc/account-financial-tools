@@ -7,22 +7,25 @@
 # import cStringIO
 # from openerp import tools
 from openerp import pooler, SUPERUSER_ID
+import logging
+_logger = logging.getLogger(__name__)
 
 
 def post_init_hook(cr, pool):
-    # al final no lo desinstalamos automaticamente porque podria romper otras
-    # dependencias o desinstalar modulos que no queremos desinstalar
-    # module_pool = pool['ir.module.module']
-    # module_ids = module_pool.search(
-    #     cr, SUPERUSER_ID,
-    #     [('name', '=', 'l10n_multilang'), ('state', '=', 'installed')], {})
-    # if not module_ids:
-    #     return True
-    # print 'install module %s' % module
-    # print 'ids for module: %s' % module_ids
-    # model.button_install(
-    #     cr, SUPERUSER_ID, module_ids, {})
-    # print 'module installed'
+    """
+    Desinstalamos l10n_multilang si está instalado, no debería ser muy
+    peligroso porque solo modulos de plan de cuentas dependeria de el
+    """
+    module_pool = pool['ir.module.module']
+    module_ids = module_pool.search(
+        cr, SUPERUSER_ID,
+        [('name', '=', 'l10n_multilang'), ('state', '=', 'installed')], {})
+    if not module_ids:
+        return True
+    _logger.info('Uninstalling module "l10n_multilang"')
+    module_pool.button_uninstall(
+        cr, SUPERUSER_ID, module_ids, {})
+    _logger.info('Module "l10n_multilang" sucessfully uninstalled')
     return True
 
 
@@ -61,6 +64,8 @@ def pre_init_hook(cr):
 
 
 def sync_field(cr, uid, lang_code, model_name, field_name):
+    _logger.info('Syncking translations for model %s, field %s' % (
+        model_name, field_name))
     pool = pooler.get_pool(cr.dbname)
     translations = pool['ir.translation'].search_read(
         cr, SUPERUSER_ID, [
@@ -72,10 +77,17 @@ def sync_field(cr, uid, lang_code, model_name, field_name):
         table = model_name.replace('.', '_')
         value = translation['value']
         res_id = translation['res_id']
-        cr.execute(
-            "UPDATE %s SET %s='%s' WHERE id=%s" % (
-                table,
-                field_name,
-                value,
-                res_id
-            ))
+        # just in case some constraint block de renaiming
+        try:
+            cr.execute(
+                "UPDATE %s SET %s='%s' WHERE id=%s" % (
+                    table,
+                    field_name,
+                    value,
+                    res_id
+                ))
+        except Exception, e:
+            _logger.warning(
+                'Could not update translation on table %s for res_id %s, '
+                'field %s, with value %s. This is what we get %s' % (
+                    table, res_id, field_name, value, e))
