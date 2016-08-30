@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account Journal Transfer',
-    'version': '8.0.1.1.1',
+    'version': '8.0.1.2.1',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'ADHOC SA',

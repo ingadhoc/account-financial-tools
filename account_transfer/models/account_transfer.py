@@ -14,6 +14,7 @@ class account_transfer(models.Model):
     _description = "account.transfer"
     _inherit = ['mail.thread']
     _rec_name = 'ref'
+    _order = 'date desc, id desc'
 
     ref = fields.Char(
         'Reference',

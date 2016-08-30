@@ -29,8 +29,8 @@
             <field name="model">account.transfer</field>
             <field name='arch' type='xml'>
                 <tree colors="blue:state == 'draft';gray:state == 'cancel'" string="Tax Settlement">
-                    <field name="ref"/>
                     <field name="date"/>
+                    <field name="ref"/>
                     <field name="source_journal_id"/>
                     <field name="target_journal_id"/>
                     <field name="amount"/>
