@@ -27,7 +27,7 @@
     ],
     'depends': [
         'account_voucher_withholding',
-        'account_mutlicompany_usability',
+        'account_multicompany_usability',
     ],
     'description': '''
 Account Multicompany Usability for Withholdings
