@@ -116,6 +116,7 @@ class ResCompanyProperty(models.Model):
         property_field = self._context.get('property_field')
         domain = self._context.get('property_domain')
         record = self._get_record()
+        print 'record', record
         if record:
             field = self._get_record()._fields.get(property_field)
             # si no viene definido un property_domain buscamos uno para
@@ -126,10 +127,15 @@ class ResCompanyProperty(models.Model):
                 except:
                     domain = []
             domain_elements = [str(x) for x in domain]
-            domain_elements += [
-                "'|'",
-                "('company_id', '=', False)",
-                "('company_id', '=', company_id)"]
+
+            # add company domain if comodel has company
+            comodel = self._get_property_comodel()
+            if comodel:
+                if self.env[comodel]._fields.get('company_id'):
+                    domain_elements += [
+                        "'|'",
+                        "('company_id', '=', False)",
+                        "('company_id', '=', company_id)"]
             str_domain = '[%s]' % ','.join(domain_elements)
 
             company_property_field = self._get_company_property_field()
