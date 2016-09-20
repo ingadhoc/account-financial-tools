@@ -19,7 +19,7 @@
                     <label for="property_account_receivable_ids"/>
                     <div class="oe_inline">
                         <field name="property_account_receivable_ids" widget="many2many_tags" class="oe_inline"/>
-                        <button name="%(action_res_company_property)d" string="(edit)" class="oe_link" type="action" context="{'property_field': 'property_account_receivable'}"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_receivable'}"/>
                     </div>
                 </field>
 
@@ -33,7 +33,7 @@
                     <label for="property_account_payable_ids"/>
                     <div class="oe_inline">
                         <field name="property_account_payable_ids" widget="many2many_tags"/>
-                        <button name="%(action_res_company_property)d" string="(edit)" class="oe_link" type="action" context="{'property_field': 'property_account_payable'}"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_payable'}"/>
                     </div>
                 </field>
 
@@ -46,7 +46,7 @@
                     <label for="property_account_position_ids"/>
                     <div class="oe_inline">
                         <field name="property_account_position_ids" widget="many2many_tags"/>
-                        <button name="%(action_res_company_property)d" string="(edit)" class="oe_link" type="action" context="{'property_field': 'property_account_position'}"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_position'}"/>
                     </div>
                 </field>
 
@@ -59,7 +59,7 @@
                     <label for="property_payment_term_ids"/>
                     <div class="oe_inline">
                         <field name="property_payment_term_ids" widget="many2many_tags"/>
-                        <button name="%(action_res_company_property)d" string="(edit)" class="oe_link" type="action" context="{'property_field': 'property_payment_term'}"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_payment_term'}"/>
                     </div>
                 </field>
 
@@ -72,7 +72,7 @@
                     <label for="property_supplier_payment_term_ids"/>
                     <div class="oe_inline">
                         <field name="property_supplier_payment_term_ids" widget="many2many_tags"/>
-                        <button name="%(action_res_company_property)d" string="(edit)" class="oe_link" type="action" context="{'property_field': 'property_supplier_payment_term'}"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_supplier_payment_term'}"/>
                     </div>
                 </field>
            </field>
@@ -94,7 +94,7 @@
                     <label for="property_product_pricelist_ids"/>
                     <div class="oe_inline">
                         <field name="property_product_pricelist_ids" widget="many2many_tags"/>
-                        <button name="%(action_res_company_property)d" string="(edit)" class="oe_link" type="action" context="{'property_field': 'property_product_pricelist'}"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_product_pricelist'}"/>
                     </div>
                 </field>
             </field>

@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account Multicompany Usability',
-    'version': '8.0.1.1.0',
+    'version': '8.0.1.2.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',

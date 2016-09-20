@@ -20,8 +20,9 @@
             id="action_res_company_property"
             res_model="res.company.property"
             view_mode="tree"
-            domain="[('company_id.consolidation_company', '=', False)]"
+            domain="[]"
             />
+            <!-- domain="[('company_id.consolidation_company', '=', False)]" -->
 
     </data>
 </openerp>

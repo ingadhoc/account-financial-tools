@@ -54,10 +54,26 @@ class ResPartner(models.Model):
 
     @api.one
     def _get_properties(self):
-        company_properties = self.env['res.company.property']._get_companies()
-        self.property_account_receivable_ids = company_properties
-        self.property_account_payable_ids = company_properties
-        self.property_account_position_ids = company_properties
-        self.property_payment_term_ids = company_properties
-        self.property_supplier_payment_term_ids = company_properties
-        self.property_product_pricelist_ids = company_properties
+        company_properties = self.env['res.company.property'].with_context(
+            active_model=self._name, active_id=self.id)
+        self.property_account_receivable_ids = company_properties.with_context(
+            property_field='property_account_receivable')._get_companies()
+        self.property_account_payable_ids = company_properties.with_context(
+            property_field='property_account_payable')._get_companies()
+        self.property_account_position_ids = company_properties.with_context(
+            property_field='property_account_position')._get_companies()
+        self.property_payment_term_ids = company_properties.with_context(
+            property_field='property_payment_term')._get_companies()
+        self.property_supplier_payment_term_ids = (
+            company_properties.with_context(
+                property_field='property_supplier_payment_term'
+            )._get_companies())
+        self.property_product_pricelist_ids = company_properties.with_context(
+            property_field='property_product_pricelist')._get_companies()
+
+    @api.multi
+    def action_company_properties(self):
+        self.ensure_one()
+        return self.env['res.company.property'].with_context(
+            active_model=self._name, active_id=self.id
+        ).action_company_properties()

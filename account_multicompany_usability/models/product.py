@@ -30,9 +30,19 @@ class ProductTemplate(models.Model):
 
     @api.one
     def _get_properties(self):
-        company_properties = self.env['res.company.property']._get_companies()
-        self.property_account_income_ids = company_properties
-        self.property_account_expense_ids = company_properties
+        company_props = self.env['res.company.property'].with_context(
+            active_model=self._name, active_id=self.id)
+        self.property_account_income_ids = company_props.with_context(
+            property_field='property_account_income')._get_companies()
+        self.property_account_expense_ids = company_props.with_context(
+            property_field='property_account_expense')._get_companies()
+
+    @api.multi
+    def action_company_properties(self):
+        self.ensure_one()
+        return self.env['res.company.property'].with_context(
+            active_model=self._name, active_id=self.id
+        ).action_company_properties()
 
 
 class ProductCategory(models.Model):
@@ -58,6 +68,16 @@ class ProductCategory(models.Model):
 
     @api.one
     def _get_properties(self):
-        company_properties = self.env['res.company.property']._get_companies()
-        self.property_account_income_categ_ids = company_properties
-        self.property_account_expense_categ_ids = company_properties
+        company_props = self.env['res.company.property'].with_context(
+            active_model=self._name, active_id=self.id)
+        self.property_account_income_categ_ids = company_props.with_context(
+            property_field='property_account_income_categ')._get_companies()
+        self.property_account_expense_categ_ids = company_props.with_context(
+            property_field='property_account_expense_categ')._get_companies()
+
+    @api.multi
+    def action_company_properties(self):
+        self.ensure_one()
+        return self.env['res.company.property'].with_context(
+            active_model=self._name, active_id=self.id
+        ).action_company_properties()

@@ -75,9 +75,30 @@ class ResCompanyProperty(models.Model):
 
     @api.model
     def _get_companies(self):
-        return self.search([
-            ('company_id.consolidation_company', '=', False),
-        ])
+        domain = []
+        comodel = self._get_property_comodel()
+        if comodel not in [
+                'account.payment.term', 'product.pricelist',
+                'account.fiscal.position']:
+            domain = [('company_id.consolidation_company', '=', False)]
+        return self.search(domain)
+
+    @api.model
+    def action_company_properties(self):
+        property_field = self._context.get('property_field', False)
+        if not property_field:
+            return True
+
+        company_properties = self._get_companies()
+        action = self.env.ref(
+            'account_multicompany_usability.action_res_company_property')
+
+        if not action:
+            return False
+        action_read = action.read()[0]
+        action_read['context'] = self._context
+        action_read['domain'] = [('id', 'in', company_properties.ids)]
+        return action_read
 
     @api.model
     def _get_property_comodel(self):
