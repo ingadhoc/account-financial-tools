@@ -4,7 +4,7 @@
 # directory
 ##############################################################################
 from openerp import models, fields, api
-from openerp import SUPERUSER_ID
+# from openerp import SUPERUSER_ID
 
 
 class account_analytic_invoice_line(models.Model):
@@ -15,7 +15,10 @@ class account_analytic_invoice_line(models.Model):
         'analytic_account_tax',
         'analytic_accountr_line_id',
         'tax_id',
-        'Taxes')
+        'Taxes',
+        domain="[('parent_id','=',False), ('company_id', '=', "
+        "parent.company_id), ('type_tax_use','in', ['sale', 'all'])]",
+    )
 
     @api.multi
     def product_id_change(self, product, uom_id, qty=0, name='', partner_id=False, price_unit=False, pricelist_id=False, company_id=None):

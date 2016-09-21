@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Contract Multi Fix',
-    'version': '8.0.0.0.0',
+    'version': '8.0.0.0.1',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -30,11 +30,12 @@
 Contract Multi Fix
 ==================
 ''',
-    'data': ['contract_view.xml'
-             ],
+    'data': [
+        'contract_view.xml'
+    ],
     'demo': [],
     'test': [],
     'installable': True,
     'auto_install': False,
     'application': False,
-    }
+}
