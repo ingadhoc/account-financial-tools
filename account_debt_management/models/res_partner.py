@@ -106,7 +106,7 @@ class ResPartner(models.Model):
 
         domain += [('partner_id', '=', self.id)]
 
-        without_date_domain = domain[:]
+        # without_date_domain = domain[:]
 
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
@@ -115,7 +115,8 @@ class ResPartner(models.Model):
             balance = sum(intitial_moves.mapped('amount'))
             financial_balance = sum(intitial_moves.mapped('financial_amount'))
             res = [get_line_vals(
-                name=_('INITIAL BALANCE'), balance=balance,
+                name=_('INITIAL BALANCE'),
+                balance=balance,
                 financial_balance=financial_balance)]
             domain.append(('date', '>=', from_date))
         else:
@@ -124,13 +125,20 @@ class ResPartner(models.Model):
             res = []
 
         if to_date:
-            all_moves = self.env['account.debt.line'].search(
-                without_date_domain)
-            balance = sum(all_moves.mapped('amount'))
-            financial_balance = sum(all_moves.mapped('financial_amount'))
-            final_line = [get_line_vals(
-                name=_('FINAL BALANCE'), balance=balance,
-                financial_balance=financial_balance)]
+            # por ahora no imprimimos la linea final, solo imprimios hasta la
+            # fecha en que se solicita el reporte y cambiamos para que salga
+            # hasta esa fecha en el header
+            # si queremos usar esto deberiamos ver que se interprete bien
+            # all_moves = self.env['account.debt.line'].search(
+            #     without_date_domain)
+            # final_balance = sum(all_moves.mapped('amount'))
+            # final_financial_balance = sum(
+            #     all_moves.mapped('financial_amount'))
+            # final_line = [get_line_vals(
+            #     name=_('FINAL BALANCE'),
+            #     balance=final_balance,
+            #     financial_balance=final_financial_balance)]
+            final_line = []
             domain.append(('date', '<=', to_date))
         else:
             final_line = []
@@ -220,7 +228,8 @@ class ResPartner(models.Model):
                 name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
-                amount=amount, balance=balance,
+                amount=amount,
+                balance=balance,
                 financial_amount=financial_amount,
                 financial_balance=financial_balance,
                 amount_currency=amount_currency,
