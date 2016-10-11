@@ -204,3 +204,11 @@ class account_transfer(models.Model):
         self.source_move_id.unlink()
         self.target_move_id.unlink()
         self.state = 'cancel'
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            if self.state != 'draft':
+                raise Warning(_(
+                    "You can't delete a transfer that is not in draft"))
+        return super(account_transfer, self).unlink()
