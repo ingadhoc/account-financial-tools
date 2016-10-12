@@ -22,6 +22,9 @@ addons:
       - python-serial
       - python-yaml
       - wkhtmltopdf # for odoo pdf reports (tested on sale for eg.)
+      # for aeroo
+      - cups
+      - libcups2-dev
       # FE
       - python-dev
       - swig
