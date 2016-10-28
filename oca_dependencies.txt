@@ -1,3 +1,4 @@
 # adhoc-aeroo_reports https://github.com/ingadhoc/aeroo_reports.git
 # adhoc_account_payment https://github.com/ingadhoc/account-payment.git
 # adhoc_partner https://github.com/ingadhoc/partner.git
+ingadhoc-miscellaneous https://github.com/ingadhoc/miscellaneous.git
