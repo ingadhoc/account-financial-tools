@@ -137,7 +137,6 @@ class account_account(models.Model):
             else:
                 # unlink
                 move_line_vals.append((3, move_line.id, False))
-                print 'move_line_vals', move_line_vals
         else:
             # create
             move_line_vals.append((0, False, {
