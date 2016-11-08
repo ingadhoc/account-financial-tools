@@ -10,8 +10,6 @@ from openerp import api, models, fields
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    name = fields.Char(translate=False)
-
     @api.one
     @api.constrains('company_id')
     def check_company(self):
@@ -75,55 +73,6 @@ class AccountJournal(models.Model):
             record_name = '%s (%s)%s' % (
                 record.name,
                 currency.name,
-                record.company_id.get_company_sufix())
-            res.append((record.id, record_name))
-        return res
-
-
-class AccountPeriod(models.Model):
-
-    _inherit = 'account.period'
-
-    @api.multi
-    def name_get(self):
-        res = []
-        for record in self:
-            record_name = '%s%s' % (
-                record.name,
-                record.company_id.get_company_sufix())
-            res.append((record.id, record_name))
-        return res
-
-
-class AccountFiscalyear(models.Model):
-
-    _inherit = 'account.fiscalyear'
-
-    @api.multi
-    def name_get(self):
-        res = []
-        for record in self:
-            record_name = '%s%s' % (
-                record.name,
-                record.company_id.get_company_sufix())
-            res.append((record.id, record_name))
-        return res
-
-
-class AccountTaxCode(models.Model):
-    _inherit = 'account.tax.code'
-
-    @api.multi
-    def name_get(self):
-        """
-        No llamamos a super porque tendriamos que igualmente hacer un read
-        para obtener la compania y no queremos disminuir la performance
-        """
-        res = []
-        for record in self:
-            record_name = '%s%s%s' % (
-                record.code and record.code + ' - ' or '',
-                record.name,
                 record.company_id.get_company_sufix())
             res.append((record.id, record_name))
         return res

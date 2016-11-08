@@ -103,10 +103,16 @@ class ResCompanyProperty(models.Model):
     @api.model
     def _get_property_comodel(self):
         property_field = self._context.get('property_field')
+        print 'property_field', property_field
         record = self._get_record()
         if record:
+            print 'self._get_record()', self._get_record()
             field = self._get_record()._fields.get(property_field)
-            return field.comodel_name
+            print 'property_field ', property_field
+            print 'field ', field
+            # if not self._get_record()._fields:
+            #     return False
+            return field and field.comodel_name or False
 
     @api.model
     def _get_record(self):

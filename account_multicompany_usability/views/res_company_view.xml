@@ -11,11 +11,7 @@
                     <field name="short_name"/>
                 </div>
                 <group name="account_grp" string="Accounting">  
-                    <label for="consolidation_company"/>
-                    <div class="oe_inline">
-                        <field name="consolidation_company" class="oe_inline"/>
-                        <button name="recreate_chart_of_account" string="Recreate Chart of Account" type="object" class="oe_link oe_inline" attrs="{'invisible': [('consolidation_company', '=', False)]}"/>
-                    </div>
+                    <field name="consolidation_company"/>
                 </group>
             </field>
         </record>

@@ -18,13 +18,13 @@ class ProductTemplate(models.Model):
     property_account_income_ids = fields.Many2many(
         'res.company.property',
         string="Income Account",
-        context=_get_property_context('property_account_income'),
+        context=_get_property_context('property_account_income_id'),
         compute='_get_properties',
     )
     property_account_expense_ids = fields.Many2many(
         'res.company.property',
         string="Expense Account",
-        context=_get_property_context('property_account_expense'),
+        context=_get_property_context('property_account_expense_id'),
         compute='_get_properties',
     )
 
@@ -33,9 +33,9 @@ class ProductTemplate(models.Model):
         company_props = self.env['res.company.property'].with_context(
             active_model='product.template', active_id=self.id)
         self.property_account_income_ids = company_props.with_context(
-            property_field='property_account_income')._get_companies()
+            property_field='property_account_income_id')._get_companies()
         self.property_account_expense_ids = company_props.with_context(
-            property_field='property_account_expense')._get_companies()
+            property_field='property_account_expense_id')._get_companies()
 
     @api.multi
     def action_company_properties(self):
@@ -59,13 +59,13 @@ class ProductProduct(models.Model):
     property_account_income_ids = fields.Many2many(
         'res.company.property',
         string="Income Account",
-        context=_get_property_context('property_account_income'),
+        context=_get_property_context('property_account_income_id'),
         compute='_get_properties',
     )
     property_account_expense_ids = fields.Many2many(
         'res.company.property',
         string="Expense Account",
-        context=_get_property_context('property_account_expense'),
+        context=_get_property_context('property_account_expense_id'),
         compute='_get_properties',
     )
 
@@ -74,9 +74,9 @@ class ProductProduct(models.Model):
         company_props = self.env['res.company.property'].with_context(
             active_model='product.template', active_id=self.product_tmpl_id.id)
         self.property_account_income_ids = company_props.with_context(
-            property_field='property_account_income')._get_companies()
+            property_field='property_account_income_id')._get_companies()
         self.property_account_expense_ids = company_props.with_context(
-            property_field='property_account_expense')._get_companies()
+            property_field='property_account_expense_id')._get_companies()
 
     @api.multi
     def action_company_properties(self):
@@ -97,13 +97,13 @@ class ProductCategory(models.Model):
     property_account_income_categ_ids = fields.Many2many(
         'res.company.property',
         string="Income Account",
-        context=_get_property_context('property_account_income_categ'),
+        context=_get_property_context('property_account_income_categ_id'),
         compute='_get_properties',
     )
     property_account_expense_categ_ids = fields.Many2many(
         'res.company.property',
         string="Expense Account",
-        context=_get_property_context('property_account_expense_categ'),
+        context=_get_property_context('property_account_expense_categ_id'),
         compute='_get_properties',
     )
 
@@ -112,9 +112,10 @@ class ProductCategory(models.Model):
         company_props = self.env['res.company.property'].with_context(
             active_model=self._name, active_id=self.id)
         self.property_account_income_categ_ids = company_props.with_context(
-            property_field='property_account_income_categ')._get_companies()
+            property_field='property_account_income_categ_id')._get_companies()
         self.property_account_expense_categ_ids = company_props.with_context(
-            property_field='property_account_expense_categ')._get_companies()
+            property_field='property_account_expense_categ_id'
+        )._get_companies()
 
     @api.multi
     def action_company_properties(self):

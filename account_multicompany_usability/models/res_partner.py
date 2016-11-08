@@ -18,31 +18,31 @@ class ResPartner(models.Model):
     property_account_receivable_ids = fields.Many2many(
         'res.company.property',
         string="Account Receivable",
-        context=_get_property_context('property_account_receivable'),
+        context=_get_property_context('property_account_receivable_id'),
         compute='_get_properties',
     )
     property_account_payable_ids = fields.Many2many(
         'res.company.property',
         string="Account Payable",
-        context=_get_property_context('property_account_payable'),
+        context=_get_property_context('property_account_payable_id'),
         compute='_get_properties',
     )
     property_account_position_ids = fields.Many2many(
         'res.company.property',
         string="Fiscal Position",
-        context=_get_property_context('property_account_position'),
+        context=_get_property_context('property_account_position_id'),
         compute='_get_properties',
     )
     property_payment_term_ids = fields.Many2many(
         'res.company.property',
         string='Customer Payment Term',
-        context=_get_property_context('property_payment_term'),
+        context=_get_property_context('property_payment_term_id'),
         compute='_get_properties',
     )
     property_supplier_payment_term_ids = fields.Many2many(
         'res.company.property',
         string='Supplier Payment Term',
-        context=_get_property_context('property_supplier_payment_term'),
+        context=_get_property_context('property_supplier_payment_term_id'),
         compute='_get_properties',
     )
     property_product_pricelist_ids = fields.Many2many(
@@ -57,16 +57,16 @@ class ResPartner(models.Model):
         company_properties = self.env['res.company.property'].with_context(
             active_model=self._name, active_id=self.id)
         self.property_account_receivable_ids = company_properties.with_context(
-            property_field='property_account_receivable')._get_companies()
+            property_field='property_account_receivable_id')._get_companies()
         self.property_account_payable_ids = company_properties.with_context(
-            property_field='property_account_payable')._get_companies()
+            property_field='property_account_payable_id')._get_companies()
         self.property_account_position_ids = company_properties.with_context(
-            property_field='property_account_position')._get_companies()
+            property_field='property_account_position_id')._get_companies()
         self.property_payment_term_ids = company_properties.with_context(
-            property_field='property_payment_term')._get_companies()
+            property_field='property_payment_term_id')._get_companies()
         self.property_supplier_payment_term_ids = (
             company_properties.with_context(
-                property_field='property_supplier_payment_term'
+                property_field='property_supplier_payment_term_id'
             )._get_companies())
         self.property_product_pricelist_ids = company_properties.with_context(
             property_field='property_product_pricelist')._get_companies()
