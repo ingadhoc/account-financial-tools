@@ -61,10 +61,12 @@ class ResPartner(models.Model):
     @api.multi
     def _get_debt_report_lines(self, company):
         def get_line_vals(
-                date=None, name=None, detail_lines=[], date_maturity=None,
+                date=None, name=None, detail_lines=None, date_maturity=None,
                 amount=None, balance=None, financial_amount=None,
                 financial_balance=None, amount_currency=None,
                 currency_name=None):
+            if not detail_lines:
+                detail_lines = []
             return {
                 'date': date,
                 'name': name,
