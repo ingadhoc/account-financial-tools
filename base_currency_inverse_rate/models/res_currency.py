@@ -21,7 +21,7 @@ class res_currency(models.Model):
     @api.one
     @api.depends('rate')
     def get_inverse_rate(self):
-        self.inverse_rate_ = self.rate and (
+        self.inverse_rate = self.rate and (
             1.0 / (self.rate))
 
 

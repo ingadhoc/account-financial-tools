@@ -47,7 +47,7 @@ shows it. We show rate FROM base currency and not TO base currency. For eg.
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }
