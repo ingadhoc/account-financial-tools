@@ -6,12 +6,6 @@
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting',
-    'description': '''
-Account Balance Constraint
-==========================
-Add fields for min and max balance on accounts.
-Add constraint on account.move validation to check account min and max.
-    ''',
     'depends': [
         'account'
     ],
