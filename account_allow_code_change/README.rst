@@ -1,1 +1,0 @@
-This module allow Account Managers to modify codes on accounts
