@@ -16,7 +16,7 @@
                 <filter string="Receivable" domain="[('type','=','receivable')]" help="Receivable payments"/>
                 <filter string="Payable" domain="[('type','=','payable')]" help="Payable payments"/>
                 <separator/>
-                <filter string="Unreconciled" domain="[('reconcile_id','=',False)]" help="Unreconciled Items" name="unreconciled"/>
+                <filter string="Unreconciled" domain="[('full_reconcile_id','=',False)]" help="Unreconciled Items" name="unreconciled"/>
                 <group expand="0" string="Group By...">
                     <filter string="Type" context="{'group_by': 'type'}"/>
                     <filter string="Date" context="{'group_by': 'date'}"/>
@@ -48,7 +48,7 @@
                 <field name="currency_id" groups="base.group_multi_currency"/>
                 <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
                 <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/>
-                <field name="reconcile_id" string="Rec." invisible="context.get('hide_reconciled', False)"/>
+                <field name="full_reconcile_id" string="Rec." invisible="context.get('hide_reconciled', False)"/>
                 <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Accounting Document" name="action_open_related_document"/>
             </tree>
          </field>
@@ -74,8 +74,8 @@
                             <field name="account_id"/>
                             <field name="move_line_id"/>
                             <field name="move_id"/>
-                            <field name="reconcile_id"/>
-                            <field name="reconcile_partial_id"/>
+                            <field name="full_reconcile_id"/>
+                            <!-- <field name="reconcile_partial_id"/> -->
                         </group>
                         <group>
                             <label for="amount" class="oe_inline"/>
@@ -117,7 +117,7 @@
     </record>
 
 
-    <menuitem id="menu_current_account" parent="account_followup.menu_finance_followup" sequence="10" action="action_account_debt_line" name="Debt Lines"/>
+    <menuitem id="menu_current_account" parent="account.menu_finance_entries" sequence="5" action="action_account_debt_line" name="Debt Lines"/>
 
 </data>
 </openerp>

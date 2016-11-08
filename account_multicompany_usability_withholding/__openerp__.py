@@ -35,9 +35,9 @@ Account Multicompany Usability for Withholdings
 Integration between account_voucher_withholding and
 account_mutlicompany_usability
 ''',
-    'installable': True,
+    'installable': False,
     'auto_install': True,
     'name': 'Account Multicompany Usability for Withholdings',
     'test': [],
-    'version': '8.0.1.0.0',
+    'version': '9.0.1.0.0',
 }

@@ -192,5 +192,3 @@ def onchange_company_id(
     return {'value': values, 'domain': domain}
 
 account_invoice.onchange_company_id = onchange_company_id
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

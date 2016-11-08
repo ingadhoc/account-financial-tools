@@ -127,5 +127,3 @@ class account_statement_move_import_wizard(models.TransientModel):
             # add statement to move lines
             line.write({'statement_id': statement.id})
         return True
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
