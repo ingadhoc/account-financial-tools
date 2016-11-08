@@ -43,8 +43,9 @@ def pre_init_hook(cr):
         ('account.payment.term', 'name'),
         ('account.payment.term', 'note'),
         ('account.tax', 'name'),
-        ('account.tax.code', 'name'),
-        ('account.account.type', 'name'),
+        ('account.tax.group', 'name'),
+        # a este al final lo dejamos
+        # ('account.account.type', 'name'),
         # campos de l10n_multilang
         ('account.account', 'name'),
         ('account.journal', 'name'),
@@ -52,7 +53,6 @@ def pre_init_hook(cr):
         ('account.analytic.journal', 'name'),
         ('account.account.template', 'name'),
         ('account.tax.template', 'name'),
-        ('account.tax.code.template', 'name'),
         ('account.chart.template', 'name'),
         ('account.fiscal.position', 'name'),
         ('account.fiscal.position', 'note'),
