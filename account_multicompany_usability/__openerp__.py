@@ -19,22 +19,25 @@
 #
 ##############################################################################
 {
-    'active': False,
+    'name': 'Account Multicompany Usability',
+    'version': '8.0.1.2.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'category': 'Accounting & Finance',
+    'depends': [
+        'account',
+    ],
     'data': [
+        'views/res_company_property_view.xml',
+        'views/res_company_view.xml',
+        'views/res_partner_view.xml',
+        'views/product_view.xml',
+        'security/security.xml',
+        'security/ir.model.access.csv',
+    ],
+    'test': [
     ],
     'demo': [],
-    'depends': ['account'],
-    'description': '''
-Account onchange Fix
-====================
-Solves this issue https://github.com/odoo/odoo/issues/2255
-''',
-    'installable': False,
-    'name': 'Account onchange Fix',
-    'test': [],
-    'version': '9.0.1.0.0',
+    'installable': True,
+    'auto_install': False,
 }

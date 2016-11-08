@@ -20,7 +20,7 @@
             <field name="inherit_id" ref="base.view_partner_tree"/>
             <field name="arch" type="xml">
                 <field name="email" position="after">
-                    <field name="debt_balance" groups="account.group_account_invoice"/>
+                    <field name="debt_balance" groups="account.group_account_invoice" sum="Total"/>
                 </field>
             </field>
         </record>

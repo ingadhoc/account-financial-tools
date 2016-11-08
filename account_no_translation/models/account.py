@@ -18,20 +18,14 @@ class AccountTaxCode(models.Model):
     name = fields.Char(translate=False)
 
 
-class AccountPaymentTerm(models.Model):
-    _inherit = 'account.payment.term'
-
-    name = fields.Char(translate=False)
-    note = fields.Char(translate=False)
-
-
 class AccountTax(models.Model):
     _inherit = 'account.tax'
 
     name = fields.Char(translate=False)
 
 
-class AccountAccount(models.Model):
-    _inherit = 'account.account'
+class AccountPaymentTerm(models.Model):
+    _inherit = 'account.payment.term'
 
     name = fields.Char(translate=False)
+    note = fields.Char(translate=False)

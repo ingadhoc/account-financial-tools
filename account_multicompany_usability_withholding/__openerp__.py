@@ -19,22 +19,25 @@
 #
 ##############################################################################
 {
-    'active': False,
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
     'data': [
     ],
-    'demo': [],
-    'depends': ['account'],
+    'depends': [
+        'account_voucher_withholding',
+        'account_multicompany_usability',
+    ],
     'description': '''
-Account onchange Fix
-====================
-Solves this issue https://github.com/odoo/odoo/issues/2255
+Account Multicompany Usability for Withholdings
+===============================================
+Integration between account_voucher_withholding and
+account_mutlicompany_usability
 ''',
-    'installable': False,
-    'name': 'Account onchange Fix',
+    'installable': True,
+    'auto_install': True,
+    'name': 'Account Multicompany Usability for Withholdings',
     'test': [],
-    'version': '9.0.1.0.0',
+    'version': '8.0.1.0.0',
 }

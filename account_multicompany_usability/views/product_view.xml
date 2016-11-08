@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_category_property_form" model="ir.ui.view">
+            <field name="name">product.category.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="account.view_category_property_form"/>
+            <field name="arch" type="xml">
+                <!-- income -->
+                <field name="property_account_income_categ" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <!-- respetamos mismos grupos que vista original -->
+                <field name="property_account_income_categ" position="after">
+                    <label for="property_account_income_categ_ids" groups="account.group_account_user"/>
+                    <div class="oe_inline" groups="account.group_account_user">
+                        <field name="property_account_income_categ_ids" widget="many2many_tags" class="oe_inline"/>
+                        <!-- pasamos property_domain igual al definido en vista -->
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_income_categ', 'property_domain': [('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]}"/>
+                    </div>
+                </field>
+
+                <!-- expense -->
+                <field name="property_account_expense_categ" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <!-- respetamos mismos grupos que vista original -->
+                <field name="property_account_expense_categ" position="after">
+                    <label for="property_account_expense_categ_ids" groups="account.group_account_user"/>
+                    <div class="oe_inline" groups="account.group_account_user">
+                        <field name="property_account_expense_categ_ids" widget="many2many_tags" class="oe_inline"/>
+                        <!-- pasamos property_domain igual al definido en vista -->
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_expense_categ', 'property_domain': [('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]}"/>
+                    </div>
+                </field>
+            </field>
+        </record>
+
+        <record id="product_template_form_view" model="ir.ui.view">
+            <field name="name">product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="account.product_template_form_view"/>
+            <field name="groups_id" eval="[(4, ref('base.group_multi_company'))]"/>
+            <field name="arch" type="xml">
+                <!-- income -->
+                <field name="property_account_income" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name="property_account_income" position="after">
+                    <label for="property_account_income_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_account_income_ids" widget="many2many_tags" class="oe_inline"/>
+                        <!-- pasamos property_domain igual al definido en vista -->
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_income', 'property_domain': [('type','=','other')]}"/>
+                    </div>
+                </field>
+
+                <!-- expense -->
+                <field name="property_account_expense" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name="property_account_expense" position="after">
+                    <label for="property_account_expense_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_account_expense_ids" widget="many2many_tags" class="oe_inline"/>
+                        <!-- pasamos property_domain igual al definido en vista -->
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_expense', 'property_domain': [('type','=','other')]}"/>
+                    </div>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>

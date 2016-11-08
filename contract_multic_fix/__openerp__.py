@@ -30,11 +30,12 @@
 Contract Multi Fix
 ==================
 ''',
-    'data': ['contract_view.xml'
-             ],
+    'data': [
+        'contract_view.xml'
+    ],
     'demo': [],
     'test': [],
     'installable': False,
     'auto_install': False,
     'application': False,
-    }
+}

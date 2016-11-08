@@ -9,7 +9,8 @@ class AccountDebtLine(models.Model):
     _description = "Account Debt Line"
     _auto = False
     # we need id on order so we can get right amount when accumulating
-    _order = 'date asc, date_maturity asc, move_id, id'
+    # move_id desc porque move id ordena ultimo arriba
+    _order = 'date asc, date_maturity asc, move_id desc, id'
     # _order = 'date desc, date_maturity desc, move_id, id'
     _depends = {
         'res.partner': [

@@ -3,5 +3,8 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from . import models
-from .hooks import pre_init_hook, post_init_hook
+from . import res_company
+from . import res_company_property
+from . import account
+from . import res_partner
+from . import product
