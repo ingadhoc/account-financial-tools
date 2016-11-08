@@ -36,7 +36,7 @@ Add reconciliations menu on accounting
     'images': [
     ],
     'depends': [
-        'account',
+        'account_full_reconcile',
     ],
     'data': [
         'account_action.xml',
@@ -45,7 +45,7 @@ Add reconciliations menu on accounting
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }
