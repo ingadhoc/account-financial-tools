@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openerp import models, fields, api, _
-from openerp.exceptions import except_orm, Warning
+from openerp.exceptions import UserError
 import openerp.addons.decimal_precision as dp
 
 
@@ -38,7 +38,7 @@ class AccountMove(models.Model):
                     ('move_id.state', '=', 'posted'),
                 ]).mapped('balance'))
                 if balance < line.account_id.min_balance:
-                    raise Warning(_(
+                    raise UserError(_(
                         'Can not create move as account %s balance would be %s'
                         ' and account has restriction of min balance to %s'
                     ) % (

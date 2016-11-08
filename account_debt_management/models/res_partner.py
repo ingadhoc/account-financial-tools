@@ -61,10 +61,10 @@ class ResPartner(models.Model):
     @api.multi
     def _get_debt_report_lines(self, company):
         def get_line_vals(
-                date=False, name=False, detail_lines=[], date_maturity=False,
-                amount=False, balance=False, financial_amount=False,
-                financial_balance=False, amount_currency=False,
-                currency_name=False):
+                date=None, name=None, detail_lines=[], date_maturity=None,
+                amount=None, balance=None, financial_amount=None,
+                financial_balance=None, amount_currency=None,
+                currency_name=None):
             return {
                 'date': date,
                 'name': name,
@@ -162,7 +162,8 @@ class ResPartner(models.Model):
             # de otra vista que se cree y a la cual si definamos el orden
             # o que sea un campo str que se ordene por ej
             # para esta ultima deberiamos ahcer algo tipo esto
-            # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR) || ' ' || m.name as juan from account_move as m;
+            # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR)
+            # || ' ' || m.name as juan from account_move as m;
             for line in records:
                 move = line.move_id
                 if move not in moves:
