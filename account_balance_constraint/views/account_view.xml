@@ -7,7 +7,7 @@
             <field name="model">account.account</field>
             <field name="inherit_id" ref="account.view_account_form"/>
             <field name="arch" type="xml">
-                <field name="balance" position="after">
+                <field name="deprecated" position="after">
                     <field name="restrict_balance"/>
                     <field name="min_balance" attrs="{'invisible':[('restrict_balance','=',False)],'required':[('restrict_balance','=',True)]}"/>
                 </field>

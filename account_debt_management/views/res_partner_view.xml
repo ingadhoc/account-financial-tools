@@ -20,7 +20,7 @@
             <field name="inherit_id" ref="base.view_partner_tree"/>
             <field name="arch" type="xml">
                 <field name="email" position="after">
-                    <field name="debt_balance" groups="account.group_account_invoice"/>
+                    <field name="debt_balance" groups="account.group_account_invoice" sum="Total"/>
                 </field>
             </field>
         </record>
@@ -50,7 +50,7 @@
                         <field name="payable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
                     </page>
                 </page>
-                <xpath expr="//div[@name='buttons']" position="inside">
+                <div name="button_box" position="inside">
                     <button
                         type="action"
                         class="oe_stat_button"
@@ -60,9 +60,12 @@
                         name="%(account_debt_management.action_account_debt_line)d"
                         attrs="{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
                         >
-                        <div><strong><field name="debt_balance" widget="monetary"/></strong><br/>Debt Detail</div>
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value"><field name="debt_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/></span>
+                            <span class="o_stat_text">Debt Detail</span>
+                        </div>
                     </button>
-                </xpath>
+                </div>
             </field>
         </record>
 

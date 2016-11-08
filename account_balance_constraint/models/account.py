@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openerp import models, fields, api, _
-from openerp.exceptions import except_orm, Warning
+from openerp.exceptions import UserError
 import openerp.addons.decimal_precision as dp
 
 
@@ -10,26 +10,40 @@ class AccountAccount(models.Model):
     restrict_balance = fields.Boolean(
         'Restrict Balance?',
         digits=dp.get_precision('Account'),
-        )
+    )
     min_balance = fields.Float(
         'Minimum Balance',
         digits=dp.get_precision('Account'),
-        )
+    )
 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
     @api.multi
-    def validate(self):
-        """We check that there is enaught balance.
-        If we want to make this check only on post, we should
-        overwrite post method"""
+    # def _post_validate(self):
+    def post(self):
+        """
+        We check that there is enaught balance.
+        Now we check on post so we get balance considering this move lines also
+        (because first we post and later we check).
+        Before we use _post_validate method that is called from other places
+        too
+        """
+        res = super(AccountMove, self).post()
         for move in self:
-            for line in move.line_id.filtered('account_id.restrict_balance'):
-                if line.account_id.balance < line.account_id.min_balance:
-                    raise Warning(_('Can not create move as account %s balance would be %s and account has restriction of min balance to %s') % (
+            for line in move.line_ids.filtered('account_id.restrict_balance'):
+                balance = sum(self.env['account.move.line'].search([
+                    ('account_id', '=', line.account_id.id),
+                    ('move_id.state', '=', 'posted'),
+                ]).mapped('balance'))
+                if balance < line.account_id.min_balance:
+                    raise UserError(_(
+                        'Can not create move as account %s balance would be %s'
+                        ' and account has restriction of min balance to %s'
+                    ) % (
                         line.account_id.name,
-                        line.account_id.balance,
+                        balance,
                         line.account_id.min_balance))
-        return super(AccountMove, self).validate()
+        # return super(AccountMove, self)._post_validate()
+        return res

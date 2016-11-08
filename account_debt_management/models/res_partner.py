@@ -10,7 +10,7 @@ from openerp import api, models, fields, _
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    unreconciled_domain = [('reconcile_id', '=', False)]
+    unreconciled_domain = [('full_reconcile_id', '=', False)]
     receivable_domain = [('type', '=', 'receivable')]
     payable_domain = [('type', '=', 'payable')]
 
@@ -61,10 +61,12 @@ class ResPartner(models.Model):
     @api.multi
     def _get_debt_report_lines(self, company):
         def get_line_vals(
-                date=False, name=False, detail_lines=[], date_maturity=False,
-                amount=False, balance=False, financial_amount=False,
-                financial_balance=False, amount_currency=False,
-                currency_name=False):
+                date=None, name=None, detail_lines=None, date_maturity=None,
+                amount=None, balance=None, financial_amount=None,
+                financial_balance=None, amount_currency=None,
+                currency_name=None):
+            if not detail_lines:
+                detail_lines = []
             return {
                 'date': date,
                 'name': name,
@@ -106,7 +108,7 @@ class ResPartner(models.Model):
 
         domain += [('partner_id', '=', self.id)]
 
-        without_date_domain = domain[:]
+        # without_date_domain = domain[:]
 
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
@@ -115,7 +117,8 @@ class ResPartner(models.Model):
             balance = sum(intitial_moves.mapped('amount'))
             financial_balance = sum(intitial_moves.mapped('financial_amount'))
             res = [get_line_vals(
-                name=_('INITIAL BALANCE'), balance=balance,
+                name=_('INITIAL BALANCE'),
+                balance=balance,
                 financial_balance=financial_balance)]
             domain.append(('date', '>=', from_date))
         else:
@@ -124,13 +127,20 @@ class ResPartner(models.Model):
             res = []
 
         if to_date:
-            all_moves = self.env['account.debt.line'].search(
-                without_date_domain)
-            balance = sum(all_moves.mapped('amount'))
-            financial_balance = sum(all_moves.mapped('financial_amount'))
-            final_line = [get_line_vals(
-                name=_('FINAL BALANCE'), balance=balance,
-                financial_balance=financial_balance)]
+            # por ahora no imprimimos la linea final, solo imprimios hasta la
+            # fecha en que se solicita el reporte y cambiamos para que salga
+            # hasta esa fecha en el header
+            # si queremos usar esto deberiamos ver que se interprete bien
+            # all_moves = self.env['account.debt.line'].search(
+            #     without_date_domain)
+            # final_balance = sum(all_moves.mapped('amount'))
+            # final_financial_balance = sum(
+            #     all_moves.mapped('financial_amount'))
+            # final_line = [get_line_vals(
+            #     name=_('FINAL BALANCE'),
+            #     balance=final_balance,
+            #     financial_balance=final_financial_balance)]
+            final_line = []
             domain.append(('date', '<=', to_date))
         else:
             final_line = []
@@ -154,7 +164,8 @@ class ResPartner(models.Model):
             # de otra vista que se cree y a la cual si definamos el orden
             # o que sea un campo str que se ordene por ej
             # para esta ultima deberiamos ahcer algo tipo esto
-            # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR) || ' ' || m.name as juan from account_move as m;
+            # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR)
+            # || ' ' || m.name as juan from account_move as m;
             for line in records:
                 move = line.move_id
                 if move not in moves:
@@ -220,7 +231,8 @@ class ResPartner(models.Model):
                 name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
-                amount=amount, balance=balance,
+                amount=amount,
+                balance=balance,
                 financial_amount=financial_amount,
                 financial_balance=financial_balance,
                 amount_currency=amount_currency,

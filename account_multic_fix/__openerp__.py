@@ -25,6 +25,7 @@
     'category': 'Accounting & Finance',
     'data': [
         'security/rule.xml',
+        'views/account_move_view.xml',
         'wizard/account_move_line_reconcile_writeoff_view.xml',
         'wizard/account_statement_from_invoice_view.xml',
     ],

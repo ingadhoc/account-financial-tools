@@ -2,43 +2,18 @@
 <openerp>
 	<data>
         <!-- Account Journal -->
-        <record id="view_account_journal_tree" model="ir.ui.view">
-            <field name="name">account.account.tree</field>
+        <record id="view_account_helper_tree" model="ir.ui.view">
+            <field name="name">account.account.helper.tree</field>
             <field name="model">account.account</field>
-            <field name="mode">primary</field>
-            <field name="inherit_id" ref="account.view_account_list"/>
+            <field eval="90" name="priority"/>
             <field name="arch" type="xml">
-                <tree position="attributes">
-                    <attribute name="editable">top</attribute>
-                    <attribute name="create">false</attribute>
-                </tree>
-                <field name="code" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="name" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="company_id" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="company_currency_id" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="debit" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="credit" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="balance" position="attributes">
-                    <attribute name="invisible">True</attribute>
-                </field>
-                <field name="type" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </field>
-                <field name="balance" position="after">
+                <tree string="Accounts" editable="top" create="false">
+                    <field name="code" readonly="1"/>
+                    <field name="name" readonly="1"/>
+                    <field name="user_type_id" readonly="1"/>
+                    <!-- <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency" readonly="1"/> -->
                     <field name="new_balance"/>
-                </field>
+                </tree>
             </field>
         </record>
 
@@ -49,8 +24,8 @@
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <button name="button_cancel" position="before">
-                    <button name="add_account_to_move" type="object" string="Search Account"/>
-                    <button name="add_partner_to_move" type="object" string="Search Partner"/>
+                    <button name="add_account_to_move" type="object" string="Set Balance by Account"/>
+                    <button name="add_partner_to_move" type="object" string="Set Balance by Partner"/>
                 </button>
             </field>
         </record>

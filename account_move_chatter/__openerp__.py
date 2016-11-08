@@ -25,10 +25,6 @@
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting',
-    'description': '''
-Account Move Chatter
-====================
-    ''',
     'depends': [
                 'account',
     ],
@@ -37,7 +33,7 @@ Account Move Chatter
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

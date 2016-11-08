@@ -26,9 +26,7 @@
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
-        'account_voucher_payline',
-        # en v9 no depender de este y copiar algunas cosas
-        'account_followup',
+        'account_full_reconcile',
         'report_aeroo',
     ],
     'data': [
@@ -38,7 +36,6 @@
         'wizard/account_debt_report_wizard_view.xml',
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
-        'views/account_voucher_view.xml',
         'res_config_view.xml',
         'security/ir.model.access.csv',
         'security/security.xml',
@@ -47,6 +44,5 @@
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

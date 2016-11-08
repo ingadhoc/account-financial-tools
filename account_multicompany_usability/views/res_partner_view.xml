@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_partner_property_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <!-- mismo grupo que vista a la que se hereda -->
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+            <field name="arch" type="xml">
+                <!-- receivables -->
+                <field name="property_account_receivable" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="required">0</attribute>
+                </field>
+
+                <field name="property_account_receivable" position="after">
+                    <label for="property_account_receivable_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_account_receivable_ids" widget="many2many_tags" class="oe_inline"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_receivable'}"/>
+                    </div>
+                </field>
+
+                <!-- payables -->
+                <field name="property_account_payable" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="required">0</attribute>
+                </field>
+
+                <field name="property_account_payable" position="after">
+                    <label for="property_account_payable_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_account_payable_ids" widget="many2many_tags"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_payable'}"/>
+                    </div>
+                </field>
+
+                <!-- fiscal position -->
+                <field name="property_account_position" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name="property_account_position" position="after">
+                    <label for="property_account_position_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_account_position_ids" widget="many2many_tags"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_account_position'}"/>
+                    </div>
+                </field>
+
+                <!-- payment term -->
+                <field name="property_payment_term" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name="property_payment_term" position="after">
+                    <label for="property_payment_term_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_payment_term_ids" widget="many2many_tags"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_payment_term'}"/>
+                    </div>
+                </field>
+
+                <!-- supplier payment term -->
+                <field name="property_supplier_payment_term" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name="property_supplier_payment_term" position="after">
+                    <label for="property_supplier_payment_term_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_supplier_payment_term_ids" widget="many2many_tags"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_supplier_payment_term'}"/>
+                    </div>
+                </field>
+           </field>
+        </record>
+
+        <!-- herencia de la vista que agrega la lista de precios,  -->
+        <record id="view_pricelist_partner_property_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="product.view_partner_property_form"/>
+            <field name="groups_id" eval="[(4, ref('product.group_sale_pricelist')), (4, ref('product.group_purchase_pricelist'))]"/>
+            <field name="arch" type="xml">
+                <!-- customer pricelist -->
+                <field name="property_product_pricelist" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+
+                <field name="property_product_pricelist" position="after">
+                    <label for="property_product_pricelist_ids"/>
+                    <div class="oe_inline">
+                        <field name="property_product_pricelist_ids" widget="many2many_tags"/>
+                        <button name="action_company_properties" string="(edit)" class="oe_link" type="object" context="{'property_field': 'property_product_pricelist'}"/>
+                    </div>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

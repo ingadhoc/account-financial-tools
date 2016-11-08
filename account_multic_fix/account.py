@@ -42,6 +42,16 @@ class account_invoice_line(models.Model):
         return res
 
 
+class account_move_line(models.Model):
+    _inherit = "account.move.line"
+
+    # redefinimos este related en nueva api para que actualice con el onchange
+    company_id = fields.Many2one(
+        related='account_id.company_id')
+    analytic_account_id = fields.Many2one(
+        domain="[('company_id','=',company_id), ('type', '!=', 'view')]")
+
+
 class account_move(models.Model):
     _inherit = "account.move"
 

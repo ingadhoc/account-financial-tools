@@ -37,10 +37,11 @@
              
         <act_window name="Account Debt Report"
             id="action_account_debt_report_wizard"
-            key2="client_action_multi"
+            key2="client_print_multi"
             src_model="res.partner"
             res_model="account.debt.report.wizard"
             view_mode="form" target="new" view_type="form"/>
-
+            <!-- ahora lo agregamos al print -->
+            <!-- key2="client_action_multi" -->
     </data>
 </openerp>

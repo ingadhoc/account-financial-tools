@@ -9,7 +9,8 @@ class AccountDebtLine(models.Model):
     _description = "Account Debt Line"
     _auto = False
     # we need id on order so we can get right amount when accumulating
-    _order = 'date asc, date_maturity asc, move_id, id'
+    # move_id desc porque move id ordena ultimo arriba
+    _order = 'date asc, date_maturity asc, move_id desc, id'
     # _order = 'date desc, date_maturity desc, move_id, id'
     _depends = {
         'res.partner': [
@@ -58,11 +59,11 @@ class AccountDebtLine(models.Model):
         'Entry line',
         readonly=True
     )
-    period_id = fields.Many2one(
-        'account.period',
-        'Period',
-        readonly=True
-    )
+    # period_id = fields.Many2one(
+    #     'account.period',
+    #     'Period',
+    #     readonly=True
+    # )
     account_id = fields.Many2one(
         'account.account',
         'Account',
@@ -73,26 +74,26 @@ class AccountDebtLine(models.Model):
         'Journal',
         readonly=True
     )
-    fiscalyear_id = fields.Many2one(
-        'account.fiscalyear',
-        'Fiscal Year',
-        readonly=True
-    )
+    # fiscalyear_id = fields.Many2one(
+    #     'account.fiscalyear',
+    #     'Fiscal Year',
+    #     readonly=True
+    # )
     move_state = fields.Selection(
         [('draft', 'Unposted'), ('posted', 'Posted')],
         'Status',
         readonly=True
     )
-    reconcile_id = fields.Many2one(
-        'account.move.reconcile',
-        'Reconciliation',
+    full_reconcile_id = fields.Many2one(
+        'account.full.reconcile',
+        'Matching Number',
         readonly=True
     )
-    reconcile_partial_id = fields.Many2one(
-        'account.move.reconcile',
-        'Partial Reconciliation',
-        readonly=True
-    )
+    # reconcile_partial_id = fields.Many2one(
+    #     'account.move.reconcile',
+    #     'Partial Reconciliation',
+    #     readonly=True
+    # )
     partner_id = fields.Many2one(
         'res.partner',
         'Partner',
@@ -191,18 +192,18 @@ class AccountDebtLine(models.Model):
                 l.date_maturity as date_maturity,
                 am.ref as ref,
                 am.state as move_state,
-                l.reconcile_id as reconcile_id,
-                l.reconcile_partial_id as reconcile_partial_id,
+                l.full_reconcile_id as full_reconcile_id,
+                -- l.reconcile_partial_id as reconcile_partial_id,
                 l.move_id as move_id,
                 l.partner_id as partner_id,
                 am.company_id as company_id,
                 am.journal_id as journal_id,
-                p.fiscalyear_id as fiscalyear_id,
-                am.period_id as period_id,
+                -- p.fiscalyear_id as fiscalyear_id,
+                -- am.period_id as period_id,
                 l.account_id as account_id,
                 l.analytic_account_id as analytic_account_id,
-                a.type as type,
-                a.user_type as account_type,
+                a.internal_type as type,
+                a.user_type_id as account_type,
                 l.currency_id as currency_id,
                 l.amount_currency as amount_currency,
                 pa.user_id as user_id,
@@ -211,10 +212,11 @@ class AccountDebtLine(models.Model):
                 account_move_line l
                 left join account_account a on (l.account_id = a.id)
                 left join account_move am on (am.id=l.move_id)
-                left join account_period p on (am.period_id=p.id)
+                -- left join account_period p on (am.period_id=p.id)
                 left join res_partner pa on (l.partner_id=pa.id)
             WHERE
-                l.state != 'draft' and a.type IN ('payable', 'receivable')
+                -- l.state != 'draft' and
+                a.internal_type IN ('payable', 'receivable')
         """
         cr.execute("""CREATE or REPLACE VIEW %s as (%s
         )""" % (self._table, query))

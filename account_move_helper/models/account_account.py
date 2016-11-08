@@ -1,0 +1,150 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+# For copyright and license notices, see __openerp__.py file in module root
+# directory
+##############################################################################
+from openerp import models, fields, api, _
+from openerp.exceptions import UserError
+
+
+class account_account(models.Model):
+    _inherit = "account.account"
+
+    balance = fields.Monetary(
+        'Balance',
+        compute='_compute_balance',
+    )
+    new_balance = fields.Monetary(
+        'Balance',
+        compute='_compute_new_balance',
+        inverse='_inverse_new_balance'
+    )
+
+    @api.multi
+    @api.depends('balance')
+    def _compute_new_balance(self):
+        move_id = self._context.get('active_id', False)
+        if not move_id:
+            return False
+        for rec in self:
+            move_line = self.env['account.move.line'].search([
+                ('move_id', '=', move_id),
+                ('account_id', '=', rec.id)], limit=1)
+            rec.new_balance = rec.balance + move_line.balance
+
+    @api.multi
+    def _compute_balance(self):
+        for rec in self:
+            # rec.balance = rec._get_balance()
+            rec.balance = sum(
+                rec.env['account.move.line'].search([
+                    ('account_id', '=', rec.id),
+                    ('move_id.state', '=', 'posted'),
+                ]).mapped('balance'))
+
+    @api.one
+    def _inverse_new_balance(self):
+        line_balance = self.new_balance - self.balance
+        self._helper_update_line(line_balance)
+
+    @api.one
+    def _helper_update_line(self, line_balance, partner=None):
+        """
+        * line_balance: balance to be used on the move line related to this
+        account
+        * value_diff: difference between the actual balance of a line
+        (if exists) for this account and the new balance
+        * new_balance: balance of the account considering lines on this entry
+        * balance: balance for the account without this entry
+        """
+        move_id = self._context.get('active_id', False)
+        if not move_id:
+            return True
+        move = self.env['account.move'].browse(move_id)
+
+        helper_account = move.company_id.helper_account_id
+        if not helper_account:
+            raise UserError(_(
+                'You need a Helper Counterpart Account configured in the '
+                'company to set the initial balance.'))
+
+        line_balance = value_diff = line_balance
+
+        move_line_vals = []
+
+        base_domain = [('move_id', '=', move_id)]
+        if partner:
+            base_domain.append(('partner_id', '=', partner.id))
+
+        move_line = self.env['account.move.line'].search(
+            base_domain + [('account_id', '=', self.id)], limit=1)
+
+        counterpart_move_line = self.env['account.move.line'].search([
+            ('move_id', '=', move_id),
+            ('account_id', '=', helper_account.id)], limit=1)
+
+        # if there is a move line we get the value_diff
+        if move_line:
+            if move_line.debit:
+                value_diff -= move_line.debit
+            elif move_line.credit:
+                value_diff += move_line.credit
+
+        if line_balance > 0:
+            debit = line_balance
+            credit = 0.0
+        elif line_balance < 0:
+            debit = 0.0
+            credit = -line_balance
+
+        # if there is a counterpart line we update values, we unlink if balance
+        # become 0
+        if counterpart_move_line:
+            counterpart_balance = counterpart_move_line.balance - value_diff
+            if counterpart_balance > 0:
+                counterpart_debit = counterpart_balance
+                counterpart_credit = 0.0
+            elif counterpart_balance < 0:
+                counterpart_debit = 0.0
+                counterpart_credit = -counterpart_balance
+            if counterpart_balance:
+                # update
+                move_line_vals.append((1, counterpart_move_line.id, {
+                    'credit': counterpart_credit,
+                    'debit': counterpart_debit,
+                }))
+            else:
+                # unlink
+                move_line_vals.append((3, counterpart_move_line.id, False))
+        else:
+            # create
+            move_line_vals.append((0, False, {
+                'name': _('Opening Balance'),
+                'account_id': helper_account.id,
+                'credit': debit,
+                'debit': credit,
+            }))
+
+        # if there is a move line we update values, we unlink if balance
+        # become 0
+        if move_line:
+            if line_balance:
+                # update
+                move_line_vals.append((1, move_line.id, {
+                    'credit': credit,
+                    'debit': debit,
+                }))
+            else:
+                # unlink
+                move_line_vals.append((3, move_line.id, False))
+        else:
+            # create
+            move_line_vals.append((0, False, {
+                'name': _('Opening Balance'),
+                'account_id': self.id,
+                'credit': credit,
+                'debit': debit,
+                'partner_id': partner and partner.id or False,
+            }))
+
+        move.write({'line_ids': move_line_vals})
