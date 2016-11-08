@@ -19,7 +19,6 @@
 #
 ##############################################################################
 {
-    'active': False,
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -32,6 +31,7 @@
 Account onchange Fix
 ====================
 Solves this issue https://github.com/odoo/odoo/issues/2255
+NOTA: todavia no migramos para v9, espermaos a que alguien reporte el error
 ''',
     'installable': False,
     'name': 'Account onchange Fix',
