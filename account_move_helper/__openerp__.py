@@ -26,13 +26,14 @@
     'license': 'AGPL-3',
     'category': 'Accounting',
     'depends': [
-                'account',
+        'account',
     ],
     'data': [
         'view/account_view.xml',
         'view/res_partner_view.xml',
+        'view/res_company_view.xml',
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
 }
