@@ -3,14 +3,15 @@
 # * account_statement_aeroo_report
 # 
 # Translators:
+# Javier Diez <jd@adhoc.com.ar>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: odoo-addons (8.0)\n"
+"Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-22 13:44+0000\n"
-"PO-Revision-Date: 2015-09-09 13:57+0000\n"
-"Last-Translator: <>\n"
-"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-odoo-addons-8-0/language/es/)\n"
+"POT-Creation-Date: 2016-11-13 20:47+0000\n"
+"PO-Revision-Date: 2016-11-13 20:47+0000\n"
+"Last-Translator: Javier Diez <jd@adhoc.com.ar>, 2016\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -18,11 +19,16 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_statement_aeroo_report
-#: view:account.bank.statement:account_statement_aeroo_report.view_bank_statement_form
-msgid "Print"
-msgstr "Imprimir"
+#: model:ir.ui.view,arch_db:account_statement_aeroo_report.view_bank_statement_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"all_lines_reconciled\" position=\"before\">\n"
+"                    <button name=\"231\" class=\"oe_highlight\" string=\"Print\" type=\"action\"/>\n"
+"                </field>              \n"
+"            "
+msgstr ""
 
 #. module: account_statement_aeroo_report
 #: model:ir.actions.report.xml,name:account_statement_aeroo_report.action_aeroo_statement_report
 msgid "Statement Report"
-msgstr ""
+msgstr "Reporte de Extracto"

@@ -4,14 +4,15 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
+# Javier Diez <jd@adhoc.com.ar>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: account-financial-tools (8.0)\n"
+"Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-05-24 23:32+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
+"POT-Creation-Date: 2016-11-13 20:47+0000\n"
+"PO-Revision-Date: 2016-11-13 20:47+0000\n"
+"Last-Translator: Javier Diez <jd@adhoc.com.ar>, 2016\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -19,9 +20,56 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_move_helper
-#: code:addons/account_move_helper/account.py:98
+#: model:ir.ui.view,arch_db:account_move_helper.view_move_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<button name=\"button_cancel\" position=\"before\">\n"
+"                    <button name=\"add_account_to_move\" type=\"object\" string=\"Set Balance by Account\"/>\n"
+"                    <button name=\"add_partner_to_move\" type=\"object\" string=\"Set Balance by Partner\"/>\n"
+"                </button>\n"
+"            "
+msgstr ""
+
+#. module: account_move_helper
+#: model:ir.ui.view,arch_db:account_move_helper.view_account_helper_tree
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<tree string=\"Accounts\" editable=\"top\" create=\"false\">\n"
+"                    <field name=\"code\" readonly=\"1\"/>\n"
+"                    <field name=\"name\" readonly=\"1\"/>\n"
+"                    <field name=\"user_type_id\" readonly=\"1\"/>\n"
+"                    <!-- <field name=\"currency_id\" options=\"{'no_create': True}\" groups=\"base.group_multi_currency\" readonly=\"1\"/> -->\n"
+"                    <field name=\"new_balance\"/>\n"
+"                </tree>\n"
+"            "
+msgstr ""
+
+#. module: account_move_helper
+#: model:ir.ui.view,arch_db:account_move_helper.view_partner_helper_tree
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<tree string=\"Contacts\" editable=\"top\" create=\"false\">\n"
+"                    <field name=\"display_name\"/>\n"
+"                    <field name=\"new_credit\"/>\n"
+"                    <!-- <field name=\"credit_copy\"/> -->\n"
+"                    <field name=\"new_debit\"/>\n"
+"                    <!-- <field name=\"debit_copy\"/> -->\n"
+"                </tree>\n"
+"            "
+msgstr ""
+
+#. module: account_move_helper
+#: model:ir.ui.view,arch_db:account_move_helper.view_company_inherit_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<xpath expr=\"//group[@name='account_grp']\" position=\"inside\">\n"
+"                    <field name=\"helper_account_id\" groups=\"base.group_no_one\"/>\n"
+"                </xpath>\n"
+"            "
+msgstr ""
+
+#. module: account_move_helper
 #: model:ir.model,name:account_move_helper.model_account_account
-#, python-format
 msgid "Account"
 msgstr "Cuenta"
 
@@ -31,13 +79,69 @@ msgid "Account Entry"
 msgstr "Asiento contable"
 
 #. module: account_move_helper
-#: field:account.account,new_balance:0
+#: code:addons/account_move_helper/models/account_move.py:21
+#, python-format
+msgid "Accounts"
+msgstr "Cuentas"
+
+#. module: account_move_helper
+#: field:account.account,balance:0 field:account.account,new_balance:0
+#: model:ir.model.fields,field_description:account_move_helper.field_account_account_balance
+#: model:ir.model.fields,field_description:account_move_helper.field_account_account_new_balance
 msgid "Balance"
 msgstr "Saldo"
 
 #. module: account_move_helper
-#: code:addons/account_move_helper/account.py:62
-#: code:addons/account_move_helper/partner.py:74
+#: model:ir.model,name:account_move_helper.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: account_move_helper
+#: code:addons/account_move_helper/models/res_partner.py:94
+#, python-format
+msgid "Company is reuquired in context to set partner balance"
+msgstr ""
+"La compañía es requerida en el contexto para establecer el saldo del partner"
+
+#. module: account_move_helper
+#: model:ir.model.fields,help:account_move_helper.field_res_company_helper_account_id
+#: help:res.company,helper_account_id:0
+msgid "Counterpart account on Journal Entries helper"
+msgstr "Cuenta de contrapartida para el Asistente de Asientos Contables"
+
+#. module: account_move_helper
+#: model:ir.model.fields,field_description:account_move_helper.field_res_partner_credit_copy
+#: field:res.partner,credit_copy:0
+msgid "Credit"
+msgstr "Crédito"
+
+#. module: account_move_helper
+#: model:ir.model.fields,field_description:account_move_helper.field_res_partner_debit_copy
+#: field:res.partner,debit_copy:0
+msgid "Debit"
+msgstr "Débito"
+
+#. module: account_move_helper
+#: model:ir.model.fields,field_description:account_move_helper.field_res_company_helper_account_id
+#: field:res.company,helper_account_id:0
+msgid "Helper Counterpart Account"
+msgstr "Cuenta de Contrapartida para Asistente"
+
+#. module: account_move_helper
+#: model:ir.model.fields,field_description:account_move_helper.field_res_partner_new_credit
+#: field:res.partner,new_credit:0
+msgid "New Crebit"
+msgstr "Nuevo crédito"
+
+#. module: account_move_helper
+#: model:ir.model.fields,field_description:account_move_helper.field_res_partner_new_debit
+#: field:res.partner,new_debit:0
+msgid "New Debit"
+msgstr "Nuevo débito"
+
+#. module: account_move_helper
+#: code:addons/account_move_helper/models/account_account.py:122
+#: code:addons/account_move_helper/models/account_account.py:143
 #, python-format
 msgid "Opening Balance"
 msgstr "Balance Inicial"
@@ -48,53 +152,17 @@ msgid "Partner"
 msgstr "Partner"
 
 #. module: account_move_helper
-#: code:addons/account_move_helper/account.py:122
+#: code:addons/account_move_helper/models/account_move.py:44
 #, python-format
 msgid "Partners"
 msgstr "Partners"
 
 #. module: account_move_helper
-#: view:account.move:account_move_helper.view_move_form
-msgid "Search Account"
-msgstr "Buscar Cuenta"
-
-#. module: account_move_helper
-#: view:account.move:account_move_helper.view_move_form
-msgid "Search Partner"
-msgstr "Buscar Partner"
-
-#. module: account_move_helper
-#: field:res.partner,new_debit:0
-msgid "Total Payable"
-msgstr "Total a Pagar"
-
-#. module: account_move_helper
-#: field:res.partner,new_credit:0
-msgid "Total Receivable"
-msgstr "Total a Cobrar"
-
-#. module: account_move_helper
-#: view:account.account:account_move_helper.view_account_journal_tree
-#: view:res.partner:account_move_helper.view_partner_tree
-msgid "True"
-msgstr "Verdadero"
-
-#. module: account_move_helper
-#: code:addons/account_move_helper/account.py:29
-#: code:addons/account_move_helper/partner.py:37
+#: code:addons/account_move_helper/models/account_account.py:67
 #, python-format
 msgid ""
-"You need a Journal with centralisation checked to set the initial balance."
-msgstr "Necesita un Diario con centralización activado para setear el balance inicial"
-
-#. module: account_move_helper
-#: view:account.account:account_move_helper.view_account_journal_tree
-#: view:res.partner:account_move_helper.view_partner_tree
-msgid "false"
-msgstr "false"
-
-#. module: account_move_helper
-#: view:account.account:account_move_helper.view_account_journal_tree
-#: view:res.partner:account_move_helper.view_partner_tree
-msgid "top"
-msgstr "top"
+"You need a Helper Counterpart Account configured in the company to set the "
+"initial balance."
+msgstr ""
+"Requiere una Cuenta de Contrapartida para Asistente configurada en la "
+"compañía para establecer el saldo inicial."
