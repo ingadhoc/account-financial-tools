@@ -224,21 +224,16 @@ class AccountDebtLine(models.Model):
     @api.multi
     def action_open_related_document(self):
         self.ensure_one()
-        domain = [
-            ('move_id', '=', self.move_id.id),
-        ]
         view_id = False
         # TODO ver si queremos devolver lista si hay mas de uno
-        record = self.env['account.invoice'].search(domain, limit=1)
+        record = self.env['account.invoice'].search(
+            [('move_id', '=', self.move_id.id)], limit=1)
         if not record:
-            record = self.env['account.voucher'].search(domain, limit=1)
+            record = self.env['account.payment'].search(
+                [('move_line_ids', '=', self.id)], limit=1)
             if record:
-                if record.type == 'receipt':
-                    view_id = self.env['ir.model.data'].xmlid_to_res_id(
-                        'account_voucher.view_vendor_receipt_form')
-                elif record.type == 'payment':
-                    view_id = self.env['ir.model.data'].xmlid_to_res_id(
-                        'account_voucher.view_vendor_payment_form')
+                view_id = self.env['ir.model.data'].xmlid_to_res_id(
+                    'account.view_account_payment_form')
             else:
                 record = self.move_id
 
