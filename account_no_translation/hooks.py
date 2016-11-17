@@ -6,7 +6,8 @@
 # from openerp import models, fields, api
 # import cStringIO
 # from openerp import tools
-from openerp import pooler, SUPERUSER_ID
+from openerp import SUPERUSER_ID
+from openerp.modules.registry import RegistryManager
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ def post_init_hook(cr, pool):
 
 
 def pre_init_hook(cr):
-    pool = pooler.get_pool(cr.dbname)
+    pool = RegistryManager.get(cr.dbname)
     lang_read = pool['res.lang'].search_read(
         cr, SUPERUSER_ID, [
             '&', ('active', '=', True), ('translatable', '=', True),
@@ -66,7 +67,7 @@ def pre_init_hook(cr):
 def sync_field(cr, uid, lang_code, model_name, field_name):
     _logger.info('Syncking translations for model %s, field %s' % (
         model_name, field_name))
-    pool = pooler.get_pool(cr.dbname)
+    pool = RegistryManager.get(cr.dbname)
     translations = pool['ir.translation'].search_read(
         cr, SUPERUSER_ID, [
             ('name', '=', '%s,%s' % (model_name, field_name)),
