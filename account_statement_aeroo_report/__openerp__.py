@@ -19,15 +19,11 @@
 #
 ##############################################################################
 {
-    'name': 'Statement Aeroo Report',
+    'name': 'Bank Statement Report',
     'version': '9.0.1.0.0',
     'category': 'Aeroo Reporting',
     'sequence': 14,
     'summary': '',
-    'description': '''
-Statement Aeroo Report
-=======================
-    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
