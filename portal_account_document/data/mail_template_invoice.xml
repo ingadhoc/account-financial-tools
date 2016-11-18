@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <!-- pisamos la plantilla de odoo agregando display_name en vez de number -->
 
