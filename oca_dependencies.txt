@@ -1,2 +1,2 @@
 ingadhoc-aeroo_reports https://github.com/ingadhoc/aeroo_reports.git
-ingadhoc-miscellaneous https://github.com/ingadhoc/miscellaneous.git 9.0
+ingadhoc-miscellaneous https://github.com/ingadhoc/miscellaneous.git
