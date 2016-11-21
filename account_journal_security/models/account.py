@@ -6,7 +6,7 @@
 from openerp import fields, models
 
 
-class account_journal(models.Model):
+class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
     user_ids = fields.Many2many(
