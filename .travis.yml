@@ -67,11 +67,11 @@ virtualenv:
   system_site_packages: true
 
 install:
-  # enable aeroo docs conversion
-  - if [[ "${OCA_RUNBOT}" == "1" ]]; then psql openerp_test -c "INSERT INTO ir_config_parameter (key, value) VALUES ('aeroo.docs_host', 'runbot.adhoc.com.ar'), ('aeroo.docs_port', '8989'), ('aeroo.docs_enabled', 'True')"; fi
   - git clone --depth=1 https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
   - travis_install_nightly
+  # enable aeroo docs conversion
+  - if [[ "${OCA_RUNBOT}" == "1" ]]; then psql openerp_test -c "INSERT INTO ir_config_parameter (key, value) VALUES ('aeroo.docs_host', 'runbot.adhoc.com.ar'), ('aeroo.docs_port', '8989'), ('aeroo.docs_enabled', 'True')"; fi
 
 script:
   - travis_run_tests
