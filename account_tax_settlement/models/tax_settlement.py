@@ -451,7 +451,6 @@ class account_tax_settlement(models.Model):
                     debit += line_vals['debit']
                     line_vals['move_id'] = move.id
                     line_vals['tax_settlement_move_id'] = move.id
-                    # print 'name', name
                     # line_vals['ref'] = name
                     created_move_line_ids.append(
                         move_line_env.create(line_vals).id)

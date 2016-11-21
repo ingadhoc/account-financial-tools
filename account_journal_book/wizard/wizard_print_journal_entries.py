@@ -38,7 +38,6 @@ class AccountJournalEntriesReport(models.TransientModel):
     def _print_report(self, data):
         data['form'].update(
             self.read(['sort_selection', 'landscape'])[0])
-        print 'data', data
         if self.landscape:
             report_name = 'account.journal.entries.report.wzd1'
         else:
