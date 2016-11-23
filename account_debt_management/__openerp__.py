@@ -27,6 +27,9 @@
     'license': 'AGPL-3',
     'depends': [
         'account_full_reconcile',
+        # mas adelante se puede separar en otro modulo que integre
+        # funcionalidad con este otro modulo
+        'account_payment_group_document',
         'report_aeroo',
     ],
     'data': [

@@ -45,11 +45,13 @@
                 <field name="amount" sum="Total"/>
                 <field name="balance" invisible="not context.get('show_balance', False)"/>
                 <field name="amount_currency" groups="base.group_multi_currency"/>
-                <field name="currency_id" groups="base.group_multi_currency"/>
+                <!-- <field name="currency_id" groups="base.group_multi_currency"/> -->
                 <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
                 <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/>
                 <field name="full_reconcile_id" string="Rec." invisible="context.get('hide_reconciled', False)"/>
                 <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Accounting Document" name="action_open_related_document"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="company_currency_id" invisible="1"/>
             </tree>
          </field>
     </record>

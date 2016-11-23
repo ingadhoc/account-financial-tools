@@ -24,8 +24,9 @@ class ResPartner(models.Model):
         'partner_id',
         domain=unreconciled_domain + payable_domain,
     )
-    debt_balance = fields.Float(
+    debt_balance = fields.Monetary(
         compute='_get_debt_balance',
+        currency_field='currency_id',
     )
 
     @api.multi

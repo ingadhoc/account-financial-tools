@@ -32,8 +32,9 @@ class AccountDebtLine(models.Model):
         'Reference',
         readonly=True
     )
-    amount = fields.Float(
-        readonly=True
+    amount = fields.Monetary(
+        readonly=True,
+        currency_field='company_currency_id',
     )
     currency_id = fields.Many2one(
         'res.currency',
@@ -45,9 +46,10 @@ class AccountDebtLine(models.Model):
         'Commercial',
         readonly=True
     )
-    amount_currency = fields.Float(
+    amount_currency = fields.Monetary(
         digits_compute=dp.get_precision('Account'),
-        readonly=True
+        readonly=True,
+        currency_field='currency_id',
     )
     move_id = fields.Many2one(
         'account.move',
@@ -125,14 +127,17 @@ class AccountDebtLine(models.Model):
     display_name = fields.Char(
         compute='get_display_name'
     )
-    financial_amount = fields.Float(
+    financial_amount = fields.Monetary(
         compute='_get_amounts',
+        currency_field='company_currency_id',
     )
-    balance = fields.Float(
+    balance = fields.Monetary(
         compute='_get_amounts',
+        currency_field='company_currency_id',
     )
-    financial_balance = fields.Float(
+    financial_balance = fields.Monetary(
         compute='_get_amounts',
+        currency_field='company_currency_id',
     )
     company_currency_id = fields.Many2one(
         related='company_id.currency_id',
@@ -236,6 +241,12 @@ class AccountDebtLine(models.Model):
                     'account.view_account_payment_form')
             else:
                 record = self.move_id
+        else:
+            # if invoice, we choose right view
+            if record.type in ['in_refund', 'in_invoice']:
+                view_id = self.env.ref('account.invoice_supplier_form').id
+            else:
+                view_id = self.env.ref('account.invoice_form').id
 
         return {
             'type': 'ir.actions.act_window',

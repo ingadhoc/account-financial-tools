@@ -8,9 +8,10 @@
     </record>
 
     <!-- activar por defecto para empleados-->
-    <record id="base.group_user" model="res.groups">
+    <!-- mejor no activamos por ahora -->
+<!--     <record id="base.group_user" model="res.groups">
         <field name="implied_ids" eval="[(4, ref('account_use_financial_amounts'))]"/>
-    </record>
+    </record> -->
 
     <record id="account_debt_line_company_rule" model="ir.rule">
         <field name="name">account.debt.line company rule</field>
