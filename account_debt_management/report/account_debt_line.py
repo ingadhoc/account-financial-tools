@@ -86,6 +86,8 @@ class AccountDebtLine(models.Model):
         'Status',
         readonly=True
     )
+    reconciled = fields.Boolean(
+    )
     full_reconcile_id = fields.Many2one(
         'account.full.reconcile',
         'Matching Number',
@@ -198,6 +200,7 @@ class AccountDebtLine(models.Model):
                 am.ref as ref,
                 am.state as move_state,
                 l.full_reconcile_id as full_reconcile_id,
+                l.reconciled as reconciled,
                 -- l.reconcile_partial_id as reconcile_partial_id,
                 l.move_id as move_id,
                 l.partner_id as partner_id,
