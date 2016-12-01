@@ -43,7 +43,7 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,presented"/>
                     </header>
                     <sheet>
-                        <div class="oe_right oe_button_box" name="buttons">
+                        <div class="oe_button_box" name="buttons">
                             <button type="action" class="oe_stat_button" id="invoice_button" icon="fa-pencil-square-o" name="%(action_account_vat_settlement_detail)d">
                                 <field name="tax_codes_count" widget="statinfo"/>
                             </button>
