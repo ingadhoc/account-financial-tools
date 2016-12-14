@@ -190,25 +190,24 @@ class AccountDebtLine(models.Model):
     #     If debt_together in context then we discount payables and make
     #     cumulative all together
     #     """
-    #     # balance = 0.0
-    #     # financial_balance = 0.0
+    #     balance = 0.0
+    #     financial_balance = 0.0
     #     # we need to reorder records
     #     # for line in reversed(self.search(
     #     #         [('id', 'in', self.ids)], order=self._order)):
     #     for line in self.search([('id', 'in', self.ids)], order=self._order):
-    #     # for line in self.search([('id', 'in', self.ids)], order=self._order):
-    #         # balance += line.amount
-    #         # line.balance = balance
-    #         # financial_amount = line.currency_id and line.currency_id.compute(
-    #         #     line.amount_currency,
-    #         #     line.company_id.currency_id) or line.amount
+    #         balance += line.amount
+    #         line.balance = balance
+    #         financial_amount = line.currency_id and line.currency_id.compute(
+    #             line.amount_currency,
+    #             line.company_id.currency_id) or line.amount
     #         financial_amount_residual = (
     #             line.currency_id and line.currency_id.compute(
     #                 line.amount_residual_currency,
     #                 line.company_id.currency_id) or line.amount_residual)
-    #         # line.financial_amount = financial_amount
-    #         # financial_balance += financial_amount
-    #         # line.financial_balance = financial_balance
+    #         line.financial_amount = financial_amount
+    #         financial_balance += financial_amount
+    #         line.financial_balance = financial_balance
     #         line.financial_amount_residual = financial_amount_residual
 
     def init(self, cr):
@@ -239,7 +238,7 @@ class AccountDebtLine(models.Model):
                 l.amount_residual_currency as amount_residual_currency,
                 l.amount_residual as amount_residual,
                 pa.user_id as user_id,
-                balance as amount
+                l.balance as amount
                 -- coalesce(l.debit, 0.0) - coalesce(l.credit, 0.0) as amount
             FROM
                 account_move_line l
