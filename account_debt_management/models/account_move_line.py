@@ -14,25 +14,26 @@ class AccountMoveLine(models.Model):
         string='Residual Financial Amount',
         currency_field='company_currency_id',
     )
-    financial_amount = fields.Monetary(
-        compute='_get_financial_amounts',
-        string='Financial Amount',
-        currency_field='company_currency_id',
-    )
+    # TODO borrar si no usamos
+    # financial_amount = fields.Monetary(
+    #     compute='_get_financial_amounts',
+    #     string='Financial Amount',
+    #     currency_field='company_currency_id',
+    # )
 
     @api.multi
     @api.depends('debit', 'credit')
     def _get_financial_amounts(self):
         for line in self:
-            financial_amount = (
-                line.currency_id and line.currency_id.compute(
-                    line.amount_currency,
-                    line.account_id.company_id.currency_id) or (
-                    line.debit - line.credit))
+            # financial_amount = (
+            #     line.currency_id and line.currency_id.compute(
+            #         line.amount_currency,
+            #         line.account_id.company_id.currency_id) or (
+            #         line.debit - line.credit))
             financial_amount_residual = (
                 line.currency_id and line.currency_id.compute(
                     line.amount_residual_currency,
                     line.account_id.company_id.currency_id) or
-                line.amount_residual_currency)
-            line.financial_amount = financial_amount
+                line.amount_residual)
+            # line.financial_amount = financial_amount
             line.financial_amount_residual = financial_amount_residual

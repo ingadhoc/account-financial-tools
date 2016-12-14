@@ -16,7 +16,8 @@
                 <filter string="Receivable" domain="[('type','=','receivable')]" help="Receivable payments"/>
                 <filter string="Payable" domain="[('type','=','payable')]" help="Payable payments"/>
                 <separator/>
-                <filter string="Unreconciled" domain="[('full_reconcile_id','=',False)]" help="Unreconciled Items" name="unreconciled"/>
+                <filter string="Unreconciled" domain="[('reconciled','=',False), ('account_id.reconcile','=',True)]" help="Unreconciled Journal Items" name="unreconciled"/>
+                <!-- <filter string="Unreconciled" domain="[('full_reconcile_id','=',False)]" help="Unreconciled Items" name="unreconciled"/> -->
                 <group expand="0" string="Group By...">
                     <filter string="Type" context="{'group_by': 'type'}"/>
                     <filter string="Date" context="{'group_by': 'date'}"/>
@@ -42,12 +43,17 @@
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="display_name"/>
                 <field name="date_maturity"/>
-                <field name="amount" sum="Total"/>
-                <field name="balance" invisible="not context.get('show_balance', False)"/>
+                <field name="amount"/>
+                <field name="amount_residual" sum="Total"/>
+                <!-- no queremos mostrarlo mas, es util? -->
+                <!-- <field name="balance" invisible="not context.get('show_balance', False)"/> -->
                 <field name="amount_currency" groups="base.group_multi_currency"/>
+                <field name="amount_residual_currency" groups="base.group_multi_currency"/>
                 <!-- <field name="currency_id" groups="base.group_multi_currency"/> -->
-                <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
-                <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/>
+                <field name="financial_amount_residual" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
+                <!-- no queremos mostrarlo mas, es util? -->
+                <!-- <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/> -->
+                <!-- <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/> -->
                 <field name="full_reconcile_id" string="Rec." invisible="context.get('hide_reconciled', False)"/>
                 <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Accounting Document" name="action_open_related_document"/>
                 <field name="currency_id" invisible="1"/>
@@ -80,13 +86,18 @@
                             <!-- <field name="reconcile_partial_id"/> -->
                         </group>
                         <group>
-                            <label for="amount" class="oe_inline"/>
-                            <div>
+                            <!-- <label for="amount" class="oe_inline"/> -->
+                           <!--  <div>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" class="oe_inline"/>
                                 <label for="amount_currency" class="oe_inline" string=" / " attrs="{'invisible': [('currency_id', '=', False)]}" groups="base.group_multi_currency"/>
                                 <field name="amount_currency" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" class="oe_inline" groups="base.group_multi_currency"/>
-                            </div>
-                            <field name="financial_amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/>
+                            </div> -->
+                            <field name="amount"/>
+                            <field name="amount_residual"/>
+                            <field name="amount_currency" groups="base.group_multi_currency"/>
+                            <field name="amount_residual_currency" groups="base.group_multi_currency"/>
+                            <field name="financial_amount_residual" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/>
+                            <!-- <field name="financial_amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/> -->
                             <field name="date"/>
                             <field name="date_maturity"/>
                             <field name="company_id" groups="base.group_multi_company"/>
