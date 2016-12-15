@@ -31,7 +31,6 @@
     ],
     'depends': [
         'account',
-        'account_voucher',
     ],
     'data': [
         'views/res_users_view.xml',
