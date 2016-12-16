@@ -28,7 +28,7 @@
 
     <record model="ir.rule" id="journal_security_rule_account_payment">
         <field name="name">Account Payments of Jornals allowed to user</field>
-        <field name="model_id" ref="account_payment.model_account_payment"/>
+        <field name="model_id" ref="account.model_account_payment"/>
         <field name="domain_force">['|',('journal_id.user_ids','=',False),('journal_id.id','in',[journal.id for journal in user.journal_ids])]</field>
     </record>      
 </data>
