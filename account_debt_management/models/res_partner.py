@@ -4,7 +4,7 @@
 # directory
 ##############################################################################
 from openerp import api, models, fields, _
-# from openerp.exceptions import Warning
+# from openerp.exceptions import ValidationError
 
 
 class ResPartner(models.Model):

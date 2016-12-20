@@ -4,7 +4,7 @@
 # directory
 ##############################################################################
 from openerp import models, fields, api, _
-from openerp.exceptions import Warning
+from openerp.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 import logging
 _logger = logging.getLogger(__name__)
@@ -189,7 +189,7 @@ class res_company_interest(models.Model):
                 ('company_id', '=', company.id)],
                 limit=1)
             if not journal:
-                raise Warning(_(
+                raise ValidationError(_(
                     'Please define sales journal for this company: "%s"') % (
                         company.name))
 
@@ -256,7 +256,7 @@ class res_company_interest(models.Model):
             prop_id = prop and prop.id or False
             account_id = self.fiscal_position.map_account(prop_id)
             if not account_id:
-                raise Warning(_(
+                raise ValidationError(_(
                     'There is no income account defined as global '
                     'property.'))
         line_vals = {

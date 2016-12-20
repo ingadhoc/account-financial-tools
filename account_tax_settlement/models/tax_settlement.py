@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openerp import fields, api, models, _
-from openerp.exceptions import Warning
+from openerp.exceptions import ValidationError
 import openerp.addons.decimal_precision as dp
 import time
 
@@ -377,10 +377,10 @@ class account_tax_settlement(models.Model):
     def get_final_line_vals(self):
         res = {}
         if not self.partner_id:
-            raise Warning(_(
+            raise ValidationError(_(
                 'No Partner configured on journal'))
         if not self.balance_account_id:
-            raise Warning(_(
+            raise ValidationError(_(
                 'No Balance account configured on journal'))
         for line in self:
             account_balance_amount = self.account_balance_amount
@@ -416,16 +416,16 @@ class account_tax_settlement(models.Model):
 
         # TODO improove here, direct comparison didnt work
         if abs(self.tax_code_balance_amount - self.account_balance_amount) >= 0.001:
-            raise Warning(_('Account Balance and Tax Balance must be equal.'))
+            raise ValidationError(_('Account Balance and Tax Balance must be equal.'))
         if not self.journal_id.sequence_id:
-            raise Warning(_('Please define a sequence on the journal.'))
+            raise ValidationError(_('Please define a sequence on the journal.'))
 
         to_settle_move_lines = self.mapped(
             'tax_settlement_detail_ids.move_line_ids')
 
         # write move id on settled tax move lines
         if to_settle_move_lines.filtered('tax_settlement_move_id'):
-            raise Warning(_(
+            raise ValidationError(_(
                 'You can not settle lines that has already been settled!\n'
                 '* Lines ids: %s') % (
                 to_settle_move_lines.filtered('tax_settlement_move_id').ids))
@@ -471,7 +471,7 @@ class account_tax_settlement(models.Model):
     @api.constrains('company_id', 'journal_id')
     def check_company(self):
         if self.company_id != self.journal_id.company_id:
-            raise Warning(_('Tax settlement company and journal company must be the same'))
+            raise ValidationError(_('Tax settlement company and journal company must be the same'))
 
     @api.one
     def _get_name(self):

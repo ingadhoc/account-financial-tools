@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openerp import fields, models, api, _
-from openerp.exceptions import Warning
+from openerp.exceptions import ValidationError
 
 
 class account_move_line(models.Model):
@@ -35,7 +35,7 @@ class account_move_line(models.Model):
     #     """
     #     if 'tax_settlement_move_id' in vals:
     #         if self.filtered('tax_settlement_move_id'):
-    #             raise Warning(_(
+    #             raise ValidationError(_(
     #                 'I seams that some lines has been already settled.\n'
     #                 '* Lines: %s') % (
     #                 self.filtered('tax_settlement_move_id').ids))
@@ -70,9 +70,9 @@ class account_move_line(models.Model):
     def make_tax_settlement(self):
         self.ensure_one()
         if self.tax_settlement_move_id:
-            raise Warning(_('Line already settled'))
+            raise ValidationError(_('Line already settled'))
         if not self.tax_code_id:
-            raise Warning(_(
+            raise ValidationError(_(
                 'Settlement only alled for journal items with tax code'))
 
         # get parent tax codes (only parents)
@@ -89,11 +89,11 @@ class account_move_line(models.Model):
             ])
 
         if not journals:
-            raise Warning(_(
+            raise ValidationError(_(
                 'No tax settlemnt journal found for tax code %s') % (
                 self.tax_code_id.name))
         elif len(journals) != 1:
-            raise Warning(_(
+            raise ValidationError(_(
                 'Only one tax settlemnt journal must exist for tax code %s'
                 'We have found the journal ids %s') % (
                 self.tax_code_id, journals.ids))
@@ -110,7 +110,7 @@ class account_move_line(models.Model):
 
         # check account type so that we can create a debt
         if account.type != 'payable':
-            raise Warning(_(
+            raise ValidationError(_(
                 'You can only pay if tax counterpart use a payable account.'
                 'Account id %i' % account.id))
 

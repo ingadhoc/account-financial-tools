@@ -4,7 +4,7 @@
 # directory
 ##############################################################################
 from openerp import api, fields, models, _
-from openerp.exceptions import Warning
+from openerp.exceptions import ValidationError
 
 
 class account_debt_report_wizard(models.TransientModel):
@@ -51,7 +51,7 @@ class account_debt_report_wizard(models.TransientModel):
     @api.constrains
     def check_company_type(self):
         if self.company_type == 'consolidate' and self.company_id:
-            raise Warning(_(
+            raise ValidationError(_(
                 'You can only select "Consolidate all Companies if no company '
                 'is selected'))
 

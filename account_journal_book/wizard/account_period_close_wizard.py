@@ -13,9 +13,9 @@ class AccountPeriodClose(models.TransientModel):
         periods = self.env['account.period'].browse(
             self._context.get('active_ids', []))
         if not periods:
-            raise Warning(_('No periods selected'))
+            raise ValidationError(_('No periods selected'))
         elif len(periods.mapped('company_id')) > 1:
-            raise Warning(_('All periods must belong to same company'))
+            raise ValidationError(_('All periods must belong to same company'))
         sequence = self.env['ir.sequence'].search([
             ('code', '=', 'journal.book.sequence'),
             ('company_id', '=', periods[0].company_id.id),
