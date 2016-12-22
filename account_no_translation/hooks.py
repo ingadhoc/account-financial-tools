@@ -51,7 +51,7 @@ def pre_init_hook(cr):
         ('account.account', 'name'),
         ('account.journal', 'name'),
         ('account.analytic.account', 'name'),
-        ('account.analytic.journal', 'name'),
+        # ('account.analytic.journal', 'name'),
         ('account.account.template', 'name'),
         ('account.tax.template', 'name'),
         ('account.chart.template', 'name'),
