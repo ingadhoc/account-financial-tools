@@ -67,17 +67,27 @@ def pre_init_hook(cr):
 def sync_field(cr, uid, lang_code, model_name, field_name):
     _logger.info('Syncking translations for model %s, field %s' % (
         model_name, field_name))
-    pool = RegistryManager.get(cr.dbname)
-    translations = pool['ir.translation'].search_read(
-        cr, SUPERUSER_ID, [
-            ('name', '=', '%s,%s' % (model_name, field_name)),
-            ('type', '=', 'model'),
-            ('lang', '=', 'es_AR')],
-        ['res_id', 'value'])
+    # pool = RegistryManager.get(cr.dbname)
+    # translations = pool['ir.translation'].search_read(
+    #     cr, SUPERUSER_ID, [
+    #         ('name', '=', '%s,%s' % (model_name, field_name)),
+    #         ('type', '=', 'model'),
+    #         ('lang', '=', 'es_AR')],
+    #     ['res_id', 'value'])
+    # dont know why but old method of searc_red is not working
+    query = ("""
+        SELECT res_id, value FROM ir_translation
+        WHERE
+            name = '%s' and type = 'model' and lang = 'es_AR'
+        """ % (
+        "%s,%s" % ('product.template', 'description_sale')))
+    cr.execute(query)
+    translations = cr.fetchall()
     for translation in translations:
         table = model_name.replace('.', '_')
-        value = translation['value']
-        res_id = translation['res_id']
+        res_id, value = translation
+        # value = translation['value']
+        # res_id = translation['res_id']
         # just in case some constraint block de renaiming
         # try:
         # no nos anduvo, arrojamos el error y listo
