@@ -137,16 +137,18 @@ class AccountDebtLine(models.Model):
     display_name = fields.Char(
         compute='get_display_name'
     )
-    # financial_amount = fields.Monetary(
-    #     compute='_get_amounts',
-    #     currency_field='company_currency_id',
-    # )
+    financial_amount = fields.Monetary(
+        related='move_line_id.financial_amount',
+        # compute='_get_amounts',
+        currency_field='company_currency_id',
+    )
     # balance = fields.Monetary(
     #     compute='_get_amounts',
     #     currency_field='company_currency_id',
     # )
     financial_amount_residual = fields.Monetary(
-        related='move_line_id.financial_amount_residual'
+        related='move_line_id.financial_amount_residual',
+        currency_field='company_currency_id',
     )
     # financial_amount_residual = fields.Monetary(
     #     compute='_get_amounts',
