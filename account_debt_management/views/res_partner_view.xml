@@ -8,7 +8,9 @@
             <field name="inherit_id" ref="base.view_res_partner_filter"/>
             <field name="arch" type="xml">
                 <field name="category_id" position="before">
-                   <filter string="With Balance" name="with_balance" domain="['|', ('credit','!=', 0.0), ('debit','!=', 0.0)]" help="Partners with receivable or payable balance different from 0"/>
+                    <!-- on v9 search credit or debit with != can not be used-->
+                   <filter string="With Balance" name="with_balance" domain="['|', '|', '|', ('credit','&gt;', 0.0), ('debit','&gt;', 0.0), ('credit','&lt;', 0.0), ('debit','&lt;', 0.0)]" help="Partners with receivable or payable balance different from 0"/>
+                   <!-- <filter string="With Balance" name="with_balance" domain="['|', ('credit','!=', 0.0), ('debit','!=', 0.0)]" help="Partners with receivable or payable balance different from 0"/> -->
                 </field>
             </field>
         </record>

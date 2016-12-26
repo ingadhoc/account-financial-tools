@@ -8,14 +8,25 @@
             <field name="inherit_id" ref="account.view_account_move_line_filter"/>
             <field name="arch" type="xml">
                 <filter position="before">
-                    <filter string="Receivable" name="filter_receivable" domain="[('account_id.type','=','receivable')]" help="Receivable payments"/>
-                    <filter string="Payable" name="filter_payable" domain="[('account_id.type','=','payable')]" help="Payable payments"/>
+                    <filter string="Receivable" name="filter_receivable" domain="[('account_id.internal_type','=','receivable')]" help="Receivable payments"/>
+                    <filter string="Payable" name="filter_payable" domain="[('account_id.internal_type','=','payable')]" help="Payable payments"/>
                 </filter>
                 <group>
                     <filter string="Type" context="{'group_by': 'type'}"/>
                     <filter string="Journal Entry" domain="[]" context="{'group_by': 'move_id'}"/>
                     <filter string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
                 </group>
+            </field>
+        </record>
+
+        <record id="account_move_line_partner_debt_tree" model="ir.ui.view">
+            <field name="name">account.move.line.debt.tree</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_tree"/>
+            <field name="arch" type="xml">
+                <field name="credit" position="after">
+                    <field name="balance" sum="Total Balance"/>
+                </field>
             </field>
         </record>
 
