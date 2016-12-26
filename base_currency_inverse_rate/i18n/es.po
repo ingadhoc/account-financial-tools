@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-13 20:47+0000\n"
-"PO-Revision-Date: 2016-11-13 20:47+0000\n"
+"POT-Creation-Date: 2016-12-26 12:03+0000\n"
+"PO-Revision-Date: 2016-12-26 12:03+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
@@ -48,25 +48,25 @@ msgstr "Moneda"
 #. module: base_currency_inverse_rate
 #: model:ir.model,name:base_currency_inverse_rate.model_res_currency_rate
 msgid "Currency Rate"
-msgstr "Taza de Cambio"
+msgstr "Tasa de Cambio"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,field_description:base_currency_inverse_rate.field_res_currency_inverse_rate
 #: field:res.currency,inverse_rate:0
 msgid "Current Inverse Rate"
-msgstr "Taza de Cambio Inversa"
+msgstr "Tasa de Cambio Inversa"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,field_description:base_currency_inverse_rate.field_res_currency_rate_inverse_rate
 #: field:res.currency.rate,inverse_rate:0
 msgid "Inverse Rate"
-msgstr "Taza Inversa"
+msgstr "Tasa Inversa"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,help:base_currency_inverse_rate.field_res_currency_rate_inverse_rate
 #: help:res.currency.rate,inverse_rate:0
 msgid "The rate of the currency from the currency of rate 1"
-msgstr "La taza de la moneda desde la moneda con taza 1"
+msgstr "La tasa de la moneda desde la moneda con Tasa 1"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,help:base_currency_inverse_rate.field_res_currency_inverse_rate
@@ -74,4 +74,4 @@ msgstr "La taza de la moneda desde la moneda con taza 1"
 msgid ""
 "The rate of the currency from the currency of rate 1 (0 if no rate defined)."
 msgstr ""
-"La taza de la moneda desde la moneda con taza 1 (0 si no hay taza definida)."
+"La tasa de la moneda desde la moneda con tasa 1 (0 si no hay Tasa definida)."

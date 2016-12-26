@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
-# Javier Diez <jd@adhoc.com.ar>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-13 20:47+0000\n"
-"PO-Revision-Date: 2016-11-13 20:47+0000\n"
-"Last-Translator: Javier Diez <jd@adhoc.com.ar>, 2016\n"
+"POT-Creation-Date: 2016-12-26 12:03+0000\n"
+"PO-Revision-Date: 2016-12-26 12:03+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -139,7 +138,7 @@ msgid ""
 "                    </page>\n"
 "                </page>\n"
 "                <div name=\"button_box\" position=\"inside\">\n"
-"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"238\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
+"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"260\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
 "                        <div class=\"o_form_field o_stat_info\">\n"
 "                            <span class=\"o_stat_value\"><field name=\"debt_balance\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\"/></span>\n"
 "                            <span class=\"o_stat_text\">Debt Detail</span>\n"
@@ -226,13 +225,18 @@ msgid ""
 "                            <!-- <field name=\"reconcile_partial_id\"/> -->\n"
 "                        </group>\n"
 "                        <group>\n"
-"                            <label for=\"amount\" class=\"oe_inline\"/>\n"
-"                            <div>\n"
+"                            <!-- <label for=\"amount\" class=\"oe_inline\"/> -->\n"
+"                           <!--  <div>\n"
 "                                <field name=\"amount\" widget=\"monetary\" options=\"{'currency_field': 'company_currency_id'}\" class=\"oe_inline\"/>\n"
 "                                <label for=\"amount_currency\" class=\"oe_inline\" string=\" / \" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"base.group_multi_currency\"/>\n"
 "                                <field name=\"amount_currency\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" class=\"oe_inline\" groups=\"base.group_multi_currency\"/>\n"
-"                            </div>\n"
-"                            <field name=\"financial_amount\" widget=\"monetary\" options=\"{'currency_field': 'company_currency_id'}\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                            </div> -->\n"
+"                            <field name=\"amount\"/>\n"
+"                            <field name=\"amount_residual\"/>\n"
+"                            <field name=\"amount_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                            <field name=\"amount_residual_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                            <field name=\"financial_amount_residual\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                            <!-- <field name=\"financial_amount\" widget=\"monetary\" options=\"{'currency_field': 'company_currency_id'}\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
 "                            <field name=\"date\"/>\n"
 "                            <field name=\"date_maturity\"/>\n"
 "                            <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
@@ -284,7 +288,8 @@ msgid ""
 "                <filter string=\"Receivable\" domain=\"[('type','=','receivable')]\" help=\"Receivable payments\"/>\n"
 "                <filter string=\"Payable\" domain=\"[('type','=','payable')]\" help=\"Payable payments\"/>\n"
 "                <separator/>\n"
-"                <filter string=\"Unreconciled\" domain=\"[('full_reconcile_id','=',False)]\" help=\"Unreconciled Items\" name=\"unreconciled\"/>\n"
+"                <filter string=\"Unreconciled\" domain=\"[('reconciled','=',False), ('account_id.reconcile','=',True)]\" help=\"Unreconciled Journal Items\" name=\"unreconciled\"/>\n"
+"                <!-- <filter string=\"Unreconciled\" domain=\"[('full_reconcile_id','=',False)]\" help=\"Unreconciled Items\" name=\"unreconciled\"/> -->\n"
 "                <group expand=\"0\" string=\"Group By...\">\n"
 "                    <filter string=\"Type\" context=\"{'group_by': 'type'}\"/>\n"
 "                    <filter string=\"Date\" context=\"{'group_by': 'date'}\"/>\n"
@@ -310,14 +315,21 @@ msgid ""
 "                <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
 "                <field name=\"display_name\"/>\n"
 "                <field name=\"date_maturity\"/>\n"
-"                <field name=\"amount\" sum=\"Total\"/>\n"
-"                <field name=\"balance\" invisible=\"not context.get('show_balance', False)\"/>\n"
+"                <field name=\"amount\"/>\n"
+"                <field name=\"amount_residual\" sum=\"Total\"/>\n"
+"                <!-- no queremos mostrarlo mas, es util? -->\n"
+"                <!-- <field name=\"balance\" invisible=\"not context.get('show_balance', False)\"/> -->\n"
 "                <field name=\"amount_currency\" groups=\"base.group_multi_currency\"/>\n"
-"                <field name=\"currency_id\" groups=\"base.group_multi_currency\"/>\n"
-"                <field name=\"financial_amount\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
-"                <field name=\"financial_balance\" invisible=\"not context.get('show_balance', False)\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                <field name=\"amount_residual_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                <!-- <field name=\"currency_id\" groups=\"base.group_multi_currency\"/> -->\n"
+"                <field name=\"financial_amount_residual\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                <!-- no queremos mostrarlo mas, es util? -->\n"
+"                <!-- <field name=\"financial_amount\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
+"                <!-- <field name=\"financial_balance\" invisible=\"not context.get('show_balance', False)\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
 "                <field name=\"full_reconcile_id\" string=\"Rec.\" invisible=\"context.get('hide_reconciled', False)\"/>\n"
 "                <button type=\"object\" string=\"Open Document\" icon=\"STOCK_JUSTIFY_LEFT\" help=\"Open Related Accounting Document\" name=\"action_open_related_document\"/>\n"
+"                <field name=\"currency_id\" invisible=\"1\"/>\n"
+"                <field name=\"company_currency_id\" invisible=\"1\"/>\n"
 "            </tree>\n"
 "         "
 msgstr ""
@@ -390,12 +402,6 @@ msgstr "Importe en moneda"
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_analytic_account_id
 msgid "Analytic Account"
 msgstr "Cuenta Analítica"
-
-#. module: account_debt_management
-#: field:account.debt.line,balance:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_balance
-msgid "Balance"
-msgstr "Saldo"
 
 #. module: account_debt_management
 #: field:account.debt.line,user_id:0
@@ -510,28 +516,18 @@ msgid "Entry line"
 msgstr "Apunte Contable"
 
 #. module: account_debt_management
+#: field:account.debt.line,financial_amount:0
 #: field:account.move.line,financial_amount:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount
 #: model:ir.model.fields,field_description:account_debt_management.field_account_move_line_financial_amount
 msgid "Financial Amount"
 msgstr "Importe Financiero"
-
-#. module: account_debt_management
-#: field:account.debt.line,financial_amount:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount
-msgid "Financial amount"
-msgstr "Importe financiero"
 
 #. module: account_debt_management
 #: field:account.debt.report.wizard,financial_amounts:0
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_financial_amounts
 msgid "Financial amounts"
 msgstr "Importes financieros"
-
-#. module: account_debt_management
-#: field:account.debt.line,financial_balance:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_balance
-msgid "Financial balance"
-msgstr "Saldo financiero"
 
 #. module: account_debt_management
 #: field:account.debt.report.wizard,from_date:0
@@ -564,7 +560,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/models/res_partner.py:120
+#: code:addons/account_debt_management/models/res_partner.py:122
 #, python-format
 msgid "INITIAL BALANCE"
 msgstr "SALDO INICIAL"
@@ -623,7 +619,7 @@ msgstr "Última actualización el"
 #: field:account.debt.line,full_reconcile_id:0
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_full_reconcile_id
 msgid "Matching Number"
-msgstr ""
+msgstr "Número de Conciliación"
 
 #. module: account_debt_management
 #: field:account.debt.line,partner_id:0
@@ -675,13 +671,33 @@ msgid "Receivable debt ids"
 msgstr "Ids de deudas a cobrar"
 
 #. module: account_debt_management
+#: field:account.debt.line,reconciled:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_reconciled
+msgid "Reconciled"
+msgstr "Conciliado"
+
+#. module: account_debt_management
 #: field:account.debt.line,ref:0
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_ref
 msgid "Reference"
 msgstr "Referencia"
 
 #. module: account_debt_management
+#: field:account.debt.line,amount_residual:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount_residual
+msgid "Residual Amount"
+msgstr "Importe Residual"
+
+#. module: account_debt_management
+#: field:account.debt.line,amount_residual_currency:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount_residual_currency
+msgid "Residual Amount in Currency"
+msgstr "Importe Residual en Moneda"
+
+#. module: account_debt_management
+#: field:account.debt.line,financial_amount_residual:0
 #: field:account.move.line,financial_amount_residual:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount_residual
 #: model:ir.model.fields,field_description:account_debt_management.field_account_move_line_financial_amount_residual
 msgid "Residual Financial Amount"
 msgstr "Importe Financiero Residual"
