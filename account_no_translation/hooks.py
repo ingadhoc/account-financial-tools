@@ -7,7 +7,7 @@
 # import cStringIO
 # from openerp import tools
 from openerp import SUPERUSER_ID
-from openerp.modules.registry import RegistryManager
+# from openerp.modules.registry import RegistryManager
 import logging
 _logger = logging.getLogger(__name__)
 
