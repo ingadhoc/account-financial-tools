@@ -11,7 +11,8 @@ class ResCompany(models.Model):
 
     helper_account_id = fields.Many2one(
         'account.account',
-        domain=[('deprecated', '=', False), ('reconcile', '=', False)],
+        domain="[('deprecated', '=', False), ('reconcile', '=', False), "
+        "('company_id', '=', id)]",
         string="Helper Counterpart Account",
         help="Counterpart account on Journal Entries helper"
     )
