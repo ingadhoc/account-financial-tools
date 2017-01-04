@@ -64,8 +64,10 @@ class ResPartner(models.Model):
     def _get_debt_report_lines(self, company):
         def get_line_vals(
                 date=None, name=None, detail_lines=None, date_maturity=None,
-                amount=None, balance=None, financial_amount=None,
-                financial_balance=None, amount_currency=None,
+                amount=None, amount_residual=None, balance=None,
+                financial_amount=None, financial_amount_residual=None,
+                financial_balance=None,
+                amount_currency=None,
                 currency_name=None):
             if not detail_lines:
                 detail_lines = []
@@ -75,8 +77,10 @@ class ResPartner(models.Model):
                 'detail_lines': detail_lines,
                 'date_maturity': date_maturity,
                 'amount': amount,
+                'amount_residual': amount_residual,
                 'balance': balance,
                 'financial_amount': financial_amount,
+                'financial_amount_residual': financial_amount_residual,
                 'financial_balance': financial_balance,
                 'amount_currency': amount_currency,
                 'currency_name': currency_name,
@@ -224,18 +228,29 @@ class ResPartner(models.Model):
                 move = record.move_id
                 currency = record.currency_id
             amount = sum(move_lines.mapped('amount'))
+            amount_residual = sum(move_lines.mapped('amount_residual'))
             financial_amount = sum(move_lines.mapped('financial_amount'))
+            financial_amount_residual = sum(move_lines.mapped(
+                'financial_amount_residual'))
             amount_currency = sum(move_lines.mapped('amount_currency'))
-            balance += amount
-            financial_balance += financial_amount
+            # si pide historial completo entonces mostramos los movimientos
+            # si no mostramos los saldos
+            if historical_full:
+                balance += amount
+                financial_balance += financial_amount
+            else:
+                balance += amount_residual
+                financial_balance += financial_amount_residual
             res.append(get_line_vals(
                 date=date,
                 name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
                 amount=amount,
+                amount_residual=amount_residual,
                 balance=balance,
                 financial_amount=financial_amount,
+                financial_amount_residual=financial_amount_residual,
                 financial_balance=financial_balance,
                 amount_currency=amount_currency,
                 currency_name=currency.name,
