@@ -7,7 +7,7 @@ Account Usability Improvements
 ==============================
 
 Several Improvements to accounting:
-#. Create a purchases journals for "Liquidación de Impuestos" and "Sueldos y Jornales" on chart account installation
+#. Create a purchases journals for "Liquidación de Impuestos", "Asientos de Apertura / Cierre" and "Sueldos y Jornales" on chart account installation
 
 Installation
 ============

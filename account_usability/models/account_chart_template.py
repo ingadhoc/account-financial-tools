@@ -20,17 +20,18 @@ class AccountChartTemplate(models.Model):
             acc_template_ref, company, journals_dict)
 
         journals = [
-            ('Compras (Liquidación de Impuestos)', 'LIMP'),
-            ('Compras (Sueldos y Jornales)', 'SYJ'),
+            ('Compras (Liquidación de Impuestos)', 'LIMP', 'purchase'),
+            ('Compras (Sueldos y Jornales)', 'SYJ', 'purchase'),
+            ('Asientos de Apertura / Cierre', 'A/C', 'general'),
         ]
 
-        for name, code in journals:
+        for name, code, type in journals:
             journal_data.append({
-                'type': 'purchase',
+                'type': type,
                 'name': name,
                 'code': code,
                 'company_id': company.id,
-                'show_on_dashboard': True,
+                'show_on_dashboard': False,
                 'update_posted': True,
             })
         return journal_data
