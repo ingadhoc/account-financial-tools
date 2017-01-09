@@ -7,7 +7,7 @@ Account Usability Improvements
 ==============================
 
 Several Improvements to accounting:
-#. TODO
+#. When creatin banks from bank menu, use bank name + account number for journal name (by default only account number is used). And also allow user to change this value (by default user can't)
 
 Installation
 ============

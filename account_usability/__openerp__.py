@@ -33,12 +33,13 @@
         'account',
     ],
     'data': [
+        'views/account_journal_view.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }
