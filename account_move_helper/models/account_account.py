@@ -62,11 +62,14 @@ class account_account(models.Model):
             return True
         move = self.env['account.move'].browse(move_id)
 
-        helper_account = move.company_id.helper_account_id
+        # TODO improove and use debit or credit regarding balance
+        helper_account = (
+            move.journal_id.default_debit_account_id or
+            move.journal_id.default_credit_account_id)
         if not helper_account:
             raise UserError(_(
-                'You need a Helper Counterpart Account configured in the '
-                'company to set the initial balance.'))
+                'You need a default debit or credit account configured on '
+                'journal "%s".') % (move.journal_id.name))
 
         line_balance = value_diff = line_balance
 

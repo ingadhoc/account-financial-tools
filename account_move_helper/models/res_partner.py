@@ -92,7 +92,7 @@ class ResPartner(models.Model):
         company_id = self._context.get('company_id', False)
         if not company_id:
             raise UserError(_(
-                'Company is reuquired in context to set partner balance'))
+                'Company is required in context to set partner balance'))
         for rec in self:
             account = getattr(
                 rec.with_context(force_company=company_id), account_field)
