@@ -100,7 +100,6 @@ class account_statement_move_import_wizard(models.TransientModel):
     @api.multi
     def confirm(self):
         self.ensure_one()
-        print 'self.move_line_ids', self.move_line_ids
 
         statement = self.statement_id
         for line in self.move_line_ids:
