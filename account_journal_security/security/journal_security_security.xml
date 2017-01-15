@@ -30,6 +30,24 @@
         <field name="name">Account Voucher of Jornals allowed to user</field>
         <field name="model_id" ref="account_voucher.model_account_voucher"/>
         <field name="domain_force">['|',('journal_id.user_ids','=',False),('journal_id.id','in',[journal.id for journal in user.journal_ids])]</field>
-    </record>      
+    </record>
+
+    <record model="ir.rule" id="journal_security_rule_account_entries_report">
+        <field name="name">Account Entries Report lines of Journals allowed to user</field>
+        <field name="model_id" ref="account.model_account_entries_report"/>
+        <field name="domain_force">['|',('journal_id.user_ids','=',False),('journal_id.id','in',[journal.id for journal in user.journal_ids])]</field>
+    </record>
+
+    <record model="ir.rule" id="journal_security_rule_account_invoice_report">
+        <field name="name">Account Invoice Report lines of Journals allowed to user</field>
+        <field name="model_id" ref="account.model_account_invoice_report"/>
+        <field name="domain_force">['|',('journal_id.user_ids','=',False),('journal_id.id','in',[journal.id for journal in user.journal_ids])]</field>
+    </record>
+
+    <record model="ir.rule" id="journal_security_rule_sale_receipt_report">
+        <field name="name">Account Voucher Sales Receipt lines of Journals allowed to user</field>
+        <field name="model_id" ref="account_voucher.model_sale_receipt_report"/>
+        <field name="domain_force">['|',('journal_id.user_ids','=',False),('journal_id.id','in',[journal.id for journal in user.journal_ids])]</field>
+    </record>
 </data>
 </openerp>
