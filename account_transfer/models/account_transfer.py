@@ -138,9 +138,11 @@ class account_transfer(models.Model):
 
         # create source move
         source_move = self.source_move_id.create(self.get_move_vals('source'))
+        source_move.post()
 
         # create target move
         target_move = self.target_move_id.create(self.get_move_vals('target'))
+        target_move.post()
 
         self.write({
             'target_move_id': target_move.id,
