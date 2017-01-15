@@ -77,11 +77,13 @@ class account_transfer(models.Model):
         'account.move',
         'Source Move',
         readonly=True,
+        copy=False,
         )
     target_move_id = fields.Many2one(
         'account.move',
         'Target Move',
         readonly=True,
+        copy=False,
         )
     state = fields.Selection([
         ('draft', 'Draft'),
