@@ -60,7 +60,9 @@ class AccountJournalEntriesReport(models.TransientModel):
     @api.multi
     def print_ods_report(self):
 
-        domain = [('journal_id', 'in', self.journal_ids.ids)]
+        # en realidad diario no lo mostramos y no dajamos que seleccione
+        # domain = [('journal_id', 'in', self.journal_ids.ids)]
+        domain = []
         if self.fiscalyear_id:
             domain.append(
                 ('period_id.fiscalyear_id', '=', self.fiscalyear_id.id))

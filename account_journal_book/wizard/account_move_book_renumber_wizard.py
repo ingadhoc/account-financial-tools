@@ -40,6 +40,7 @@ class account_move_book_renumber(models.TransientModel):
         'account_journal_book_renumber_rel',
         'wizard_id', 'journal_id',
         required=True,
+        context="{'active_test': False}",
         domain="[('company_id', '=', company_id)]",
         help="Journals to renumber",
         string="Journals"
@@ -87,13 +88,18 @@ class account_move_book_renumber(models.TransientModel):
     @api.onchange('journal_ids')
     def onchange_journals(self):
         self.grouped_journal_ids = self.grouped_journal_ids.search([
-            ('id', '=', self.journal_ids.ids),
+            ('id', 'in', self.journal_ids.ids),
             ('type', 'in', ['sale', 'purchase']),
         ])
 
     @api.onchange('company_id')
     def onchange_company(self):
-        self.journal_ids = self.journal_ids.search(
+        # if journal active module is installed, we want to renumber all
+        # journals no matter active or not
+        # we also need to send active_test context here because if not only
+        # active journals are returned
+        self.journal_ids = self.journal_ids.with_context(
+            active_test=False).search(
             [('company_id', '=', self.company_id.id)])
         self.period_ids = self.period_ids.search([
             ('company_id', '=', self.company_id.id),
@@ -125,17 +131,21 @@ class account_move_book_renumber(models.TransientModel):
         _logger.debug("Searching for account moves to renumber.")
         # TODO ver si queremos ordenr por periodo o a todos los movimientos
         # juntos
+        journal_ids = self.with_context(
+            active_test=False).journal_ids.ids
         moves = self.env['account.move'].search([
-            ('journal_id', 'in', self.journal_ids.ids),
+            ('journal_id', 'in', journal_ids),
             ('period_id', 'in', self.period_ids.ids),
             ('state', '=', 'posted')],
             order='date,id')
+        print '8241 in vmoces', 8241 in moves.ids
+        print 'self.period_ids.ids', self.period_ids.ids
         if self.numbering_order == 'by_date':
             moves.moves_renumber(self.sequence_id, self.grouped_journal_ids)
         else:
             for period in self.period_ids:
                 self.env['account.move'].search([
-                    ('journal_id', 'in', self.journal_ids.ids),
+                    ('journal_id', 'in', journal_ids),
                     ('period_id', '=', period.id),
                     ('state', '=', 'posted')],
                     order='date,id').moves_renumber(
