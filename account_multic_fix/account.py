@@ -18,6 +18,16 @@ class account_invoice(models.Model):
                 _('You cannot change the company of a invoice that has lines. You should delete them first.'))
         return super(account_invoice, self).onchange_company_id(company_id, part_id, type, invoice_line, currency_id)
 
+    @api.multi
+    @api.constrains('journal_id', 'company_id')
+    def check_period_company(self):
+        for rec in self:
+            journal_company = rec.journal_id.company_id
+            if rec.company_id and journal_company and \
+                    journal_company != rec.company_id:
+                raise Warning(_(
+                    'Journal must be of the same company of the invoice'))
+
 
 class account_invoice_line(models.Model):
     _inherit = "account.invoice.line"
@@ -56,7 +66,26 @@ class account_move(models.Model):
     _inherit = "account.move"
 
     period_id = fields.Many2one(
-        domain="[('company_id','=',company_id), ('state', '=', 'draft')]")
+        domain="[('company_id','=',company_id), ('state', '=', 'draft')]"
+    )
+
+    @api.multi
+    # no funciona el api constrain entonces lo hacemos en write y create
+    # @api.constrains('journal_id', 'periodo_id')
+    def check_period_company(self):
+        for rec in self:
+            period_company = rec.period_id.company_id
+            journal_company = rec.journal_id.company_id
+            if journal_company and period_company and \
+                    journal_company != period_company:
+                raise Warning(_(
+                    'Period and journal must belong to same company'))
+
+    @api.multi
+    def write(self, vals):
+        res = super(account_move, self).write(vals)
+        self.check_period_company()
+        return res
 
     @api.model
     def create(self, vals):
@@ -77,7 +106,9 @@ class account_move(models.Model):
                 period = self.env['account.period'].browse(period_id)
                 if period.company_id == journal.company_id:
                     vals['company_id'] = journal.company_id.id
-        return super(account_move, self).create(vals)
+        res = super(account_move, self).create(vals)
+        res.check_period_company()
+        return res
 
     @api.onchange('journal_id')
     def onchange_journal_id(self):
@@ -111,21 +142,23 @@ class account_statement(models.Model):
         return True
 
     _constraints = [
-            (_check_company_id, 'The journal and period chosen have to belong to the same company.', [
-             'journal_id', 'period_id']),
-        ]
+        (_check_company_id, 'The journal and period chosen have to belong to the same company.', [
+            'journal_id', 'period_id']),
+    ]
 
 
 class account_bank_statement_line(models.Model):
     _inherit = "account.bank.statement.line"
 
     def _domain_move_lines_for_reconciliation(self, cr, uid, st_line, excluded_ids=None, str=False, additional_domain=None, context=None):
-        domain = super(account_bank_statement_line, self)._domain_move_lines_for_reconciliation(cr, uid, st_line, excluded_ids, str, additional_domain, context)
+        domain = super(account_bank_statement_line, self)._domain_move_lines_for_reconciliation(
+            cr, uid, st_line, excluded_ids, str, additional_domain, context)
         domain.append(('company_id', '=', st_line.statement_id.company_id.id))
         return domain
 
     def _domain_reconciliation_proposition(self, cr, uid, st_line, excluded_ids=None, context=None):
-        domain = super(account_bank_statement_line, self)._domain_reconciliation_proposition(cr, uid, st_line, excluded_ids, context)
+        domain = super(account_bank_statement_line, self)._domain_reconciliation_proposition(
+            cr, uid, st_line, excluded_ids, context)
         domain.append(('company_id', '=', st_line.statement_id.company_id.id))
         return domain
 
