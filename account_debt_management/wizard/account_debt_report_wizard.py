@@ -48,7 +48,7 @@ class account_debt_report_wizard(models.TransientModel):
     secondary_currency = fields.Boolean(
         help='Add columns for secondary currency?')
 
-    @api.constrains
+    @api.constrains('company_type', 'company_id')
     def check_company_type(self):
         if self.company_type == 'consolidate' and self.company_id:
             raise Warning(_(
