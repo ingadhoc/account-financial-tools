@@ -14,14 +14,44 @@ class account_move(models.Model):
     number_in_book = fields.Char(
         string='Number in Book',
         help='This number is set when closing a period or by running a wizard'
-        )
+    )
 
-    _sql_constraints = [
-        ('number_in_book_uniq', 'unique(number_in_book, company_id)',
-            'Number in Book must be unique per Company!')]
+    @api.model
+    def get_book_line_value(self, number_in_book, field):
+        recs = self.search([('number_in_book', '=', number_in_book)])
+        if field in ['debit', 'credit']:
+            print "'line_id.' + field", 'line_id.' + field
+            return sum(recs.mapped('line_id.' + field))
+        elif field in ['date']:
+            print 'c cccc'
+            print 'c cccc'
+            print 'c cccc', recs.mapped(field)
+            return min(recs.mapped(field))
+
+        if len(recs) > 1:
+            return 'aaa'
+        else:
+            return recs[field]
+
+    # we dont want it as we allow to group moves
+    # _sql_constraints = [
+    #     ('number_in_book_uniq', 'unique(number_in_book, journal_id)',
+    #         'Number in Book must be unique per Journal!')]
 
     @api.multi
-    def moves_renumber(self, sequence):
+    def moves_renumber(self, sequence, grouped_journals=None):
+        if grouped_journals:
+            for journal in grouped_journals:
+                journal_moves = self.filtered(
+                    lambda x: x.journal_id == journal)
+                if not journal_moves:
+                    continue
+                fiscalyear = journal_moves[0].period_id.fiscalyear_id
+                journal_moves.write({
+                    'number_in_book': sequence.with_context(
+                        fiscalyear_id=fiscalyear.id)._next()
+                })
+                self -= journal_moves
         _logger.info("Renumbering %d account moves.", len(self.ids))
         for move in self:
             new_number = sequence.with_context(

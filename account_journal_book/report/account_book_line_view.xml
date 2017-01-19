@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <record id="view_account_book_line_search" model="ir.ui.view">
+         <field name="name">account.book.line.search</field>
+         <field name="model">account.book.line</field>
+         <field name="arch" type="xml">
+            <search string="Book Lines">
+                <field name="date"/>
+                <!-- <field name="journal_id"/> -->
+                <!-- <field name="company_id" groups="base.group_multi_company"/> -->
+                <!-- <field name="move_id"/> -->
+                <separator/>
+                <group expand="0" string="Group By...">
+<!--                     <filter string="Type" context="{'group_by': 'type'}"/>
+                    <filter string="Date" context="{'group_by': 'date'}"/>
+                    <filter string="Partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Journal" context="{'group_by': 'journal_id'}"/>
+                    <filter string="Entry" context="{'group_by': 'move_id'}"/>
+                    <filter string="Account" context="{'group_by': 'account_id'}"/>
+                    <filter string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="Date Maturity" context="{'group_by': 'date_maturity'}"/>
+                    <filter string="Commercial" context="{'group_by': 'user_id'}"/> -->
+               </group>
+            </search>
+         </field>
+    </record>
+
+    <record id="view_account_book_line_tree" model="ir.ui.view">
+         <field name="name">account.book.line.tree</field>
+         <field name="model">account.book.line</field>
+         <field name="arch" type="xml">
+            <tree string="Book Lines">
+                <field name="number_in_book"/>
+                <field name="date"/>
+                <field name="period_id"/>
+                <field name="account_id"/>
+                <!-- <field name="journal_id"/> -->
+                <!-- <field name="fiscalyear_id"/> -->
+                <!-- <field name="move_state"/> -->
+                <!-- <field name="move_id"/> -->
+                <!-- <field name="move_line_id"/> -->
+                <!-- <field name="company_id" groups="base.group_multi_company"/> -->
+                <!-- <field name="display_name"/> -->
+                <field name="debit" sum="Total"/>
+                <field name="credit" sum="Total"/>
+            </tree>
+         </field>
+    </record>
+
+<!--     <record id="view_account_book_line_graph" model="ir.ui.view">
+         <field name="name">account.book.line.graph</field>
+         <field name="model">account.book.line</field>
+         <field name="arch" type="xml">
+            <graph string="book Lines Analysis" type="pivot">
+                <field name="partner_id" type="row"/>
+                <field name="move_id" type="row"/>
+                <field name="date" type="col"/>
+                <field name="amount" type="measure"/>
+            </graph>
+         </field>
+    </record> -->
+
+    <record id="action_account_book_line" model="ir.actions.act_window">
+        <field name="name">Account Book Lines</field>
+        <field name="res_model">account.book.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <!-- <field name="view_mode">tree,form,graph</field> -->
+        <field name="context">{}</field>
+    </record>
+
+
+    <menuitem id="menu_current_account" parent="account.final_accounting_reports" sequence="10" action="action_account_book_line" name="Book Lines"/>
+
+</data>
+</openerp>

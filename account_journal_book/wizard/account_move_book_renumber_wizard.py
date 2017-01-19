@@ -17,15 +17,15 @@ class account_move_book_renumber(models.TransientModel):
         'Company',
         required=True,
         default=lambda self: self.env.user.company_id
-        )
+    )
     numbering_order = fields.Selection([
         ('by_date_per_period', 'By Date per Period'),
         ('by_date', 'By Date'),
-        ],
+    ],
         'Numbering Order',
         required=True,
         default='by_date_per_period'
-        )
+    )
     sequence_id = fields.Many2one(
         'ir.sequence',
         'Book Number Sequence',
@@ -34,7 +34,7 @@ class account_move_book_renumber(models.TransientModel):
         context={'default_code': 'journal.book.sequence'},
         help='If no sequence provided then it wont be numbered',
         required=True,
-        )
+    )
     journal_ids = fields.Many2many(
         'account.journal',
         'account_journal_book_renumber_rel',
@@ -43,7 +43,7 @@ class account_move_book_renumber(models.TransientModel):
         domain="[('company_id', '=', company_id)]",
         help="Journals to renumber",
         string="Journals"
-        )
+    )
     period_ids = fields.Many2many(
         'account.period',
         'account_period_book_renumber_rel',
@@ -53,7 +53,7 @@ class account_move_book_renumber(models.TransientModel):
         domain="[('company_id', '=', company_id), ('state', '=', 'draft')]",
         string="Periods",
         ondelete='null'
-        )
+    )
     number_next = fields.Integer(
         related='sequence_id.number_next_actual',
         readonly=True,
@@ -61,31 +61,45 @@ class account_move_book_renumber(models.TransientModel):
         # required=True,
         # default=1,
         # help="Journal sequences will start counting on this number"
-        )
+    )
     state = fields.Selection([
         ('init', 'Initial'),
         ('renumber', 'Renumbering')],
         readonly=True,
         default='init',
-        )
+    )
+    grouped_journal_ids = fields.Many2many(
+        'account.journal',
+        string='Grouped Journals',
+        domain="[('company_id', '=', company_id)]",
+        help='Group Entries of this journals and number with same number',
+    )
+
+    @api.onchange('journal_ids')
+    def onchange_journals(self):
+        self.grouped_journal_ids = self.grouped_journal_ids.search([
+            ('id', '=', self.journal_ids.ids),
+            ('type', 'in', ['sale', 'purchase']),
+        ])
 
     @api.onchange('company_id')
     def onchange_company(self):
         self.journal_ids = self.journal_ids.search(
             [('company_id', '=', self.company_id.id)])
-        self.period_ids = self.period_ids.search(
-            [('company_id', '=', self.company_id.id)]).filtered(
-                lambda x: x.state == 'draft')
+        self.period_ids = self.period_ids.search([
+            ('company_id', '=', self.company_id.id),
+            ('state', '=', 'draft'),
+        ])
 
         sequence = self.env['ir.sequence'].search([
             ('code', '=', 'journal.book.sequence'),
             ('company_id', '=', self.company_id.id),
-            ], limit=1)
+        ], limit=1)
         if not sequence:
             sequence = sequence.search([
                 ('code', '=', 'journal.book.sequence'),
                 ('company_id', '=', False)
-                ], limit=1)
+            ], limit=1)
         self.sequence_id = sequence
 
     # @api.onchange('sequence_id')
@@ -108,14 +122,15 @@ class account_move_book_renumber(models.TransientModel):
             ('state', '=', 'posted')],
             order='date,id')
         if self.numbering_order == 'by_date':
-            moves.moves_renumber(self.sequence_id)
+            moves.moves_renumber(self.sequence_id, self.grouped_journal_ids)
         else:
             for period in self.period_ids:
                 self.env['account.move'].search([
                     ('journal_id', 'in', self.journal_ids.ids),
                     ('period_id', '=', period.id),
                     ('state', '=', 'posted')],
-                    order='date,id').moves_renumber(self.sequence_id)
+                    order='date,id').moves_renumber(
+                        self.sequence_id, self.grouped_journal_ids)
 
         view_id = self.env['ir.model.data'].xmlid_to_res_id(
             'account.view_move_tree')

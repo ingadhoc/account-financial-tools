@@ -17,6 +17,9 @@
                         <field name="number_next"/>
                     </group>
                     <notebook>
+                        <page string="Grouped Journals">
+                            <field name="grouped_journal_ids"/>
+                        </page>
                         <page string="Periods">
                             <field name="period_ids" editable="top"/>
                         </page>

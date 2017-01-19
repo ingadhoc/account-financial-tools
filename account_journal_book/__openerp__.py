@@ -24,7 +24,7 @@
 ##############################################################################
 {
     'name': "Libro Diario Contable",
-    'version': "8.0.0.3.1",
+    'version': "8.0.1.2.0",
     'author': "Spanish Localization Team,"
               "Zikzakmedia SL,"
               "J. Gutierrez,"
@@ -36,12 +36,15 @@
     'license': "AGPL-3",
     'depends': [
         "account",
+        "report_aeroo",
     ],
     'data': [
         "wizard/wizard_print_journal_entries_view.xml",
         # 'wizard/account_period_close_wizard_view.xml',
         'wizard/account_move_book_renumber_wizard_view.xml',
         "report/account_journal_book.xml",
+        'report/account_book_line_view.xml',
+        'report/account_book_report.xml',
         'views/account_view.xml',
         'data/sequence.xml',
     ],

@@ -13,6 +13,7 @@
                 <xpath expr="//field[@name='target_move']" position="after">
                     <field name="sort_selection"/>
                     <field name="landscape"/>
+                    <field name="group_by_number_in_book"/>
                     <newline/>
                 </xpath>
             </field>
