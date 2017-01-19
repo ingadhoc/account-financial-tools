@@ -74,6 +74,15 @@ class account_move_book_renumber(models.TransientModel):
         domain="[('company_id', '=', company_id)]",
         help='Group Entries of this journals and number with same number',
     )
+    fiscalyear_id = fields.Many2one(
+        'account.fiscalyear',
+        'Fiscal Year',
+        domain="[('company_id', '=', company_id)]"
+    )
+
+    @api.onchange('fiscalyear_id')
+    def change_fiscalyear(self):
+        self.period_ids = self.fiscalyear_id.period_ids
 
     @api.onchange('journal_ids')
     def onchange_journals(self):
@@ -118,7 +127,7 @@ class account_move_book_renumber(models.TransientModel):
         # juntos
         moves = self.env['account.move'].search([
             ('journal_id', 'in', self.journal_ids.ids),
-            ('period_id', '=', self.period_ids.ids),
+            ('period_id', 'in', self.period_ids.ids),
             ('state', '=', 'posted')],
             order='date,id')
         if self.numbering_order == 'by_date':

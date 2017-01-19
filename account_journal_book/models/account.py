@@ -40,6 +40,9 @@ class account_move(models.Model):
 
     @api.multi
     def moves_renumber(self, sequence, grouped_journals=None):
+        """
+        We use sql instead of write to avoid constraints
+        """
         if grouped_journals:
             for journal in grouped_journals:
                 journal_moves = self.filtered(
@@ -47,13 +50,25 @@ class account_move(models.Model):
                 if not journal_moves:
                     continue
                 fiscalyear = journal_moves[0].period_id.fiscalyear_id
-                journal_moves.write({
-                    'number_in_book': sequence.with_context(
-                        fiscalyear_id=fiscalyear.id)._next()
-                })
-                self -= journal_moves
+                number = sequence.with_context(
+                    fiscalyear_id=fiscalyear.id)._next()
+                self._cr.execute("""
+                    UPDATE account_move
+                    SET number_in_book=%s
+                    WHERE id in %s""", (number, tuple(journal_moves.ids),))
+                # journal_moves.write({
+                #     'number_in_book': sequence.with_context(
+                #         fiscalyear_id=fiscalyear.id)._next()
+                # })
+                # self -= journal_moves
         _logger.info("Renumbering %d account moves.", len(self.ids))
         for move in self:
-            new_number = sequence.with_context(
+            number = sequence.with_context(
                 fiscalyear_id=move.period_id.fiscalyear_id.id)._next()
-            move.number_in_book = new_number
+            self._cr.execute("""
+                UPDATE account_move
+                SET number_in_book=%s
+                WHERE id in %s""", (number, tuple(move.ids),))
+            # new_number = sequence.with_context(
+            #     fiscalyear_id=move.period_id.fiscalyear_id.id)._next()
+            # move.number_in_book = new_number
