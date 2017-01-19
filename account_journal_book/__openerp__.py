@@ -45,6 +45,7 @@
         "report/account_journal_book.xml",
         'report/account_book_line_view.xml',
         'report/account_book_report.xml',
+        'security/ir.model.access.csv',
         'views/account_view.xml',
         'data/sequence.xml',
     ],
