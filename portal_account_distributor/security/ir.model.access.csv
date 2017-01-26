@@ -21,3 +21,4 @@ access_account_tax_code_distributor,account.tax_code.distributor,account.model_a
 access_account_move_distributor,account.move.distributor,account.model_account_move,base.group_portal_distributor,1,0,0,0
 access_account_payment_term_distributor,account.account.payment.term.distributor,account.model_account_payment_term,base.group_portal_distributor,1,0,0,0
 access_account_payment_term_line_distributor,account.account.payment.term.line.distributor,account.model_account_payment_term_line,base.group_portal_distributor,1,0,0,0
+access_account_fiscal_position_tax_distributor,account.account.fiscal.position.tax.distributor,account.model_account_fiscal_position_tax,base.group_portal_distributor,1,0,0,0
