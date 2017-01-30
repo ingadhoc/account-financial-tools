@@ -9,6 +9,10 @@ Account Usability Improvements
 Several Improvements to accounting:
 #. When creatin banks from bank menu, use bank name + account number for journal name (by default only account number is used). And also allow user to change this value (by default user can't)
 #. Make company id not required and false by default on payment term. This field was added on v9 and it is not used anywhere
+#. Add debit and credit card payment methods
+#. For inbound debit and credit payments, allow to configure days for collection. This will be used to set maturity date of related journal entries
+#. Add online payment method on journals
+#. Add link between payment acquirer and journals
 
 Installation
 ============
