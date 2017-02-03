@@ -89,7 +89,8 @@ class ResPartner(models.Model):
         self.ensure_one()
 
         result_selection = self._context.get('result_selection', False)
-        group_by_move = self._context.get('group_by_move', False)
+        group_by = self._context.get('group_by', False)
+        # group_by_move = self._context.get('group_by_move', False)
         from_date = self._context.get('from_date', False)
         to_date = self._context.get('to_date', False)
         historical_full = self._context.get('historical_full', False)
@@ -158,8 +159,9 @@ class ResPartner(models.Model):
         #     groupby=['move_id'],
         # )
         records = self.env['account.debt.line'].search(domain)
-        if group_by_move:
-            moves = []
+        # if group_by_move:
+        if group_by:
+            new_records = []
             # no podemos hacer sorted porque ordena por criterio de move_id
             # TODO analizar otras alternativas para que esto quede mas lindo
             # y tmb para que en la vista, si agrupo por move, se agrupe bien
@@ -173,10 +175,10 @@ class ResPartner(models.Model):
             # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR)
             # || ' ' || m.name as juan from account_move as m;
             for line in records:
-                move = line.move_id
-                if move not in moves:
-                    moves.append(move)
-            records = moves
+                new_record = line[group_by]
+                if new_record not in new_records:
+                    new_records.append(new_record)
+            records = new_records
             # records = records.mapped('move_id').sorted(
             #     lambda x: x.date)
 
@@ -184,40 +186,62 @@ class ResPartner(models.Model):
         # manera mas facil
         for record in records:
             detail_lines = []
-            if group_by_move:
-                move = record
+            if group_by == 'document_number':
+                # en record viene del document_number
+                # display_name = record
+                document_number = record
                 move_lines = self.env['account.debt.line'].search(
-                    domain + [('move_id', '=', move.id)])
-                display_names = move_lines.mapped('display_name')
-                display_names = list(set(display_names))
-                # lo hacemos asi por la misma razon de sin grou_by_mov
-                dates = list(set(move_lines.mapped('date')))
-                if len(dates) == 1:
-                    date = dates[0]
-                else:
-                    date = move.date
-                # si todos los display names de lineas son iguales, mostramos
-                # eso, si no, el del move
-                if len(display_names) == 1:
-                    display_name = display_names[0]
-                else:
-                    display_name = move.display_name
+                    domain + [('document_number', '=', record)])
+                date = move_lines[0].date
                 date_maturity = move_lines[0].date_maturity
                 # TODO podrian existir distintas monedas en asientos manuales
                 # arreglar
                 currency = move_lines[0].currency_id
                 if show_invoice_detail:
                     for inv_line in move_lines.mapped(
-                            'move_line_id.invoice.invoice_line'):
+                            'move_line_id.invoice_id.invoice_line_ids'):
                         detail_lines.append(
                             ("* %s x %s %s" % (
                                 inv_line.name.replace(
                                     '\n', ' ').replace('\r', ''),
                                 inv_line.quantity,
-                                inv_line.uos_id.name)))
+                                inv_line.uom_id.name)))
+            # DEPRECIAMOS???
+            # elif group_by == 'move_id':
+            #     move = record
+            #     move_lines = self.env['account.debt.line'].search(
+            #         domain + [('move_id', '=', move.id)])
+            #     display_names = move_lines.mapped('display_name')
+            #     display_names = list(set(display_names))
+            #     # lo hacemos asi por la misma razon de sin grou_by_mov
+            #     dates = list(set(move_lines.mapped('date')))
+            #     if len(dates) == 1:
+            #         date = dates[0]
+            #     else:
+            #         date = move.date
+            #     # si todos los display names de lineas son iguales, mostramos
+            #     # eso, si no, el del move
+            #     if len(display_names) == 1:
+            #         display_name = display_names[0]
+            #     else:
+            #         display_name = move.display_name
+            #     date_maturity = move_lines[0].date_maturity
+            #     # TODO podrian existir distintas monedas en asientos manuales
+            #     # arreglar
+            #     currency = move_lines[0].currency_id
+            #     if show_invoice_detail:
+            #         for inv_line in move_lines.mapped(
+            #                 'move_line_id.invoice_id.invoice_line_ids'):
+            #             detail_lines.append(
+            #                 ("* %s x %s %s" % (
+            #                     inv_line.name.replace(
+            #                         '\n', ' ').replace('\r', ''),
+            #                     inv_line.quantity,
+            #                     inv_line.uom_id.name)))
             else:
                 move_lines = record
-                display_name = record.display_name
+                document_number = record.document_number
+                # display_name = record.display_name
                 date_maturity = record.date_maturity
                 # no tomamos el date del move, si bien este es un campo
                 # related, porque algunas veces hacen el artilugio de cambiar
@@ -225,7 +249,6 @@ class ResPartner(models.Model):
                 # actualizas uno se actualiza el otro, lo dejamos por si a
                 # futuro se cambia ese campo para que no sea related
                 date = record.date
-                move = record.move_id
                 currency = record.currency_id
             amount = sum(move_lines.mapped('amount'))
             amount_residual = sum(move_lines.mapped('amount_residual'))
@@ -243,7 +266,8 @@ class ResPartner(models.Model):
                 financial_balance += financial_amount_residual
             res.append(get_line_vals(
                 date=date,
-                name=display_name,
+                name=document_number,
+                # name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
                 amount=amount,

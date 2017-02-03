@@ -6,9 +6,11 @@
          <field name="model">account.debt.line</field>
          <field name="arch" type="xml">
             <search string="Debt Lines">
+                <field name="document_number"/>
                 <field name="date"/>
                 <field name="date_maturity"/>
                 <field name="partner_id"/>
+                <field name="document_type_id"/>
                 <field name="journal_id"/>
                 <field name="user_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
@@ -23,6 +25,8 @@
                     <filter string="Date" context="{'group_by': 'date'}"/>
                     <filter string="Partner" context="{'group_by': 'partner_id'}"/>
                     <filter string="Journal" context="{'group_by': 'journal_id'}"/>
+                    <filter string="Document Number" context="{'group_by': 'document_number'}"/>
+                    <filter string="Document Type" context="{'group_by': 'document_type_id'}"/>
                     <filter string="Entry" context="{'group_by': 'move_id'}"/>
                     <filter string="Account" context="{'group_by': 'account_id'}"/>
                     <filter string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
@@ -41,7 +45,8 @@
                 <field name="date"/>
                 <field name="partner_id" invisible="context.get('show_balance', False)"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-                <field name="display_name"/>
+                <field name="document_number"/>
+                <!-- <field name="display_name"/> -->
                 <field name="date_maturity"/>
                 <field name="amount"/>
                 <field name="amount_residual" sum="Total"/>
@@ -74,7 +79,8 @@
                     <field name="company_currency_id" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
                     <h1 class="oe_inline">
-                        <field name="display_name" class="oe_inline"/>
+                        <field name="document_number" class="oe_inline"/>
+                        <!-- <field name="display_name" class="oe_inline"/> -->
                     </h1>
                     <group>
                         <group>

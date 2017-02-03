@@ -20,13 +20,14 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '9.0.1.1.0',
+    'version': '9.0.1.2.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
         'account_full_reconcile',
+        'account_document',
         # TODO vamos a analizar si agregamos esto o no
         # mas adelante se puede separar en otro modulo que integre
         # funcionalidad con este otro modulo

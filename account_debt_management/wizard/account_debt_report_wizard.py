@@ -37,9 +37,16 @@ class account_debt_report_wizard(models.TransientModel):
     # TODO implementar
     # show_receipt_detail = fields.Boolean('Show Receipt Detail')
     # TODO ver si implementamos esta opcion imprimiendo subilistado de o2m
-    group_by_move = fields.Boolean(
-        'Group By Move',
-        default=True)
+    group_by = fields.Selection([
+        ('document_number', 'Document Number'),
+        # TODO si es necesario implementar
+        # ('move_id', 'Move'),
+    ],
+        default='document_number',
+    )
+    # group_by_move = fields.Boolean(
+    #     'Group By Move',
+    #     default=True)
     historical_full = fields.Boolean(
         help='If true, then it will show all partner history. If not, only '
         'unreconciled items will be shown.')
@@ -62,7 +69,7 @@ class account_debt_report_wizard(models.TransientModel):
             return True
         partners = self.env['res.partner'].browse(active_ids)
         return self.env['report'].with_context(
-            group_by_move=self.group_by_move,
+            group_by=self.group_by,
             secondary_currency=self.secondary_currency,
             financial_amounts=self.financial_amounts,
             result_selection=self.result_selection,
@@ -82,7 +89,7 @@ class account_debt_report_wizard(models.TransientModel):
         active_id = self._context.get('active_id', False)
         context = {
             # report keys
-            'group_by_move': self.group_by_move,
+            'group_by': self.group_by,
             'secondary_currency': self.secondary_currency,
             'financial_amounts': self.financial_amounts,
             'result_selection': self.result_selection,

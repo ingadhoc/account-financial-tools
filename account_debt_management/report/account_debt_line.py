@@ -7,6 +7,7 @@ class AccountDebtLine(models.Model):
     _name = "account.debt.line"
     _description = "Account Debt Line"
     _auto = False
+    _rec_name = 'document_number'
     # we need id on order so we can get right amount when accumulating
     # move_id desc porque move id ordena ultimo arriba
     _order = 'date asc, date_maturity asc, move_id desc, id'
@@ -15,12 +16,24 @@ class AccountDebtLine(models.Model):
         'res.partner': [
             'user_id',
         ],
+        'account.move': [
+            'document_type_id', 'document_number',
+        ],
         'account.move.line': [
             'account_id', 'debit', 'credit', 'date_maturity', 'partner_id',
             'amount_currency',
         ],
     }
 
+    document_type_id = fields.Many2one(
+        'account.document.type',
+        'Document Type',
+        readonly=True
+    )
+    document_number = fields.Char(
+        readonly=True,
+        string='Document Number',
+    )
     date = fields.Date(
         readonly=True
     )
@@ -134,9 +147,9 @@ class AccountDebtLine(models.Model):
     )
 
     # computed fields
-    display_name = fields.Char(
-        compute='get_display_name'
-    )
+    # display_name = fields.Char(
+    #     compute='get_display_name'
+    # )
     financial_amount = fields.Monetary(
         related='move_line_id.financial_amount',
         # compute='_get_amounts',
@@ -163,26 +176,29 @@ class AccountDebtLine(models.Model):
         readonly=True,
     )
 
-    @api.one
-    def get_display_name(self):
-        # usamos display_name para que contenga doc number o name
-        # luego si el ref es igual al name del move no lo mostramos
-        display_name = self.move_id.display_name
-        ref = False
-        # because account voucher replace / with ''
-        move_names = [self.move_id.name, self.move_id.name.replace('/', '')]
-        # solo agregamos el ref del asiento o el name del line si son distintos
-        # a el name del asiento
-        if self.ref and self.ref not in move_names:
-            ref = self.ref
-        elif (
-                self.move_line_id.name and
-                self.move_line_id.name != '/' and
-                self.move_line_id.name not in move_names):
-            ref = self.move_line_id.name
-        if ref:
-            display_name = '%s (%s)' % (display_name, ref)
-        self.display_name = display_name
+    # TODO por ahora, y si nadie lo extraña, vamos a usar document_number
+    # en vez de este, alternativas por si se extraña:
+    # si se extraña entonces tal vez mejor restaurarlo con otro nombre
+    # @api.one
+    # def get_display_name(self):
+    #     # usamos display_name para que contenga doc number o name
+    #     # luego si el ref es igual al name del move no lo mostramos
+    #     display_name = self.move_id.display_name
+    #     ref = False
+    #     # because account voucher replace / with ''
+    #     move_names = [self.move_id.name, self.move_id.name.replace('/', '')]
+    #     # solo agregamos el ref del asiento o el name del line si son
+    #     # distintos a el name del asiento
+    #     if self.ref and self.ref not in move_names:
+    #         ref = self.ref
+    #     elif (
+    #             self.move_line_id.name and
+    #             self.move_line_id.name != '/' and
+    #             self.move_line_id.name not in move_names):
+    #         ref = self.move_line_id.name
+    #     if ref:
+    #         display_name = '%s (%s)' % (display_name, ref)
+    #     self.display_name = display_name
 
     # @api.multi
     # @api.depends('amount_residual_currency')
@@ -220,6 +236,12 @@ class AccountDebtLine(models.Model):
                 l.id as move_line_id,
                 am.date as date,
                 l.date_maturity as date_maturity,
+                -- si devuelve '' el concat del prefix y number lo cambiamos
+                -- por null y luego coalesce se encarga de elerig el name
+                COALESCE(NULLIF(CONCAT(
+                    dt.doc_code_prefix, am.document_number), ''), am.name)
+                    as document_number,
+                am.document_type_id as document_type_id,
                 am.ref as ref,
                 am.state as move_state,
                 l.full_reconcile_id as full_reconcile_id,
@@ -248,6 +270,8 @@ class AccountDebtLine(models.Model):
                 left join account_move am on (am.id=l.move_id)
                 -- left join account_period p on (am.period_id=p.id)
                 left join res_partner pa on (l.partner_id=pa.id)
+                left join account_document_type dt on (
+                    am.document_type_id=dt.id)
             WHERE
                 -- l.state != 'draft' and
                 a.internal_type IN ('payable', 'receivable')
