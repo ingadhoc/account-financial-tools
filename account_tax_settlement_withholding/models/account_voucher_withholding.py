@@ -6,7 +6,8 @@ class account_voucher_withholding(models.Model):
     _inherit = 'account.voucher.withholding'
 
     tax_state = fields.Selection(
-        related='move_line_id.tax_state'
+        related='move_line_id.tax_state',
+        readonly=True,
         )
 
     @api.multi

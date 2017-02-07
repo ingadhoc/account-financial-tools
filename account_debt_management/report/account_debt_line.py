@@ -152,6 +152,7 @@ class AccountDebtLine(models.Model):
     # )
     financial_amount = fields.Monetary(
         related='move_line_id.financial_amount',
+        readonly=True,
         # compute='_get_amounts',
         currency_field='company_currency_id',
     )
@@ -162,6 +163,7 @@ class AccountDebtLine(models.Model):
     financial_amount_residual = fields.Monetary(
         related='move_line_id.financial_amount_residual',
         currency_field='company_currency_id',
+        readonly=True,
     )
     # financial_amount_residual = fields.Monetary(
     #     compute='_get_amounts',

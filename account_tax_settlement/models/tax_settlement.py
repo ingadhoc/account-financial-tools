@@ -218,7 +218,8 @@ class account_tax_settlement(models.Model):
         states={'draft': [('readonly', False)]},
         )
     partner_id = fields.Many2one(
-        related='journal_id.partner_id.commercial_partner_id'
+        related='journal_id.partner_id.commercial_partner_id',
+        readonly=True,
         )
     date_to = fields.Date(
         "End Date",
