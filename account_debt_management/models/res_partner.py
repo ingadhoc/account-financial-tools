@@ -10,10 +10,9 @@ from openerp import api, models, fields, _
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    # unreconciled_domain = [('full_reconcile_id', '=', False)]
     unreconciled_domain = [('reconciled', '=', False)]
-    receivable_domain = [('type', '=', 'receivable')]
-    payable_domain = [('type', '=', 'payable')]
+    receivable_domain = [('internal_type', '=', 'receivable')]
+    payable_domain = [('internal_type', '=', 'payable')]
 
     receivable_debt_ids = fields.One2many(
         'account.debt.line',
@@ -89,15 +88,11 @@ class ResPartner(models.Model):
         self.ensure_one()
 
         result_selection = self._context.get('result_selection', False)
-        group_by = self._context.get('group_by', False)
-        # group_by_move = self._context.get('group_by_move', False)
         from_date = self._context.get('from_date', False)
         to_date = self._context.get('to_date', False)
         historical_full = self._context.get('historical_full', False)
         company_type = self._context.get('company_type', False)
         show_invoice_detail = self._context.get('show_invoice_detail', False)
-        # TODO implementar
-        # show_receipt_detail = self._context.get('show_receipt_detail', False)
 
         domain = []
 
@@ -107,6 +102,13 @@ class ResPartner(models.Model):
 
         if not historical_full:
             domain += self.unreconciled_domain
+            # si pide historial completo entonces mostramos los movimientos
+            # si no mostramos los saldos
+            balance_field = 'amount_residual'
+            financial_balance_field = 'financial_amount_residual'
+        else:
+            balance_field = 'amount'
+            financial_balance_field = 'financial_amount'
 
         if result_selection == 'receivable':
             domain += self.receivable_domain
@@ -115,14 +117,13 @@ class ResPartner(models.Model):
 
         domain += [('partner_id', '=', self.id)]
 
-        # without_date_domain = domain[:]
-
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
             intitial_moves = self.env['account.debt.line'].search(
                 initial_domain)
-            balance = sum(intitial_moves.mapped('amount'))
-            financial_balance = sum(intitial_moves.mapped('financial_amount'))
+            balance = sum(intitial_moves.mapped(balance_field))
+            financial_balance = sum(intitial_moves.mapped(
+                financial_balance_field))
             res = [get_line_vals(
                 name=_('INITIAL BALANCE'),
                 balance=balance,
@@ -152,122 +153,36 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
-        # no usamos mas este group porque usa el orden de move_id
-        # records = self.env['account.debt.line'].read_group(
-        #     domain=domain,
-        #     fields=['move_id'],
-        #     groupby=['move_id'],
-        # )
         records = self.env['account.debt.line'].search(domain)
-        # if group_by_move:
-        if group_by:
-            new_records = []
-            # no podemos hacer sorted porque ordena por criterio de move_id
-            # TODO analizar otras alternativas para que esto quede mas lindo
-            # y tmb para que en la vista, si agrupo por move, se agrupe bien
-            # se me ocurre:
-            # 1. cambiar criterio de orden a move y de ultima en vista
-            # corregir con "default_order="id desc""
-            # 2. hacer que las debt lines se crean con una agrupacion
-            # de otra vista que se cree y a la cual si definamos el orden
-            # o que sea un campo str que se ordene por ej
-            # para esta ultima deberiamos ahcer algo tipo esto
-            # select CAST(ROW_NUMBER() OVER (ORDER BY m.date, m.id) AS VARCHAR)
-            # || ' ' || m.name as juan from account_move as m;
-            for line in records:
-                new_record = line[group_by]
-                if new_record not in new_records:
-                    new_records.append(new_record)
-            records = new_records
-            # records = records.mapped('move_id').sorted(
-            #     lambda x: x.date)
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
         for record in records:
             detail_lines = []
-            if group_by == 'document_number':
-                # en record viene del document_number
-                # display_name = record
-                document_number = record
-                move_lines = self.env['account.debt.line'].search(
-                    domain + [('document_number', '=', record)])
-                date = move_lines[0].date
-                date_maturity = move_lines[0].date_maturity
-                # TODO podrian existir distintas monedas en asientos manuales
-                # arreglar
-                currency = move_lines[0].currency_id
-                if show_invoice_detail:
-                    for inv_line in move_lines.mapped(
-                            'move_line_id.invoice_id.invoice_line_ids'):
-                        detail_lines.append(
-                            ("* %s x %s %s" % (
-                                inv_line.name.replace(
-                                    '\n', ' ').replace('\r', ''),
-                                inv_line.quantity,
-                                inv_line.uom_id.name)))
-            # DEPRECIAMOS???
-            # elif group_by == 'move_id':
-            #     move = record
-            #     move_lines = self.env['account.debt.line'].search(
-            #         domain + [('move_id', '=', move.id)])
-            #     display_names = move_lines.mapped('display_name')
-            #     display_names = list(set(display_names))
-            #     # lo hacemos asi por la misma razon de sin grou_by_mov
-            #     dates = list(set(move_lines.mapped('date')))
-            #     if len(dates) == 1:
-            #         date = dates[0]
-            #     else:
-            #         date = move.date
-            #     # si todos los display names de lineas son iguales, mostramos
-            #     # eso, si no, el del move
-            #     if len(display_names) == 1:
-            #         display_name = display_names[0]
-            #     else:
-            #         display_name = move.display_name
-            #     date_maturity = move_lines[0].date_maturity
-            #     # TODO podrian existir distintas monedas en asientos manuales
-            #     # arreglar
-            #     currency = move_lines[0].currency_id
-            #     if show_invoice_detail:
-            #         for inv_line in move_lines.mapped(
-            #                 'move_line_id.invoice_id.invoice_line_ids'):
-            #             detail_lines.append(
-            #                 ("* %s x %s %s" % (
-            #                     inv_line.name.replace(
-            #                         '\n', ' ').replace('\r', ''),
-            #                     inv_line.quantity,
-            #                     inv_line.uom_id.name)))
-            else:
-                move_lines = record
-                document_number = record.document_number
-                # display_name = record.display_name
-                date_maturity = record.date_maturity
-                # no tomamos el date del move, si bien este es un campo
-                # related, porque algunas veces hacen el artilugio de cambiar
-                # esta fecha en el move line, en realidad verificamos que si
-                # actualizas uno se actualiza el otro, lo dejamos por si a
-                # futuro se cambia ese campo para que no sea related
-                date = record.date
-                currency = record.currency_id
-            amount = sum(move_lines.mapped('amount'))
-            amount_residual = sum(move_lines.mapped('amount_residual'))
-            financial_amount = sum(move_lines.mapped('financial_amount'))
-            financial_amount_residual = sum(move_lines.mapped(
-                'financial_amount_residual'))
-            amount_currency = sum(move_lines.mapped('amount_currency'))
-            # si pide historial completo entonces mostramos los movimientos
-            # si no mostramos los saldos
-            if historical_full:
-                balance += amount
-                financial_balance += financial_amount
-            else:
-                balance += amount_residual
-                financial_balance += financial_amount_residual
+            if show_invoice_detail:
+                for inv_line in record.move_line_ids.mapped(
+                        'invoice_id.invoice_line_ids'):
+                    detail_lines.append(
+                        ("* %s x %s %s" % (
+                            inv_line.name.replace(
+                                '\n', ' ').replace('\r', ''),
+                            inv_line.quantity,
+                            inv_line.uom_id.name)))
+            document_number = record.document_number
+            date_maturity = record.date_maturity
+            date = record.date
+            currency = record.currency_id
+            amount = record.amount
+            amount_residual = record.amount_residual
+            financial_amount = record.financial_amount
+            financial_amount_residual = record.financial_amount_residual
+            amount_currency = record.amount_currency
+
+            balance += record[balance_field]
+            financial_balance += record[financial_balance_field]
             res.append(get_line_vals(
                 date=date,
                 name=document_number,
-                # name=display_name,
                 detail_lines=detail_lines,
                 date_maturity=date_maturity,
                 amount=amount,
