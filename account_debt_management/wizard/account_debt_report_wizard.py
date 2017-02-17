@@ -36,17 +36,6 @@ class account_debt_report_wizard(models.TransientModel):
     show_invoice_detail = fields.Boolean('Show Invoice Detail')
     # TODO implementar
     # show_receipt_detail = fields.Boolean('Show Receipt Detail')
-    # TODO ver si implementamos esta opcion imprimiendo subilistado de o2m
-    group_by = fields.Selection([
-        ('document_number', 'Document Number'),
-        # TODO si es necesario implementar
-        # ('move_id', 'Move'),
-    ],
-        default='document_number',
-    )
-    # group_by_move = fields.Boolean(
-    #     'Group By Move',
-    #     default=True)
     historical_full = fields.Boolean(
         help='If true, then it will show all partner history. If not, only '
         'unreconciled items will be shown.')
@@ -68,8 +57,8 @@ class account_debt_report_wizard(models.TransientModel):
         if not active_ids:
             return True
         partners = self.env['res.partner'].browse(active_ids)
+        report = 'account_debt_report'
         return self.env['report'].with_context(
-            group_by=self.group_by,
             secondary_currency=self.secondary_currency,
             financial_amounts=self.financial_amounts,
             result_selection=self.result_selection,
@@ -80,8 +69,7 @@ class account_debt_report_wizard(models.TransientModel):
             historical_full=self.historical_full,
             show_invoice_detail=self.show_invoice_detail,
             # show_receipt_detail=self.show_receipt_detail,
-        ).get_action(
-            partners, 'account_debt_report')
+        ).get_action(partners, report)
 
     @api.multi
     def send_by_email(self):
@@ -89,7 +77,6 @@ class account_debt_report_wizard(models.TransientModel):
         active_id = self._context.get('active_id', False)
         context = {
             # report keys
-            'group_by': self.group_by,
             'secondary_currency': self.secondary_currency,
             'financial_amounts': self.financial_amounts,
             'result_selection': self.result_selection,

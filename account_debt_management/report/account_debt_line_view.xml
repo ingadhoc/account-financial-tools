@@ -11,27 +11,19 @@
                 <field name="date_maturity"/>
                 <field name="partner_id"/>
                 <field name="document_type_id"/>
-                <field name="journal_id"/>
-                <field name="user_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-                <field name="move_id"/>
-                <filter string="Receivable" domain="[('type','=','receivable')]" help="Receivable payments"/>
-                <filter string="Payable" domain="[('type','=','payable')]" help="Payable payments"/>
+                <filter string="Receivable" domain="[('internal_type','=','receivable')]" help="Receivable payments"/>
+                <filter string="Payable" domain="[('internal_type','=','payable')]" help="Payable payments"/>
                 <separator/>
                 <filter string="Unreconciled" domain="[('reconciled','=',False), ('account_id.reconcile','=',True)]" help="Unreconciled Journal Items" name="unreconciled"/>
-                <!-- <filter string="Unreconciled" domain="[('full_reconcile_id','=',False)]" help="Unreconciled Items" name="unreconciled"/> -->
                 <group expand="0" string="Group By...">
-                    <filter string="Type" context="{'group_by': 'type'}"/>
+                    <filter string="Type" context="{'group_by': 'internal_type'}"/>
                     <filter string="Date" context="{'group_by': 'date'}"/>
                     <filter string="Partner" context="{'group_by': 'partner_id'}"/>
-                    <filter string="Journal" context="{'group_by': 'journal_id'}"/>
-                    <filter string="Document Number" context="{'group_by': 'document_number'}"/>
                     <filter string="Document Type" context="{'group_by': 'document_type_id'}"/>
-                    <filter string="Entry" context="{'group_by': 'move_id'}"/>
                     <filter string="Account" context="{'group_by': 'account_id'}"/>
                     <filter string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
                     <filter string="Date Maturity" context="{'group_by': 'date_maturity'}"/>
-                    <filter string="Commercial" context="{'group_by': 'user_id'}"/>
                </group>
             </search>
          </field>
@@ -46,7 +38,6 @@
                 <field name="partner_id" invisible="context.get('show_balance', False)"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="document_number"/>
-                <!-- <field name="display_name"/> -->
                 <field name="date_maturity"/>
                 <field name="amount"/>
                 <field name="amount_residual" sum="Total"/>
@@ -54,12 +45,10 @@
                 <!-- <field name="balance" invisible="not context.get('show_balance', False)"/> -->
                 <field name="amount_currency" groups="base.group_multi_currency"/>
                 <field name="amount_residual_currency" groups="base.group_multi_currency"/>
-                <!-- <field name="currency_id" groups="base.group_multi_currency"/> -->
                 <field name="financial_amount_residual" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
                 <!-- no queremos mostrarlo mas, es util? -->
                 <!-- <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/> -->
                 <!-- <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/> -->
-                <field name="full_reconcile_id" string="Rec." invisible="context.get('hide_reconciled', False)"/>
                 <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Accounting Document" name="action_open_related_document"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="company_currency_id" invisible="1"/>
@@ -80,35 +69,32 @@
                     <field name="currency_id" invisible="1"/>
                     <h1 class="oe_inline">
                         <field name="document_number" class="oe_inline"/>
-                        <!-- <field name="display_name" class="oe_inline"/> -->
                     </h1>
                     <group>
                         <group>
                             <field name="partner_id"/>
                             <field name="account_id"/>
-                            <field name="move_line_id"/>
-                            <field name="move_id"/>
-                            <field name="full_reconcile_id"/>
-                            <!-- <field name="reconcile_partial_id"/> -->
+                            <field name="payment_group_id" attrs="{'invisible': [('payment_group_id', '=', False)]}"/>
+                            <field name="invoice_id" attrs="{'invisible': [('invoice_id', '=', False)]}"/>
+                            <field name="statement_id" attrs="{'invisible': [('statement_id', '=', False)]}"/>
                         </group>
                         <group>
-                            <!-- <label for="amount" class="oe_inline"/> -->
-                           <!--  <div>
-                                <field name="amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" class="oe_inline"/>
-                                <label for="amount_currency" class="oe_inline" string=" / " attrs="{'invisible': [('currency_id', '=', False)]}" groups="base.group_multi_currency"/>
-                                <field name="amount_currency" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" class="oe_inline" groups="base.group_multi_currency"/>
-                            </div> -->
                             <field name="amount"/>
                             <field name="amount_residual"/>
                             <field name="amount_currency" groups="base.group_multi_currency"/>
                             <field name="amount_residual_currency" groups="base.group_multi_currency"/>
                             <field name="financial_amount_residual" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/>
-                            <!-- <field name="financial_amount" widget="monetary" options="{'currency_field': 'company_currency_id'}" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/> -->
                             <field name="date"/>
                             <field name="date_maturity"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Journal Entries">
+                            <field name="move_line_ids"/>
+                            <!-- <field name="move_ids"/> -->
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
          </field>
@@ -120,7 +106,7 @@
          <field name="arch" type="xml">
             <graph string="Debt Lines Analysis" type="pivot">
                 <field name="partner_id" type="row"/>
-                <field name="move_id" type="row"/>
+                <field name="document_number" type="row"/>
                 <field name="date" type="col"/>
                 <field name="amount" type="measure"/>
             </graph>

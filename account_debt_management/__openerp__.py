@@ -28,6 +28,9 @@
     'depends': [
         'account_full_reconcile',
         'account_document',
+        # lo agregamos aca por simplicidad y para poder poner link al
+        # payment
+        'account_payment_group',
         # TODO vamos a analizar si agregamos esto o no
         # mas adelante se puede separar en otro modulo que integre
         # funcionalidad con este otro modulo
