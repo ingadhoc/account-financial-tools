@@ -1,2 +1,3 @@
 ingadhoc-aeroo_reports https://github.com/ingadhoc/aeroo_reports.git
 ingadhoc-miscellaneous https://github.com/ingadhoc/miscellaneous.git
+ingadhoc-payment https://github.com/ingadhoc/payment.git
