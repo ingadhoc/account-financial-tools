@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import tools
-from openerp import models, fields, api
+from openerp import tools, models, fields, api, _
 from ast import literal_eval
 
 
@@ -23,6 +22,12 @@ class AccountDebtLine(models.Model):
         ],
     }
 
+    blocked = fields.Boolean(
+        string='No Follow-up',
+        readonly=True,
+        help="You can check this box to mark this journal item as a "
+        "litigation with the associated partner"
+    )
     document_type_id = fields.Many2one(
         'account.document.type',
         'Document Type',
@@ -106,29 +111,51 @@ class AccountDebtLine(models.Model):
     # computed fields
     financial_amount = fields.Monetary(
         compute='_compute_move_lines_data',
-        readonly=True,
         currency_field='company_currency_id',
     )
     financial_amount_residual = fields.Monetary(
         compute='_compute_move_lines_data',
         currency_field='company_currency_id',
-        readonly=True,
+    )
+    # we get this line to make it easier to compute other lines
+    # for debt lines, as we group by due date, we should have only one
+    move_line_id = fields.Many2one(
+        'account.move.line',
+        string='Entry line',
+        compute='_compute_move_lines_data',
     )
     move_line_ids = fields.One2many(
         'account.move.line',
         string='Entry lines',
         compute='_compute_move_lines_data',
-        readonly=True
     )
     move_ids = fields.One2many(
         'account.move',
         string='Entry',
         compute='_compute_move_lines_data',
-        readonly=True
     )
     company_currency_id = fields.Many2one(
         related='company_id.currency_id',
         readonly=True,
+    )
+    payment_group_id = fields.Many2one(
+        'account.payment.group',
+        'Payment Group',
+        compute='_compute_move_lines_data',
+    )
+    invoice_id = fields.Many2one(
+        'account.invoice',
+        'Invoice',
+        compute='_compute_move_lines_data',
+    )
+    # es una concatenacion de los name de los move lines
+    name = fields.Char(
+        compute='_compute_move_lines_data',
+    )
+    statement_id = fields.Many2one(
+        'account.bank.statement',
+        'Statement',
+        compute='_compute_move_lines_data',
     )
 
     # TODO por ahora, y si nadie lo extraña, vamos a usar document_number
@@ -164,9 +191,36 @@ class AccountDebtLine(models.Model):
         cumulative all together
         """
         for rec in self:
-            rec.move_line_ids = rec.move_line_ids.browse(
+            move_lines = rec.move_line_ids.browse(
                 literal_eval(rec.move_lines_str))
+
+            rec.move_line_ids = move_lines
+            rec.name = ', '.join(move_lines.mapped('name'))
             rec.move_ids = rec.move_line_ids.mapped('move_id')
+
+            if len(move_lines) == 1:
+                # return one line or empty recordset
+                rec.move_line_id = (
+                    len(move_lines) == 1 and move_lines[0] or
+                    rec.env['account.move.line'])
+
+            rec.invoice_id = rec.move_line_id.invoice_id
+            rec.payment_group_id = rec.move_line_id.mapped(
+                'payment_id.payment_group_id')
+            rec.statement_id = rec.move_line_id.statement_id
+            # invoices = rec.move_line_ids.mapped('invoice_id')
+            # if len(invoices) == 1:
+            #     rec.invoice_id = invoices
+
+            # payment_groups = rec.move_line_ids.mapped(
+            #     'payment_id.payment_group_id')
+            # if len(payment_groups) == 1:
+            #     rec.payment_group_id = payment_groups
+
+            # statements = rec.move_line_ids.mapped('statement_id')
+            # if len(statements) == 1:
+            #     rec.statement_id = statements
+
             rec.financial_amount = sum(
                 rec.move_line_ids.mapped('financial_amount'))
             rec.financial_amount_residual = sum(
@@ -179,10 +233,15 @@ class AccountDebtLine(models.Model):
                 row_number() OVER () AS id,
                 string_agg(cast(l.id as varchar), ',') as move_lines_str,
                 max(am.date) as date,
-                max(l.date_maturity) as date_maturity,
+                l.date_maturity as date_maturity,
+                -- max(l.date_maturity) as date_maturity,
                 am.document_type_id as document_type_id,
                 c.document_number as document_number,
                 bool_and(l.reconciled) as reconciled,
+                -- l.blocked as blocked,
+                -- si cualquier deuda esta bloqueada de un comprobante,
+                -- toda deberia estar bloqueda
+                bool_and(l.blocked) as blocked,
 
                 -- TODO borrar, al final no pudimos hacerlo asi porque si no
                 -- agrupamos por am.name, entonces todo lo que no tenga tipo
@@ -243,7 +302,7 @@ class AccountDebtLine(models.Model):
             GROUP BY
                 l.partner_id, am.company_id, l.account_id, l.currency_id,
                 a.internal_type, a.user_type_id, c.document_number,
-                am.document_type_id
+                am.document_type_id, l.date_maturity
                 -- dt.doc_code_prefix, am.document_number
         """
         cr.execute("""CREATE or REPLACE VIEW %s as (%s
@@ -252,30 +311,45 @@ class AccountDebtLine(models.Model):
     @api.multi
     def action_open_related_document(self):
         self.ensure_one()
-        view_id = False
-        # TODO ver si queremos devolver lista si hay mas de uno
-        record = self.env['account.invoice'].search(
-            [('move_id', '=', self.move_id.id)], limit=1)
-        if not record:
-            record = self.env['account.payment'].search(
-                [('move_line_ids', '=', self.id)], limit=1)
-            if record:
-                view_id = self.env['ir.model.data'].xmlid_to_res_id(
-                    'account.view_account_payment_form')
-            else:
-                record = self.move_id
-        else:
-            # if invoice, we choose right view
-            if record.type in ['in_refund', 'in_invoice']:
-                view_id = self.env.ref('account.invoice_supplier_form').id
-            else:
-                view_id = self.env.ref('account.invoice_form').id
+        # usamos lo que ya se usa en js para devolver la accion
+        res_model, res_id, action_name, view_id = self.get_model_id_and_name()
 
         return {
             'type': 'ir.actions.act_window',
-            'res_model': record._name,
+            'name': action_name,
+            'res_model': res_model,
             'view_type': 'form',
             'view_mode': 'form',
-            'res_id': record.id,
-            'view_id': view_id,
+            'views': [[view_id, 'form']],
+            'res_id': res_id,
+            # 'view_id': res[0],
         }
+
+    @api.multi
+    def get_model_id_and_name(self):
+        """
+        Function used to display the right action on journal items on dropdown
+        lists, in reports like general ledger
+        """
+        if self.statement_id:
+            return [
+                'account.bank.statement', self.statement_id.id,
+                _('View Bank Statement'), False]
+        if self.payment_group_id:
+            return [
+                'account.payment.group',
+                self.payment_group_id.id,
+                _('View Payment Group'), False]
+        if self.invoice_id:
+            view_id = self.invoice_id.get_formview_id()
+            return [
+                'account.invoice',
+                self.invoice_id.id,
+                _('View Invoice'),
+                view_id]
+        # TODO ver si implementamos un move
+        return [
+            'account.move',
+            self.move_ids.id,
+            _('View Move'),
+            False]

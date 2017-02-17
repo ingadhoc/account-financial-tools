@@ -65,9 +65,6 @@
                     <button type="object" string="Open Document" help="Open Related Accounting Document" name="action_open_related_document"/>
                 </header>
                 <sheet>
-                    <!-- TODO agregar estos dos como botones -->
-                    <field name="move_line_ids"/>
-                    <field name="move_ids"/>
                     <field name="company_currency_id" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
                     <h1 class="oe_inline">
@@ -77,6 +74,9 @@
                         <group>
                             <field name="partner_id"/>
                             <field name="account_id"/>
+                            <field name="payment_group_id" attrs="{'invisible': [('payment_group_id', '=', False)]}"/>
+                            <field name="invoice_id" attrs="{'invisible': [('invoice_id', '=', False)]}"/>
+                            <field name="statement_id" attrs="{'invisible': [('statement_id', '=', False)]}"/>
                         </group>
                         <group>
                             <field name="amount"/>
@@ -89,6 +89,12 @@
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Journal Entries">
+                            <field name="move_line_ids"/>
+                            <!-- <field name="move_ids"/> -->
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
          </field>
