@@ -15,6 +15,8 @@ and cumulative amounts
 * Add partner balance
 * You can send email to one or multiple partners with they debt report
 
+NOTE: if you want to group by date (on line per maturity date) then you need to add a parameter "account_debt_management.group_by_date" with value "True" and update this module.
+
 
 Installation
 ============

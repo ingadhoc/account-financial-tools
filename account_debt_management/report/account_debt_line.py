@@ -228,17 +228,25 @@ class AccountDebtLine(models.Model):
 
     def init(self, cr):
         tools.drop_view_if_exists(cr, self._table)
+        group_by_date = self.pool['ir.config_parameter'].get_param(
+            cr, 1, 'account_debt_management.group_by_date')
+        if group_by_date:
+            params = ('l.date_maturity as date_maturity,', ', l.date_maturity')
+        else:
+            params = ('min(l.date_maturity) as date_maturity,', '')
         query = """
             SELECT
-                -- row_number() OVER () AS id,
-                ROW_NUMBER() OVER (ORDER BY l.partner_id, am.company_id,
-                    l.account_id, l.currency_id, a.internal_type,
-                    a.user_type_id, c.document_number, am.document_type_id,
-                    l.date_maturity) as id,
+                -- es una funcion y se renumera constantemente, por eso
+                -- necesita el over
+                -- ROW_NUMBER() OVER (ORDER BY l.partner_id, am.company_id,
+                --     l.account_id, l.currency_id, a.internal_type,
+                --     a.user_type_id, c.document_number, am.document_type_id,
+                --     l.date_maturity) as id,
+                -- igualmente los move lines son unicos, usamos eso como id
+                max(l.id) as id,
                 string_agg(cast(l.id as varchar), ',') as move_lines_str,
                 max(am.date) as date,
-                l.date_maturity as date_maturity,
-                -- max(l.date_maturity) as date_maturity,
+                %s
                 am.document_type_id as document_type_id,
                 c.document_number as document_number,
                 bool_and(l.reconciled) as reconciled,
@@ -306,9 +314,9 @@ class AccountDebtLine(models.Model):
             GROUP BY
                 l.partner_id, am.company_id, l.account_id, l.currency_id,
                 a.internal_type, a.user_type_id, c.document_number,
-                am.document_type_id, l.date_maturity
+                am.document_type_id %s
                 -- dt.doc_code_prefix, am.document_number
-        """
+        """ % params
         cr.execute("""CREATE or REPLACE VIEW %s as (%s
         )""" % (self._table, query))
 
