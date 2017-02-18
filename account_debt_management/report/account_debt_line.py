@@ -230,7 +230,11 @@ class AccountDebtLine(models.Model):
         tools.drop_view_if_exists(cr, self._table)
         query = """
             SELECT
-                row_number() OVER () AS id,
+                -- row_number() OVER () AS id,
+                ROW_NUMBER() OVER (ORDER BY l.partner_id, am.company_id,
+                    l.account_id, l.currency_id, a.internal_type,
+                    a.user_type_id, c.document_number, am.document_type_id,
+                    l.date_maturity) as id,
                 string_agg(cast(l.id as varchar), ',') as move_lines_str,
                 max(am.date) as date,
                 l.date_maturity as date_maturity,
@@ -282,7 +286,7 @@ class AccountDebtLine(models.Model):
                 left join account_account a on (l.account_id = a.id)
                 left join account_move am on (am.id=l.move_id)
                 -- left join account_period p on (am.period_id=p.id)
-                left join res_partner pa on (l.partner_id=pa.id)
+                -- left join res_partner pa on (l.partner_id=pa.id)
                 left join account_document_type dt on (
                     am.document_type_id=dt.id)
                 left join (
