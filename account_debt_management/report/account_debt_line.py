@@ -228,10 +228,12 @@ class AccountDebtLine(models.Model):
 
     def init(self, cr):
         tools.drop_view_if_exists(cr, self._table)
-        group_by_date = self.pool['ir.config_parameter'].get_param(
-            cr, 1, 'account_debt_management.group_by_date')
-        if group_by_date:
+        date_maturity_type = self.pool['ir.config_parameter'].get_param(
+            cr, 1, 'account_debt_management.date_maturity_type')
+        if date_maturity_type == 'detail':
             params = ('l.date_maturity as date_maturity,', ', l.date_maturity')
+        elif date_maturity_type == 'max':
+            params = ('max(l.date_maturity) as date_maturity,', '')
         else:
             params = ('min(l.date_maturity) as date_maturity,', '')
         query = """
