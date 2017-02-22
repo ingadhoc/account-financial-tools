@@ -129,9 +129,14 @@ class AccountDebtLine(models.Model):
         string='Entry lines',
         compute='_compute_move_lines_data',
     )
-    move_ids = fields.One2many(
+    move_id = fields.Many2one(
         'account.move',
         string='Entry',
+        compute='_compute_move_lines_data',
+    )
+    move_ids = fields.One2many(
+        'account.move',
+        string='Entries',
         compute='_compute_move_lines_data',
     )
     company_currency_id = fields.Many2one(
@@ -197,6 +202,8 @@ class AccountDebtLine(models.Model):
             rec.move_line_ids = move_lines
             rec.name = ', '.join(move_lines.mapped('name'))
             rec.move_ids = rec.move_line_ids.mapped('move_id')
+            if len(rec.move_ids) == 1:
+                rec.move_id = rec.move_ids
 
             if len(move_lines) == 1:
                 # return one line or empty recordset
@@ -361,9 +368,9 @@ class AccountDebtLine(models.Model):
                 self.invoice_id.id,
                 _('View Invoice'),
                 view_id]
-        # TODO ver si implementamos un move
+        # TODO ver si implementamos que pasa cuando hay mas de un move
         return [
             'account.move',
-            self.move_ids.id,
+            self.move_id.id,
             _('View Move'),
             False]
