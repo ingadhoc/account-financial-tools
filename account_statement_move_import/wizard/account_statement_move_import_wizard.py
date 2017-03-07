@@ -126,4 +126,5 @@ class account_statement_move_import_wizard(models.TransientModel):
             # create statement line
             statement_line = statement.line_ids.create(line_vals)
             line.move_id.statement_line_id = statement_line.id
+            line.statement_id = statement.id
         return True
