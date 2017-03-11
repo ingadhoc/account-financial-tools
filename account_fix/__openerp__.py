@@ -24,8 +24,6 @@
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
     'data': [
-        '../../odoo-argentina/l10n_ar_account/demo/account_customer_invoice_demo.yml',
-        '../../odoo-argentina/l10n_ar_account/demo/account_customer_invoice_validate_demo.yml',
     ],
     'demo': [],
     'depends': ['account'],
