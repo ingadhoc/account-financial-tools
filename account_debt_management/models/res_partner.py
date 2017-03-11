@@ -197,7 +197,8 @@ class ResPartner(models.Model):
         res += final_line
         return res
 
-    @api.one
+    @api.multi
     @api.depends('debit', 'credit')
     def _get_debt_balance(self):
-        self.debt_balance = self.credit - self.debit
+        for rec in self:
+            rec.debt_balance = rec.credit
