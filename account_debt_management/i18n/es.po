@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-30 00:26+0000\n"
-"PO-Revision-Date: 2016-07-31 20:18+0000\n"
+"POT-Creation-Date: 2017-01-19 17:15+0000\n"
+"PO-Revision-Date: 2016-12-12 19:46+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -286,12 +286,6 @@ msgid "Entry line"
 msgstr "Apunte Contable"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/models/res_partner.py:132
-#, python-format
-msgid "FINAL BALANCE"
-msgstr "SALDO FINAL"
-
-#. module: account_debt_management
 #: field:account.move.line,financial_amount:0
 msgid "Financial Amount"
 msgstr "Importe Financiero"
@@ -556,6 +550,7 @@ msgstr "Hasta"
 
 #. module: account_debt_management
 #: view:account.debt.line:account_debt_management.view_account_debt_line_tree
+#: view:res.partner:account_debt_management.view_partner_tree
 msgid "Total"
 msgstr "Total"
 

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-05-24 23:24+0000\n"
+"POT-Creation-Date: 2017-01-19 17:15+0000\n"
+"PO-Revision-Date: 2016-08-16 23:46+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -20,11 +20,13 @@ msgstr ""
 
 #. module: account_journal_security
 #: field:res.users,property_account_payable:0
+#: field:res.users,property_account_payable_ids:0
 msgid "Account Payable"
 msgstr "A pagar"
 
 #. module: account_journal_security
 #: field:res.users,property_account_receivable:0
+#: field:res.users,property_account_receivable_ids:0
 msgid "Account Receivable"
 msgstr "A Cobrar"
 
@@ -62,8 +64,9 @@ msgstr "Contratos"
 
 #. module: account_journal_security
 #: field:res.users,property_payment_term:0
+#: field:res.users,property_payment_term_ids:0
 msgid "Customer Payment Term"
-msgstr ""
+msgstr "Customer Payment Term"
 
 #. module: account_journal_security
 #: help:res.users,last_reconciliation_date:0
@@ -79,8 +82,9 @@ msgstr ""
 
 #. module: account_journal_security
 #: field:res.users,property_account_position:0
+#: field:res.users,property_account_position_ids:0
 msgid "Fiscal Position"
-msgstr ""
+msgstr "Fiscal Position"
 
 #. module: account_journal_security
 #: help:account.journal,user_ids:0
@@ -126,9 +130,15 @@ msgid "Restricted to Users"
 msgstr "Restringido a usuarios"
 
 #. module: account_journal_security
+#: field:res.users,property_product_pricelist_ids:0
+msgid "Sale Pricelist"
+msgstr "Sale Pricelist"
+
+#. module: account_journal_security
 #: field:res.users,property_supplier_payment_term:0
+#: field:res.users,property_supplier_payment_term_ids:0
 msgid "Supplier Payment Term"
-msgstr ""
+msgstr "Supplier Payment Term"
 
 #. module: account_journal_security
 #: help:res.users,property_account_position:0

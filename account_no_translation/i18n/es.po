@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-27 00:54+0000\n"
-"PO-Revision-Date: 2016-07-27 00:54+0000\n"
+"POT-Creation-Date: 2017-01-19 17:15+0000\n"
+"PO-Revision-Date: 2017-01-19 17:15+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
@@ -19,11 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_no_translation
-#: model:ir.model,name:account_no_translation.model_account_account
-msgid "Account"
-msgstr "Cuenta"
-
-#. module: account_no_translation
 #: model:ir.model,name:account_no_translation.model_account_account_type
 msgid "Account Type"
 msgstr "Tipo de Cuenta"
@@ -31,7 +26,7 @@ msgstr "Tipo de Cuenta"
 #. module: account_no_translation
 #: model:ir.model,name:account_no_translation.model_account_payment_term
 msgid "Payment Term"
-msgstr "Término de Pago"
+msgstr "Payment Term"
 
 #. module: account_no_translation
 #: model:ir.model,name:account_no_translation.model_account_tax
@@ -41,4 +36,4 @@ msgstr "Impuesto"
 #. module: account_no_translation
 #: model:ir.model,name:account_no_translation.model_account_tax_code
 msgid "Tax Code"
-msgstr "Código Impuesto"
+msgstr "Código impuesto"

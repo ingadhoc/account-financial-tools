@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-03-01 20:10+0000\n"
+"POT-Creation-Date: 2017-01-19 17:15+0000\n"
+"PO-Revision-Date: 2017-01-19 13:23+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Galician (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/gl/)\n"
 "MIME-Version: 1.0\n"
@@ -21,10 +21,26 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_journal_book
+#: field:account.book.line,account_id:0
 #: report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
 msgid "Account"
 msgstr "Conta"
+
+#. module: account_journal_book
+#: model:ir.model,name:account_journal_book.model_account_book_line
+msgid "Account Book Line"
+msgstr ""
+
+#. module: account_journal_book
+#: model:ir.actions.act_window,name:account_journal_book.action_account_book_line
+msgid "Account Book Lines"
+msgstr ""
+
+#. module: account_journal_book
+#: model:ir.actions.report.xml,name:account_journal_book.account_book_report
+msgid "Account Book Report"
+msgstr ""
 
 #. module: account_journal_book
 #: model:ir.model,name:account_journal_book.model_account_move
@@ -56,6 +72,13 @@ msgstr ""
 #: code:addons/account_journal_book/wizard/account_period_close_wizard.py:18
 #, python-format
 msgid "All periods must belong to same company"
+msgstr ""
+
+#. module: account_journal_book
+#: view:account.book.line:account_journal_book.view_account_book_line_search
+#: view:account.book.line:account_journal_book.view_account_book_line_tree
+#: model:ir.ui.menu,name:account_journal_book.menu_current_account
+msgid "Book Lines"
 msgstr ""
 
 #. module: account_journal_book
@@ -117,12 +140,14 @@ msgid "Created on"
 msgstr ""
 
 #. module: account_journal_book
+#: field:account.book.line,credit:0
 #: report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
 msgid "Credit"
 msgstr ""
 
 #. module: account_journal_book
+#: field:account.book.line,date:0
 #: selection:account.journal.entries.report,filter:0
 #: report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
@@ -130,7 +155,7 @@ msgid "Date"
 msgstr "Data"
 
 #. module: account_journal_book
-#: report:account.journal.entries.report.wzd:0
+#: field:account.book.line,debit:0 report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
 msgid "Debit"
 msgstr ""
@@ -142,6 +167,7 @@ msgid "Description"
 msgstr "Descrición"
 
 #. module: account_journal_book
+#: field:account.book.line,display_name:0
 #: field:account.journal.entries.report,display_name:0
 #: field:account.move.book.move.renumber,display_name:0
 msgid "Display Name"
@@ -181,6 +207,7 @@ msgstr ""
 
 #. module: account_journal_book
 #: field:account.journal.entries.report,fiscalyear_id:0
+#: field:account.move.book.move.renumber,fiscalyear_id:0
 msgid "Fiscal Year"
 msgstr ""
 
@@ -195,7 +222,28 @@ msgid "General Data"
 msgstr ""
 
 #. module: account_journal_book
-#: field:account.journal.entries.report,id:0
+#: view:account.book.line:account_journal_book.view_account_book_line_search
+msgid "Group By..."
+msgstr ""
+
+#. module: account_journal_book
+#: help:account.move.book.move.renumber,grouped_journal_ids:0
+msgid "Group Entries of this journals and number with same number"
+msgstr ""
+
+#. module: account_journal_book
+#: field:account.journal.entries.report,group_by_number_in_book:0
+msgid "Group by number in book"
+msgstr ""
+
+#. module: account_journal_book
+#: view:account.move.book.move.renumber:account_journal_book.view_account_book_move_renumber_form
+#: field:account.move.book.move.renumber,grouped_journal_ids:0
+msgid "Grouped Journals"
+msgstr ""
+
+#. module: account_journal_book
+#: field:account.book.line,id:0 field:account.journal.entries.report,id:0
 #: field:account.move.book.move.renumber,id:0
 msgid "ID"
 msgstr ""
@@ -211,6 +259,7 @@ msgid "Initial"
 msgstr ""
 
 #. module: account_journal_book
+#: field:account.book.line,journal_id:0
 #: report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
 msgid "Journal"
@@ -250,6 +299,7 @@ msgid "Landscape mode"
 msgstr ""
 
 #. module: account_journal_book
+#: field:account.book.line,__last_update:0
 #: field:account.journal.entries.report,__last_update:0
 #: field:account.move.book.move.renumber,__last_update:0
 msgid "Last Modified on"
@@ -297,8 +347,8 @@ msgid "Number in Book"
 msgstr ""
 
 #. module: account_journal_book
-#: sql_constraint:account.move:0
-msgid "Number in Book must be unique per Company!"
+#: field:account.book.line,number_in_book:0
+msgid "Number in book"
 msgstr ""
 
 #. module: account_journal_book
@@ -319,6 +369,7 @@ msgid "Partner"
 msgstr "Empresa"
 
 #. module: account_journal_book
+#: field:account.book.line,period_id:0
 #: report:account.journal.entries.report.wzd:0
 #: report:account.journal.entries.report.wzd1:0
 msgid "Period"
@@ -329,6 +380,11 @@ msgstr "Período"
 #: view:account.move.book.move.renumber:account_journal_book.view_account_book_move_renumber_form
 #: field:account.move.book.move.renumber,period_ids:0
 msgid "Periods"
+msgstr ""
+
+#. module: account_journal_book
+#: selection:account.book.line,state:0
+msgid "Posted"
 msgstr ""
 
 #. module: account_journal_book
@@ -365,7 +421,7 @@ msgid "Renumber Book Number"
 msgstr ""
 
 #. module: account_journal_book
-#: code:addons/account_journal_book/wizard/account_move_book_renumber_wizard.py:126
+#: code:addons/account_journal_book/wizard/account_move_book_renumber_wizard.py:160
 #, python-format
 msgid "Renumbered account moves"
 msgstr ""
@@ -401,6 +457,11 @@ msgid "State"
 msgstr ""
 
 #. module: account_journal_book
+#: field:account.book.line,state:0
+msgid "Status"
+msgstr ""
+
+#. module: account_journal_book
 #: field:account.journal.entries.report,target_move:0
 msgid "Target Moves"
 msgstr ""
@@ -413,6 +474,16 @@ msgstr ""
 #. module: account_journal_book
 #: view:account.move.book.move.renumber:account_journal_book.view_account_book_move_renumber_form
 msgid "This wizard will help you renumber entries in one or more journals."
+msgstr ""
+
+#. module: account_journal_book
+#: view:account.book.line:account_journal_book.view_account_book_line_tree
+msgid "Total"
+msgstr ""
+
+#. module: account_journal_book
+#: selection:account.book.line,state:0
+msgid "Unposted"
 msgstr ""
 
 #. module: account_journal_book

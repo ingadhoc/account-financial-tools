@@ -5,12 +5,12 @@
 # Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: odoo-addons (8.0)\n"
+"Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-22 13:44+0000\n"
-"PO-Revision-Date: 2015-10-22 14:33+0000\n"
-"Last-Translator: Juan Jose Scarafia <scarafia.juanjose@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-odoo-addons-8-0/language/es/)\n"
+"POT-Creation-Date: 2017-01-19 17:15+0000\n"
+"PO-Revision-Date: 2017-01-19 15:27+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -70,6 +70,23 @@ msgstr "Factura"
 #: model:ir.model,name:account_multic_fix.model_account_invoice_line
 msgid "Invoice Line"
 msgstr "Línea de factura"
+
+#. module: account_multic_fix
+#: model:ir.model,name:account_multic_fix.model_account_move_line
+msgid "Journal Items"
+msgstr "Apuntes Contable"
+
+#. module: account_multic_fix
+#: code:addons/account_multic_fix/account.py:28
+#, python-format
+msgid "Journal must be of the same company of the invoice"
+msgstr ""
+
+#. module: account_multic_fix
+#: code:addons/account_multic_fix/account.py:81
+#, python-format
+msgid "Period and journal must belong to same company"
+msgstr ""
 
 #. module: account_multic_fix
 #: model:ir.model,name:account_multic_fix.model_account_statement_operation_template

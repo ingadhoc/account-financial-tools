@@ -11,11 +11,11 @@ msgstr ""
 "POT-Creation-Date: 2017-01-19 17:15+0000\n"
 "PO-Revision-Date: 2017-01-19 17:15+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
-"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
+"Language-Team: Finnish (https://www.transifex.com/adhoc/teams/46451/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: es\n"
+"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_multicompany_usability
@@ -24,80 +24,80 @@ msgstr ""
 #: view:res.partner:account_multicompany_usability.view_partner_property_form
 #: view:res.partner:account_multicompany_usability.view_pricelist_partner_property_form
 msgid "(edit)"
-msgstr "(edit)"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_account
 #: field:res.company.property,property_account_id:0
 msgid "Account"
-msgstr "Cuenta"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_move
 msgid "Account Entry"
-msgstr "Asiento contable"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.partner,property_account_payable_ids:0
 msgid "Account Payable"
-msgstr "Account Payable"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.partner,property_account_receivable_ids:0
 msgid "Account Receivable"
-msgstr "Account Receivable"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_period
 msgid "Account period"
-msgstr "Periodo contable"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: view:res.company:account_multicompany_usability.view_company_form
 msgid "Accounting"
-msgstr "Contabilidad"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_analytic_account
 msgid "Analytic Account"
-msgstr "Cuenta Analítica"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_res_company
 msgid "Companies"
-msgstr "Compañías"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,company_id:0
 msgid "Company"
-msgstr "Company"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.actions.act_window,name:account_multicompany_usability.action_res_company_property
 #: view:res.company.property:account_multicompany_usability.view_res_company_property_form
 msgid "Company Properties"
-msgstr "Propiedades de la compañia"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_res_company_property
 msgid "Company Property"
-msgstr "Company Property"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company.py:113
 #, python-format
 msgid "Company must be of type \"consolidated\""
-msgstr "Company must be of type \"consolidated\""
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company,consolidation_company:0
 msgid "Consolidation Company"
-msgstr "Compañía de Consolidación"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.partner,property_payment_term_ids:0
 msgid "Customer Payment Term"
-msgstr "Customer Payment Term"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:product.product,taxes_id:0
@@ -107,7 +107,7 @@ msgstr ""
 #. module: account_multicompany_usability
 #: field:res.company.property,display_name:0
 msgid "Display name"
-msgstr "Display name"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company.py:139
@@ -116,8 +116,6 @@ msgid ""
 "El código (%s) de la cuenta \"%s\" de la compania \"%s\" ya existe en la "
 "compañía padre pero no tiene el mismo nombre"
 msgstr ""
-"El código (%s) de la cuenta \"%s\" de la compania \"%s\" ya existe en la "
-"compañía padre pero no tiene el mismo nombre"
 
 #. module: account_multicompany_usability
 #: field:product.category,property_account_expense_categ_ids:0
@@ -125,18 +123,18 @@ msgstr ""
 #: field:product.product,property_account_expense_ids:0
 #: field:product.template,property_account_expense_ids:0
 msgid "Expense Account"
-msgstr "Expense Account"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,property_position_id:0
 #: field:res.partner,property_account_position_ids:0
 msgid "Fiscal Position"
-msgstr "Fiscal Position"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_fiscalyear
 msgid "Fiscal Year"
-msgstr "Ejercicio fiscal"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,id:0
@@ -149,35 +147,35 @@ msgstr "ID"
 #: field:product.product,property_account_income_ids:0
 #: field:product.template,property_account_income_ids:0
 msgid "Income Account"
-msgstr "Income Account"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_journal
 msgid "Journal"
-msgstr "Diario"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company.py:74
 #, python-format
 msgid "La property encontrada no es de account.account"
-msgstr "La property encontrada no es de account.account"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,__last_update:0
 msgid "Last Modified on"
-msgstr "Last Modified on"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company.py:81
 #, python-format
 msgid "No encontramos cuenta en la cia padre para cuenta property \"%s\""
-msgstr "No encontramos cuenta en la cia padre para cuenta property \"%s\""
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company.py:67
 #, python-format
 msgid "No encontramos ninguna property en las cias hijas para%s"
-msgstr "No encontramos ninguna property en las cias hijas para%s"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company.py:164
@@ -186,29 +184,27 @@ msgid ""
 "No encontramos una cuenta padre para la cuenta \"%s-%s\" en el plan de "
 "cuentas de la compania padre"
 msgstr ""
-"No encontramos una cuenta padre para la cuenta \"%s-%s\" en el plan de "
-"cuentas de la compania padre"
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company_property.py:198
 #, python-format
 msgid "None"
-msgstr "None"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_res_partner
 msgid "Partner"
-msgstr "Empresa"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,property_term_id:0
 msgid "Payment Term"
-msgstr "Payment Term"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,property_pricelist_id:0
 msgid "Pricelist"
-msgstr "Pricelist"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_product_product
@@ -218,48 +214,48 @@ msgstr ""
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_product_category
 msgid "Product Category"
-msgstr "Categoría de producto"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_product_template
 msgid "Product Template"
-msgstr "Plantilla de producto"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company.property,property_field:0
 msgid "Property field"
-msgstr "Property field"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: code:addons/account_multicompany_usability/models/res_company_property.py:185
 #, python-format
 msgid "Property for model %s not implemented yet"
-msgstr "Property for model %s not implemented yet"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: view:res.company:account_multicompany_usability.view_company_form
 msgid "Recreate Chart of Account"
-msgstr "Recrear Plan de Cuentas"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.partner,property_product_pricelist_ids:0
 msgid "Sale Pricelist"
-msgstr "Sale Pricelist"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.company,short_name:0
 msgid "Short name"
-msgstr "Short name"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: help:res.company,short_name:0
 msgid "Short name used to identify this company"
-msgstr "Short name used to identify this company"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:res.partner,property_supplier_payment_term_ids:0
 msgid "Supplier Payment Term"
-msgstr "Supplier Payment Term"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: field:product.product,supplier_taxes_id:0
@@ -269,12 +265,12 @@ msgstr ""
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_tax
 msgid "Tax"
-msgstr "Impuesto"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: model:ir.model,name:account_multicompany_usability.model_account_tax_code
 msgid "Tax Code"
-msgstr "Código impuesto"
+msgstr ""
 
 #. module: account_multicompany_usability
 #: help:product.product,property_account_expense:0
