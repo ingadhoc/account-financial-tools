@@ -27,7 +27,7 @@ Usage
 
 To use this module, you need to:
 
-#. El informe se puede encontrar dentro de *Contabilidad > Informes legales > Informes contables > Libro diario*
+#. El informe se puede encontrar dentro de *Contabilidad > Informes legales > Diarios > Libro diario*
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
