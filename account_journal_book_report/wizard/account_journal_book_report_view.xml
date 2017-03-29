@@ -11,7 +11,7 @@
                     <attribute name="invisible">1</attribute>
                 </page>
                 <xpath expr="//field[@name='target_move']" position="after">
-                    <field name="next_entry_number"/>
+                    <field name="last_entry_number"/>
                     <!-- <field name="landscape"/> -->
                     <!-- <field name="group_by_number_in_book"/> -->
                     <newline/>

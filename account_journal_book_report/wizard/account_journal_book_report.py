@@ -22,14 +22,14 @@ class AccountJournalBookReport(models.TransientModel):
         required=True,
         ondelete='cascade',
     )
-    next_entry_number = fields.Integer(
-        string='Próximo número de asiento',
+    last_entry_number = fields.Integer(
+        string='Último número de asiento',
+        required=True,
+        default=0,
     )
 
     @api.multi
     def _print_report(self, data):
-        data['form'].update(
-            self.read(['sort_selection', 'landscape'])[0])
         # en realidad diario no lo mostramos y no dajamos que seleccione
         # domain = [('journal_id', 'in', self.journal_ids.ids)]
 
@@ -61,7 +61,7 @@ class AccountJournalBookReport(models.TransientModel):
 
         return self.env['report'].with_context(
             period_ids=moves.mapped('period_id').ids,
-            next_entry_number=self.next_entry_number,
+            last_entry_number=self.last_entry_number,
             # period_ids=lines.mapped('period_id').ids,
             # periods=self.env['account.period'].browse(period_ids),
             # read=read,
