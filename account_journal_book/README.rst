@@ -10,6 +10,8 @@ Uso
 El informe se puede encontrar dentro de *Contabilidad > Informes legales >
 Informes contables > Libro diario*.
 
+IMPORTANTE: este modulo va a ser depreciado y reemplazado por account_journal_book_report que es bastante mas simple y basicamente es solo un reporte (sin almacenar numeros en asientos y sinfuncion de renumerar))
+
 Problemas conocidos
 ===================
 
