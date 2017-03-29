@@ -36,7 +36,7 @@
     'data': [
         'wizard/account_journal_book_report_view.xml',
         'report/account_journal_book_report.xml',
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'views/account_view.xml',
     ],
     "installable": True,
