@@ -1,0 +1,182 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * account_journal_book_report
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-29 23:17+0000\n"
+"PO-Revision-Date: 2017-03-29 23:17+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
+"Language-Team: Spanish (Ecuador) (https://www.transifex.com/adhoc/teams/46451/es_EC/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: es_EC\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_journal_book_report
+#: model:ir.actions.report.xml,name:account_journal_book_report.account_journal_book_report
+msgid "Account Journal Book Report"
+msgstr ""
+
+#. module: account_journal_book_report
+#: selection:account.journal.book.report,target_move:0
+msgid "All Entries"
+msgstr ""
+
+#. module: account_journal_book_report
+#: selection:account.journal.book.report,target_move:0
+msgid "All Posted Entries"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal,book_group_id:0
+msgid "Book Group"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,chart_account_id:0
+msgid "Chart of Account"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,company_id:0
+msgid "Company"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,create_uid:0
+#: field:account.journal.book.report,create_uid:0
+msgid "Created by"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,create_date:0
+#: field:account.journal.book.report,create_date:0
+msgid "Created on"
+msgstr ""
+
+#. module: account_journal_book_report
+#: selection:account.journal.book.report,filter:0
+msgid "Date"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,display_name:0
+#: field:account.journal.book.report,display_name:0
+msgid "Display Name"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,date_to:0
+msgid "End Date"
+msgstr "Fecha de finalización"
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,period_to:0
+msgid "End Period"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,filter:0
+msgid "Filter by"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,fiscalyear_id:0
+msgid "Fiscal Year"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,id:0
+#: field:account.journal.book.report,id:0
+msgid "ID"
+msgstr ""
+
+#. module: account_journal_book_report
+#: model:ir.model,name:account_journal_book_report.model_account_journal
+msgid "Journal"
+msgstr ""
+
+#. module: account_journal_book_report
+#: model:ir.model,name:account_journal_book_report.model_account_journal_book_report
+msgid "Journal Book Report"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,journal_ids:0
+msgid "Journals"
+msgstr ""
+
+#. module: account_journal_book_report
+#: help:account.journal.book.report,fiscalyear_id:0
+msgid "Keep empty for all open fiscal year"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,__last_update:0
+#: field:account.journal.book.report,__last_update:0
+msgid "Last Modified on"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,write_uid:0
+#: field:account.journal.book.report,write_uid:0
+msgid "Last Updated by"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,write_date:0
+#: field:account.journal.book.report,write_date:0
+msgid "Last Updated on"
+msgstr ""
+
+#. module: account_journal_book_report
+#: model:ir.actions.act_window,name:account_journal_book_report.action_account_journal_book_report
+#: model:ir.ui.menu,name:account_journal_book_report.menu_account_journal_book_report
+msgid "Libro Diario"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.group,name:0
+msgid "Name"
+msgstr "Nombre"
+
+#. module: account_journal_book_report
+#: selection:account.journal.book.report,filter:0
+msgid "No Filters"
+msgstr ""
+
+#. module: account_journal_book_report
+#: selection:account.journal.book.report,filter:0
+msgid "Periods"
+msgstr ""
+
+#. module: account_journal_book_report
+#: help:account.journal.book.report,chart_account_id:0
+msgid "Select Charts of Accounts"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,date_from:0
+msgid "Start Date"
+msgstr "Fecha inicio"
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,period_from:0
+msgid "Start Period"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,target_move:0
+msgid "Target Moves"
+msgstr ""
+
+#. module: account_journal_book_report
+#: field:account.journal.book.report,last_entry_number:0
+msgid "Último número de asiento"
+msgstr ""
