@@ -1,0 +1,35 @@
+<odoo>
+<data noupdate="1">
+
+    <record model="ir.rule" id="journal_security_rule">
+        <field name="name">Journals restricted to users</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">['|', ('user_ids', '=', False), ('id', 'in', user.journal_ids.ids)]</field>
+    </record>
+    
+    <record model="ir.rule" id="journal_security_rule_account_invoice">
+        <field name="name">Invoices of Jornals restricted to user</field>
+        <field name="model_id" ref="account.model_account_invoice"/>
+        <field name="domain_force">['|', ('journal_id.user_ids', '=' ,False), ('journal_id.id', 'in', user.journal_ids.ids)]</field>
+    </record>    
+
+    <record model="ir.rule" id="journal_security_rule_account_move">
+        <field name="name">Account Move of Jornals restricted to user</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">['|', ('journal_id.user_ids', '=' ,False), ('journal_id.id', 'in', user.journal_ids.ids)]</field>
+    </record>          
+
+    <record model="ir.rule" id="journal_security_rule_account_move_line">
+        <field name="name">Account Move Line of Jornals restricted to user</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">['|', ('journal_id.user_ids', '=' ,False), ('journal_id.id', 'in', user.journal_ids.ids)]</field>
+    </record>   
+
+    <record model="ir.rule" id="journal_security_rule_account_payment">
+        <field name="name">Account Payments of Jornals restricted to user</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">['|', ('journal_id.user_ids', '=' ,False), ('journal_id.id', 'in', user.journal_ids.ids)]</field>
+    </record>      
+
+</data>
+</odoo>
