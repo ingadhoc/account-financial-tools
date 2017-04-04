@@ -1,7 +1,8 @@
 <openerp>
     <data>
         <!-- Form -->
-        <record id="view_journal_security_users_form" model="ir.ui.view">
+        <!-- al final hicimos que se editen solo desde diarios -->
+        <!-- <record id="view_journal_security_users_form" model="ir.ui.view">
             <field name="name">journal_security.users.form</field>
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_form"/>
@@ -12,7 +13,7 @@
                     </group>                
                 </xpath>                
             </field>
-        </record>
+        </record> -->
         
     </data>
 </openerp>

@@ -9,6 +9,7 @@
                 <page name="advanced_settings" position="inside">
                     <group>
                         <field name="user_ids" widget="many2many_tags" groups="base.group_erp_manager"/>
+                        <field name="modification_user_ids" widget="many2many_tags" groups="base.group_erp_manager"/>
                     </group>
                 </page>
             </field>
