@@ -6,6 +6,40 @@
 from openerp import fields, models, api, SUPERUSER_ID, _
 from openerp.exceptions import ValidationError
 
+# agregamos lo auto join para evitar problemas de performance
+
+
+class AccountInvoice(models.Model):
+    _inherit = 'account.invoice'
+
+    journal_id = fields.Many2one(
+        auto_join=True
+    )
+
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    journal_id = fields.Many2one(
+        auto_join=True
+    )
+
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    journal_id = fields.Many2one(
+        auto_join=True
+    )
+
+
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+    journal_id = fields.Many2one(
+        auto_join=True
+    )
+
 
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
