@@ -14,6 +14,8 @@ Several Improvements to accounting:
 #. Add online payment method on journals
 #. Add link between payment acquirer and journals
 #. Fix the balance of the "journals" in the accounting table, so that it shows the value of the column "to pay" not "total" as it does until now.
+#. Add print invoice button on paid state
+
 
 Installation
 ============

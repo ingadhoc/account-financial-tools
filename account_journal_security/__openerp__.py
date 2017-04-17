@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-    'version': '9.0.1.0.0',
+    'version': '9.0.1.1.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -35,7 +35,8 @@
     'data': [
         'views/res_users_view.xml',
         'views/account_view.xml',
-        'security/journal_security_security.xml',
+        'security/restricted_journal_security.xml',
+        'security/modification_journal_security.xml',
     ],
     'demo': [
     ],
