@@ -4,13 +4,16 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
+# Andres L <aleibrecht@gmail.com>, 2016
+# Javier Diez <jd@adhoc.com.ar>, 2017
+# Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-26 12:03+0000\n"
-"PO-Revision-Date: 2016-12-26 12:03+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
+"POT-Creation-Date: 2017-03-21 11:14+0000\n"
+"PO-Revision-Date: 2017-03-21 11:14+0000\n"
+"Last-Translator: Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,7 +75,7 @@ msgstr ""
 "\n"
 "    <p>Puede encontrar adjunto sus resumen de cuenta de ${object.company_id.name}: </p>\n"
 "    <br/>\n"
-"    <p>Si tiene cualquier consulta, no ude en contactarnos.</p>\n"
+"    <p>Si tiene cualquier consulta, no dude en contactarnos.</p>\n"
 "    <p>Gracias por elegir ${object.company_id.name or 'us'}!</p>\n"
 "    <br/>\n"
 "    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
@@ -114,8 +117,8 @@ msgstr ""
 msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<data><filter position=\"before\">\n"
-"                    <filter string=\"Receivable\" name=\"filter_receivable\" domain=\"[('account_id.type','=','receivable')]\" help=\"Receivable payments\"/>\n"
-"                    <filter string=\"Payable\" name=\"filter_payable\" domain=\"[('account_id.type','=','payable')]\" help=\"Payable payments\"/>\n"
+"                    <filter string=\"Receivable\" name=\"filter_receivable\" domain=\"[('account_id.internal_type','=','receivable')]\" help=\"Receivable payments\"/>\n"
+"                    <filter string=\"Payable\" name=\"filter_payable\" domain=\"[('account_id.internal_type','=','payable')]\" help=\"Payable payments\"/>\n"
 "                </filter>\n"
 "                <group>\n"
 "                    <filter string=\"Type\" context=\"{'group_by': 'type'}\"/>\n"
@@ -124,6 +127,17 @@ msgid ""
 "                </group>\n"
 "            </data>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<data><filter position=\"before\">\n"
+"                    <filter string=\"A Recibir\" name=\"filter_receivable\" domain=\"[('account_id.internal_type','=','receivable')]\" help=\"Pagos a recibir\"/>\n"
+"                    <filter string=\"Pagables\" name=\"filter_payable\" domain=\"[('account_id.internal_type','=','payable')]\" help=\"Pagos a pagar\"/>\n"
+"                </filter>\n"
+"                <group>\n"
+"                    <filter string=\"Tipo\" context=\"{'group_by': 'type'}\"/>\n"
+"                    <filter string=\"Asiento\" domain=\"[]\" context=\"{'group_by': 'move_id'}\"/>\n"
+"                    <filter string=\"Compañia\" domain=\"[]\" name=\"group_company\" context=\"{'group_by': 'company_id'}\" groups=\"base.group_multi_company\"/>\n"
+"                </group>\n"
+"            </data>"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_partner_inherit_debt_form
@@ -138,7 +152,7 @@ msgid ""
 "                    </page>\n"
 "                </page>\n"
 "                <div name=\"button_box\" position=\"inside\">\n"
-"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"260\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
+"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"268\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
 "                        <div class=\"o_form_field o_stat_info\">\n"
 "                            <span class=\"o_stat_value\"><field name=\"debt_balance\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\"/></span>\n"
 "                            <span class=\"o_stat_text\">Debt Detail</span>\n"
@@ -147,16 +161,58 @@ msgid ""
 "                </div>\n"
 "            </data>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<data><page name=\"sales_purchases\" position=\"after\">\n"
+"                    <page name=\"customer_debt\" string=\"Customer Debt\" attrs=\"{'invisible': ['|', ('customer', '=', False),  '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\" groups=\"account.group_account_invoice\">\n"
+"                        <field name=\"receivable_debt_ids\" context=\"{'show_balance': 1, 'hide_reconciled': 1}\"/>\n"
+"                    </page>\n"
+"                    <page name=\"supplier_debt\" string=\"Supplier Debt\" attrs=\"{'invisible': ['|', ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\" groups=\"account.group_account_invoice\">\n"
+"                        <field name=\"payable_debt_ids\" context=\"{'show_balance': 1, 'hide_reconciled': 1}\"/>\n"
+"                    </page>\n"
+"                </page>\n"
+"                <div name=\"button_box\" position=\"inside\">\n"
+"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"268\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
+"                        <div class=\"o_form_field o_stat_info\">\n"
+"                            <span class=\"o_stat_value\"><field name=\"debt_balance\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\"/></span>\n"
+"                            <span class=\"o_stat_text\">Debt Detail</span>\n"
+"                        </div>\n"
+"                    </button>\n"
+"                </div>\n"
+"            </data>"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_res_partner_filter
 msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<field name=\"category_id\" position=\"before\">\n"
-"                   <filter string=\"With Balance\" name=\"with_balance\" domain=\"['|', ('credit','!=', 0.0), ('debit','!=', 0.0)]\" help=\"Partners with receivable or payable balance different from 0\"/>\n"
+"                    <!-- on v9 search credit or debit with != can not be used-->\n"
+"                   <filter string=\"With Balance\" name=\"with_balance\" domain=\"['|', '|', '|', ('credit','&gt;', 0.0), ('debit','&gt;', 0.0), ('credit','&lt;', 0.0), ('debit','&lt;', 0.0)]\" help=\"Partners with receivable or payable balance different from 0\"/>\n"
+"                   <!-- <filter string=\"With Balance\" name=\"with_balance\" domain=\"['|', ('credit','!=', 0.0), ('debit','!=', 0.0)]\" help=\"Partners with receivable or payable balance different from 0\"/> -->\n"
 "                </field>\n"
 "            "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"category_id\" position=\"before\">\n"
+"                    <!-- on v9 search credit or debit with != can not be used-->\n"
+"                   <filter string=\"Con Balance\" name=\"with_balance\" domain=\"['|', '|', '|', ('credit','&gt;', 0.0), ('debit','&gt;', 0.0), ('credit','&lt;', 0.0), ('debit','&lt;', 0.0)]\" help=\"Parners con pagos a cobrar o pagar cuyos balances son distintos de 0Partners with receivable or payable balance different from 0\"/>\n"
+"                   <!-- <filter string=\"With Balance\" name=\"with_balance\" domain=\"['|', ('credit','!=', 0.0), ('debit','!=', 0.0)]\" help=\"Partners with receivable or payable balance different from 0\"/> -->\n"
+"                </field>\n"
+"            "
+
+#. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_tree
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"credit\" position=\"after\">\n"
+"                    <field name=\"balance\" sum=\"Total Balance\"/>\n"
+"                </field>\n"
+"            "
+msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"credit\" position=\"after\">\n"
+"                    <field name=\"balance\" sum=\"Balance Total\"/>\n"
+"                </field>\n"
+"            "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_partner_tree
@@ -167,6 +223,11 @@ msgid ""
 "                </field>\n"
 "            "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"email\" position=\"after\">\n"
+"                    <field name=\"debt_balance\" groups=\"account.group_account_invoice\" sum=\"Total\"/>\n"
+"                </field>\n"
+"            "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
@@ -185,8 +246,7 @@ msgid ""
 "                            <field name=\"historical_full\"/>\n"
 "                            <field name=\"secondary_currency\"/>\n"
 "                            <field name=\"financial_amounts\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
-"                            <field name=\"group_by_move\"/>\n"
-"                            <field name=\"show_invoice_detail\" attrs=\"{'invisible': [('group_by_move', '=', False)]}\"/>\n"
+"                            <field name=\"show_invoice_detail\"/>\n"
 "                            <!-- <field name=\"show_receipt_detail\" attrs=\"{'invisible': [('group_by_move', '=', False)]}\"/> -->\n"
 "                        </group>\n"
 "                    </group>\n"
@@ -200,6 +260,33 @@ msgid ""
 "                </form>\n"
 "            "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<form string=\"Account Summary\">\n"
+"                    <group>\n"
+"                        <group>\n"
+"                            <field name=\"from_date\"/>\n"
+"                            <field name=\"to_date\"/>\n"
+"                            <field name=\"result_selection\"/>\n"
+"                            <field name=\"company_id\" string=\"Company\" ref=\"base.main_company\"/>\n"
+"                            <field name=\"company_type\" attrs=\"{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}\" ref=\"base.main_company\"/>\n"
+"                        </group>\n"
+"                        <group>\n"
+"                            <field name=\"historical_full\"/>\n"
+"                            <field name=\"secondary_currency\"/>\n"
+"                            <field name=\"financial_amounts\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                            <field name=\"show_invoice_detail\"/>\n"
+"                            <!-- <field name=\"show_receipt_detail\" attrs=\"{'invisible': [('group_by_move', '=', False)]}\"/> -->\n"
+"                        </group>\n"
+"                    </group>\n"
+"                    <footer>\n"
+"                        <button string=\"Confirm\" name=\"confirm\" type=\"object\" class=\"oe_highlight\"/>\n"
+"                        or\n"
+"                        <button string=\"Send by Email\" name=\"send_by_email\" type=\"object\" class=\"oe_highlight\"/>\n"
+"                        or\n"
+"                        <button string=\"Cancel\" class=\"oe_link\" special=\"cancel\"/>\n"
+"                    </footer>\n"
+"                </form>\n"
+"            "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_form
@@ -213,39 +300,76 @@ msgid ""
 "                    <field name=\"company_currency_id\" invisible=\"1\"/>\n"
 "                    <field name=\"currency_id\" invisible=\"1\"/>\n"
 "                    <h1 class=\"oe_inline\">\n"
-"                        <field name=\"display_name\" class=\"oe_inline\"/>\n"
+"                        <field name=\"document_number\" class=\"oe_inline\"/>\n"
 "                    </h1>\n"
 "                    <group>\n"
 "                        <group>\n"
 "                            <field name=\"partner_id\"/>\n"
 "                            <field name=\"account_id\"/>\n"
-"                            <field name=\"move_line_id\"/>\n"
-"                            <field name=\"move_id\"/>\n"
-"                            <field name=\"full_reconcile_id\"/>\n"
-"                            <!-- <field name=\"reconcile_partial_id\"/> -->\n"
+"                            <field name=\"payment_group_id\" attrs=\"{'invisible': [('payment_group_id', '=', False)]}\"/>\n"
+"                            <field name=\"invoice_id\" attrs=\"{'invisible': [('invoice_id', '=', False)]}\"/>\n"
+"                            <field name=\"statement_id\" attrs=\"{'invisible': [('statement_id', '=', False)]}\"/>\n"
 "                        </group>\n"
 "                        <group>\n"
-"                            <!-- <label for=\"amount\" class=\"oe_inline\"/> -->\n"
-"                           <!--  <div>\n"
-"                                <field name=\"amount\" widget=\"monetary\" options=\"{'currency_field': 'company_currency_id'}\" class=\"oe_inline\"/>\n"
-"                                <label for=\"amount_currency\" class=\"oe_inline\" string=\" / \" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"base.group_multi_currency\"/>\n"
-"                                <field name=\"amount_currency\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" class=\"oe_inline\" groups=\"base.group_multi_currency\"/>\n"
-"                            </div> -->\n"
 "                            <field name=\"amount\"/>\n"
 "                            <field name=\"amount_residual\"/>\n"
 "                            <field name=\"amount_currency\" groups=\"base.group_multi_currency\"/>\n"
 "                            <field name=\"amount_residual_currency\" groups=\"base.group_multi_currency\"/>\n"
 "                            <field name=\"financial_amount_residual\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
-"                            <!-- <field name=\"financial_amount\" widget=\"monetary\" options=\"{'currency_field': 'company_currency_id'}\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
 "                            <field name=\"date\"/>\n"
 "                            <field name=\"date_maturity\"/>\n"
 "                            <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
 "                        </group>\n"
 "                    </group>\n"
+"                    <notebook>\n"
+"                        <page string=\"Journal Entries\">\n"
+"                            <field name=\"move_line_ids\"/>\n"
+"                            <!-- <field name=\"move_ids\"/> -->\n"
+"                        </page>\n"
+"                    </notebook>\n"
 "                </sheet>\n"
 "            </form>\n"
 "         "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<form string=\"Debt Line\">\n"
+"                <header>\n"
+"                    <button type=\"object\" string=\"Open Document\" help=\"Open Related Accounting Document\" name=\"action_open_related_document\"/>\n"
+"                </header>\n"
+"                <sheet>\n"
+"                    <field name=\"company_currency_id\" invisible=\"1\"/>\n"
+"                    <field name=\"currency_id\" invisible=\"1\"/>\n"
+"                    <h1 class=\"oe_inline\">\n"
+"                        <field name=\"document_number\" class=\"oe_inline\"/>\n"
+"                    </h1>\n"
+"                    <group>\n"
+"                        <group>\n"
+"                            <field name=\"partner_id\"/>\n"
+"                            <field name=\"account_id\"/>\n"
+"                            <field name=\"payment_group_id\" attrs=\"{'invisible': [('payment_group_id', '=', False)]}\"/>\n"
+"                            <field name=\"invoice_id\" attrs=\"{'invisible': [('invoice_id', '=', False)]}\"/>\n"
+"                            <field name=\"statement_id\" attrs=\"{'invisible': [('statement_id', '=', False)]}\"/>\n"
+"                        </group>\n"
+"                        <group>\n"
+"                            <field name=\"amount\"/>\n"
+"                            <field name=\"amount_residual\"/>\n"
+"                            <field name=\"amount_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                            <field name=\"amount_residual_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                            <field name=\"financial_amount_residual\" attrs=\"{'invisible': [('currency_id', '=', False)]}\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                            <field name=\"date\"/>\n"
+"                            <field name=\"date_maturity\"/>\n"
+"                            <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
+"                        </group>\n"
+"                    </group>\n"
+"                    <notebook>\n"
+"                        <page string=\"Journal Entries\">\n"
+"                            <field name=\"move_line_ids\"/>\n"
+"                            <!-- <field name=\"move_ids\"/> -->\n"
+"                        </page>\n"
+"                    </notebook>\n"
+"                </sheet>\n"
+"            </form>\n"
+"         "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_graph
@@ -253,12 +377,20 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<graph string=\"Debt Lines Analysis\" type=\"pivot\">\n"
 "                <field name=\"partner_id\" type=\"row\"/>\n"
-"                <field name=\"move_id\" type=\"row\"/>\n"
+"                <field name=\"document_number\" type=\"row\"/>\n"
 "                <field name=\"date\" type=\"col\"/>\n"
 "                <field name=\"amount\" type=\"measure\"/>\n"
 "            </graph>\n"
 "         "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<graph string=\"Debt Lines Analysis\" type=\"pivot\">\n"
+"                <field name=\"partner_id\" type=\"row\"/>\n"
+"                <field name=\"document_number\" type=\"row\"/>\n"
+"                <field name=\"date\" type=\"col\"/>\n"
+"                <field name=\"amount\" type=\"measure\"/>\n"
+"            </graph>\n"
+"         "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_config_settings
@@ -272,38 +404,65 @@ msgid ""
 "                </label>\n"
 "\t\t\t"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<label for=\"group_multi_currency\" position=\"after\">\n"
+"                    <div>\n"
+"                        <field name=\"group_account_use_financial_amounts\" class=\"oe_inline\" attrs=\"{'invisible': [('group_multi_currency', '&lt;&gt;', True)]}\"/>\n"
+"                        <label for=\"group_account_use_financial_amounts\" attrs=\"{'invisible': [('group_multi_currency', '&lt;&gt;', True)]}\"/>\n"
+"                    </div>\n"
+"                </label>\n"
+"\t\t\t"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<search string=\"Debt Lines\">\n"
+"                <field name=\"document_number\"/>\n"
 "                <field name=\"date\"/>\n"
 "                <field name=\"date_maturity\"/>\n"
 "                <field name=\"partner_id\"/>\n"
-"                <field name=\"journal_id\"/>\n"
-"                <field name=\"user_id\"/>\n"
+"                <field name=\"document_type_id\"/>\n"
 "                <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
-"                <field name=\"move_id\"/>\n"
-"                <filter string=\"Receivable\" domain=\"[('type','=','receivable')]\" help=\"Receivable payments\"/>\n"
-"                <filter string=\"Payable\" domain=\"[('type','=','payable')]\" help=\"Payable payments\"/>\n"
+"                <filter string=\"Receivable\" domain=\"[('internal_type','=','receivable')]\" help=\"Receivable payments\"/>\n"
+"                <filter string=\"Payable\" domain=\"[('internal_type','=','payable')]\" help=\"Payable payments\"/>\n"
 "                <separator/>\n"
 "                <filter string=\"Unreconciled\" domain=\"[('reconciled','=',False), ('account_id.reconcile','=',True)]\" help=\"Unreconciled Journal Items\" name=\"unreconciled\"/>\n"
-"                <!-- <filter string=\"Unreconciled\" domain=\"[('full_reconcile_id','=',False)]\" help=\"Unreconciled Items\" name=\"unreconciled\"/> -->\n"
 "                <group expand=\"0\" string=\"Group By...\">\n"
-"                    <filter string=\"Type\" context=\"{'group_by': 'type'}\"/>\n"
+"                    <filter string=\"Type\" context=\"{'group_by': 'internal_type'}\"/>\n"
 "                    <filter string=\"Date\" context=\"{'group_by': 'date'}\"/>\n"
 "                    <filter string=\"Partner\" context=\"{'group_by': 'partner_id'}\"/>\n"
-"                    <filter string=\"Journal\" context=\"{'group_by': 'journal_id'}\"/>\n"
-"                    <filter string=\"Entry\" context=\"{'group_by': 'move_id'}\"/>\n"
+"                    <filter string=\"Document Type\" context=\"{'group_by': 'document_type_id'}\"/>\n"
 "                    <filter string=\"Account\" context=\"{'group_by': 'account_id'}\"/>\n"
 "                    <filter string=\"Company\" context=\"{'group_by': 'company_id'}\" groups=\"base.group_multi_company\"/>\n"
 "                    <filter string=\"Date Maturity\" context=\"{'group_by': 'date_maturity'}\"/>\n"
-"                    <filter string=\"Commercial\" context=\"{'group_by': 'user_id'}\"/>\n"
 "               </group>\n"
 "            </search>\n"
 "         "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<search string=\"Debt Lines\">\n"
+"                <field name=\"document_number\"/>\n"
+"                <field name=\"date\"/>\n"
+"                <field name=\"date_maturity\"/>\n"
+"                <field name=\"partner_id\"/>\n"
+"                <field name=\"document_type_id\"/>\n"
+"                <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
+"                <filter string=\"Receivable\" domain=\"[('internal_type','=','receivable')]\" help=\"Receivable payments\"/>\n"
+"                <filter string=\"Payable\" domain=\"[('internal_type','=','payable')]\" help=\"Payable payments\"/>\n"
+"                <separator/>\n"
+"                <filter string=\"Unreconciled\" domain=\"[('reconciled','=',False), ('account_id.reconcile','=',True)]\" help=\"Unreconciled Journal Items\" name=\"unreconciled\"/>\n"
+"                <group expand=\"0\" string=\"Group By...\">\n"
+"                    <filter string=\"Type\" context=\"{'group_by': 'internal_type'}\"/>\n"
+"                    <filter string=\"Date\" context=\"{'group_by': 'date'}\"/>\n"
+"                    <filter string=\"Partner\" context=\"{'group_by': 'partner_id'}\"/>\n"
+"                    <filter string=\"Document Type\" context=\"{'group_by': 'document_type_id'}\"/>\n"
+"                    <filter string=\"Account\" context=\"{'group_by': 'account_id'}\"/>\n"
+"                    <filter string=\"Company\" context=\"{'group_by': 'company_id'}\" groups=\"base.group_multi_company\"/>\n"
+"                    <filter string=\"Date Maturity\" context=\"{'group_by': 'date_maturity'}\"/>\n"
+"               </group>\n"
+"            </search>\n"
+"         "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_tree
@@ -313,7 +472,7 @@ msgid ""
 "                <field name=\"date\"/>\n"
 "                <field name=\"partner_id\" invisible=\"context.get('show_balance', False)\"/>\n"
 "                <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
-"                <field name=\"display_name\"/>\n"
+"                <field name=\"document_number\"/>\n"
 "                <field name=\"date_maturity\"/>\n"
 "                <field name=\"amount\"/>\n"
 "                <field name=\"amount_residual\" sum=\"Total\"/>\n"
@@ -321,18 +480,38 @@ msgid ""
 "                <!-- <field name=\"balance\" invisible=\"not context.get('show_balance', False)\"/> -->\n"
 "                <field name=\"amount_currency\" groups=\"base.group_multi_currency\"/>\n"
 "                <field name=\"amount_residual_currency\" groups=\"base.group_multi_currency\"/>\n"
-"                <!-- <field name=\"currency_id\" groups=\"base.group_multi_currency\"/> -->\n"
 "                <field name=\"financial_amount_residual\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
 "                <!-- no queremos mostrarlo mas, es util? -->\n"
 "                <!-- <field name=\"financial_amount\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
 "                <!-- <field name=\"financial_balance\" invisible=\"not context.get('show_balance', False)\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
-"                <field name=\"full_reconcile_id\" string=\"Rec.\" invisible=\"context.get('hide_reconciled', False)\"/>\n"
 "                <button type=\"object\" string=\"Open Document\" icon=\"STOCK_JUSTIFY_LEFT\" help=\"Open Related Accounting Document\" name=\"action_open_related_document\"/>\n"
 "                <field name=\"currency_id\" invisible=\"1\"/>\n"
 "                <field name=\"company_currency_id\" invisible=\"1\"/>\n"
 "            </tree>\n"
 "         "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<tree string=\"Debt Lines\" colors=\"red:(not date_maturity or date_maturity&lt;=current_date) and amount&gt;0\">\n"
+"                <field name=\"date\"/>\n"
+"                <field name=\"partner_id\" invisible=\"context.get('show_balance', False)\"/>\n"
+"                <field name=\"company_id\" groups=\"base.group_multi_company\"/>\n"
+"                <field name=\"document_number\"/>\n"
+"                <field name=\"date_maturity\"/>\n"
+"                <field name=\"amount\"/>\n"
+"                <field name=\"amount_residual\" sum=\"Total\"/>\n"
+"                <!-- no queremos mostrarlo mas, es util? -->\n"
+"                <!-- <field name=\"balance\" invisible=\"not context.get('show_balance', False)\"/> -->\n"
+"                <field name=\"amount_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                <field name=\"amount_residual_currency\" groups=\"base.group_multi_currency\"/>\n"
+"                <field name=\"financial_amount_residual\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/>\n"
+"                <!-- no queremos mostrarlo mas, es util? -->\n"
+"                <!-- <field name=\"financial_amount\" sum=\"Total\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
+"                <!-- <field name=\"financial_balance\" invisible=\"not context.get('show_balance', False)\" groups=\"account_debt_management.account_use_financial_amounts\"/> -->\n"
+"                <button type=\"object\" string=\"Open Document\" icon=\"STOCK_JUSTIFY_LEFT\" help=\"Open Related Accounting Document\" name=\"action_open_related_document\"/>\n"
+"                <field name=\"currency_id\" invisible=\"1\"/>\n"
+"                <field name=\"company_currency_id\" invisible=\"1\"/>\n"
+"            </tree>\n"
+"         "
 
 #. module: account_debt_management
 #: field:account.debt.line,account_id:0
@@ -396,18 +575,6 @@ msgstr "Importe"
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount_currency
 msgid "Amount currency"
 msgstr "Importe en moneda"
-
-#. module: account_debt_management
-#: field:account.debt.line,analytic_account_id:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_analytic_account_id
-msgid "Analytic Account"
-msgstr "Cuenta Analítica"
-
-#. module: account_debt_management
-#: field:account.debt.line,user_id:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_user_id
-msgid "Commercial"
-msgstr "Comercial"
 
 #. module: account_debt_management
 #: field:account.debt.line,company_id:0
@@ -492,16 +659,30 @@ msgstr ""
 "Los importes financieros son importes en otra moneda convertidos a la moneda de la compañía a la tasa de cambio del día."
 
 #. module: account_debt_management
+#: field:account.debt.line,display_name:0
 #: field:account.debt.report.wizard,display_name:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_display_name
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_display_name
 msgid "Display Name"
 msgstr "Nombre a Mostrar"
 
 #. module: account_debt_management
-#: field:account.debt.line,display_name:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_display_name
-msgid "Display name"
-msgstr "Nombre a Mostrar"
+#: field:account.debt.line,document_number:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_document_number
+msgid "Document Number"
+msgstr "Número de documento"
+
+#. module: account_debt_management
+#: field:account.debt.line,document_type_id:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_document_type_id
+msgid "Document Type"
+msgstr "Tipo de Documento"
+
+#. module: account_debt_management
+#: field:account.debt.line,move_ids:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_move_ids
+msgid "Entries"
+msgstr "Asientos"
 
 #. module: account_debt_management
 #: field:account.debt.line,move_id:0
@@ -510,18 +691,34 @@ msgid "Entry"
 msgstr "Asiento"
 
 #. module: account_debt_management
+#: field:account.debt.line,move_lines_str:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_move_lines_str
+msgid "Entry Lines String"
+msgstr "Texto de apuntes contables"
+
+#. module: account_debt_management
 #: field:account.debt.line,move_line_id:0
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_move_line_id
 msgid "Entry line"
 msgstr "Apunte Contable"
 
 #. module: account_debt_management
+#: field:account.debt.line,move_line_ids:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_move_line_ids
+msgid "Entry lines"
+msgstr "Apuntes Contables"
+
+#. module: account_debt_management
 #: field:account.debt.line,financial_amount:0
-#: field:account.move.line,financial_amount:0
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount
-#: model:ir.model.fields,field_description:account_debt_management.field_account_move_line_financial_amount
-msgid "Financial Amount"
-msgstr "Importe Financiero"
+msgid "Financial amount"
+msgstr "Importe financiero"
+
+#. module: account_debt_management
+#: field:account.debt.line,financial_amount_residual:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount_residual
+msgid "Financial amount residual"
+msgstr "Importe financiero residual"
 
 #. module: account_debt_management
 #: field:account.debt.report.wizard,financial_amounts:0
@@ -534,12 +731,6 @@ msgstr "Importes financieros"
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_from_date
 msgid "From"
 msgstr "Desde"
-
-#. module: account_debt_management
-#: field:account.debt.report.wizard,group_by_move:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_group_by_move
-msgid "Group By Move"
-msgstr "Agrupar por Asiento"
 
 #. module: account_debt_management
 #: selection:account.debt.report.wizard,company_type:0
@@ -560,7 +751,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/models/res_partner.py:122
+#: code:addons/account_debt_management/models/res_partner.py:128
 #, python-format
 msgid "INITIAL BALANCE"
 msgstr "SALDO INICIAL"
@@ -585,15 +776,10 @@ msgstr ""
 "exportada."
 
 #. module: account_debt_management
-#: field:account.debt.line,journal_id:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_journal_id
-msgid "Journal"
-msgstr "Diario"
-
-#. module: account_debt_management
-#: model:ir.model,name:account_debt_management.model_account_move_line
-msgid "Journal Item"
-msgstr "Elementos del diario"
+#: field:account.debt.line,invoice_id:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_invoice_id
+msgid "Invoice"
+msgstr "Factura"
 
 #. module: account_debt_management
 #: field:account.debt.line,__last_update:0
@@ -616,10 +802,16 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: account_debt_management
-#: field:account.debt.line,full_reconcile_id:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_full_reconcile_id
-msgid "Matching Number"
-msgstr "Número de Conciliación"
+#: field:account.debt.line,name:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: account_debt_management
+#: field:account.debt.line,blocked:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_blocked
+msgid "No Follow-up"
+msgstr "Sin seguimiento"
 
 #. module: account_debt_management
 #: field:account.debt.line,partner_id:0
@@ -629,7 +821,7 @@ msgid "Partner"
 msgstr "Partner"
 
 #. module: account_debt_management
-#: selection:account.debt.line,type:0
+#: selection:account.debt.line,internal_type:0
 msgid "Payable"
 msgstr "Cuenta por Pagar"
 
@@ -645,12 +837,13 @@ msgid "Payable debt ids"
 msgstr "Ids de deudas a pagar"
 
 #. module: account_debt_management
-#: selection:account.debt.line,move_state:0
-msgid "Posted"
-msgstr "Asentado"
+#: field:account.debt.line,payment_group_id:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_payment_group_id
+msgid "Payment Group"
+msgstr "Grupo de Pago"
 
 #. module: account_debt_management
-#: selection:account.debt.line,type:0
+#: selection:account.debt.line,internal_type:0
 msgid "Receivable"
 msgstr "Cuenta por Cobrar"
 
@@ -695,21 +888,13 @@ msgid "Residual Amount in Currency"
 msgstr "Importe Residual en Moneda"
 
 #. module: account_debt_management
-#: field:account.debt.line,financial_amount_residual:0
-#: field:account.move.line,financial_amount_residual:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount_residual
-#: model:ir.model.fields,field_description:account_debt_management.field_account_move_line_financial_amount_residual
-msgid "Residual Financial Amount"
-msgstr "Importe Financiero Residual"
-
-#. module: account_debt_management
 #: field:account.debt.report.wizard,secondary_currency:0
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_secondary_currency
 msgid "Secondary currency"
 msgstr "Moneda Secundaria"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:107
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:101
 #, python-format
 msgid "Send by Email"
 msgstr "Enviar por Email"
@@ -721,10 +906,10 @@ msgid "Show Invoice Detail"
 msgstr "Mostrar Detalle de Facturas"
 
 #. module: account_debt_management
-#: field:account.debt.line,move_state:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_move_state
-msgid "Status"
-msgstr "Estado"
+#: field:account.debt.line,statement_id:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_statement_id
+msgid "Statement"
+msgstr "Extracto"
 
 #. module: account_debt_management
 #: field:account.debt.report.wizard,to_date:0
@@ -733,15 +918,10 @@ msgid "To"
 msgstr "Hasta"
 
 #. module: account_debt_management
-#: field:account.debt.line,type:0
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_type
+#: field:account.debt.line,internal_type:0
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_internal_type
 msgid "Type"
 msgstr "Tipo"
-
-#. module: account_debt_management
-#: selection:account.debt.line,move_state:0
-msgid "Unposted"
-msgstr "No Asentado"
 
 #. module: account_debt_management
 #: field:account.config.settings,group_account_use_financial_amounts:0
@@ -751,7 +931,41 @@ msgid "Use Financial Amounts"
 msgstr "Usar Importes Financieros"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:54
+#: code:addons/account_debt_management/report/account_debt_line.py:358
+#, python-format
+msgid "View Bank Statement"
+msgstr "Ver estado de cuenta bancaria"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/report/account_debt_line.py:369
+#, python-format
+msgid "View Invoice"
+msgstr "Ver factura"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/report/account_debt_line.py:375
+#, python-format
+msgid "View Move"
+msgstr "Ver Movimiento"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/report/account_debt_line.py:363
+#, python-format
+msgid "View Payment Group"
+msgstr "Ver Grupo de Pago"
+
+#. module: account_debt_management
+#: help:account.debt.line,blocked:0
+#: model:ir.model.fields,help:account_debt_management.field_account_debt_line_blocked
+msgid ""
+"You can check this box to mark this journal item as a litigation with the "
+"associated partner"
+msgstr ""
+"Puede marcar esta casilla para marcar este artículo de diario como un "
+"litigio con el partner asociado"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:50
 #, python-format
 msgid ""
 "You can only select \"Consolidate all Companies if no company is selected"

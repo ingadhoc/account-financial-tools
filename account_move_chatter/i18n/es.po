@@ -4,14 +4,14 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
-# Javier Diez <jd@adhoc.com.ar>, 2016
+# Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-13 20:47+0000\n"
-"PO-Revision-Date: 2016-11-13 20:47+0000\n"
-"Last-Translator: Javier Diez <jd@adhoc.com.ar>, 2016\n"
+"POT-Creation-Date: 2017-03-21 11:14+0000\n"
+"PO-Revision-Date: 2017-03-21 11:14+0000\n"
+"Last-Translator: Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,6 +31,14 @@ msgid ""
 "                </form>\n"
 "            "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<form string=\"Account Entry\">\n"
+"                    <div class=\"oe_chatter\">\n"
+"                        <field name=\"message_follower_ids\" widget=\"mail_followers\"/>\n"
+"                        <field name=\"message_ids\" widget=\"mail_thread\"/>\n"
+"                    </div>\n"
+"                </form>\n"
+"            "
 
 #. module: account_move_chatter
 #: model:ir.model,name:account_move_chatter.model_account_move
