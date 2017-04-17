@@ -44,9 +44,10 @@ class AccountJournal(models.Model):
         if self.type in ['sale', 'purchase']:
             currency = self.currency_id or self.company_id.currency_id
             sum_waiting = 0
-            # optimization to find total and sum of invoice that are in draft,
-            # open state
-            query = """SELECT state, residual_signed, currency_id AS currency FROM account_invoice WHERE journal_id = %s AND state NOT IN ('paid', 'cancel');"""
+            query = """SELECT state, residual_signed, currency_id AS currency
+                       FROM account_invoice
+                       WHERE journal_id = %s
+                       AND state NOT IN ('paid', 'cancel');"""
             self.env.cr.execute(query, (self.id,))
             query_results = self.env.cr.dictfetchall()
             for result in query_results:
