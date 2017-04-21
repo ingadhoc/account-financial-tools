@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Accoount Usability Improvements',
-    'version': '9.0.1.3.0',
+    'version': '9.0.1.4.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -38,7 +38,9 @@
         'views/account_payment_term_view.xml',
         'views/payment_acquirer_view.xml',
         'views/account_invoice_view.xml',
+        'views/account_bank_statement_view.xml',
         'data/account_payment_method_data.xml',
+        'data/mail_data.xml',
     ],
     'demo': [
     ],
