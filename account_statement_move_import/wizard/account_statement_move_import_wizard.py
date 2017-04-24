@@ -114,6 +114,8 @@ class account_statement_move_import_wizard(models.TransientModel):
                 'amount': line_balance,
                 'imported': True,
                 'imported_line_id': line.id,
+                'currency_id': line.currency_id.id or False,
+                'amount_currency': line.amount_currency,
                 # 'type': line_type,
                 'partner_id': line.partner_id.id,
                 # we need journal entry so that id dont suggest a
