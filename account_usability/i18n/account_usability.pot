@@ -1,26 +1,23 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_usability
+#	* account_usability
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-20 16:45+0000\n"
-"PO-Revision-Date: 2017-04-20 13:53-0300\n"
+"POT-Creation-Date: 2017-04-20 16:44+0000\n"
+"PO-Revision-Date: 2017-04-20 16:44+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: es\n"
-"X-Generator: Poedit 1.8.7.1\n"
 
 #. module: account_usability
 #: model:mail.template,body_html:account_usability.email_template_bank_statement
-msgid ""
-"\n"
+msgid "\n"
 "<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
 "\n"
 "    <p>Hello ${object.name},</p>\n"
@@ -64,228 +61,141 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
-"\n"
-"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
-"\n"
-"    <p style=\"margin:0px 0px 9px 0px;font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;\">Hola ${object.name},</p>\n"
-"\n"
-"    <p style=\"margin:0px 0px 9px 0px;font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;\">Confirmamos la recepción de su pago por $ ${ctx.get('amount')} del dia ${ctx.get('date')}</p>\n"
-"    <br>\n"
-"    <p style=\"margin:0px 0px 9px 0px;font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;\">Si tiene alguna pregunta, no dude en contactarnos.</p>\n"
-"    <p style=\"margin:0px 0px 9px 0px;font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;\">\n"
-"Gracias por elegir ${object.company_id.name or 'us'}!</p>\n"
-"    <br>\n"
-"    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
-"        <h3 style=\"font-size:16px;color:inherit;line-height:1.1;font-weight:400;font-family:inherit;margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n"
-"            <strong style=\"font-weight:bold;text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n"
-"    </div>\n"
-"    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n"
-"        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n"
-"        % if object.company_id.street:\n"
-"            ${object.company_id.street}<br>\n"
-"        % endif\n"
-"        % if object.company_id.street2:\n"
-"            ${object.company_id.street2}<br>\n"
-"        % endif\n"
-"        % if object.company_id.city or object.company_id.zip:\n"
-"            ${object.company_id.zip} ${object.company_id.city}<br>\n"
-"        % endif\n"
-"        % if object.company_id.country_id:\n"
-"            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br>\n"
-"        % endif\n"
-"        </span>\n"
-"        % if object.company_id.phone:\n"
-"            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n"
-"                Phone:&nbsp; ${object.company_id.phone}\n"
-"            </div>\n"
-"        % endif\n"
-"        % if object.company_id.website:\n"
-"            <div>\n"
-"                Web :&nbsp;<a href=\"${object.company_id.website}\" style=\"text-decoration-color:initial;text-decoration-style:initial;text-decoration-line:none;color:rgb(33, 183, 153);background-color:transparent;\">${object.company_id.website}</a>\n"
-"            </div>\n"
-"        % endif\n"
-"        <p style=\"margin:0px 0px 9px 0px;font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;\"></p>\n"
-"    </div>\n"
-"</div>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.view_invoice_report_extended_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<button name=\"invoice_print\" position=\"after\">\n"
 "                <button name=\"invoice_print\" string=\"Print\" type=\"object\" states=\"paid\" groups=\"base.group_user\"/>\n"
 "            </button>\n"
 "        "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<button name=\"invoice_print\" position=\"after\">\n"
-"                <button name=\"invoice_print\" string=\"Print\" type=\"object\" states=\"paid\" groups=\"base.group_user\"/>\n"
-"            </button>\n"
-"        "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.view_account_bank_statement_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<field name=\"bank_account_id\" position=\"after\">\n"
 "                    <button name=\"send_mail\" string=\"Send payment confirmation email\" type=\"object\" attrs=\"{'invisible':['|','|',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0)]}\" help=\"Send payment confirmation email\" icon=\"fa-envelope\"/>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"bank_account_id\" position=\"after\">\n"
-"                    <button name=\"send_mail\" string=\"Send payment confirmation email\" type=\"object\" attrs=\"{'invisible':['|','|',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0)]}\" help=\"Send payment confirmation email\" icon=\"fa-envelope\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.view_account_bank_journal_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<field name=\"bank_id\" position=\"after\">\n"
 "                    <field name=\"name\"/>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"bank_id\" position=\"after\">\n"
-"                    <field name=\"name\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.view_payment_term_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<field name=\"company_id\" position=\"attributes\">\n"
 "                    <attribute name=\"invisible\">0</attribute>\n"
 "                    <attribute name=\"groups\">base.group_multi_company</attribute>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"company_id\" position=\"attributes\">\n"
-"                    <attribute name=\"invisible\">0</attribute>\n"
-"                    <attribute name=\"groups\">base.group_multi_company</attribute>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.acquirer_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<field name=\"environment\" position=\"after\">\n"
 "                    <field name=\"journal_id\"/>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"environment\" position=\"after\">\n"
-"                    <field name=\"journal_id\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.view_account_journal_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<field name=\"inbound_payment_method_ids\" position=\"after\">\n"
 "                    <field name=\"debit_card_days_for_collection\" attrs=\"{'invisible':[('type', 'not in', ['bank','cash'])]}\"/>\n"
 "                    <field name=\"credit_card_days_for_collection\" attrs=\"{'invisible':[('type', 'not in', ['bank','cash'])]}\"/>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"inbound_payment_method_ids\" position=\"after\">\n"
-"                    <field name=\"debit_card_days_for_collection\" attrs=\"{'invisible':[('type', 'not in', ['bank','cash'])]}\"/>\n"
-"                    <field name=\"credit_card_days_for_collection\" attrs=\"{'invisible':[('type', 'not in', ['bank','cash'])]}\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.acquirer_search
-msgid ""
-"<?xml version=\"1.0\"?>\n"
+msgid "<?xml version=\"1.0\"?>\n"
 "<field name=\"provider\" position=\"after\">\n"
 "                    <field name=\"journal_id\"/>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"provider\" position=\"after\">\n"
-"                    <field name=\"journal_id\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: help:account.journal,acquirer_ids:0
 #: model:ir.model.fields,help:account_usability.field_account_journal_acquirer_ids
 msgid "Acquirer that use this journal to register online payments journal entries"
-msgstr "Comprador que utiliza esta revista para registrar entradas de diario de pagos en línea"
+msgstr ""
 
 #. module: account_usability
 #: field:account.journal,acquirer_ids:0
 #: model:ir.model.fields,field_description:account_usability.field_account_journal_acquirer_ids
 msgid "Acquirers"
-msgstr "Comprador"
+msgstr ""
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_account_bank_statement_line
 msgid "Bank Statement Line"
-msgstr "Línea de extracto bancario"
+msgstr ""
 
 #. module: account_usability
 #: field:account.journal,credit_card_days_for_collection:0
 #: model:ir.model.fields,field_description:account_usability.field_account_journal_credit_card_days_for_collection
 msgid "Credit card days for collection"
-msgstr "Días de tarjeta de crédito para el cobro"
+msgstr ""
 
 #. module: account_usability
 #: field:account.journal,debit_card_days_for_collection:0
 #: model:ir.model.fields,field_description:account_usability.field_account_journal_debit_card_days_for_collection
 msgid "Debit card days for collection"
-msgstr "Días de tarjeta de débito para el cobro"
+msgstr ""
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_account_journal
 msgid "Journal"
-msgstr "Diario"
+msgstr ""
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_payment_acquirer
 msgid "Payment Acquirer"
-msgstr "Método de pago"
+msgstr ""
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_account_payment_term
 msgid "Payment Term"
-msgstr "Término de Pago"
+msgstr ""
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_account_payment
 msgid "Payments"
-msgstr "Pagos"
+msgstr ""
 
 #. module: account_usability
 #: code:addons/account_usability/models/payment_acquirer.py:25
 #, python-format
 msgid "The journal company must belong to the same company of the aquirer"
-msgstr "La Compania del Diario debe pertenecer a la misma empresa de el comprador"
+msgstr ""
 
 #. module: account_usability
 #: help:account.journal,credit_card_days_for_collection:0
 #: model:ir.model.fields,help:account_usability.field_account_journal_credit_card_days_for_collection
 msgid "This number of days will be added to the date of inbound credit card payments to get the due date, usefull for cashflow analysis"
-msgstr "Este número de días se agregará a la fecha de los pagos de tarjetas de crédito entrantes para obtener la fecha de vencimiento, útil para el análisis de flujo de caja"
+msgstr ""
 
 #. module: account_usability
 #: help:account.journal,debit_card_days_for_collection:0
 #: model:ir.model.fields,help:account_usability.field_account_journal_debit_card_days_for_collection
 msgid "This number of days will be added to the date of inbound debit card payments to get the due date, usefull for cashflow analysis"
-msgstr "Este número de días se agregará a la fecha de los pagos de tarjetas de crédito entrantes para obtener la fecha de vencimiento, útil para el análisis de flujo de caja"
+msgstr ""
 
 #. module: account_usability
 #: model:mail.template,subject:account_usability.email_template_bank_statement
 msgid "We confirm receipt of your payment"
-msgstr "Confirmamos la recepción de su pago"
+msgstr ""
+
