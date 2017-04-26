@@ -119,6 +119,7 @@ class account_statement_move_import_wizard(models.TransientModel):
                 'name': line.name,
                 'ref': line.ref,
                 'amount': line.balance,
+                'currency_id': line.currency_id.id,
                 'amount_currency': line.amount_currency,
                 'partner_id': line.partner_id.id,
             }
