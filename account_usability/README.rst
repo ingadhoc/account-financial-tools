@@ -13,7 +13,10 @@ Several Improvements to accounting:
 #. For inbound debit and credit payments, allow to configure days for collection. This will be used to set maturity date of related journal entries
 #. Add online payment method on journals
 #. Add link between payment acquirer and journals
-#. Add print invoice button on paid state
+#. Fix the balance of the "journals" in the accounting table, so that it shows the value of the column "to pay" not "total" as it does until now.
+#. Add print invoice button on paid state.
+#. Add send email button on bank statement lines to confirm payment to customers.
+
 
 Installation
 ============

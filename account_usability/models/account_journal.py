@@ -5,6 +5,7 @@
 ##############################################################################
 from openerp import models, api, fields
 # from openerp.exceptions import UserError
+from openerp.tools.misc import formatLang
 
 
 class AccountJournal(models.Model):
@@ -36,3 +37,25 @@ class AccountJournal(models.Model):
         help='Acquirer that use this journal to register online payments '
         'journal entries',
     )
+
+    @api.multi
+    def get_journal_dashboard_datas(self):
+        res = super(AccountJournal, self).get_journal_dashboard_datas()
+        if self.type in ['sale', 'purchase']:
+            currency = self.currency_id or self.company_id.currency_id
+            sum_waiting = 0
+            query = """SELECT state, residual_signed, currency_id AS currency
+                       FROM account_invoice
+                       WHERE journal_id = %s
+                       AND state NOT IN ('paid', 'cancel');"""
+            self.env.cr.execute(query, (self.id,))
+            query_results = self.env.cr.dictfetchall()
+            for result in query_results:
+                cur = self.env['res.currency'].browse(result.get('currency'))
+                if result.get('state') == 'open':
+                    sum_waiting += cur.compute(
+                        result.get('residual_signed'), currency)
+            res.update({'sum_waiting': formatLang(
+                self.env, sum_waiting or 0.0,
+                currency_obj=self.currency_id or self.company_id.currency_id)})
+        return res
