@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account no Translation',
-    'version': '9.0.1.0.0',
+    'version': '9.0.1.1.0',
     'category': 'Accounting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
@@ -35,6 +35,5 @@
     'test': [
     ],
     'installable': True,
-    'pre_init_hook': 'pre_init_hook',
     'post_init_hook': 'post_init_hook',
 }

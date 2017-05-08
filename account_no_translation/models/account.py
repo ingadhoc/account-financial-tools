@@ -24,6 +24,7 @@ class AccountTax(models.Model):
     _inherit = 'account.tax'
 
     name = fields.Char(translate=False)
+    description = fields.Char(translate=False)
 
 
 class AccountPaymentTerm(models.Model):
