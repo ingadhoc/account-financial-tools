@@ -25,6 +25,8 @@
                             <field name="move_id"/>
                             <field name="debit" sum="Total Debit"/>
                             <field name="credit" sum="Total Credit"/>
+                            <field name="amount_currency" sum="Total" groups="base.group_multi_currency"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
                             <field name="reconcile_ref"/>
                             <field name="state" invisible="1"/>
                         </tree>
