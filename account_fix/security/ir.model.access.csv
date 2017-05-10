@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+account.access_product_product_account_manager,product.product.account.manager,product.model_product_product,account.group_account_manager,1,1,1,1
+account.access_product_template_account_manager,product.template.account.manager,product.model_product_template,account.group_account_manager,1,1,1,1
+account.access_product_price_history_account_manager,prices.history.account.manager,product.model_product_price_history,account.group_account_manager,1,1,1,1
+access_account_invoice_report_billing,account.invoice.report_billing,account.model_account_invoice_report,account.group_account_invoice,1,0,0,0

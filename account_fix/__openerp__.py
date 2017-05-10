@@ -24,10 +24,11 @@
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
     'data': [
+        'security/ir.model.access.csv',
     ],
     'demo': [],
     'depends': ['account'],
     'installable': True,
     'name': 'Account Fixes',
     'test': [],
-    'version': '9.0.1.0.0'}
+    'version': '9.0.1.1.0'}

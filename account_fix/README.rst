@@ -7,7 +7,7 @@ Account Fixes
 =============
 
 #. Invoices: when recomputing taxes from an invoice line change, dont delete manual taxes
-
+#. Backport of ir.model.access rules of v10, moslty to allow account users (without sale or others) to manage products
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
    :target: https://runbot.adhoc.com.ar/
