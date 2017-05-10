@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
-# Javier Diez <jd@adhoc.com.ar>, 2017
-# Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 11:14+0000\n"
-"PO-Revision-Date: 2017-03-21 11:14+0000\n"
-"Last-Translator: Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017\n"
+"POT-Creation-Date: 2017-05-10 13:17+0000\n"
+"PO-Revision-Date: 2017-05-10 13:17+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -71,8 +69,10 @@ msgid ""
 "                            <field name=\"ref\"/>\n"
 "                            <field name=\"statement_id\" invisible=\"1\"/>\n"
 "                            <field name=\"partner_id\"/>\n"
-"                            <field name=\"debit\" sum=\"Total Debit\"/>\n"
-"                            <field name=\"credit\" sum=\"Total Credit\"/>\n"
+"                            <field name=\"balance\" string=\"Amount\" sum=\"Total\"/>\n"
+"                            <field name=\"amount_currency\" sum=\"Total\" groups=\"base.group_multi_currency\"/>\n"
+"                            <field name=\"currency_id\" invisible=\"1\"/>\n"
+"                            <field name=\"company_currency_id\" invisible=\"1\"/>\n"
 "                        </tree>\n"
 "                    </field>\n"
 "                    <footer>\n"
@@ -83,35 +83,6 @@ msgid ""
 "                </form>\n"
 "             "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<form string=\"Import Journal Items\">\n"
-"                    <field name=\"statement_id\" invisible=\"1\"/>\n"
-"                    <field name=\"journal_id\" invisible=\"1\"/>\n"
-"                    <field name=\"journal_account_ids\" invisible=\"1\"/>\n"
-"                    <group>\n"
-"                        <field name=\"from_date\"/>\n"
-"                        <field name=\"to_date\"/>\n"
-"                    </group>\n"
-"                    <button name=\"get_move_lines\" type=\"object\" string=\"Get Lines\"/>\n"
-"                    <field name=\"move_line_ids\">\n"
-"                        <tree>\n"
-"                            <field name=\"date\"/>\n"
-"                            <field name=\"move_id\" required=\"0\"/>\n"
-"                            <field name=\"name\"/>\n"
-"                            <field name=\"ref\"/>\n"
-"                            <field name=\"statement_id\" invisible=\"1\"/>\n"
-"                            <field name=\"partner_id\"/>\n"
-"                            <field name=\"debit\" sum=\"Total Debit\"/>\n"
-"                            <field name=\"credit\" sum=\"Total Credit\"/>\n"
-"                        </tree>\n"
-"                    </field>\n"
-"                    <footer>\n"
-"                        <button name=\"confirm\" string=\"Confirm\" type=\"object\" class=\"oe_highlight\"/>\n"
-"                        or\n"
-"                        <button string=\"Cancel\" class=\"oe_link\" special=\"cancel\"/>\n"
-"                    </footer>\n"
-"                </form>\n"
-"             "
 
 #. module: account_statement_move_import
 #: field:account.statement.move.import.wizard,create_uid:0
@@ -156,7 +127,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:107
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:109
 #, python-format
 msgid ""
 "Imported line account must be one of the journals defaults, in this case %s"
@@ -165,7 +136,7 @@ msgstr ""
 " defecto en el diario, en este caso %s"
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:113
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:115
 #, python-format
 msgid "Imported line must have \"statement_id\" == False"
 msgstr "La línea importada debe tener  \"statement_id\" == False"
