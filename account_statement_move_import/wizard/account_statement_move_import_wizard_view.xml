@@ -4,7 +4,7 @@
 
         <record id="account_statement_move_import_wizard_form_view" model="ir.ui.view">
              <field name="name">account_statement_move_import_wizard form</field>
-             <field name="model">account.statement.move.import.Wizard</field>
+             <field name="model">account.statement.move.import.wizard</field>
              <field name="arch" type="xml">
                 <form string="Import Journal Items">
                     <field name="statement_id" invisible="1"/>
