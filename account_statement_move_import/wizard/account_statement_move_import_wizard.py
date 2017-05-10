@@ -102,6 +102,8 @@ class account_statement_move_import_wizard(models.TransientModel):
         self.ensure_one()
 
         statement = self.statement_id
+        statement_currency = statement.currency_id
+        company_currency = statement.company_id.currency_id
         for line in self.move_line_ids:
             if line.account_id not in self.journal_account_ids:
                 raise Warning(_(
@@ -113,14 +115,36 @@ class account_statement_move_import_wizard(models.TransientModel):
                 raise Warning(_(
                     'Imported line must have "statement_id" == False'))
 
+            # si el statement es en otra moneda, odoo interpreta que el amount
+            # de las lineas es en esa moneda y no tendria sentido importar
+            # otra moneda, ademas si uno hace un pago en otra moneda odoo
+            # convierte la linea que afecta el banco a la moneda del banco
+            if statement_currency != company_currency:
+                if line.currency_id != statement_currency:
+                    raise Warning(
+                        'Si el diario del extracto es en otra moneda distinta '
+                        'a la de la compañía, los apuntes a importar deben '
+                        'tener como otra moneda esa misma moneda (%s)' % (
+                            statement_currency.name))
+                amount = line.amount_currency
+                currency_id = False
+                amount_currency = False
+            # si el estatement es en moneda de la cia, importamos por las dudas
+            # currency y amount currency pero en realidad no son necesarios
+            # y de hecho son invisibles por defecto
+            else:
+                amount = line.balance
+                currency_id = line.currency_id.id
+                amount_currency = line.amount_currency
+
             line_vals = {
                 'statement_id': statement.id,
                 'date': line.date,
                 'name': line.name,
                 'ref': line.ref,
-                'amount': line.balance,
-                'currency_id': line.currency_id.id,
-                'amount_currency': line.amount_currency,
+                'amount': amount,
+                'currency_id': currency_id,
+                'amount_currency': amount_currency,
                 'partner_id': line.partner_id.id,
             }
 
