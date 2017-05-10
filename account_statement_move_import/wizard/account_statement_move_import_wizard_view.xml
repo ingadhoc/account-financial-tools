@@ -24,7 +24,7 @@
                             <field name="statement_id" invisible="1"/>
                             <field name="partner_id"/>
                             <field name="balance" string="Amount" sum="Total"/>
-                            <field name="amount_currency" sum="Total Credit"/>
+                            <field name="amount_currency" sum="Total" groups="base.group_multi_currency"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_currency_id" invisible="1"/>
                         </tree>
