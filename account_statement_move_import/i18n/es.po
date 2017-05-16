@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:58+0000\n"
-"PO-Revision-Date: 2016-05-24 23:23+0000\n"
+"POT-Creation-Date: 2017-05-10 13:11+0000\n"
+"PO-Revision-Date: 2017-05-10 13:13+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/adhoc/ingadhoc-account-financial-tools-8-0/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -90,14 +90,14 @@ msgid "Imported Move Line"
 msgstr ""
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:94
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:95
 #, python-format
 msgid ""
 "Imported line account must be one of the journals defaults, in this case %s"
 msgstr "Las lineas a a importar deben ser de la misma cuenta de las establecidas por defecto en el diario, en este caso %s"
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:100
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:101
 #, python-format
 msgid "Imported line must have \"statement_id\" == False"
 msgstr "La línea importada debe tener  \"statement_id\" == False"
@@ -164,6 +164,11 @@ msgstr "Asistente de Importación de Apuntes Contables"
 #: field:account.statement.move.import.wizard,to_date:0
 msgid "To Date"
 msgstr "A Fecha"
+
+#. module: account_statement_move_import
+#: view:account.statement.move.import.wizard:account_statement_move_import.account_statement_move_import_wizard_form_view
+msgid "Total"
+msgstr "Total"
 
 #. module: account_statement_move_import
 #: view:account.statement.move.import.wizard:account_statement_move_import.account_statement_move_import_wizard_form_view
