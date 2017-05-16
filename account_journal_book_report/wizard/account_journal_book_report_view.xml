@@ -30,7 +30,7 @@
         </record>
 
         <menuitem
-                  parent="account.menu_journals"
+                  parent="account.menu_journals_report"
                   action="action_account_journal_book_report"
                   id="menu_account_journal_book_report"/>
 
