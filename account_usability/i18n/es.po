@@ -1,21 +1,22 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_usability
-#
+# * account_usability
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0e\n"
+"Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-19 15:35+0000\n"
-"PO-Revision-Date: 2017-05-19 12:40-0300\n"
-"Last-Translator: <>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2017-05-19 17:53+0000\n"
+"PO-Revision-Date: 2017-05-19 17:53+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: \n"
 "Language: es\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_usability
 #: model:mail.template,body_html:account_usability.email_template_bank_statement
@@ -129,18 +130,11 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<field name=\"bank_account_id\" position=\"after\">\n"
 "                    <field name=\"sent\" invisible=\"1\"/>\n"
-"                        <button name=\"send_mail\" string=\"Send payment confirmation email\" type=\"object\" attrs=\"{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',True)]}\" help=\"Send payment confirmation email\" icon=\"fa-envelope-o\"/>\n"
-"                        <button name=\"send_mail\" string=\"Forward payment confirmation email\" type=\"object\" class=\"oe_link\" confirm=\"An email has already been sent to this partner. Do you want to send it again?\" icon=\"fa-envelope\" attrs=\"{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',False)]}\"/>\n"
+"                    <button name=\"send_mail\" string=\"Send payment confirmation email\" type=\"object\" attrs=\"{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',True)]}\" help=\"Send payment confirmation email\" icon=\"fa-envelope-o\"/>\n"
+"                    <button name=\"send_mail_copy\" string=\"Forward payment confirmation email\" type=\"object\" confirm=\"An email has already been sent to this partner. Do you want to send it again?\" icon=\"fa-envelope\" attrs=\"{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',False)]}\"/>\n"
 "                </field>\n"
 "            "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"bank_account_id\" position=\"after\">\n"
-"                    <field name=\"sent\" invisible=\"1\"/>\n"
-"                        <button name=\"send_mail\" string=\"Send payment confirmation email\" type=\"object\" attrs=\"{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',True)]}\" help=\"Send payment confirmation email\" icon=\"fa-envelope-o\"/>\n"
-"                        <button name=\"send_mail\" string=\"Forward payment confirmation email\" type=\"object\" class=\"oe_link\" confirm=\"An email has already been sent to this partner. Do you want to send it again?\" icon=\"fa-envelope\" attrs=\"{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',False)]}\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: account_usability
 #: model:ir.ui.view,arch_db:account_usability.view_account_bank_journal_form
@@ -224,8 +218,11 @@ msgstr ""
 #. module: account_usability
 #: help:account.journal,acquirer_ids:0
 #: model:ir.model.fields,help:account_usability.field_account_journal_acquirer_ids
-msgid "Acquirer that use this journal to register online payments journal entries"
-msgstr "Comprador que utiliza esta revista para registrar entradas de diario de pagos en línea"
+msgid ""
+"Acquirer that use this journal to register online payments journal entries"
+msgstr ""
+"Comprador que utiliza esta revista para registrar entradas de diario de "
+"pagos en línea"
 
 #. module: account_usability
 #: field:account.journal,acquirer_ids:0
@@ -252,8 +249,18 @@ msgstr "Días de tarjeta de débito para el cobro"
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_account_journal
+#: model:ir.model.fields,field_description:account_usability.field_payment_acquirer_journal_id
+#: field:payment.acquirer,journal_id:0
 msgid "Journal"
 msgstr "Diario"
+
+#. module: account_usability
+#: model:ir.model.fields,help:account_usability.field_payment_acquirer_journal_id
+#: help:payment.acquirer,journal_id:0
+msgid "Journal to be used to record journal entry of this payment acquirer"
+msgstr ""
+"Diario que se utilizará para registrar el asiento de diario de este pago de "
+"comprado"
 
 #. module: account_usability
 #: model:ir.model,name:account_usability.model_payment_acquirer
@@ -280,19 +287,30 @@ msgstr "Enviado"
 #: code:addons/account_usability/models/payment_acquirer.py:25
 #, python-format
 msgid "The journal company must belong to the same company of the aquirer"
-msgstr "La Compania del Diario debe pertenecer a la misma empresa de el comprador"
+msgstr ""
+"La Compania del Diario debe pertenecer a la misma empresa de el comprador"
 
 #. module: account_usability
 #: help:account.journal,credit_card_days_for_collection:0
 #: model:ir.model.fields,help:account_usability.field_account_journal_credit_card_days_for_collection
-msgid "This number of days will be added to the date of inbound credit card payments to get the due date, usefull for cashflow analysis"
-msgstr "Este número de días se agregará a la fecha de los pagos de tarjetas de crédito entrantes para obtener la fecha de vencimiento, útil para el análisis de flujo de caja"
+msgid ""
+"This number of days will be added to the date of inbound credit card "
+"payments to get the due date, usefull for cashflow analysis"
+msgstr ""
+"Este número de días se agregará a la fecha de los pagos de tarjetas de "
+"crédito entrantes para obtener la fecha de vencimiento, útil para el "
+"análisis de flujo de caja"
 
 #. module: account_usability
 #: help:account.journal,debit_card_days_for_collection:0
 #: model:ir.model.fields,help:account_usability.field_account_journal_debit_card_days_for_collection
-msgid "This number of days will be added to the date of inbound debit card payments to get the due date, usefull for cashflow analysis"
-msgstr "Este número de días se agregará a la fecha de los pagos de tarjetas de crédito entrantes para obtener la fecha de vencimiento, útil para el análisis de flujo de caja"
+msgid ""
+"This number of days will be added to the date of inbound debit card payments"
+" to get the due date, usefull for cashflow analysis"
+msgstr ""
+"Este número de días se agregará a la fecha de los pagos de tarjetas de "
+"crédito entrantes para obtener la fecha de vencimiento, útil para el "
+"análisis de flujo de caja"
 
 #. module: account_usability
 #: model:mail.template,subject:account_usability.email_template_bank_statement
