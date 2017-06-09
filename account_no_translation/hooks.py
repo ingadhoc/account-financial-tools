@@ -65,7 +65,12 @@ def sync_field(cr, registry, uid, lang_code, model_name, field_name):
     for translation in translations:
         table = model_name.replace('.', '_')
         value = translation['value']
+        # algunas veces la trad es vacias
+        if not value:
+            continue
         res_id = translation['res_id']
+        _logger.info('Syncking on res_id %s, value %s, field_name %s' % (
+            res_id, value, field_name))
         # just in case some constraint block de renaiming
         # try:
         # no nos anduvo, arrojamos el error y listo
