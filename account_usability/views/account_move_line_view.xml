@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_move_line_analisis" model="ir.actions.act_window">
+        <field name="name">Análisis de Apuntes Contables</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.move.line</field>
+        <!-- <field name="view_id" ref="view_wizard_multi_chart"/> -->
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,graph,pivot</field>
+    </record>
+
+    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.account_reports_business_intelligence_menu" action="action_move_line_analisis"/>
+
+</odoo>
