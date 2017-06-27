@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+    <record id="account_journal_book_report" model="ir.actions.report.xml">
+        <field name="name">Account Journal Book Report</field>
+        <field name="type">ir.actions.report.xml</field>
+        <!-- <field name="model">account.move.line</field> -->
+        <field name="model">account.move</field>
+        <field name="report_name">account_journal_book_report</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-ods</field>
+        <field name="out_format" ref="report_aeroo.report_mimetypes_xls_odt"/>
+        <field name="parser_loc"></field>
+        <field name="report_rml">account_journal_book_report/report/account_journal_book_report.ods</field>
+        <field name="tml_source">file</field>
+        <!-- <field name="parser_state">default</field> -->
+        <field name="parser_state">loc</field>
+        <field name="parser_loc">account_journal_book_report/report/parser.py</field>
+    </record>
+</data>
+</openerp>
