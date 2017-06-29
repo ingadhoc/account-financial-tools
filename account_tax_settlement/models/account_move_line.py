@@ -3,159 +3,100 @@ from openerp import fields, models, api, _
 from openerp.exceptions import ValidationError
 
 
-class account_move_line(models.Model):
+class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    tax_settlement_detail_id = fields.Many2one(
-        'account.tax.settlement.detail',
-        'Tax Settlement Detail',
-        )
-    tax_state = fields.Selection([
-        ('to_settle', _('To Settle')),
-        ('to_pay', _('To Pay')),
-        ('paid', _('Paid')),
-        ],
-        _('Tax State'),
-        compute='_get_tax_state',
-        # store=True,
-        )
+    # a este lo dejamos por ahora pero tal vez podamos evitarlo
+    # igual me quiero simplificar no usando la conciliacion por ahora
     tax_settlement_move_id = fields.Many2one(
         'account.move',
         'Tax Settlement Move',
         help='Move where this tax has been settled',
-        )
+    )
 
-    # NOTO. No se porque me da un error esta funcion. Por ahora pusimos
-    # restriccion en tax settlement
-    # @api.multi
-    # def write(self, vals):
-    #     """
-    #     Check that you are not writing tax_settlement_move_id to a line that
-    #     has it already setted
-    #     """
-    #     if 'tax_settlement_move_id' in vals:
-    #         if self.filtered('tax_settlement_move_id'):
-    #             raise ValidationError(_(
-    #                 'I seams that some lines has been already settled.\n'
-    #                 '* Lines: %s') % (
-    #                 self.filtered('tax_settlement_move_id').ids))
-    #     return super(account_move_line, self).write(vals)
+    @api.multi
+    def _get_tax_settlement_journal(self):
+        """
+        This method return the journal that can settle this move line.
+        This can be overwrited by other modules
+        """
+        self.ensure_one()
+        return self.account_id.settlement_journal_id
+        # return self.env['account.journal']
 
-    @api.one
+    @api.multi
+    def create_tax_settlement_entry(self):
+        settlement_journal = self.env['account.journal']
+        for rec in self:
+            settlement_journal |= rec._get_tax_settlement_journal()
+        if not settlement_journal:
+            raise ValidationError(_(
+                'No encontramos diario de liquidación para los apuntes '
+                'contables: %s') % self.ids)
+        elif len(settlement_journal) != 1:
+            raise ValidationError(_(
+                'Solo debe seleccionar líneas que se liquiden con un mismo '
+                'diario, las líneas seleccionadas (ids %s) se liquidan con '
+                'diarios %s') % (self.ids, settlement_journal.ids))
+        settlement_journal.create_tax_settlement_entry(self)
+
+    tax_state = fields.Selection([
+        ('to_settle', 'To Settle'),
+        ('to_pay', 'To Pay'),
+        ('paid', 'Paid'),
+    ],
+        'Tax State',
+        compute='_compute_tax_state',
+        store=True,
+    )
+
+    @api.multi
     @api.depends(
-        'tax_code_id',
-        # 'tax_settlement_move_id',
-        'tax_settlement_move_id.payable_residual',
-        )
-    def _get_tax_state(self):
-        if self.tax_code_id:
-            tax_state = 'to_settle'
-            if self.tax_settlement_move_id:
-                tax_state = 'to_pay'
-                # if tax_settlement_move_id and move are the same, then
-                # we are on the settlement move line
-                if self.tax_settlement_move_id == self.move_id:
-                    tax_state = False
-                elif self.tax_settlement_move_id.payable_residual == 0.0:
-                    tax_state = 'paid'
-            self.tax_state = tax_state
+        'tax_line_id',
+        'tax_settlement_move_id.matched_percentage',
+    )
+    def _compute_tax_state(self):
+        for rec in self.filtered(lambda x: x.tax_line_id):
+            # en los moves existe matched_percentage que es igual a 1
+            # cuando se pago completamente
+            if rec.tax_settlement_move_id.matched_percentage == 1.0:
+                state = 'paid'
+            elif rec.tax_settlement_move_id:
+                state = 'to_pay'
+            else:
+                state = 'to_settle'
+            rec.tax_state = state
 
     @api.multi
-    def pay_tax_settlement(self):
+    def action_open_tax_settlement_entry(self):
         self.ensure_one()
-        return self.tax_settlement_move_id.with_context(
-            from_settlement=True).create_voucher('payment')
+        return {
+            'name': _('Journal Entries'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.move',
+            'target': 'current',
+            'res_id': self.tax_settlement_move_id.id,
+            'type': 'ir.actions.act_window',
+        }
 
     @api.multi
-    def make_tax_settlement(self):
+    def action_pay_tax_settlement(self):
         self.ensure_one()
-        if self.tax_settlement_move_id:
-            raise ValidationError(_('Line already settled'))
-        if not self.tax_code_id:
-            raise ValidationError(_(
-                'Settlement only alled for journal items with tax code'))
-
-        # get parent tax codes (only parents)
-        parent_tax_codes_ids = []
-        parent_tax_code = self.tax_code_id
-        while parent_tax_code:
-            parent_tax_codes_ids.append(parent_tax_code.id)
-            parent_tax_code = parent_tax_code.parent_id
-
-        # parent_tax_codes_ids = self.
-        journals = self.env['account.journal'].search([
-            ('type', '=', 'tax_settlement'),
-            ('tax_code_id', 'in', parent_tax_codes_ids),
-            ])
-
-        if not journals:
-            raise ValidationError(_(
-                'No tax settlemnt journal found for tax code %s') % (
-                self.tax_code_id.name))
-        elif len(journals) != 1:
-            raise ValidationError(_(
-                'Only one tax settlemnt journal must exist for tax code %s'
-                'We have found the journal ids %s') % (
-                self.tax_code_id, journals.ids))
-        else:
-            journal = journals
-
-        # check account payable
-        if self.debit < self.credit:
-            account = journal.default_debit_account_id
-            tax_code = journal.default_debit_tax_code_id
-        else:
-            account = journal.default_credit_account_id
-            tax_code = journal.default_credit_tax_code_id
-
-        # check account type so that we can create a debt
-        if account.type != 'payable':
-            raise ValidationError(_(
-                'You can only pay if tax counterpart use a payable account.'
-                'Account id %i' % account.id))
-
-        # get date, period and name
-        date = fields.Date.context_today(self)
-        period = self.env['account.period'].with_context(
-            company_id=self.company_id.id).find(date)[:1]
-        name = journal.sequence_id._next()
-
-        move_vals = {
-            'ref': name,
-            'name': name,
-            'period_id': period.id,
-            'date': date,
-            'journal_id': journal.id,
-            'company_id': self.company_id.id,
-            }
-        move = self.env['account.move'].create(move_vals)
-
-        # write move id on settled tax move line
-        self.tax_settlement_move_id = move.id
-
-        counterpart_line_vals = {
-            'move_id': move.id,
-            'partner_id': self.partner_id.id,
-            'name': self.name,
-            'debit': self.credit,
-            'credit': self.debit,
-            'account_id': self.account_id.id,
-            'tax_code_id': self.tax_code_id.id,
-            'tax_amount': self.tax_amount,
-            'tax_settlement_move_id': move.id,
+        open_move_line_ids = self.tax_settlement_move_id.line_ids.filtered(
+            lambda r: not r.reconciled and r.account_id.internal_type in (
+                'payable', 'receivable'))
+        return {
+            'name': _('Register Payment'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.payment.group',
+            'view_id': False,
+            'target': 'current',
+            'type': 'ir.actions.act_window',
+            'context': {
+                'to_pay_move_line_ids': open_move_line_ids.ids,
+                'pop_up': True,
+                'default_company_id': self.company_id.id,
+            },
         }
-        move.line_id.create(counterpart_line_vals)
-
-        # TODO ver si ref se completa con el name del journal
-        deb_line_vals = {
-            'move_id': move.id,
-            'partner_id': journal.partner_id.commercial_partner_id.id,
-            'name': self.name,
-            'debit': self.debit,
-            'credit': self.credit,
-            'account_id': account.id,
-            'tax_code_id': tax_code.id,
-            'tax_amount': -1.0 * self.tax_amount,
-        }
-        move.line_id.create(deb_line_vals)
-        return True

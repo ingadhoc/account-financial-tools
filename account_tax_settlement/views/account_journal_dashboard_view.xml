@@ -1,0 +1,47 @@
+<odoo>
+    <record id="account_journal_dashboard_kanban_view_inherited" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban.inherited</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view" />
+        <field name="arch" type="xml">
+            <field name="kanban_dashboard" position="after">
+                <field name="settlement_tax"/>
+                <field name="settlement_financial_report_id"/>
+            </field>
+            <t t-call="JournalBodySalePurchase" position="after">
+                <t t-if="record.settlement_tax.raw_value" t-call="JournalBodyTaxSettlement"/>
+            </t>
+            <templates>
+                <t t-name="JournalBodyTaxSettlement">
+                    <div class="col-xs-6 o_kanban_primary_left">
+                        <button type="object" name="action_create_tax_settlement_entry" class="btn btn-primary btn-sm">
+                            <span>New Settlement</span>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 o_kanban_primary_right">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <a type="object" name="open_action" context="{'tax_settlement': True}">
+                                    <span><t t-esc="dashboard.unsettled_count"/> Líneas a liquidar</span>
+                                </a>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span><t t-esc="dashboard.unsettled_amount"/></span>
+                            </div>
+                        </div>
+                        <div class="row" t-if="record.settlement_financial_report_id.raw_value">
+                            <div class="col-xs-6">
+                                <a type="object" name="open_action" context="{'open_report': '1'}">
+                                    <span>Posición según informe</span>
+                                </a>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span><t t-esc="dashboard.report_position"/></span>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </field>
+    </record>
+</odoo>

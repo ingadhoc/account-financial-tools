@@ -9,13 +9,13 @@ class account_voucher(models.Model):
         'account.move.line',
         compute='_get_tax_move_lines',
         string=_('Tax Journal Items'),
-        )
+    )
 
     @api.one
     @api.depends(
         'move_id.line_id.tax_code_id',
         'move_id.line_id.tax_amount',
-        )
+    )
     def _get_tax_move_lines(self):
         self.tax_move_line_ids = self.move_id.line_id.filtered(
             lambda r: r.tax_code_id and r.tax_amount)

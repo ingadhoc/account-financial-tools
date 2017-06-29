@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import account_journal
-import account_move_line
-import account_voucher
-import tax_settlement
+from . import account_journal
+from . import account_account
+from . import account_move_line
+# import account_voucher
