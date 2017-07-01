@@ -329,6 +329,8 @@ class AccountDebtLine(models.Model):
         cr.execute("""CREATE or REPLACE VIEW %s as (%s
         )""" % (self._table, query))
 
+    # TODO tal vez podamos usar métodos agregados por account_usability
+    # que hacen exactamente esto
     @api.multi
     def action_open_related_document(self):
         self.ensure_one()
