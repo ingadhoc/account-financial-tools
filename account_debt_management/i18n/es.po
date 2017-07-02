@@ -4,13 +4,14 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
+# Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-14 20:57+0000\n"
-"PO-Revision-Date: 2017-06-14 20:57+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
+"POT-Creation-Date: 2017-07-01 22:04+0000\n"
+"PO-Revision-Date: 2017-07-01 22:04+0000\n"
+"Last-Translator: Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -149,7 +150,7 @@ msgid ""
 "                    </page>\n"
 "                </page>\n"
 "                <div name=\"button_box\" position=\"inside\">\n"
-"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"269\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
+"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"268\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
 "                        <div class=\"o_form_field o_stat_info\">\n"
 "                            <span class=\"o_stat_value\"><field name=\"debt_balance\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\"/></span>\n"
 "                            <span class=\"o_stat_text\">Debt Detail</span>\n"
@@ -158,6 +159,24 @@ msgid ""
 "                </div>\n"
 "            </data>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<data><page name=\"sales_purchases\" position=\"after\">\n"
+"                    <page name=\"customer_debt\" string=\"Customer Debt\" attrs=\"{'invisible': ['|', ('customer', '=', False),  '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\" groups=\"account.group_account_invoice\">\n"
+"                        <field name=\"receivable_debt_ids\" context=\"{'show_balance': 1, 'hide_reconciled': 1}\"/>\n"
+"                    </page>\n"
+"                    <page name=\"supplier_debt\" string=\"Supplier Debt\" attrs=\"{'invisible': ['|', ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\" groups=\"account.group_account_invoice\">\n"
+"                        <field name=\"payable_debt_ids\" context=\"{'show_balance': 1, 'hide_reconciled': 1}\"/>\n"
+"                    </page>\n"
+"                </page>\n"
+"                <div name=\"button_box\" position=\"inside\">\n"
+"                    <button type=\"action\" class=\"oe_stat_button\" id=\"debt_detail\" icon=\"fa-list\" context=\"{'show_balance': 1, 'search_default_partner_id': active_id}\" name=\"268\" attrs=\"{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}\">\n"
+"                        <div class=\"o_form_field o_stat_info\">\n"
+"                            <span class=\"o_stat_value\"><field name=\"debt_balance\" widget=\"monetary\" options=\"{'currency_field': 'currency_id'}\"/></span>\n"
+"                            <span class=\"o_stat_text\">Debt Detail</span>\n"
+"                        </div>\n"
+"                    </button>\n"
+"                </div>\n"
+"            </data>"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_res_partner_filter
@@ -910,25 +929,25 @@ msgid "Use Financial Amounts"
 msgstr "Usar Importes Financieros"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:358
+#: code:addons/account_debt_management/report/account_debt_line.py:360
 #, python-format
 msgid "View Bank Statement"
 msgstr "Ver estado de cuenta bancaria"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:369
+#: code:addons/account_debt_management/report/account_debt_line.py:371
 #, python-format
 msgid "View Invoice"
 msgstr "Ver factura"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:375
+#: code:addons/account_debt_management/report/account_debt_line.py:377
 #, python-format
 msgid "View Move"
 msgstr "Ver Movimiento"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:363
+#: code:addons/account_debt_management/report/account_debt_line.py:365
 #, python-format
 msgid "View Payment Group"
 msgstr "Ver Grupo de Pago"
