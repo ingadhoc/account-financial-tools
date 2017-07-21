@@ -3,14 +3,13 @@
 # * account_financial_amount
 # 
 # Translators:
-# Javier Diez <jd@adhoc.com.ar>, 2017
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 11:14+0000\n"
-"PO-Revision-Date: 2017-03-21 11:14+0000\n"
+"POT-Creation-Date: 2017-07-20 18:37+0000\n"
+"PO-Revision-Date: 2017-07-20 18:37+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_financial_amount
-#: field:account.move.line,financial_amount:0
 #: model:ir.model.fields,field_description:account_financial_amount.field_account_move_line_financial_amount
 msgid "Financial Amount"
 msgstr "Importe Financiero"
@@ -31,7 +29,6 @@ msgid "Journal Item"
 msgstr "Elementos del diario"
 
 #. module: account_financial_amount
-#: field:account.move.line,financial_amount_residual:0
 #: model:ir.model.fields,field_description:account_financial_amount.field_account_move_line_financial_amount_residual
 msgid "Residual Financial Amount"
 msgstr "Importe Financiero Residual"

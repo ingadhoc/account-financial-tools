@@ -4,52 +4,19 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
-# Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 11:14+0000\n"
-"PO-Revision-Date: 2017-03-21 11:14+0000\n"
-"Last-Translator: Nicolas Mac Rouillon <nmr@ingadhoc.com>, 2017\n"
+"POT-Creation-Date: 2017-07-20 18:37+0000\n"
+"PO-Revision-Date: 2017-07-20 18:37+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#. module: base_currency_inverse_rate
-#: model:ir.ui.view,arch_db:base_currency_inverse_rate.view_currency_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"active\" position=\"after\">\n"
-"                    <field name=\"inverse_rate\"/>\n"
-"                </field>\n"
-"            "
-msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"active\" position=\"after\">\n"
-"                    <field name=\"inverse_rate\"/>\n"
-"                </field>\n"
-"            "
-
-#. module: base_currency_inverse_rate
-#: model:ir.ui.view,arch_db:base_currency_inverse_rate.view_currency_rate_form
-#: model:ir.ui.view,arch_db:base_currency_inverse_rate.view_currency_rate_tree
-#: model:ir.ui.view,arch_db:base_currency_inverse_rate.view_currency_tree
-msgid ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"rate\" position=\"after\">\n"
-"                    <field name=\"inverse_rate\"/>\n"
-"                </field>\n"
-"            "
-msgstr ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"rate\" position=\"after\">\n"
-"                    <field name=\"inverse_rate\"/>\n"
-"                </field>\n"
-"            "
 
 #. module: base_currency_inverse_rate
 #: model:ir.model,name:base_currency_inverse_rate.model_res_currency
@@ -63,25 +30,21 @@ msgstr "Tasa de Cambio"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,field_description:base_currency_inverse_rate.field_res_currency_inverse_rate
-#: field:res.currency,inverse_rate:0
 msgid "Current Inverse Rate"
 msgstr "Tasa de Cambio Inversa"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,field_description:base_currency_inverse_rate.field_res_currency_rate_inverse_rate
-#: field:res.currency.rate,inverse_rate:0
 msgid "Inverse Rate"
 msgstr "Tasa Inversa"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,help:base_currency_inverse_rate.field_res_currency_rate_inverse_rate
-#: help:res.currency.rate,inverse_rate:0
 msgid "The rate of the currency from the currency of rate 1"
 msgstr "La tasa de la moneda desde la moneda con Tasa 1"
 
 #. module: base_currency_inverse_rate
 #: model:ir.model.fields,help:base_currency_inverse_rate.field_res_currency_inverse_rate
-#: help:res.currency,inverse_rate:0
 msgid ""
 "The rate of the currency from the currency of rate 1 (0 if no rate defined)."
 msgstr ""

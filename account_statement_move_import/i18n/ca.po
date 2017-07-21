@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 11:14+0000\n"
-"PO-Revision-Date: 2017-03-21 11:14+0000\n"
+"POT-Creation-Date: 2017-07-20 18:37+0000\n"
+"PO-Revision-Date: 2017-07-20 18:37+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
 "Language-Team: Catalan (https://www.transifex.com/adhoc/teams/46451/ca/)\n"
 "MIME-Version: 1.0\n"
@@ -19,116 +19,80 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_statement_move_import
-#: model:ir.ui.view,arch_db:account_statement_move_import.view_bank_statement_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
-"<div name=\"button_box\">\n"
-"                    <button class=\"oe_inline oe_stat_button\" name=\"235\" string=\"Import Journal Items\" type=\"action\" attrs=\"{'invisible':[('state','=','confirm')]}\" widget=\"statinfo\" icon=\"fa-pencil-square-o\"/>\n"
-"                </div>\n"
-"            "
-msgstr ""
-
-#. module: account_statement_move_import
-#: model:ir.ui.view,arch_db:account_statement_move_import.view_move_line_form
-msgid ""
-"<?xml version=\"1.0\"?>\n"
-"<field name=\"statement_id\" position=\"after\">\n"
-"                    <field name=\"exclude_on_statements\"/>\n"
-"                </field>\n"
-"            "
+#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
+msgid "Amount"
 msgstr ""
 
 #. module: account_statement_move_import
 #: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
-msgid ""
-"<?xml version=\"1.0\"?>\n"
-"<form string=\"Import Journal Items\">\n"
-"                    <field name=\"statement_id\" invisible=\"1\"/>\n"
-"                    <field name=\"journal_id\" invisible=\"1\"/>\n"
-"                    <field name=\"journal_account_ids\" invisible=\"1\"/>\n"
-"                    <group>\n"
-"                        <field name=\"from_date\"/>\n"
-"                        <field name=\"to_date\"/>\n"
-"                    </group>\n"
-"                    <button name=\"get_move_lines\" type=\"object\" string=\"Get Lines\"/>\n"
-"                    <field name=\"move_line_ids\">\n"
-"                        <tree>\n"
-"                            <field name=\"date\"/>\n"
-"                            <field name=\"move_id\" required=\"0\"/>\n"
-"                            <field name=\"name\"/>\n"
-"                            <field name=\"ref\"/>\n"
-"                            <field name=\"statement_id\" invisible=\"1\"/>\n"
-"                            <field name=\"partner_id\"/>\n"
-"                            <field name=\"debit\" sum=\"Total Debit\"/>\n"
-"                            <field name=\"credit\" sum=\"Total Credit\"/>\n"
-"                        </tree>\n"
-"                    </field>\n"
-"                    <footer>\n"
-"                        <button name=\"confirm\" string=\"Confirm\" type=\"object\" class=\"oe_highlight\"/>\n"
-"                        or\n"
-"                        <button string=\"Cancel\" class=\"oe_link\" special=\"cancel\"/>\n"
-"                    </footer>\n"
-"                </form>\n"
-"             "
+msgid "Cancel"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,create_uid:0
+#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
+msgid "Confirm"
+msgstr ""
+
+#. module: account_statement_move_import
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,create_date:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_create_date
 msgid "Created on"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,display_name:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.move.line,exclude_on_statements:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_move_line_exclude_on_statements
 msgid "Exclude on Statements"
 msgstr ""
 
 #. module: account_statement_move_import
-#: help:account.move.line,exclude_on_statements:0
 #: model:ir.model.fields,help:account_statement_move_import.field_account_move_line_exclude_on_statements
 msgid "Exclude this move line suggestion on statements"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,from_date:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_from_date
 msgid "From Date"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,id:0
+#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
+msgid "Get Lines"
+msgstr ""
+
+#. module: account_statement_move_import
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_id
 msgid "ID"
 msgstr ""
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:107
+#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
+#: model:ir.ui.view,arch_db:account_statement_move_import.view_bank_statement_form
+msgid "Import Journal Items"
+msgstr ""
+
+#. module: account_statement_move_import
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:109
 #, python-format
 msgid ""
 "Imported line account must be one of the journals defaults, in this case %s"
 msgstr ""
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:113
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:115
 #, python-format
 msgid "Imported line must have \"statement_id\" == False"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,journal_id:0
 #: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:37
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_journal_id
 #, python-format
@@ -136,7 +100,6 @@ msgid "Journal"
 msgstr "Diari"
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,journal_account_ids:0
 #: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:43
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_journal_account_ids
 #, python-format
@@ -149,31 +112,26 @@ msgid "Journal Item"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,move_line_ids:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_move_line_ids
 msgid "Journal Items"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,__last_update:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard___last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,write_uid:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,write_date:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_write_date
 msgid "Last Updated on"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,statement_id:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_statement_id
 msgid "Statement"
 msgstr ""
@@ -184,12 +142,21 @@ msgid "Statement Import Journal Items Wizard"
 msgstr ""
 
 #. module: account_statement_move_import
-#: field:account.statement.move.import.wizard,to_date:0
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_to_date
 msgid "To Date"
 msgstr ""
 
 #. module: account_statement_move_import
+#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
+msgid "Total"
+msgstr ""
+
+#. module: account_statement_move_import
 #: model:ir.model,name:account_statement_move_import.model_account_statement_move_import_wizard
 msgid "account_statement_move_import_wizard"
+msgstr ""
+
+#. module: account_statement_move_import
+#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
+msgid "or"
 msgstr ""
