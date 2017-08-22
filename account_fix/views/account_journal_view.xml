@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="model">account.journal</field>
+        <field name="name">account.journal.form</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <!-- backport of https://github.com/odoo/odoo/commit/d0029f11ce5d4b9e9de6ceb8a1904c76915cee84 -->
+            <field name="code" position="attributes">
+                <attribute name="attrs"></attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

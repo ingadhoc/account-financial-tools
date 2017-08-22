@@ -9,6 +9,9 @@ Account Fixes
 #. Fix related to partner credit / debit fields and computation on multi company
 #. Fix the tax computation when creating a refund invoice from an invoice.
 #. Backport of ir.model.access rules of v10, moslty to allow account users (without sale or others) to manage products
+#. Backport of code being editable on journals: https://github.com/odoo/odoo/commit/d0029f11ce5d4b9e9de6ceb8a1904c76915cee84 (REMOVE on v10)
+
+
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
    :target: https://runbot.adhoc.com.ar/
