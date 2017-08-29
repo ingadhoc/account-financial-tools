@@ -52,7 +52,8 @@ class AccountJournal(models.Model):
         # string='Restricted to Users',
         string='Totally restricted to',
         help='If choose some users, then this journal and the information'
-        ' related to it will be only visible for those users.')
+        ' related to it will be only visible for those users.',
+        copy=False)
 
     modification_user_ids = fields.Many2many(
         'res.users',
