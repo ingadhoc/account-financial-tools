@@ -63,7 +63,8 @@ class AccountJournal(models.Model):
         string='Modifications restricted to',
         help='If choose some users, then only this users will be allow to '
         ' create, write or delete accounting data related of this journal. '
-        'Information will still be visible for other users.')
+        'Information will still be visible for other users.',
+        copy=False)
 
     @api.multi
     @api.constrains('user_ids')
