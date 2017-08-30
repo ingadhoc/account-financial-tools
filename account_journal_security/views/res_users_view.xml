@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>
         <!-- Form -->
         <!-- al final hicimos que se editen solo desde diarios -->
@@ -16,4 +16,4 @@
         </record> -->
         
     </data>
-</openerp>
+</odoo>
