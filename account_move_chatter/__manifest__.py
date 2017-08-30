@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Account Move Chatter',
-    'version': '9.0.1.0.0',
+    'version': '10.0.1.0.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -33,7 +33,7 @@
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }
