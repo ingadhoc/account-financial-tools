@@ -3,8 +3,8 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import fields, models, api, SUPERUSER_ID, _
-from openerp.exceptions import ValidationError
+from odoo import fields, models, api, SUPERUSER_ID, _
+from odoo.exceptions import ValidationError
 
 # agregamos lo auto join para evitar problemas de performance
 
@@ -52,7 +52,9 @@ class AccountJournal(models.Model):
         # string='Restricted to Users',
         string='Totally restricted to',
         help='If choose some users, then this journal and the information'
-        ' related to it will be only visible for those users.')
+        ' related to it will be only visible for those users.',
+        copy=False
+    )
 
     modification_user_ids = fields.Many2many(
         'res.users',
@@ -62,7 +64,9 @@ class AccountJournal(models.Model):
         string='Modifications restricted to',
         help='If choose some users, then only this users will be allow to '
         ' create, write or delete accounting data related of this journal. '
-        'Information will still be visible for other users.')
+        'Information will still be visible for other users.',
+        copy=False
+    )
 
     @api.multi
     @api.constrains('user_ids')

@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>
         <!-- Form -->
         <record id="view_journal_security_account_journal_form" model="ir.ui.view">
@@ -14,6 +14,5 @@
                 </page>
             </field>
         </record>
-        
     </data>
-</openerp>
+</odoo>
