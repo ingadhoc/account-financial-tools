@@ -8,13 +8,13 @@ Account Fixes
 
 #. Fix related to partner credit / debit fields and computation on multi company
 #. Fix the tax computation when creating a refund invoice from an invoice.
-#. Backport of ir.model.access rules of v10, moslty to allow account users (without sale or others) to manage products
+
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
    :target: https://runbot.adhoc.com.ar/
 
 .. repo_id is available in https://github.com/OCA/maintainer-tools/blob/master/tools/repos_with_ids.txt
-.. branch is "9.0" for example
+.. branch is "10.0" for example
 
 Known issues / Roadmap
 ======================
@@ -25,7 +25,7 @@ Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues
-<https://github.com/ingadhoc/{project_repo}/issues>`_. In case of trouble, please
+<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed feedback.
 

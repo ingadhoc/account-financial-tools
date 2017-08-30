@@ -19,16 +19,16 @@
 #
 ##############################################################################
 {
+    'name': 'Account Fixes',
+    'version': '10.0.1.0.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
     'data': [
-        'security/ir.model.access.csv',
     ],
     'demo': [],
     'depends': ['account'],
-    'installable': False,
-    'name': 'Account Fixes',
     'test': [],
-    'version': '9.0.1.1.0'}
+    'installable': True,
+}
