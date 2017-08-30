@@ -20,21 +20,16 @@
 ##############################################################################
 {
     "name": "Account Journal Active",
-    "version": "9.0.1.0.0",
+    "version": "10.0.1.0.0",
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     "category": "Accounting",
-    "description": """ This module is to desactivate unused Daily more.
-Account Journal Active Field
-============================
-Adds active field on account journal
-    """,
     'depends': ['account'],
     'data': [
-        'account_journal_view.xml',
+        'views/account_journal_view.xml',
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
 }
