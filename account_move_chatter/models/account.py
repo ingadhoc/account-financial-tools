@@ -23,13 +23,3 @@ class AccountMove(models.Model):
     narration = fields.Text(track_visibility='onchange')
     company_id = fields.Many2one(track_visibility='onchange')
     balance = fields.Float(track_visibility='onchange')
-
-    # este todavia es necesario en v9 pero por ahora omitimos, probablemente
-    # en v10 no sea mas necesario
-    # @api.multi
-    # def button_cancel(self):
-    #     res = super(account_move, self).button_cancel()
-    #     tracked_fields = self._get_tracked_fields('state')
-    #     initial_values = {self.id: {'state': 'posted'}}
-    #     self.message_track(tracked_fields, initial_values)
-    #     return res
