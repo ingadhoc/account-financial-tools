@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
-	<data>
-
+<odoo>
+    <data>
         <record id="view_move_line_form" model="ir.ui.view">
             <field name="name">account.move.line.form</field>
             <field name="model">account.move.line</field>
@@ -24,6 +23,5 @@
                 </div>
             </field>
         </record>
-        
-	</data>
-</openerp>
+    </data>
+</odoo>
