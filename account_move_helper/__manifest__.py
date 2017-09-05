@@ -20,8 +20,8 @@
 ##############################################################################
 {
     'name': 'Account Move helper',
-    'version': '9.0.1.1.0',
-    'author': 'ADHOC SA',
+    'version': '10.0.1.0.0',
+    'author': 'ADHOC SA, Odoo Community Association (OCA)',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting',
@@ -34,5 +34,5 @@
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
 }
