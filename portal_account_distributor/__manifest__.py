@@ -21,7 +21,6 @@
 {
     'name': 'Portal Distributor Account',
     'version': '9.0.1.0.0',
-    'category': 'Tools',
     'complexity': 'easy',
     'description': '''
 Portal Distributor Account
