@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
+<odoo>
     <data>
-
         <record id="account_statement_move_import_wizard_form_view" model="ir.ui.view">
              <field name="name">account_statement_move_import_wizard form</field>
              <field name="model">account.statement.move.import.wizard</field>
@@ -14,7 +13,7 @@
                         <field name="from_date"/>
                         <field name="to_date"/>
                     </group>
-                    <button name="get_move_lines" type="object" string="Get Lines"/>
+                   <!--  <button name="get_move_lines" type="object" string="Get Lines"/> -->
                     <field name="move_line_ids">
                         <tree>
                             <field name="date"/>
@@ -44,6 +43,5 @@
              <field name="view_mode">form</field>
              <field name="target">new</field>
        </record>
-       
     </data>
-</openerp>
+</odoo>

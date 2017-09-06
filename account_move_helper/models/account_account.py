@@ -3,11 +3,11 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, fields, api, _
-from openerp.exceptions import UserError
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
-class account_account(models.Model):
+class AccountAccount(models.Model):
     _inherit = "account.account"
 
     balance = fields.Monetary(
@@ -42,12 +42,13 @@ class account_account(models.Model):
                     ('move_id.state', '=', 'posted'),
                 ]).mapped('balance'))
 
-    @api.one
+    @api.multi
     def _inverse_new_balance(self):
-        line_balance = self.new_balance - self.balance
-        self._helper_update_line(line_balance)
+        for rec in self:
+            line_balance = rec.new_balance - rec.balance
+            rec._helper_update_line(line_balance)
 
-    @api.one
+    @api.multi
     def _helper_update_line(self, line_balance, partner=None):
         """
         * line_balance: balance to be used on the move line related to this

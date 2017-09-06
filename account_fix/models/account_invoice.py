@@ -3,7 +3,7 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, api
+from odoo import models, api
 
 
 class AccountInvoice(models.Model):
@@ -14,6 +14,10 @@ class AccountInvoice(models.Model):
     @api.returns('self')
     def refund(self, date_invoice=None,
                date=None, description=None, journal_id=None):
+        """
+        En las facturas rectificativas no se calculan bien los impuestos (por)
+        ej. el campo base. Esto arregla eso
+        """
         new_invoices = super(AccountInvoice, self).refund(
             date_invoice=date_invoice, date=date,
             description=description, journal_id=journal_id)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data>
+<odoo>
+    <data>
         <!-- Account Journal -->
         <record id="view_account_helper_tree" model="ir.ui.view">
             <field name="name">account.account.helper.tree</field>
@@ -30,5 +30,5 @@
             </field>
         </record>
        
-	</data>
-</openerp>
+    </data>
+</odoo>

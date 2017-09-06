@@ -3,10 +3,10 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, api, _
+from odoo import models, api, _
 
 
-class account_move(models.Model):
+class AccountMove(models.Model):
     _inherit = "account.move"
 
     @api.multi

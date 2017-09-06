@@ -3,11 +3,13 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, fields
+from odoo import fields, models
 
 
-class product_template(models.Model):
-    _inherit = 'product.template'
+class AccountJournal(models.Model):
+    _inherit = "account.journal"
 
-    standard_price = fields.Float(
-        groups='base.group_user,base.group_portal_distributor')
+    active = fields.Boolean(
+        'Active',
+        default=True
+    )

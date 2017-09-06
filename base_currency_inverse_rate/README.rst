@@ -2,35 +2,30 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-================
-Journal Security
-================
+==========================
+Base Currency Inverse Rate
+==========================
 
-This module it creates a many2many field between journals and users. If you set users to journal or viceversa, then this journals and the related moves, will be only seen by selected users.
-Usually used for payroll journals.
-This fields are only seen by users with 'access right management'.
+In some countries we are use to see exchange rate in the inverse way as odoo
+shows it. We show rate FROM base currency and not TO base currency. For eg.
+#. Base Currency ARS: 1.0
+#. USD rate: 12.0 (in odoo way 1 / 12.0 = 0.0833)
 
 Installation
 ============
 
 To install this module, you need to:
 
-#. Just install this module
+#. Just install it
 
 Configuration
 =============
 
 To configure this module, you need to:
 
-#. Go to Users / Access Rigths / Restricted Journals
-#. Set the journals to restrict.
+#. Nothing no be done
 
-Usage
-=====
 
-To use this module, you need to:
-
-#. When posting a journal entry, minimun balance constrains are going to be checked
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
@@ -42,7 +37,7 @@ To use this module, you need to:
 Known issues / Roadmap
 ======================
 
-* ...
+* N/A
 
 Bug Tracker
 ===========
