@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Accounting Financial Amounts",
-    "version": "9.0.1.0.0",
-    "author": "Moldeo Interactive,ADHOC SA",
+    "version": "10.0.1.0.0",
+    "author": "Moldeo Interactive, ADHOC SA, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "Accounting",
     "depends": [
@@ -14,5 +14,5 @@
     ],
     'images': [
     ],
-    'installable': False,
+    'installable': True,
 }
