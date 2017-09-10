@@ -24,7 +24,6 @@ class AccountPayment(models.Model):
     _rec_name we are changing _name_get
     """
     _inherit = "account.payment"
-    _rec_name = "display_name"
 
     # document_number = fields.Char(
     #     string=_('Document Number'),
