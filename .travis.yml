@@ -52,7 +52,6 @@ env:
   - TRANSIFEX_TEAM='46451'
 
   matrix:
-  # TODO enable lint check
   - LINT_CHECK="1"
   - TRANSIFEX="1"
   - TESTS="1" ODOO_REPO="odoo/odoo" 
