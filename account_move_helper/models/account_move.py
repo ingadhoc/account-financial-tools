@@ -28,7 +28,8 @@ class account_move(models.Model):
             'target': 'current',
             'domain': [
                 ('internal_type', 'in', ['liquidity', 'other']),
-                ('company_id', '=', self.company_id.id)],
+                ('company_id', '=', self.company_id.id),
+                ('deprecated', '=', False)],
             'context': {'company_id': self.company_id.id},
         }
 
