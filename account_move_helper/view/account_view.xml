@@ -24,8 +24,8 @@
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <button name="button_cancel" position="before">
-                    <button name="add_account_to_move" type="object" string="Set Balance by Account"/>
-                    <button name="add_partner_to_move" type="object" string="Set Balance by Partner"/>
+                    <button name="add_account_to_move" type="object" string="Set Balance by Account" attrs="{'invisible': [('state', '=', 'posted')]}"/>
+                    <button name="add_partner_to_move" type="object" string="Set Balance by Partner" attrs="{'invisible': [('state', '=', 'posted')]}"/>
                 </button>
             </field>
         </record>
