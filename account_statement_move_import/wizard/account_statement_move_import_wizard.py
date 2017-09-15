@@ -55,6 +55,25 @@ class account_statement_move_import_wizard(models.TransientModel):
     )
 
     @api.multi
+    def onchange(self, values, field_name, field_onchange):
+        """
+        Idea obtenida de aca
+        https://github.com/odoo/odoo/issues/16072#issuecomment-289833419
+        por el cambio que se introdujo en esa mimsa conversación, TODO en v11
+        no haría mas falta, simplemente domain="[('id', 'in', x2m_field)]"
+        Otras posibilidades que probamos pero no resultaron del todo fue:
+        * agregar onchange sobre campos calculados y que devuelvan un dict con
+        domain. El tema es que si se entra a un registro guardado el onchange
+        no se ejecuta
+        * usae el modulo de web_domain_field que esta en un pr a la oca
+        """
+        for field in field_onchange.keys():
+            if field.startswith('journal_account_ids.'):
+                del field_onchange[field]
+        return super(account_statement_move_import_wizard, self).onchange(
+            values, field_name, field_onchange)
+
+    @api.multi
     @api.onchange('statement_id')
     def onchange_statement(self):
         if self.statement_id.date:
@@ -77,6 +96,10 @@ class account_statement_move_import_wizard(models.TransientModel):
             ('account_id', 'in', self.journal_account_ids.ids),
             ('statement_id', '=', False),
             ('exclude_on_statements', '=', False),
+            # agregamos esta condicion porque hasta v10, inclusive, no se
+            # permite que un move este en mas de un statement, entonces
+            # solo ofrecemos lineas si el move no está en ningún statement
+            ('move_id.statement_line_id', '=', False),
             ('date', '>=', self.from_date),
             ('date', '<=', self.to_date),
         ])
@@ -104,7 +127,13 @@ class account_statement_move_import_wizard(models.TransientModel):
         statement = self.statement_id
         statement_currency = statement.currency_id
         company_currency = statement.company_id.currency_id
+        moves = self.env['account.move']
         for line in self.move_line_ids:
+            # como odoo move solo en un extracto si ya se importo el move
+            # no volvemos a importar. TODO ver como sigue esto en v11
+            if line.move_id in moves:
+                continue
+            moves |= line.move_id
             if line.account_id not in self.journal_account_ids:
                 raise Warning(_(
                     'Imported line account must be one of the journals '
