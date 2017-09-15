@@ -44,7 +44,12 @@ class account_account(models.Model):
 
     @api.one
     def _inverse_new_balance(self):
-        line_balance = self.new_balance - self.balance
+        # agregamos el round por un bug de odoo que por mas que estos
+        # trabajando con x decimales, si el usuario por interfaz agrega mas
+        # decimales (que x) odoo lo termina almacenando y luego da error
+        # por descuadre de apunte
+        new_balance = self.company_id.currency_id.round(self.new_balance)
+        line_balance = new_balance - self.balance
         self._helper_update_line(line_balance)
 
     @api.one
