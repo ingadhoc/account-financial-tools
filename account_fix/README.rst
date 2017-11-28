@@ -10,6 +10,8 @@ Account Fixes
 #. Fix the tax computation when creating a refund invoice from an invoice.
 #. Backport of ir.model.access rules of v10, moslty to allow account users (without sale or others) to manage products
 #. Backport of code being editable on journals: https://github.com/odoo/odoo/commit/d0029f11ce5d4b9e9de6ceb8a1904c76915cee84 (REMOVE on v10)
+#. Make readonly the journal_type related field of bank statements so that users are allow to create statement without perm to write on journals.
+#. Overwrite create_bank_statement method so that users are allow to create statement without perm to write on journals.
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
