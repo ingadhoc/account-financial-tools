@@ -3,7 +3,11 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from . import res_partner
-from . import account_invoice
-from . import account_bank_statement
-from . import account_journal
+from openerp import models, fields
+
+
+class AccountBankStatement(models.Model):
+
+    _inherit = "account.bank.statement"
+
+    journal_type = fields.Selection(readonly=True)
