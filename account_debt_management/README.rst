@@ -21,6 +21,7 @@ By default all lines of same document are grouped and minimun maturity date of t
     #. max: one line per document, max maturity date shown
     #. min (default value if no parameter or no matching): one line per document, min maturity date shown.
 
+IMPORTANT: this modules isn't compatible with account_journal_security or account_multi_store module. This mudule allows user to see all debt lines no matter journals restrictions
 
 Installation
 ============
