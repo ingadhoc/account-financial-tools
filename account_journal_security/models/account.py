@@ -97,3 +97,21 @@ class AccountJournal(models.Model):
                     'diario') % (rec.name))
         # necesitamos limpiar este cache para que no deje de verlo
         self.env.user.context_get.clear_cache(self)
+
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        """
+        Para que usuarios los usuarios no puedan elegir diarios donde no puedan
+        escribir, modificamos la funcion search. No lo hacemos por regla de
+        permiso ya que si no pueden ver los diarios termina dando errores en
+        cualquier lugar que se use un campo related a algo del diario
+        """
+        user = self.env.user
+        # if superadmin, do not apply
+        if user.id != 1:
+            args += [
+                '|', ('modification_user_ids', '=', False),
+                ('id', 'in', user.modification_journal_ids.ids)]
+
+        return super(AccountJournal, self).search(
+            args, offset, limit, order, count=count)

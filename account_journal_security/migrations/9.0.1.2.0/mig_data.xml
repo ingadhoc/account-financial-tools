@@ -1,0 +1,7 @@
+<odoo>
+
+    <record model='ir.rule' id='journal_security_mod_rule'>
+        <field name='perm_read' eval="False"/>
+    </record>
+
+</odoo>
