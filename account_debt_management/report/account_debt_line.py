@@ -195,17 +195,23 @@ class AccountDebtLine(models.Model):
         If debt_together in context then we discount payables and make
         cumulative all together
         """
-        # compute with sudo for compatibility with journal security or
-        # mult-store module. TODO improove this. We should only display debt
-        # lines allowed to the user but as we dont have an stored way to
-        # get the journals, we can't create a rule
-        # we have try to overwrite search method and use the stored field
-        # move_lines_str but we could nt find a way to make compare an string
-        # list with the list of journals
-        self = self.sudo()
         for rec in self:
-            move_lines = rec.move_line_ids.browse(
-                literal_eval(rec.move_lines_str))
+            # for compatibility with journal security or
+            # mult-store module. We should only display debt
+            # lines allowed to the user but as we dont have an stored way to
+            # get the journals, we can't create a rule
+            # we have try to overwrite search method and use the stored field
+            # move_lines_str but we could nt find a way to make compare an
+            # string list with the list of journals
+            if isinstance(literal_eval(rec.move_lines_str), int):
+                move_lines_str = [literal_eval(rec.move_lines_str)]
+            elif isinstance(literal_eval(rec.move_lines_str), tuple):
+                move_lines_str = list(literal_eval(rec.move_lines_str))
+            else:
+                continue
+            # Use search to find only move_lines that the user allowed to read
+            move_lines = rec.move_line_ids.search(
+                [('id', 'in', move_lines_str)])
 
             rec.move_line_ids = move_lines
             rec.name = ', '.join(move_lines.mapped('name'))
