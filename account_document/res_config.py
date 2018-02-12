@@ -36,7 +36,7 @@ class WizardMultiChartsAccounts(models.TransientModel):
 
 
 class AccountConfigSettings(models.TransientModel):
-    _inherit = 'account.config.settings'
+    _inherit = 'res.config.settings'
 
     sale_use_documents = fields.Boolean(
         'Sale Use Documents'
