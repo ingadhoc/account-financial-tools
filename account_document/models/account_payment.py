@@ -3,9 +3,9 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, fields, api, _
-from openerp.exceptions import UserError, ValidationError
-from openerp.osv import expression
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 import logging
 _logger = logging.getLogger(__name__)
 

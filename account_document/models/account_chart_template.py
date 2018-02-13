@@ -3,8 +3,8 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, api, fields, _
-from openerp.addons.account_document.models.res_company import ResCompany
+from odoo import models, api, fields, _
+from odoo.addons.account_document.models.res_company import ResCompany
 import logging
 _logger = logging.getLogger(__name__)
 
