@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import fields, models, api
 from odoo.addons.account_document.models.res_company import ResCompany
 # from odoo.exceptions import UserError
