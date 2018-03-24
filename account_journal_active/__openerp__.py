@@ -36,5 +36,5 @@ Adds active field on account journal
     ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
 }

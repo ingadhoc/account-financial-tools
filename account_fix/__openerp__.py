@@ -29,7 +29,7 @@
     ],
     'demo': [],
     'depends': ['account'],
-    'installable': True,
+    'installable': False,
     'name': 'Account Fixes',
     'test': [],
     'version': '9.0.1.3.0'}
