@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>
 <record id="action_account_move_reconcile" model="ir.actions.act_window">
     <field name="name">Reconciliations</field>
@@ -16,4 +16,4 @@
     groups="base.group_no_one"
     />
     </data>
-</openerp>
+</odoo>

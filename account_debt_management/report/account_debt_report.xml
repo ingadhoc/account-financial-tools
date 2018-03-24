@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
 <data>
     <record id="account_debt_report" model="ir.actions.report.xml">
         <field name="name">Account Debt Report</field>
@@ -14,4 +14,4 @@
         <field name="tml_source">file</field>
     </record>
 </data>
-</openerp>
+</odoo>

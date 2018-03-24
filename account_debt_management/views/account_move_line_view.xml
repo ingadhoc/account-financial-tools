@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>
 
         <!-- mejoras a la vista search de move line -->
@@ -44,4 +44,4 @@
          </record>
  -->
     </data>
-</openerp>
+</odoo>
