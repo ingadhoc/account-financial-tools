@@ -1,4 +1,4 @@
-[![Runbot Status](http://runbot.adhoc.com.ar/runbot/badge/flat/7/11.0.svg)](http://runbot.adhoc.com.ar/runbot/repo/github-com-ingadhoc-account-financial-tools-7)
+[![Runbot Status](http://runbot.adhoc.com.ar/runbot/badge/flat/16/11.0.svg)](http://runbot.adhoc.com.ar/runbot/repo/github-com-ingadhoc-account-financial-tools-16)
 [![Build Status](https://travis-ci.org/ingadhoc/account-financial-tools.svg?branch=11.0)](https://travis-ci.org/ingadhoc/account-financial-tools)
 [![Coverage Status](https://coveralls.io/repos/ingadhoc/account-financial-tools/badge.png?branch=11.0)](https://coveralls.io/r/ingadhoc/account-financial-tools?branch=11.0)
 [![Code Climate](https://codeclimate.com/github/ingadhoc/account-financial-tools/badges/gpa.svg)](https://codeclimate.com/github/ingadhoc/account-financial-tools)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Accounting Documents integration with Portal",
     "version": "9.0.1.0.0",

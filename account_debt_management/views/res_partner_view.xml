@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>
 
         <!--Inherited filter view -->
@@ -72,4 +72,4 @@
         </record>
 
     </data>
-</openerp>
+</odoo>

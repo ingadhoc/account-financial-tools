@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>        
         <!-- bank statement -->
         <record id="view_bank_statement_form" model="ir.ui.view">
@@ -12,4 +12,4 @@
             </field>
         </record>
     </data>
-</openerp>
+</odoo>
