@@ -8,10 +8,8 @@
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
-            <field eval="False" name="doall"/>
-            <field eval="'res.company.interest'" name="model"/>
-            <field eval="'_cron_recurring_interests_invoices'" name="function"/>
-            <field eval="'()'" name="args"/>
+            <field name="model" ref="model_res_company_interest"/>
+            <field name="code">_cron_recurring_interests_invoices()</field>
         </record>
 
     </data>
