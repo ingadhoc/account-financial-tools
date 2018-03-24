@@ -3,8 +3,8 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from openerp import fields, models, api, SUPERUSER_ID, _
-from openerp.exceptions import ValidationError
+from odoo import fields, models, api, SUPERUSER_ID, _
+from odoo.exceptions import ValidationError
 
 # agregamos lo auto join para evitar problemas de performance
 

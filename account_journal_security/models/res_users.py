@@ -3,9 +3,9 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from openerp import fields, models
-# from openerp import SUPERUSER_ID, api, _
-# from openerp.exceptions import ValidationError
+from odoo import fields, models
+# from odoo import SUPERUSER_ID, api, _
+# from odoo.exceptions import ValidationError
 
 
 class Users(models.Model):
