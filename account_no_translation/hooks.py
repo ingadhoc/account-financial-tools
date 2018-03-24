@@ -76,7 +76,7 @@ def sync_field(cr, registry, uid, lang_code, model_name, field_name):
         # no nos anduvo, arrojamos el error y listo
         sql_str = "UPDATE %s SET %s=%%s WHERE id=%%s" % (table, field_name)
         cr.execute(sql_str, (value, res_id))
-        # except Exception, e:
+        # except Exception as e:
         #     _logger.warning(
         #         'Could not update translation on table %s for res_id %s, '
         #         'field %s, with value %s. This is what we get %s' % (
