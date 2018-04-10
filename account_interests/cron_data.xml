@@ -10,6 +10,7 @@
             <field name="numbercall">-1</field>
             <field name="model" ref="model_res_company_interest"/>
             <field name="code">_cron_recurring_interests_invoices()</field>
+            <field name="state">code</field>
         </record>
 
     </data>
