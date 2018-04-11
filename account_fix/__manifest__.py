@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,21 +18,17 @@
 #
 ##############################################################################
 {
-    'name': 'Account Move Chatter',
-    'version': '9.0.1.0.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'category': 'Accounting',
-    'depends': [
-                'account',
-    ],
+    'category': 'Accounting & Finance',
     'data': [
-        'view/account_view.xml',
+        'security/ir.model.access.csv',
+        'views/account_journal_view.xml',
     ],
     'demo': [],
+    'depends': ['account'],
+    'installable': False,
+    'name': 'Account Fixes',
     'test': [],
-    'installable': True,
-    'auto_install': False,
-    'application': False,
-}
+    'version': '9.0.1.3.0'}

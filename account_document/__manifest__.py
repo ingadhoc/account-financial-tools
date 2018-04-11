@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Accounting Documents Management",
     "version": "11.0.1.9.0",
@@ -35,5 +34,5 @@
     ],
     'images': [
     ],
-    'installable': True,
+    'installable': False,
 }

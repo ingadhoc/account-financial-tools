@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,35 +18,30 @@
 #
 ##############################################################################
 {
-    'name': 'Base Currency Inverse Rate',
-    'version': '9.0.0.0.0',
+    'name': 'Journal Security',
+    'version': '9.0.1.2.0',
     'category': 'Accounting',
     'sequence': 14,
+    'summary': '',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'summary': '',
-    'description': '''
-Base Currency Inverse Rate
-==========================
-In some countries we are use to see exchange rate in the inverse way as odoo
-shows it. We show rate FROM base currency and not TO base currency. For eg.
-* Base Currency ARS: 1.0
-* USD rate: 12.0 (in odoo way 1 / 12.0 = 0.0833)
-    ''',
-    'depends': [
-        'base',
+    'images': [
     ],
-    'external_dependencies': {
-    },
+    'depends': [
+        'account',
+    ],
     'data': [
-        'views/res_currency_view.xml',
+        'views/res_users_view.xml',
+        'views/account_view.xml',
+        'security/restricted_journal_security.xml',
+        'security/modification_journal_security.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

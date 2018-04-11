@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,17 +18,41 @@
 #
 ##############################################################################
 {
+    'name': 'Calculate interests for selected partners',
+    'version': '9.0.1.0.0',
+    'category': 'Accounting',
+    'sequence': 14,
+    'summary': 'Quotations, Sales Orders, Invoicing',
+    'description': '''
+Interests Management
+====================
+Se deben configurar los intereses en la compañía.
+
+TODO:
+ * ver si queremos que tambien se calcule interes proporcional para lo que
+ vencio en este ultimo periodo
+ * ver si agregamos una fecha en partner ultima fecha de intereses y que
+ completemos cuando creamos la factura asi podemos hacer un commit luego de
+ cada una y si se rompe podemos recuperar.
+    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'category': 'Accounting & Finance',
-    'data': [
-        'security/ir.model.access.csv',
-        'views/account_journal_view.xml',
+    'images': [
     ],
-    'demo': [],
-    'depends': ['account'],
-    'installable': True,
-    'name': 'Account Fixes',
-    'test': [],
-    'version': '9.0.1.3.0'}
+    'depends': [
+        'account',
+    ],
+    'data': [
+        'company_view.xml',
+        'cron_data.xml',
+        'security/ir.model.access.csv',
+    ],
+    'demo': [
+    ],
+    'test': [
+    ],
+    'installable': False,
+    'auto_install': False,
+    'application': False,
+}

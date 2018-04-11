@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from openupgradelib import openupgrade
 import logging
 _logger = logging.getLogger(__name__)

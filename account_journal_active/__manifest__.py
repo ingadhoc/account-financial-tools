@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,28 +18,22 @@
 #
 ##############################################################################
 {
-    'name': 'Account Statement Move Import',
-    'version': '9.0.1.1.0',
-    'category': 'Accounting',
-    'sequence': 14,
-    'summary': '',
+    "name": "Account Journal Active",
+    "version": "9.0.1.0.0",
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'images': [
-    ],
-    'depends': [
-        'account',
-    ],
+    "category": "Accounting",
+    "description": """ This module is to desactivate unused Daily more.
+Account Journal Active Field
+============================
+Adds active field on account journal
+    """,
+    'depends': ['account'],
     'data': [
-        'wizard/account_statement_move_import_wizard_view.xml',
-        'account_view.xml',
+        'account_journal_view.xml',
     ],
-    'demo': [
-    ],
-    'test': [
-    ],
-    'installable': True,
-    'auto_install': False,
-    'application': False,
+    'demo': [],
+    'test': [],
+    'installable': False,
 }

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,33 +18,28 @@
 #
 ##############################################################################
 {
-    'name': 'Account Reconciliations Menu',
-    'version': '9.0.1.0.0',
-    'category': 'Sale',
+    'name': 'Account Statement Move Import',
+    'version': '9.0.1.1.0',
+    'category': 'Accounting',
     'sequence': 14,
     'summary': '',
-    'description': '''
-Account Reconciliations Menu
-============================
-Add reconciliations menu on accounting
-
-    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
     ],
     'depends': [
-        'account_full_reconcile',
+        'account',
     ],
     'data': [
-        'account_action.xml',
+        'wizard/account_statement_move_import_wizard_view.xml',
+        'account_view.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,30 +18,38 @@
 #
 ##############################################################################
 {
-    'name': 'Journal Security',
-    'version': '9.0.1.2.0',
-    'category': 'Accounting',
-    'sequence': 14,
-    'summary': '',
+    'name': 'Account Debt Management',
+    'version': '9.0.1.5.0',
+    'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'images': [
-    ],
     'depends': [
-        'account',
+        'account_full_reconcile',
+        'account_document',
+        # lo agregamos aca por simplicidad y para poder poner link al
+        # payment
+        'account_payment_group',
+        # TODO vamos a analizar si agregamos esto o no
+        # mas adelante se puede separar en otro modulo que integre
+        # funcionalidad con este otro modulo
+        # 'account_payment_group_document',
+        'report_aeroo',
     ],
     'data': [
-        'views/res_users_view.xml',
-        'views/account_view.xml',
-        'security/restricted_journal_security.xml',
-        'security/modification_journal_security.xml',
+        'report/account_debt_report.xml',
+        'report/account_debt_line_view.xml',
+        'data/mail_data.xml',
+        'wizard/account_debt_report_wizard_view.xml',
+        'views/account_move_line_view.xml',
+        'views/res_partner_view.xml',
+        'res_config_view.xml',
+        'security/ir.model.access.csv',
+        'security/security.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': True,
-    'auto_install': False,
-    'application': False,
+    'installable': False,
 }

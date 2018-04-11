@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,29 +18,33 @@
 #
 ##############################################################################
 {
-    'name': 'Bank Statement Report',
+    'name': 'Account Reconciliations Menu',
     'version': '9.0.1.0.0',
-    'category': 'Aeroo Reporting',
+    'category': 'Sale',
     'sequence': 14,
     'summary': '',
+    'description': '''
+Account Reconciliations Menu
+============================
+Add reconciliations menu on accounting
+
+    ''',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
     ],
     'depends': [
-        'account',
-        'report_aeroo',
+        'account_full_reconcile',
     ],
     'data': [
-        'reports/statement_report.xml',
-        'views/account_statement_view.xml',
+        'account_action.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

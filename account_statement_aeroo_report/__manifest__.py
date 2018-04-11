@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,22 +18,29 @@
 #
 ##############################################################################
 {
-    "name": "Account Journal Active",
-    "version": "9.0.1.0.0",
+    'name': 'Bank Statement Report',
+    'version': '9.0.1.0.0',
+    'category': 'Aeroo Reporting',
+    'sequence': 14,
+    'summary': '',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    "category": "Accounting",
-    "description": """ This module is to desactivate unused Daily more.
-Account Journal Active Field
-============================
-Adds active field on account journal
-    """,
-    'depends': ['account'],
-    'data': [
-        'account_journal_view.xml',
+    'images': [
     ],
-    'demo': [],
-    'test': [],
-    'installable': True,
+    'depends': [
+        'account',
+        'report_aeroo',
+    ],
+    'data': [
+        'reports/statement_report.xml',
+        'views/account_statement_view.xml',
+    ],
+    'demo': [
+    ],
+    'test': [
+    ],
+    'installable': False,
+    'auto_install': False,
+    'application': False,
 }

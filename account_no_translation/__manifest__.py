@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -34,6 +33,6 @@
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'post_init_hook': 'post_init_hook',
 }

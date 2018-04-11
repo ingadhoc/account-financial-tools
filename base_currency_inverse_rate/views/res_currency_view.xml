@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<openerp>
+<odoo>
     <data>
     <!-- currency rate -->
         <record model='ir.ui.view' id='view_currency_form'>
@@ -47,4 +47,4 @@
             </field>
         </record>          
     </data>
-</openerp>
+</odoo>

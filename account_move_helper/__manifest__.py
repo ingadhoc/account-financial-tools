@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015  ADHOC SA  (http://www.adhoc.com.ar)
@@ -19,28 +18,20 @@
 #
 ##############################################################################
 {
-    'name': 'Portal Distributor Account',
-    'version': '9.0.1.0.0',
-    'category': 'Tools',
-    'complexity': 'easy',
-    'description': '''
-Portal Distributor Account
-==========================
-    ''',
+    'name': 'Account Move helper',
+    'version': '9.0.1.2.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
-    'depends': ['portal'],
-    'demo': [
-        'portal_demo.xml',
+    'category': 'Accounting',
+    'depends': [
+        'account',
     ],
     'data': [
-        'security/portal_security.xml',
-        'security/ir.model.access.csv',
-        'account_view.xml',
+        'view/account_view.xml',
+        'view/res_partner_view.xml',
     ],
+    'demo': [],
+    'test': [],
     'installable': False,
-    'auto_install': False,
-    'application': False,
-    'category': 'Hidden',
 }
