@@ -21,6 +21,8 @@ class AccountInvoice(models.Model):
         new_invoices = super(AccountInvoice, self).refund(
             date_invoice=date_invoice, date=date,
             description=description, journal_id=journal_id)
+        for new_invoice in new_invoices:
+            new_invoice.date_due = False
         new_invoices.compute_taxes()
         return new_invoices
 
