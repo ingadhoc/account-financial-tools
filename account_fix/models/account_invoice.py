@@ -3,7 +3,12 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import models, api
+from openerp import models, api, _
+from openerp.exceptions import ValidationError
+import logging
+
+
+_logger = logging.getLogger(__name__)
 
 
 class AccountInvoice(models.Model):
@@ -46,3 +51,14 @@ class AccountInvoice(models.Model):
         #     self.currency_id = self._context.get('default_currency_id')
         # else:
         #     super(AccountInvoice, self)._onchange_journal_id()
+
+    @api.multi
+    def compute_taxes(self):
+        _logger.info('Checking compute taxes on draft invoices')
+        if not self._context.get('force_compute_taxes') and self.filtered(
+                lambda x: x.state != 'drfat'):
+            raise ValidationError(_(
+                'You can compute taxes invoices that are not in draft only if '
+                'you send "force_compute_taxes=True" on context. Be aware'
+                'invoices amounts could change'))
+        return super(AccountInvoice, self).compute_taxes()
