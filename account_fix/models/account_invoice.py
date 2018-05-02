@@ -56,7 +56,7 @@ class AccountInvoice(models.Model):
     def compute_taxes(self):
         _logger.info('Checking compute taxes on draft invoices')
         if not self._context.get('force_compute_taxes') and self.filtered(
-                lambda x: x.state != 'drfat'):
+                lambda x: x.state != 'draft'):
             raise ValidationError(_(
                 'You can compute taxes invoices that are not in draft only if '
                 'you send "force_compute_taxes=True" on context. Be aware'
