@@ -225,10 +225,15 @@ class AccountDebtLine(models.Model):
                     len(move_lines) == 1 and move_lines[0] or
                     rec.env['account.move.line'])
 
-            rec.invoice_id = rec.move_line_id.invoice_id
-            rec.payment_group_id = rec.move_line_id.mapped(
+            invoice_id = rec.move_line_ids.mapped('invoice_id')
+            rec.invoice_id = len(invoice_id) == 1 and invoice_id
+
+            payment_group = rec.move_line_ids.mapped(
                 'payment_id.payment_group_id')
-            rec.statement_id = rec.move_line_id.statement_id
+            rec.payment_group_id = len(payment_group) == 1 and payment_group
+
+            statement = rec.move_line_ids.mapped('statement_id')
+            rec.statement_id = len(statement) == 1 and statement
             # invoices = rec.move_line_ids.mapped('invoice_id')
             # if len(invoices) == 1:
             #     rec.invoice_id = invoices
