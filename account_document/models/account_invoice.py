@@ -97,21 +97,21 @@ class AccountInvoice(models.Model):
         readonly=True,
     )
 
-    @api.multi
-    def _get_tax_amount_by_group(self):
-        """
-        we can not inherit because of function design, we overwrite
-        """
-        self.ensure_one()
-        res = {}
-        currency = self.currency_id or self.company_id.currency_id
-        for line in self.report_tax_line_ids:
-            res.setdefault(line.tax_id.tax_group_id, 0.0)
-            res[line.tax_id.tax_group_id] += line.amount
-        res = sorted(res.items(), key=lambda l: l[0].sequence)
-        res = map(lambda l: (
-            l[0].name, formatLang(self.env, l[1], currency_obj=currency)), res)
-        return res
+#    @api.multi
+#    def _get_tax_amount_by_group(self):
+#        """
+#        we can not inherit because of function design, we overwrite
+#        """
+#        self.ensure_one()
+#        res = {}
+#        currency = self.currency_id or self.company_id.currency_id
+#        for line in self.report_tax_line_ids:
+#            res.setdefault(line.tax_id.tax_group_id, 0.0)
+#            res[line.tax_id.tax_group_id] += line.amount
+#        res = sorted(res.items(), key=lambda l: l[0].sequence)
+#        res = map(lambda l: (
+#            l[0].name, formatLang(self.env, l[1], currency_obj=currency)), res)
+#        return res
 
     @api.depends(
         'amount_untaxed', 'amount_tax', 'tax_line_ids', 'document_type_id')
