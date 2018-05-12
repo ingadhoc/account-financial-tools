@@ -7,6 +7,7 @@
     <data noupdate="1">
         <!--Email template -->
         <record id="portal_sale.email_template_edi_invoice" model="mail.template">
+            <field name="report_name">Invoice_${(object.display_name or '').replace('/','_')}_${object.state == 'draft' and 'draft' or ''}</field>
             <field name="body_html"><![CDATA[
 <div style="font-family: 'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
 
@@ -23,7 +24,7 @@
        &nbsp;&nbsp;Order reference: ${object.origin}<br />
        % endif
        % if object.user_id:
-       &nbsp;&nbsp;Your contact: <a href="mailto:${object.user_id.email or ''}?subject=Invoice%20${object.number}">${object.user_id.name}</a>
+       &nbsp;&nbsp;Your contact: <a href="mailto:${object.user_id.email or ''}?subject=Invoice%20${object.display_name}">${object.user_id.name}</a>
        % endif
     </p>  
 
