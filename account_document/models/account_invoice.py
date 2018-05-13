@@ -127,8 +127,8 @@ class AccountInvoice(models.Model):
 
 #    @api.multi
 #    def _get_tax_amount_by_group(self):
-#        """
-#        we can not inherit because of function design, we overwrite
+#        """ Method used by qweb invoice report. We are not using this report
+#        for now.
 #        """
 #        self.ensure_one()
 #        res = {}

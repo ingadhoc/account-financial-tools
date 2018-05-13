@@ -28,7 +28,7 @@
     </xpath> -->
 
 
-    <!-- por fines de migracion se comentan este bloque 
+    <!-- por fines de migracion y porque no se usa por el momento se comentan este bloque
     <xpath expr="//span[@t-field='l.price_subtotal']" position="attributes">
         <attribute name="t-field">l.report_price_subtotal</attribute>
     </xpath>

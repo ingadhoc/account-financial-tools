@@ -18,7 +18,8 @@ class AccountDocmentType(models.Model):
 
     sequence = fields.Integer(
         default=10,
-        required=True, help="Used to order records in tree views and relational fields"
+        required=True,
+        help="Used to order records in tree views and relational fields"
     )
     localization = fields.Selection(
         _get_localizations,

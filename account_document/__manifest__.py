@@ -1,6 +1,6 @@
 {
     "name": "Accounting Documents Management",
-    "version": "11.0.1.9.0",
+    "version": "11.0.1.0.0",
     "author": "Moldeo Interactive,ADHOC SA,Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "Accounting",
@@ -34,5 +34,5 @@
     ],
     'images': [
     ],
-    'installable': False,
+    'installable': True,
 }
