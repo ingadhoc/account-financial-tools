@@ -13,6 +13,7 @@ Account Fixes
 #. Make readonly the journal_type related field of bank statements so that users are allow to create statement without perm to write on journals.
 #. Overwrite create_bank_statement method so that users are allow to create statement without perm to write on journals.
 #. Fix importantisimo haciendo readonly el campo releated company_id de account.move.line ya que si se agrega en una vista fuerza un terrible recomputo
+#. Do not allow to recompute taxes on invoices that are not on draft state because tax and invoice amounts could change
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
