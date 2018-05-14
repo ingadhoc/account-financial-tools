@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="name">account.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <field name="inbound_payment_method_ids" position="after">
+                <field name="debit_card_days_for_collection" attrs="{'invisible':[('type', 'not in', ['bank','cash'])]}"/>
+                <field name="credit_card_days_for_collection" attrs="{'invisible':[('type', 'not in', ['bank','cash'])]}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_account_bank_journal_form" model="ir.ui.view">
+        <field name="name">account.bank.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_bank_journal_form"/>
+        <field name="arch" type="xml">
+            <field name="bank_id" position="after">
+                <field name="name"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

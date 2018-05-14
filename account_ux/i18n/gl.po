@@ -1,0 +1,146 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * account_usability
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0c\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-21 11:14+0000\n"
+"PO-Revision-Date: 2017-03-21 11:14+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
+"Language-Team: Galician (https://www.transifex.com/adhoc/teams/46451/gl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: gl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_usability
+#: model:ir.ui.view,arch_db:account_usability.view_account_bank_journal_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"bank_id\" position=\"after\">\n"
+"                    <field name=\"name\"/>\n"
+"                </field>\n"
+"            "
+msgstr ""
+
+#. module: account_usability
+#: model:ir.ui.view,arch_db:account_usability.view_payment_term_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"company_id\" position=\"attributes\">\n"
+"                    <attribute name=\"invisible\">0</attribute>\n"
+"                    <attribute name=\"groups\">base.group_multi_company</attribute>\n"
+"                </field>\n"
+"            "
+msgstr ""
+
+#. module: account_usability
+#: model:ir.ui.view,arch_db:account_usability.acquirer_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"environment\" position=\"after\">\n"
+"                    <field name=\"journal_id\"/>\n"
+"                </field>\n"
+"            "
+msgstr ""
+
+#. module: account_usability
+#: model:ir.ui.view,arch_db:account_usability.view_account_journal_form
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"inbound_payment_method_ids\" position=\"after\">\n"
+"                    <field name=\"debit_card_days_for_collection\" attrs=\"{'invisible':[('type', 'not in', ['bank','cash'])]}\"/>\n"
+"                    <field name=\"credit_card_days_for_collection\" attrs=\"{'invisible':[('type', 'not in', ['bank','cash'])]}\"/>\n"
+"                </field>\n"
+"            "
+msgstr ""
+
+#. module: account_usability
+#: model:ir.ui.view,arch_db:account_usability.acquirer_search
+msgid ""
+"<?xml version=\"1.0\"?>\n"
+"<field name=\"provider\" position=\"after\">\n"
+"                    <field name=\"journal_id\"/>\n"
+"                </field>\n"
+"            "
+msgstr ""
+
+#. module: account_usability
+#: help:account.journal,acquirer_ids:0
+#: model:ir.model.fields,help:account_usability.field_account_journal_acquirer_ids
+msgid ""
+"Acquirer that use this journal to register online payments journal entries"
+msgstr ""
+
+#. module: account_usability
+#: field:account.journal,acquirer_ids:0
+#: model:ir.model.fields,field_description:account_usability.field_account_journal_acquirer_ids
+msgid "Acquirers"
+msgstr ""
+
+#. module: account_usability
+#: field:account.journal,credit_card_days_for_collection:0
+#: model:ir.model.fields,field_description:account_usability.field_account_journal_credit_card_days_for_collection
+msgid "Credit card days for collection"
+msgstr ""
+
+#. module: account_usability
+#: field:account.journal,debit_card_days_for_collection:0
+#: model:ir.model.fields,field_description:account_usability.field_account_journal_debit_card_days_for_collection
+msgid "Debit card days for collection"
+msgstr ""
+
+#. module: account_usability
+#: model:ir.model,name:account_usability.model_account_journal
+#: model:ir.model.fields,field_description:account_usability.field_payment_acquirer_journal_id
+#: field:payment.acquirer,journal_id:0
+msgid "Journal"
+msgstr "Diario"
+
+#. module: account_usability
+#: model:ir.model.fields,help:account_usability.field_payment_acquirer_journal_id
+#: help:payment.acquirer,journal_id:0
+msgid "Journal to be used to record journal entry of this payment acquirer"
+msgstr ""
+
+#. module: account_usability
+#: model:ir.model,name:account_usability.model_payment_acquirer
+msgid "Payment Acquirer"
+msgstr ""
+
+#. module: account_usability
+#: model:ir.model,name:account_usability.model_account_payment_term
+msgid "Payment Term"
+msgstr ""
+
+#. module: account_usability
+#: model:ir.model,name:account_usability.model_account_payment
+msgid "Payments"
+msgstr ""
+
+#. module: account_usability
+#: code:addons/account_usability/models/payment_acquirer.py:25
+#, python-format
+msgid "The journal company must belong to the same company of the aquirer"
+msgstr ""
+
+#. module: account_usability
+#: help:account.journal,credit_card_days_for_collection:0
+#: model:ir.model.fields,help:account_usability.field_account_journal_credit_card_days_for_collection
+msgid ""
+"This number of days will be added to the date of inbound credit card "
+"payments to get the due date, usefull for cashflow analysis"
+msgstr ""
+
+#. module: account_usability
+#: help:account.journal,debit_card_days_for_collection:0
+#: model:ir.model.fields,help:account_usability.field_account_journal_debit_card_days_for_collection
+msgid ""
+"This number of days will be added to the date of inbound debit card payments"
+" to get the due date, usefull for cashflow analysis"
+msgstr ""
