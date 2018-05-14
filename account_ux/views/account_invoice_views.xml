@@ -1,0 +1,65 @@
+<odoo>
+
+    <record id="view_invoice_report_extended_form" model="ir.ui.view">
+        <field name="name">account.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <!-- agregamos boton para poder cancelar facturas pagadas sin pagos (facturas con importe 0 o que por que van contra cuenta no a cobrar/pagar)  -->
+            <form>
+                <field name="payment_move_line_ids" invisible="1"/>
+            </form>
+
+            <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
+            <field name="origin" position="attributes">
+                <attribute name="attrs"></attribute>
+            </field>
+
+            <button name="action_invoice_draft" position="after">
+                <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
+            </button>
+
+            <button name="invoice_print" position="after">
+                <button name="invoice_print" string="Print" type="object" states="paid" groups="base.group_user"/>
+            </button>
+
+            <field name="currency_id" position="after">
+                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="account.group_account_user"/>
+            </field>
+
+            <field name="currency_id" position="attributes">
+                <attribute name="readonly">True</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="invoice_supplier_form" model="ir.ui.view">
+        <field name="name">account.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <!-- agregamos boton para poder cancelar facturas pagadas sin pagos (facturas con importe 0 o que por que van contra cuenta no a cobrar/pagar)  -->
+            <form>
+                <field name="payment_move_line_ids" invisible="1"/>
+            </form>
+
+            <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
+            <field name="origin" position="attributes">
+                <attribute name="attrs"></attribute>
+            </field>
+
+            <button name="action_invoice_draft" position="after">
+                <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
+            </button>
+
+            <field name="currency_id" position="replace">
+                <label for="currency_id" groups="base.group_multi_currency"/>
+                <div groups="base.group_multi_currency">
+                    <field name="currency_id" options="{'no_create': True, 'no_open': True}" class="oe_inline" readonly="1"/>
+                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="account.group_account_user"/>
+                </div>
+            </field>
+        </field>
+    </record>
+
+</odoo>
