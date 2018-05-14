@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- agregado de account type en búsqueda de apuntes -->
+    <record id="view_account_move_line_filter" model="ir.ui.view">
+        <field name="name">account.move.line.search</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="arch" type="xml">
+            <field name="account_id" position="after">
+                <field name="user_type_id"/>
+                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"/>
+            </field>
+            <group>
+                <filter string="Account Type" context="{'group_by':'user_type_id'}"/>
+                <filter string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+            </group>
+            <!-- add name to this group so it can be send as default by other modules -->
+            <filter context="{'group_by':'account_id'}" position="attributes">
+                <attribute name="name">group_by_account</attribute>
+            </filter>
+        </field>
+    </record>
+
+    <!-- agregado de boton para abrir documento relacionado -->
+    <record id="view_move_line_tree" model="ir.ui.view">
+        <field name="name">account.move.line.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <tree>
+                <button type="object" string="Open Document" icon="fa-file-o" help="Open Related Document" name="action_open_related_document"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- TODO mejorar en payment group heredando de move line para no necesitar esto -->
+<!--     <record id="view_move_line_payment_group_tree" model="ir.ui.view">
+        <field name="name">account.move.line.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account_payment_group.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <tree>
+                <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Document" name="action_open_related_document"/>
+            </tree>
+        </field>
+    </record> -->
+
+    <record id="action_move_line_analisis" model="ir.actions.act_window">
+        <field name="name">Análisis de Apuntes Contables</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.move.line</field>
+        <!-- <field name="view_id" ref="view_wizard_multi_chart"/> -->
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,graph,pivot</field>
+    </record>
+
+    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.account_reports_business_intelligence_menu" action="action_move_line_analisis"/>
+
+</odoo>
