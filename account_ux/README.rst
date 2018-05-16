@@ -42,7 +42,7 @@ Several Improvements to accounting:
   * Change currency wizard only works when multi currency is activated
   * In order to see the change button in the invoice we should be added to the "Technical Settings / Show Full Accounting Features" group
   * We can restrict the change of the currency for a group of users by adding them to "Restrict Change Invoice Currency Exchange" group
-
+#. Adds possibility of filtering and grouping by company on invoices.
 
 Installation
 ============
