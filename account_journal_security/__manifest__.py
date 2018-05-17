@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-    'version': '9.0.1.2.0',
+    'version': '10.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',

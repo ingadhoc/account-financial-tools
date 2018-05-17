@@ -9,19 +9,19 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     financial_amount_residual = fields.Monetary(
-        compute='_get_financial_amounts',
+        compute='_compute_financial_amounts',
         string='Residual Financial Amount',
         currency_field='company_currency_id',
     )
     financial_amount = fields.Monetary(
-        compute='_get_financial_amounts',
+        compute='_compute_financial_amounts',
         string='Financial Amount',
         currency_field='company_currency_id',
     )
 
     @api.multi
     @api.depends('debit', 'credit')
-    def _get_financial_amounts(self):
+    def _compute_financial_amounts(self):
         for line in self:
             financial_amount = (
                 line.currency_id and line.currency_id.compute(

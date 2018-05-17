@@ -37,7 +37,7 @@ To use this module, you need to:
    :target: https://runbot.adhoc.com.ar/
 
 .. repo_id is available in https://github.com/OCA/maintainer-tools/blob/master/tools/repos_with_ids.txt
-.. branch is "9.0" for example
+.. branch is "10.0" for example
 
 Known issues / Roadmap
 ======================

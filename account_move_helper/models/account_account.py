@@ -6,7 +6,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
-class account_account(models.Model):
+class AccountAccount(models.Model):
     _inherit = "account.account"
 
     balance = fields.Monetary(
@@ -41,17 +41,18 @@ class account_account(models.Model):
                     ('move_id.state', '=', 'posted'),
                 ]).mapped('balance'))
 
-    @api.one
+    @api.multi
     def _inverse_new_balance(self):
         # agregamos el round por un bug de odoo que por mas que estos
         # trabajando con x decimales, si el usuario por interfaz agrega mas
         # decimales (que x) odoo lo termina almacenando y luego da error
         # por descuadre de apunte
-        new_balance = self.company_id.currency_id.round(self.new_balance)
-        line_balance = new_balance - self.balance
-        self._helper_update_line(line_balance)
+        for rec in self:
+            new_balance = rec.company_id.currency_id.round(rec.new_balance)
+            line_balance = new_balance - rec.balance
+            rec._helper_update_line(line_balance)
 
-    @api.one
+    @api.multi
     def _helper_update_line(self, line_balance, partner=None):
         """
         * line_balance: balance to be used on the move line related to this
