@@ -1,7 +1,7 @@
 {
     "name": "Accounting Financial Amounts",
-    "version": "10.0.1.0.0",
-    "author": "Moldeo Interactive, ADHOC SA",
+    "version": "11.0.1.0.0",
+    "author": "ADHOC SA",
     "license": "AGPL-3",
     "category": "Accounting",
     "depends": [
@@ -13,5 +13,5 @@
     ],
     'images': [
     ],
-    'installable': False,
+    'installable': True,
 }
