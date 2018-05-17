@@ -20,7 +20,7 @@
 {
     'name': 'Account Move Chatter',
     'version': '10.0.1.0.0',
-    'author': 'ADHOC SA, Odoo Community Association (OCA)',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting',
