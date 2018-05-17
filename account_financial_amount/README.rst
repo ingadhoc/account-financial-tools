@@ -1,45 +1,51 @@
-.. image:: https://img.shields.io/badge/licence-AGPL--3-blue.svg
-    :alt: License
+.. |company| replace:: ADHOC SA
 
+.. |company_logo| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-logo.png
+   :alt: ADHOC SA
+   :target: https://www.adhoc.com.ar
+
+.. |icon| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-icon.png
+
+.. image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+   :target: https://www.gnu.org/licenses/agpl
+   :alt: License: AGPL-3
+
+============================
 Accounting Financial Amounts
 ============================
 
-Add financial amounts on account move lines. This module should not be installed alone, it is going to be installed by other modules automatically.
+Add financial amounts on account move lines.
 
-Configuration
-=============
+IMPORTANTE: This module should not be installed alone, it is going to be installed by other modules automatically.
 
-TODO
+.. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
+   :alt: Try me on Runbot
+   :target: http://runbot.adhoc.com.ar/
 
-Usage
-=====
+Bug Tracker
+===========
 
-TODO
-
-Know issues / Roadmap
-=====================
-
-TODO
+Bugs are tracked on `GitHub Issues
+<https://github.com/ingadhoc/{project_repo}/issues>`_. In case of trouble, please
+check there if your issue has already been reported. If you spotted it first,
+help us smashing it by providing a detailed and welcomed feedback.
 
 Credits
 =======
 
+Images
+------
+
+* |company| |icon|
+
 Contributors
 ------------
-
-* TODO
 
 Maintainer
 ----------
 
-.. image:: http://odoo-argentina.org/logo.png
-   :alt: Odoo Argentina
-   :target: http://odoo-argentina.org
+|company_logo|
 
-This module is maintained by the Odoo Argentina.
+This module is maintained by the |company|.
 
-Odoo Argentina, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-To contribute to this module, please visit http://odoo-argentina.org
+To contribute to this module, please visit https://www.adhoc.com.ar.
