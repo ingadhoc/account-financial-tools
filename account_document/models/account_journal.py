@@ -74,7 +74,12 @@ class AccountJournal(models.Model):
             self.use_documents = False
 
     @api.multi
-    def update_journal_document_types(self, vals=None):
+    @api.constrains(
+        'code',
+        'company_id',
+        'use_documents',
+    )
+    def update_journal_document_types(self,vals=False):
         """
         Tricky constraint to create documents on journal.
         You should not inherit this function, inherit
