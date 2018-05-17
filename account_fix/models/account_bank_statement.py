@@ -9,4 +9,6 @@ class AccountBankStatement(models.Model):
 
     _inherit = "account.bank.statement"
 
-    journal_type = fields.Selection(readonly=True)
+    journal_type = fields.Selection(
+        readonly=True
+    )
