@@ -5,7 +5,7 @@
 from odoo import models, api, _
 
 
-class account_move(models.Model):
+class AccountMove(models.Model):
     _inherit = "account.move"
 
     @api.multi

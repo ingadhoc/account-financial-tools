@@ -3,11 +3,11 @@
 # directory
 ##############################################################################
 from odoo import fields, models, api, _
-from odoo.exceptions import Warning
+from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 
 
-class account_statement_move_import_wizard(models.TransientModel):
+class AccountStatementMoveImportWizard(models.TransientModel):
     _name = "account.statement.move.import.wizard"
     _description = "account_statement_move_import_wizard"
 
@@ -33,13 +33,13 @@ class account_statement_move_import_wizard(models.TransientModel):
     )
     journal_id = fields.Many2one(
         'account.journal',
-        _('Journal'),
-        compute='get_journal',
+        'Journal',
+        compute='_compute_get_journal',
     )
     journal_account_ids = fields.Many2many(
         'account.account',
-        compute='get_accounts',
-        string=_('Journal Accounts')
+        compute='_compute_get_accounts',
+        string='Journal Accounts'
     )
     move_line_ids = fields.Many2many(
         'account.move.line',
@@ -82,14 +82,12 @@ class account_statement_move_import_wizard(models.TransientModel):
 
     @api.multi
     @api.depends('statement_id')
-    def get_journal(self):
+    def _compute_get_journal(self):
         self.journal_id = self.statement_id.journal_id
 
     @api.multi
-    # @api.onchange('from_date', 'to_date', 'journal_id')
+    @api.onchange('from_date', 'to_date', 'journal_id')
     def get_move_lines(self):
-        # dont know why but on v9 the onchange does not work and move_line_ids
-        # remains empty on wizard confirmation
         move_lines = self.move_line_ids.search([
             ('journal_id', '=', self.journal_id.id),
             ('account_id', 'in', self.journal_account_ids.ids),
@@ -114,7 +112,7 @@ class account_statement_move_import_wizard(models.TransientModel):
 
     @api.multi
     @api.depends('journal_id')
-    def get_accounts(self):
+    def _compute_get_accounts(self):
         self.journal_account_ids = (
             self.journal_id.default_credit_account_id +
             self.journal_id.default_debit_account_id)
@@ -134,13 +132,13 @@ class account_statement_move_import_wizard(models.TransientModel):
                 continue
             moves |= line.move_id
             if line.account_id not in self.journal_account_ids:
-                raise Warning(_(
+                raise UserError(_(
                     'Imported line account must be one of the journals '
                     'defaults, in this case %s') % (
                     ', '.join(self.journal_account_ids.mapped('name'))))
 
             if line.statement_id:
-                raise Warning(_(
+                raise UserError(_(
                     'Imported line must have "statement_id" == False'))
 
             # si el statement es en otra moneda, odoo interpreta que el amount
@@ -149,10 +147,10 @@ class account_statement_move_import_wizard(models.TransientModel):
             # convierte la linea que afecta el banco a la moneda del banco
             if statement_currency != company_currency:
                 if line.currency_id != statement_currency:
-                    raise Warning(
+                    raise UserError(_(
                         'Si el diario del extracto es en otra moneda distinta '
                         'a la de la compañía, los apuntes a importar deben '
-                        'tener como otra moneda esa misma moneda (%s)' % (
+                        'tener como otra moneda esa misma moneda (%s)') % (
                             statement_currency.name))
                 amount = line.amount_currency
                 currency_id = False

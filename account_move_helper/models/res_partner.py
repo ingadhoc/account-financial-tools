@@ -75,12 +75,12 @@ class ResPartner(models.Model):
                     field: sum(rec.env['account.move.line'].search(
                         domain).mapped('balance'))})
 
-    @api.one
+    @api.multi
     def _inverse_new_debit(self):
         self._set_new_credit_debit(
             'new_debit', 'debit_copy', 'property_account_payable_id')
 
-    @api.one
+    @api.multi
     def _inverse_new_credit(self):
         self._set_new_credit_debit(
             'new_credit', 'credit_copy', 'property_account_receivable_id')

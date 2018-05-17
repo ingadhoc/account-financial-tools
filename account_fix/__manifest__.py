@@ -18,17 +18,16 @@
 #
 ##############################################################################
 {
-    'author': 'ADHOC SA',
+    'name': 'Account Fixes',
+    'version': '10.0.1.0.0',
+    'author': 'ADHOC SA,Odoo Community Association (OCA)',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'category': 'Accounting & Finance',
     'data': [
-        'security/ir.model.access.csv',
-        'views/account_journal_view.xml',
     ],
     'demo': [],
     'depends': ['account'],
-    'installable': False,
-    'name': 'Account Fixes',
     'test': [],
-    'version': '9.0.1.3.0'}
+    'installable': True,
+}
