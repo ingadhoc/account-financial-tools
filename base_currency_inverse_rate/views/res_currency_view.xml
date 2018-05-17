@@ -7,7 +7,7 @@
             <field name="model">res.currency</field>
             <field name="inherit_id" ref="base.view_currency_form"/>
             <field name='arch' type='xml'>
-                <field name="active" position="after">
+                <field name="rate" position="after">
                     <field name="inverse_rate"/>
                 </field>
             </field>
