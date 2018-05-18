@@ -34,7 +34,7 @@ class ResConfigSettings(models.TransientModel):
         """
         We send this value in context because to use them on journals creation
         """
-        return super(AccountConfigSettings, self.with_context(
+        return super(ResConfigSettings, self.with_context(
             sale_use_documents=self.sale_use_documents,
             purchase_use_documents=self.purchase_use_documents,
         )).set_chart_of_accounts()

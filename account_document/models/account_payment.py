@@ -79,7 +79,7 @@ class AccountPayment(models.Model):
     )
     next_number = fields.Integer(
         # related='receiptbook_id.sequence_id.number_next_actual',
-        compute='_get_next_number',
+        compute='_compute_next_number',
         string='Next Number',
     )
     display_name = fields.Char(
@@ -103,7 +103,7 @@ class AccountPayment(models.Model):
         'journal_id.sequence_id.number_next_actual',
         'receiptbook_id.sequence_id.number_next_actual',
     )
-    def _get_next_number(self):
+    def _compute_next_number(self):
         """
         show next number only for payments without number and on draft state
         """

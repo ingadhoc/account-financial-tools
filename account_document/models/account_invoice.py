@@ -43,7 +43,7 @@ class AccountInvoice(models.Model):
     )
     available_journal_document_type_ids = fields.Many2many(
         'account.journal.document.type',
-        compute='get_available_journal_document_types',
+        compute='_compute_available_journal_document_types',
         string='Available Journal Document Types',
     )
     journal_document_type_id = fields.Many2one(
@@ -77,11 +77,11 @@ class AccountInvoice(models.Model):
         index=True,
     )
     display_name = fields.Char(
-        compute='_get_display_name',
+        compute='_compute_display_name',
         string='Document Reference',
     )
     next_number = fields.Integer(
-        compute='_get_next_number',
+        compute='_compute_next_number',
         string='Next Number',
     )
     use_documents = fields.Boolean(
@@ -98,21 +98,21 @@ class AccountInvoice(models.Model):
         readonly=True,
     )
 
-#    @api.multi
-#    def _get_tax_amount_by_group(self):
-#        """ Method used by qweb invoice report. We are not using this report
-#        for now.
-#        """
-#        self.ensure_one()
-#        res = {}
-#        currency = self.currency_id or self.company_id.currency_id
-#        for line in self.report_tax_line_ids:
-#            res.setdefault(line.tax_id.tax_group_id, 0.0)
-#            res[line.tax_id.tax_group_id] += line.amount
-#        res = sorted(res.items(), key=lambda l: l[0].sequence)
-#        res = map(lambda l: (
-#            l[0].name, formatLang(self.env, l[1], currency_obj=currency)), res)
-#        return res
+# @api.multi
+# def _get_tax_amount_by_group(self):
+#     """ Method used by qweb invoice report. We are not using this report
+#     for now.
+#     """
+#     self.ensure_one()
+#     res = {}
+#     currency = self.currency_id or self.company_id.currency_id
+#     for line in self.report_tax_line_ids:
+#         res.setdefault(line.tax_id.tax_group_id, 0.0)
+#         res[line.tax_id.tax_group_id] += line.amount
+#     res = sorted(res.items(), key=lambda l: l[0].sequence)
+#     res = map(lambda l: (
+#         l[0].name, formatLang(self.env, l[1], currency_obj=currency)), res)
+#     return res
 
     @api.depends(
         'amount_untaxed', 'amount_tax', 'tax_line_ids', 'document_type_id')
@@ -142,7 +142,7 @@ class AccountInvoice(models.Model):
         'journal_id.sequence_id.number_next_actual',
         'journal_document_type_id.sequence_id.number_next_actual',
     )
-    def _get_next_number(self):
+    def _compute_next_number(self):
         """
         show next number only for invoices without number and on draft state
         """
@@ -229,7 +229,7 @@ class AccountInvoice(models.Model):
         'document_number',
         'document_type_id.doc_code_prefix'
     )
-    def _get_display_name(self):
+    def _compute_display_name(self):
         """
         If move_name then invoice has been validated, then:
         * If document number and document type, we show them
@@ -342,7 +342,7 @@ class AccountInvoice(models.Model):
 
     @api.multi
     @api.depends('journal_id', 'partner_id', 'company_id')
-    def get_available_journal_document_types(self):
+    def _compute_available_journal_document_types(self):
         """
         This function should only be inherited if you need to add another
         "depends", for eg, if you need to add a depend on "new_field" you

@@ -19,7 +19,6 @@ class AccountDocmentType(models.Model):
     )
     localization = fields.Selection(
         _get_localizations,
-        #ResCompany._localization_selection,
         'Localization',
         help='If you set a localization here then it will be available only '
         'for companies of this localization',

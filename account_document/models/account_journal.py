@@ -222,6 +222,6 @@ class AccountJournal(models.Model):
                 SET
                     journal_id=%s
                 WHERE journal_id = %s
-                """ % (table, to_journal.id, from_journal.id))
+                """, (table, to_journal.id, from_journal.id))
         if delete_from:
             from_journal.unlink()
