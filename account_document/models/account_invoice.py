@@ -6,38 +6,9 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 # import odoo.addons.decimal_precision as dp
 # import re
-from odoo.tools.misc import formatLang
+# from odoo.tools.misc import formatLang
 import logging
 _logger = logging.getLogger(__name__)
-
-
-from openerp.addons.account.models.account_invoice import AccountInvoice
-
-
-@api.multi
-def invoice_validate(self):
-    """
-    We make reference only unique if you are not using documents as documents
-    already guarantee to not enode twice same vendor bill.
-    TODO: mejorar esto en v11, ahora es con monkey patch pero en v11 el codigo
-    de odoo es heredable
-    """
-    for invoice in self.filtered(lambda x: not x.use_documents):
-        if invoice.type in ('in_invoice', 'in_refund') and invoice.reference:
-            if self.search([
-                ('type', '=', invoice.type),
-                ('reference', '=', invoice.reference),
-                ('company_id', '=', invoice.company_id.id),
-                ('commercial_partner_id', '=',
-                    invoice.commercial_partner_id.id),
-                   ('id', '!=', invoice.id)]):
-                raise UserError(_(
-                    "Duplicated vendor reference detected. You probably "
-                    "encoded twice the same vendor bill/refund."))
-    return self.write({'state': 'open'})
-
-
-AccountInvoice.invoice_validate = invoice_validate
 
 
 class AccountInvoice(models.Model):
@@ -91,6 +62,7 @@ class AccountInvoice(models.Model):
         readonly=True,
         store=True,
         auto_join=True,
+        index=True,
     )
     document_sequence_id = fields.Many2one(
         related='journal_document_type_id.sequence_id',
@@ -102,6 +74,7 @@ class AccountInvoice(models.Model):
         readonly=True,
         states={'draft': [('readonly', False)]},
         track_visibility='onchange',
+        index=True,
     )
     display_name = fields.Char(
         compute='_get_display_name',
@@ -114,7 +87,7 @@ class AccountInvoice(models.Model):
     use_documents = fields.Boolean(
         related='journal_id.use_documents',
         string='Use Documents?',
-        readonly=True
+        readonly=True,
     )
     localization = fields.Selection(
         related='company_id.localization',
@@ -342,12 +315,12 @@ class AccountInvoice(models.Model):
                 # also use this for supplier invoices
                 else:
                     document_number = invoice.document_number
-                invoice.move_id.write({
+                invoice.move_id.update({
                     'document_type_id': (
                         journal_document_type.document_type_id.id),
                     'document_number': document_number,
                 })
-            invoice.write(inv_vals)
+            invoice.update(inv_vals)
         return True
 
     @api.multi
@@ -512,3 +485,11 @@ class AccountInvoice(models.Model):
         if refund_document_number:
             values['document_number'] = refund_document_number
         return values
+
+    @api.multi
+    def _check_duplicate_supplier_reference(self):
+        """We make reference only unique if you are not using documents.
+        Documents already guarantee to not encode twice same vendor bill.
+        """
+        return super(
+            AccountInvoice, self.filtered(lambda x: not x.use_documents))
