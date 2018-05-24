@@ -5,8 +5,8 @@
 from odoo import fields, models
 
 
-class argentinian_base_configuration(models.TransientModel):
-    _inherit = 'account.config.settings'
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
 
     group_account_use_financial_amounts = fields.Boolean(
         "Use Financial Amounts",

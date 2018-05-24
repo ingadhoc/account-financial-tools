@@ -24,7 +24,7 @@ class ResPartner(models.Model):
         domain=unreconciled_domain + payable_domain,
     )
     debt_balance = fields.Monetary(
-        compute='_get_debt_balance',
+        compute='_compute_debt_balance',
         currency_field='currency_id',
     )
 
@@ -198,6 +198,6 @@ class ResPartner(models.Model):
 
     @api.multi
     @api.depends('debit', 'credit')
-    def _get_debt_balance(self):
+    def _compute_debt_balance(self):
         for rec in self:
             rec.debt_balance = rec.credit - rec.debit
