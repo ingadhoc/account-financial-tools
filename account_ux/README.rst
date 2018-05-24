@@ -36,6 +36,7 @@ Several Improvements to accounting:
 #. Make origin always visible on invoices. By default odoo only make it visible when it has a value. The issue is that a user can delete the value but can't restore it again. We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order
 #. Agregamos opción para que al cancelar conciliaciones con asiento de ajuste de diferencia de cambio, este último, en vez de revertirse, se borre. Esto además permite desconciliar en casos donde por defecto no se pueda (esto es un bug). Para activar este borrado se debe crear parámetro "delete_exchange_rate_entry" con valor "True"
 #. Adds possibility of filtering and grouping by company on invoices.
+#. Add the field "last time entries checked" with tecnical features in partner view.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.

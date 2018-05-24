@@ -46,6 +46,7 @@
         'views/account_bank_statement_views.xml',
         'views/account_move_line_views.xml',
         'views/account_full_reconcile_views.xml',
+        'views/res_partner_views.xml',
         'data/account_payment_method_data.xml',
         'data/mail_data.xml',
         'data/ir_parameters_data.xml',
