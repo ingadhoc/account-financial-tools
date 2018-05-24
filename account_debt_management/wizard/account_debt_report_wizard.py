@@ -6,7 +6,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
-class account_debt_report_wizard(models.TransientModel):
+class AccountDebtReportWizard(models.TransientModel):
     _name = 'account.debt.report.wizard'
     _description = 'Account Debt Report Wizard'
 
