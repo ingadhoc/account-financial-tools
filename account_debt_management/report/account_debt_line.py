@@ -251,10 +251,11 @@ class AccountDebtLine(models.Model):
             rec.financial_amount_residual = sum(
                 rec.move_line_ids.mapped('financial_amount_residual'))
 
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, self._table)
-        date_maturity_type = self.pool['ir.config_parameter'].get_param(
-            cr, 1, 'account_debt_management.date_maturity_type')
+    @api.model_cr
+    def init(self):
+        tools.drop_view_if_exists(self._cr, self._table)
+        date_maturity_type = self.env['ir.config_parameter'].sudo().get_param(
+            'account_debt_management.date_maturity_type')
         if date_maturity_type == 'detail':
             params = ('l.date_maturity as date_maturity,', ', l.date_maturity')
         elif date_maturity_type == 'max':
@@ -344,7 +345,7 @@ class AccountDebtLine(models.Model):
                 am.document_type_id %s
                 -- dt.doc_code_prefix, am.document_number
         """ % params
-        cr.execute("""CREATE or REPLACE VIEW %s as (%s
+        self._cr.execute("""CREATE or REPLACE VIEW %s as (%s
         )""" % (self._table, query))
 
     # TODO tal vez podamos usar métodos agregados por account_usability

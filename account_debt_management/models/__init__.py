@@ -3,4 +3,3 @@
 # directory
 ##############################################################################
 from . import res_partner
-from . import ir_conf_parameter

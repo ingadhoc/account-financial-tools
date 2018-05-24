@@ -19,13 +19,12 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '9.0.1.5.0',
+    'version': '11.0.1.0.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
-        'account_full_reconcile',
         'account_document',
         # lo agregamos aca por simplicidad y para poder poner link al
         # payment
@@ -41,15 +40,15 @@
         'report/account_debt_line_view.xml',
         'data/mail_data.xml',
         'wizard/account_debt_report_wizard_view.xml',
+        'wizard/res_config_settings_views.xml',
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
-        'res_config_view.xml',
         'security/ir.model.access.csv',
-        'security/security.xml',
+        'security/account_debt_management_security.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
 }
