@@ -19,8 +19,10 @@ class AccountInvoice(models.Model):
     def refund(self, date_invoice=None,
                date=None, description=None, journal_id=None):
         """
-        En las facturas rectificativas no se calculan bien los impuestos (por)
-        ej. el campo base. Esto arregla eso
+        En las facturas rectificativas no se calculan bien los impuestos (por
+        ej. el campo base). Esto arregla eso y además blanquea la fecha
+        de vencimiento que por defecto es duplicada desde la factura original
+        y nos puede traer errores en factura electronica
         """
         new_invoices = super(AccountInvoice, self).refund(
             date_invoice=date_invoice, date=date,
@@ -40,7 +42,7 @@ class AccountInvoice(models.Model):
     def _onchange_journal_id(self):
         """
         desactivamos cambio de moneda ya que el cambio de moneda no actualiza
-        precios y en realidad en la mayoria de los csaos no quermeos que
+        precios y en realidad en la mayoria de los casos no quermeos que
         cambiar diario cambie moneda.
         """
         currency = self.currency_id

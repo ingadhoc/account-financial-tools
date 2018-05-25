@@ -10,10 +10,10 @@
                 <xpath expr="//page[@name='access_rights']//group" position="before">
                     <group string="Restricted Journals" groups="base.group_erp_manager">
                         <field name="journal_ids" nolabel="1" widget="many2many_tags"/>
-                    </group>                
-                </xpath>                
+                    </group>
+                </xpath>
             </field>
         </record> -->
-        
+
     </data>
 </odoo>
