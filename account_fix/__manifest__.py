@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account Fixes',
-    'version': '10.0.1.0.0',
+    'version': '11.0.1.0.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
