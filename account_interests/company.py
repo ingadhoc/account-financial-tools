@@ -176,7 +176,7 @@ class res_company_interest(models.Model):
             # update amounts for new invoice
             invoice.button_reset_taxes()
             if self.automatic_validation:
-                invoice.signal_workflow('invoice_open')
+                invoice.action_invoice_open()
 
     @api.multi
     def _prepare_interest_invoice(self, partner, debt, to_date, journal=None):
