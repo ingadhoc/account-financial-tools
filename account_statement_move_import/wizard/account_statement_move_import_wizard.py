@@ -9,7 +9,6 @@ from dateutil.relativedelta import relativedelta
 
 class AccountStatementMoveImportWizard(models.TransientModel):
     _name = "account.statement.move.import.wizard"
-    _description = "account_statement_move_import_wizard"
 
     @api.model
     def _get_statement(self):
@@ -52,25 +51,6 @@ class AccountStatementMoveImportWizard(models.TransientModel):
         # "('exclude_on_statements', '=', False), "
         "('account_id', 'in', journal_account_ids[0][2])]"
     )
-
-    @api.multi
-    def onchange(self, values, field_name, field_onchange):
-        """
-        Idea obtenida de aca
-        https://github.com/odoo/odoo/issues/16072#issuecomment-289833419
-        por el cambio que se introdujo en esa mimsa conversación, TODO en v11
-        no haría mas falta, simplemente domain="[('id', 'in', x2m_field)]"
-        Otras posibilidades que probamos pero no resultaron del todo fue:
-        * agregar onchange sobre campos calculados y que devuelvan un dict con
-        domain. El tema es que si se entra a un registro guardado el onchange
-        no se ejecuta
-        * usae el modulo de web_domain_field que esta en un pr a la oca
-        """
-        for field in field_onchange.keys():
-            if field.startswith('journal_account_ids.'):
-                del field_onchange[field]
-        return super(account_statement_move_import_wizard, self).onchange(
-            values, field_name, field_onchange)
 
     @api.multi
     @api.onchange('statement_id')
