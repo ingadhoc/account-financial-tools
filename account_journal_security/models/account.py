@@ -83,6 +83,16 @@ class AccountJournal(models.Model):
         Este check parece ser necesario solo por un bug de odoo que no
         controlaria los campos m2m
         """
+        # esto es porque las ir rules tienen un cache que no permite
+        # que el cambio aplique en el momento
+        self.env['ir.rule'].clear_caches()
+
+        if self.modification_user_ids and self.user_ids:
+            raise ValidationError(_(
+                'No puede setear valores en "Totalmente restricto a:" y '
+                '"Modificaciones restrictas a:" simultaneamente. Las opciones '
+                'son excluyentes!'))
+
         # con sudo porque ya no los ve si no se asigno
         env_user = self.env.user
         if env_user.id == SUPERUSER_ID:
