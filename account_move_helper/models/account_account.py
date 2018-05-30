@@ -10,7 +10,6 @@ class AccountAccount(models.Model):
     _inherit = "account.account"
 
     balance = fields.Monetary(
-        'Balance',
         compute='_compute_balance',
     )
     new_balance = fields.Monetary(
@@ -19,7 +18,6 @@ class AccountAccount(models.Model):
         inverse='_inverse_new_balance'
     )
 
-    @api.multi
     @api.depends('balance')
     def _compute_new_balance(self):
         move_id = self._context.get('active_id', False)
@@ -33,13 +31,17 @@ class AccountAccount(models.Model):
 
     @api.multi
     def _compute_balance(self):
+        move_id = self._context.get('active_id', False)
+        move = self.env['account.move'].browse(move_id)
         for rec in self:
-            # rec.balance = rec._get_balance()
+            domain = [
+                ('account_id', '=', rec.id),
+                ('move_id.state', '=', 'posted'),
+            ]
+            if move:
+                domain.append(('date', '<=', move.date))
             rec.balance = sum(
-                rec.env['account.move.line'].search([
-                    ('account_id', '=', rec.id),
-                    ('move_id.state', '=', 'posted'),
-                ]).mapped('balance'))
+                rec.env['account.move.line'].search(domain).mapped('balance'))
 
     @api.multi
     def _inverse_new_balance(self):

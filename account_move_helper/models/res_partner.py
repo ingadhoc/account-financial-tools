@@ -57,6 +57,8 @@ class ResPartner(models.Model):
 
     @api.multi
     def _compute_debit_credit(self):
+        move_id = self._context.get('active_id', False)
+        move = self.env['account.move'].browse(move_id)
         for rec in self:
             for internal_type, field in [
                     ('receivable', 'credit_copy'), ('payable', 'debit_copy')]:
@@ -70,7 +72,8 @@ class ResPartner(models.Model):
                 company_id = self._context.get('company_id', False)
                 if company_id:
                     domain.append(('company_id', '=', company_id))
-
+                if move:
+                    domain.append(('date', '<=', move.date))
                 rec.update({
                     field: sum(rec.env['account.move.line'].search(
                         domain).mapped('balance'))})

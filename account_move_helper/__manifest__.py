@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account Move helper',
-    'version': '9.0.1.2.0',
+    'version': '11.0.1.0.0',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -28,10 +28,10 @@
         'account',
     ],
     'data': [
-        'view/account_view.xml',
-        'view/res_partner_view.xml',
+        'views/account_account_views.xml',
+        'views/account_move_views.xml',
+        'views/res_partner_views.xml',
     ],
     'demo': [],
-    'test': [],
-    'installable': False,
+    'installable': True,
 }
