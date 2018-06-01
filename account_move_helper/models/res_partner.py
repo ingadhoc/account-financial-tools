@@ -21,12 +21,10 @@ class ResPartner(models.Model):
         compute='_compute_debit_credit',
     )
     new_credit = fields.Monetary(
-        'New Crebit',
         compute='_compute_new_debit_credit',
         inverse='_inverse_new_credit'
     )
     new_debit = fields.Monetary(
-        'New Debit',
         compute='_compute_new_debit_credit',
         inverse='_inverse_new_debit'
     )
@@ -59,6 +57,8 @@ class ResPartner(models.Model):
     def _compute_debit_credit(self):
         move_id = self._context.get('active_id', False)
         move = self.env['account.move'].browse(move_id)
+        company_id = self._context.get('company_id', False)
+        AccountMoveLine = self.env['account.move.line']
         for rec in self:
             for internal_type, field in [
                     ('receivable', 'credit_copy'), ('payable', 'debit_copy')]:
@@ -69,13 +69,12 @@ class ResPartner(models.Model):
                     ('account_id.internal_type', '=', internal_type),
                     ('move_id.state', '=', 'posted'),
                 ]
-                company_id = self._context.get('company_id', False)
                 if company_id:
                     domain.append(('company_id', '=', company_id))
                 if move:
                     domain.append(('date', '<=', move.date))
                 rec.update({
-                    field: sum(rec.env['account.move.line'].search(
+                    field: sum(AccountMoveLine.search(
                         domain).mapped('balance'))})
 
     @api.multi
@@ -98,6 +97,6 @@ class ResPartner(models.Model):
         for rec in self:
             account = getattr(
                 rec.with_context(force_company=company_id), account_field)
-            new_value = rec[new_value_field]
-            value_diff = new_value - rec[old_value_field]
+            new_value = rec.get(new_value_field, 0.0)
+            value_diff = new_value - rec.get(old_value_field, 0.0)
             account._helper_update_line(value_diff, rec)

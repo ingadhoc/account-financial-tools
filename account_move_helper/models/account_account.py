@@ -23,11 +23,12 @@ class AccountAccount(models.Model):
         move_id = self._context.get('active_id', False)
         if not move_id:
             return False
+        AccountMoveLine = self.env['account.move.line']
         for rec in self:
-            move_line = self.env['account.move.line'].search([
+            move_line = AccountMoveLine.search([
                 ('move_id', '=', move_id),
                 ('account_id', '=', rec.id)], limit=1)
-            rec.new_balance = rec.balance + move_line.balance
+            rec.update({'new_balance': rec.balance + move_line.balance})
 
     @api.multi
     def _compute_balance(self):
@@ -45,10 +46,11 @@ class AccountAccount(models.Model):
 
     @api.multi
     def _inverse_new_balance(self):
-        # agregamos el round por un bug de odoo que por mas que estos
-        # trabajando con x decimales, si el usuario por interfaz agrega mas
-        # decimales (que x) odoo lo termina almacenando y luego da error
-        # por descuadre de apunte
+        """agregamos el round por un bug de odoo que por mas que estos
+        trabajando con x decimales, si el usuario por interfaz agrega mas
+        decimales (que x) odoo lo termina almacenando y luego da error
+        por descuadre de apunte
+        """
         for rec in self:
             new_balance = rec.company_id.currency_id.round(rec.new_balance)
             line_balance = new_balance - rec.balance
