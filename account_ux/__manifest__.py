@@ -31,10 +31,7 @@
     'depends': [
         'account',
         "payment",
-        # para agregar boton en move lines de payment group
-        # TODO deberiamos evitar esta dependencia y hacer que
-        # payment group herede de move line
-        # "account_payment_group",
+        "account_payment_group",
     ],
     'data': [
         'security/account_ux_security.xml',
