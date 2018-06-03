@@ -41,7 +41,7 @@
         <field name="inherit_id" ref="account_payment_group.view_move_line_tree"/>
         <field name="arch" type="xml">
             <tree>
-                <button type="object" string="Open Document" icon="STOCK_JUSTIFY_LEFT" help="Open Related Document" name="action_open_related_document"/>
+                <button type="object" string="Open Document" icon="fa-external-link" help="Open Related Document" name="action_open_related_document"/>
             </tree>
         </field>
     </record>
