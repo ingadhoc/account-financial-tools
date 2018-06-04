@@ -1,26 +1,23 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_ux
+#	* account_ux
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-30 13:42+0000\n"
-"PO-Revision-Date: 2018-04-30 10:43-0300\n"
+"POT-Creation-Date: 2018-06-04 14:16+0000\n"
+"PO-Revision-Date: 2018-06-04 14:16+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: es\n"
-"X-Generator: Poedit 1.8.7.1\n"
 
 #. module: account_ux
 #: model:mail.template,body_html:account_ux.email_template_bank_statement
-msgid ""
-"\n"
+msgid "\n"
 "    <div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
 "\n"
 "    <p>Hello ${object.name},</p>\n"
@@ -63,8 +60,7 @@ msgid ""
 "    </div>\n"
 "    </div>\n"
 "            "
-msgstr ""
-"\n"
+msgstr "\n"
 "    <div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
 "\n"
 "    <p>Hello ${object.name},</p>\n"
@@ -189,6 +185,11 @@ msgid "Change Type"
 msgstr "Change Type"
 
 #. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_invioce_filter
+msgid "Company"
+msgstr "Compañía"
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency_create_uid
 msgid "Created by"
 msgstr "Creado por"
@@ -221,7 +222,7 @@ msgid "Currency Rate"
 msgstr "Tasa Monetaria"
 
 #. module: account_ux
-#: code:addons/account_ux/wizards/account_change_currency.py:72
+#: code:addons/account_ux/wizards/account_change_currency.py:67
 #, python-format
 msgid "Currency changed from %s to %s with rate %s"
 msgstr "Currency changed from %s to %s with rate %s"
@@ -274,6 +275,11 @@ msgid "Invoice Currency"
 msgstr "Invoice Currency"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings_group_reference_on_tree_and_main_form
+msgid "Invoice Reference/Description"
+msgstr "Refencia/Descripcion de Factura"
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
 msgid "Journal"
 msgstr "Diario"
@@ -305,11 +311,13 @@ msgid "Online"
 msgstr "Online"
 
 #. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
 #: model:ir.ui.view,arch_db:account_ux.view_move_line_tree
 msgid "Open Document"
 msgstr "Abrir documento"
 
 #. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
 #: model:ir.ui.view,arch_db:account_ux.view_move_line_tree
 msgid "Open Related Document"
 msgstr "Open Related Document"
@@ -333,6 +341,12 @@ msgstr "Pagos"
 #: model:ir.ui.view,arch_db:account_ux.view_invoice_report_extended_form
 msgid "Print"
 msgstr "Imprimir"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_move_reconcile
+#: model:ir.ui.menu,name:account_ux.menu_reconciliations
+msgid "Reconciliations"
+msgstr "Reconciliations"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
@@ -359,6 +373,16 @@ msgstr "Send payment confirmation email"
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line_sent
 msgid "Sent"
 msgstr "Enviado"
+
+#. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_res_config_settings
+msgid "Show Reference/Description in list view and in main section of form view"
+msgstr "Mostrar Referencia/Descripción en vista lista y en sección principal de la vista formulario"
+
+#. module: account_ux
+#: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
+msgid "Show invoice reference field on tree and main form views"
+msgstr "Mostrar campo referencia de la factura en la vista lista y en la vista formulario principal"
 
 #. module: account_ux
 #: model:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
@@ -393,24 +417,28 @@ msgstr "Update both currency and values"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move_line.py:16
+#: code:addons/account_ux/models/account_move_line.py:18
 #, python-format
 msgid "View Bank Statement"
 msgstr "View Bank Statement"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move_line.py:23
+#: code:addons/account_ux/models/account_move_line.py:25
 #, python-format
 msgid "View Invoice"
 msgstr "View Invoice"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move_line.py:24
+#: code:addons/account_ux/models/account_move_line.py:26
 #, python-format
 msgid "View Move"
 msgstr "View Move"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move_line.py:19
+#: code:addons/account_ux/models/account_move_line.py:21
 #, python-format
 msgid "View Payment"
 msgstr "View Payment"
@@ -424,3 +452,9 @@ msgstr "We confirm receipt of your payment"
 #: model:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "or"
 msgstr "or"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_config_settings
+msgid "res.config.settings"
+msgstr "res.config.settings"
+
