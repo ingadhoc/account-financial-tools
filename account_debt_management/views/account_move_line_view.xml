@@ -12,7 +12,6 @@
                     <filter string="Payable" name="filter_payable" domain="[('account_id.internal_type','=','payable')]" help="Payable payments"/>
                 </filter>
                 <group>
-                    <filter string="Type" context="{'group_by': 'type'}"/>
                     <filter string="Journal Entry" domain="[]" context="{'group_by': 'move_id'}"/>
                     <filter string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
                 </group>
