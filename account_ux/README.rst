@@ -10,9 +10,9 @@
    :target: https://www.gnu.org/licenses/agpl
    :alt: License: AGPL-3
 
-==============================
-Account Usability Improvements
-==============================
+==========
+Account UX
+==========
 
 Several Improvements to accounting:
 
