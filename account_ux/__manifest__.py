@@ -18,7 +18,7 @@
 #
 ##############################################################################
 {
-    'name': 'Account Usability Improvements',
+    'name': 'Account UX',
     'version': '11.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
@@ -36,6 +36,7 @@
     'data': [
         'security/account_ux_security.xml',
         'wizards/account_change_currency_views.xml',
+        'wizards/res_config_settings_views.xml',
         'views/account_journal_views.xml',
         'views/account_payment_term_views.xml',
         'views/payment_acquirer_views.xml',

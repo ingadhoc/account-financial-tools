@@ -3,3 +3,4 @@
 # directory
 ##############################################################################
 from . import account_change_currency
+from . import res_config_settings

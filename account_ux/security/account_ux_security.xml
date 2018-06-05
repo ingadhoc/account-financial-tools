@@ -3,5 +3,10 @@
     <record model="res.groups" id="group_restrict_change_currency_exchange">
         <field name="name">Restrict Change Invoice Currency Exchange</field>
     </record>
-</odoo>
 
+    <record id="group_reference_on_tree_and_main_form" model="res.groups">
+        <field name="name">Show invoice reference field on tree and main form views</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+</odoo>

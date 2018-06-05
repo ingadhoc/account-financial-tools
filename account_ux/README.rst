@@ -10,9 +10,9 @@
    :target: https://www.gnu.org/licenses/agpl
    :alt: License: AGPL-3
 
-==============================
-Account Usability Improvements
-==============================
+==========
+Account UX
+==========
 
 Several Improvements to accounting:
 
@@ -37,6 +37,8 @@ Several Improvements to accounting:
 #. Agregamos opción para que al cancelar conciliaciones con asiento de ajuste de diferencia de cambio, este último, en vez de revertirse, se borre. Esto además permite desconciliar en casos donde por defecto no se pueda (esto es un bug). Para activar este borrado se debe crear parámetro "delete_exchange_rate_entry" con valor "True"
 #. Adds possibility of filtering and grouping by company on invoices.
 #. Add the field "last time entries checked" with tecnical features in partner view.
+#. Add option to show invoice reference field on tree view and on main
+   section of form view
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
@@ -71,7 +73,7 @@ Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues
-<https://github.com/ingadhoc/enterprise-extensions/issues>`_. In case of trouble, please
+<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed feedback.
 
