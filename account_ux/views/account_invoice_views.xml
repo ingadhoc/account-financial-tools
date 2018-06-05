@@ -30,6 +30,9 @@
             <field name="currency_id" position="attributes">
                 <attribute name="readonly">True</attribute>
             </field>
+            <field name="tax_line_ids" position="after">
+                <button string="_Add_Tax" states="draft" class="oe_link" type="action" name="%(action_account_invoice_tax_wizard_form)d"/>
+            </field>
         </field>
     </record>
 
@@ -58,6 +61,12 @@
                     <field name="currency_id" options="{'no_create': True, 'no_open': True}" class="oe_inline" readonly="1"/>
                     <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="account.group_account_user"/>
                 </div>
+            </field>
+            <xpath expr="//field[@name='tax_line_ids']/tree" position="attributes">
+                <attribute name="create">false</attribute>
+            </xpath>
+            <field name="tax_line_ids" position="after">
+                <button string="_Add_Tax" states="draft" class="oe_link" type="action" name="%(action_account_invoice_tax_wizard_form)d"/>
             </field>
         </field>
     </record>
