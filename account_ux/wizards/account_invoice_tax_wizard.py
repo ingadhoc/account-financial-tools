@@ -59,12 +59,14 @@ class AccountInvoiceTaxWizard(models.TransientModel):
     @api.onchange('tax_id')
     def onchange_tax(self):
         res = self.tax_id.compute_all(self.base)
-        self.name = res['taxes'] and res['taxes'][0]['name'] or False
+        self.name = res.get('taxes', False) and res['taxes'][0].get(
+            'name', False) or False
 
     @api.onchange('base', 'tax_id')
     def onchange_base(self):
         res = self.tax_id.compute_all(self.base)
-        self.amount = res['taxes'] and res['taxes'][0]['amount'] or False
+        self.amount = res.get('taxes', False) and res['taxes'][0].get(
+            'amount', False) or False
 
     @api.multi
     def confirm(self):
