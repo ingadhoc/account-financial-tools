@@ -32,6 +32,7 @@ class ResPartner(models.Model):
     @api.multi
     def _compute_new_debit_credit(self):
         move_id = self._context.get('active_id', False)
+        AccountMoveLine = self.env['account.move.line']
         if not move_id:
             return False
         company_id = self._context.get(
@@ -46,7 +47,7 @@ class ResPartner(models.Model):
                         'new_debit', 'debit_copy')]:
                 account = getattr(
                     rec.with_context(force_company=company_id), account_field)
-                move_line = self.env['account.move.line'].search([
+                move_line = AccountMoveLine.search([
                     ('move_id', '=', move_id),
                     ('partner_id', '=', rec.id),
                     ('account_id', '=', account.id),
