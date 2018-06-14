@@ -1,4 +1,6 @@
 from odoo import tools, models, fields, api, _
+from odoo.tools import float_is_zero
+from odoo.exceptions import UserError
 from ast import literal_eval
 
 
@@ -396,3 +398,27 @@ class AccountDebtLine(models.Model):
             self.move_id.id,
             _('View Move'),
             False]
+
+    @api.multi
+    def cancel_amount_residual_currency(self):
+        """Agregamos este metodo (y el botón) para cancelar la deuda en moneda
+        en los casos donde no se canceló automaticamente el importe en esa
+        divisa
+        """
+        # al final esto lo hacemos por vista, ademas tampoco es tan critico
+        # porque podrian hacer este ajuste manualmente
+        # if not self.user_has_groups('account.group_account_manager'):
+        #     group = self.env.ref('account.group_account_manager')
+        #     raise UserError(_(
+        #         'Only users with group "%s / %s" group can cancel amount '
+        #         'residual') % (group.category_id.name, group.name))
+        self = self.with_context(default_ref=_(
+            'Ajuste manual de deuda en divisa'))
+        for aml in self.mapped('move_line_ids'):
+            if not float_is_zero(
+                    aml.amount_residual,
+                    precision_rounding=aml.company_currency_id.rounding):
+                raise UserError(_(
+                    'No se puede cancelar el resisual en moneda porque el '
+                    'apunte %s aún tiene saldo contable.' % aml.id))
+            aml.compute_full_after_batch_reconcile()
