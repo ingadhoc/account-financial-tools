@@ -197,7 +197,11 @@ class ResPartner(models.Model):
         return res
 
     @api.multi
-    @api.depends('debit', 'credit')
+    # This computes makes fields to be computed upon partner creation where no
+    # id exists yet and raise an erro because of partner where being empty on
+    # _credit_debit_get method, ase debit and credit don't have depends, this
+    # field neither
+    # @api.depends('debit', 'credit')
     def _compute_debt_balance(self):
         for rec in self:
             rec.debt_balance = rec.credit - rec.debit
