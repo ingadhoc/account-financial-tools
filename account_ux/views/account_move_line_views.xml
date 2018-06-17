@@ -15,6 +15,7 @@
             <group>
                 <filter string="Account Type" context="{'group_by':'user_type_id'}"/>
                 <filter string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+                <filter string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
             </group>
             <!-- add name to this group so it can be send as default by other modules -->
             <filter context="{'group_by':'account_id'}" position="attributes">

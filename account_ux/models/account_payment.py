@@ -1,7 +1,7 @@
 # © 2016 ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, fields
+from odoo import models, fields, api
 import datetime
 
 
@@ -22,3 +22,13 @@ class AccountPayment(models.Model):
                 fields.Date.from_string(
                     self.payment_date) + datetime.timedelta(days=10))
         return vals
+
+    @api.multi
+    def cancel(self):
+        """
+        On payment cancel delete move_name as we wont to allow deletion of
+        payments. TODO: this could be parametrizable
+        """
+        res = super(AccountPayment, self).cancel()
+        self.update({'move_name': False})
+        return res
