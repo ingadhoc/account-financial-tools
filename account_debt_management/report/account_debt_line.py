@@ -422,3 +422,12 @@ class AccountDebtLine(models.Model):
                     'No se puede cancelar el resisual en moneda porque el '
                     'apunte %s aún tiene saldo contable.' % aml.id))
             aml.compute_full_after_batch_reconcile()
+            # verificamos que se haya conciliado correctamente, en algunos
+            # casos no está haciendo el ajuste bien.
+            if not float_is_zero(
+                    aml.amount_residual_currency,
+                    precision_rounding=aml.company_currency_id.rounding):
+                raise UserError(_(
+                    "No se puedo cancelar el residual en moneda "
+                    "automáticamente. Debe hacerlo manualmente. Id de apunte "
+                    "contable: %s") % aml.id)
