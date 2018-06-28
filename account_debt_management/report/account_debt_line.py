@@ -421,9 +421,15 @@ class AccountDebtLine(models.Model):
                 raise UserError(_(
                     'No se puede cancelar el resisual en moneda porque el '
                     'apunte %s aún tiene saldo contable.' % aml.id))
-            aml.compute_full_after_batch_reconcile()
-            # verificamos que se haya conciliado correctamente, en algunos
-            # casos no está haciendo el ajuste bien.
+
+            partial_rec = aml.credit and aml.matched_debit_ids[0] or \
+                aml.matched_credit_ids[0]
+            partial_rec.with_context(
+                skip_full_reconcile_check=True).create_exchange_rate_entry(
+                    aml, 0.0, aml.amount_residual_currency,
+                    aml.currency_id, aml.date)
+
+            # verificamos que se haya conciliado correctamente
             if not float_is_zero(
                     aml.amount_residual_currency,
                     precision_rounding=aml.company_currency_id.rounding):
