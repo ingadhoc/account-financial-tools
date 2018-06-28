@@ -85,6 +85,28 @@
         </field>
     </record>
 
+    <record id="invoice_tree" model="ir.ui.view">
+        <field name="name">account.invoice.tree.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_tree"/>
+        <field name="arch" type="xml">
+            <field name="amount_total_signed" position="before">
+                <field name="amount_untaxed_signed_real" sum="Total"/>
+            </field>
+        </field>
+    </record>
+
+     <record id="invoice_supplier_tree" model="ir.ui.view">
+        <field name="name">account.invoice.supplier.tree.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+        <field name="arch" type="xml">
+            <field name="amount_total_signed" position="before">
+                <field name="amount_untaxed_signed_real" sum="Total"/>
+            </field>
+        </field>
+    </record>
+
 <!-- views to move or add reference field on tree/form views -->
 
     <record id="view_reference_on_tree_view" model="ir.ui.view">
