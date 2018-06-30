@@ -2,11 +2,27 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, api, _
+from odoo import models, api, fields, _
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+
+    move_helper_enable = fields.Boolean(
+        compute='_compute_move_helper_enable',
+    )
+
+    @api.depends(
+        'journal_id.type',
+        'journal_id.default_credit_account_id',
+        'journal_id.default_debit_account_id',
+    )
+    def _compute_move_helper_enable(self):
+        for rec in self:
+            if rec.journal_id.type == 'general' \
+                    and rec.journal_id.default_debit_account_id \
+                    and rec.journal_id.default_credit_account_id:
+                rec.move_helper_enable = True
 
     @api.multi
     def add_account_to_move(self):
@@ -49,5 +65,8 @@ class AccountMove(models.Model):
             'view_id': view_id,
             'search_view_id': search_view_id,
             'target': 'current',
+            # only commercial partners
+            'domain': [
+                '|', ('parent_id', '=', False), ('is_company', '=', True)],
             'context': {'company_id': self.company_id.id},
         }
