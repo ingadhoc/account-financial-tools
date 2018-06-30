@@ -21,9 +21,11 @@ class AccountInvoice(models.Model):
         'invoice_line_ids.price_subtotal', 'tax_line_ids.amount',
         'currency_id', 'company_id', 'date_invoice', 'type')
     def _compute_amount(self):
-        super(AccountInvoice, self)._compute_amount()
-        sign = self.type in ['in_refund', 'out_refund'] and -1 or 1
-        self.amount_untaxed_signed_real = self.amount_untaxed * sign
+        # because super method is api.one
+        for rec in self:
+            super(AccountInvoice, rec)._compute_amount()
+            sign = rec.type in ['in_refund', 'out_refund'] and -1 or 1
+            rec.amount_untaxed_signed_real = rec.amount_untaxed * sign
 
     @api.multi
     def invoice_cancel_from_done(self):
