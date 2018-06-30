@@ -98,6 +98,6 @@ class ResPartner(models.Model):
         for rec in self:
             account = getattr(
                 rec.with_context(force_company=company_id), account_field)
-            new_value = rec.get(new_value_field, 0.0)
-            value_diff = new_value - rec.get(old_value_field, 0.0)
+            new_value = rec[new_value_field] or 0.0
+            value_diff = new_value - (rec[old_value_field] or 0.0)
             account._helper_update_line(value_diff, rec)

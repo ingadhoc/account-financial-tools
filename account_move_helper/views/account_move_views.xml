@@ -5,9 +5,12 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
+            <form>
+                <field name="move_helper_enable" invisible="1"/>>
+            </form>
             <field name="state" position="before">
-                <button name="add_account_to_move" type="object" string="Set Balance by Account" attrs="{'invisible': [('state', '=', 'posted')]}"/>
-                <button name="add_partner_to_move" type="object" string="Set Balance by Partner" attrs="{'invisible': [('state', '=', 'posted')]}"/>
+                <button name="add_account_to_move" type="object" string="Set Balance by Account" attrs="{'invisible': ['|', ('state', '=', 'posted'), ('move_helper_enable', '!=', True)]}"/>
+                <button name="add_partner_to_move" type="object" string="Set Balance by Partner" attrs="{'invisible': ['|', ('state', '=', 'posted'), ('move_helper_enable', '!=', True)]}"/>
             </field>
         </field>
     </record>
