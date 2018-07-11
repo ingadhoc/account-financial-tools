@@ -40,6 +40,7 @@ Several Improvements to accounting:
 #. Add the field "last time entries checked" with tecnical features in partner view.
 #. Add option to show invoice reference field on tree view and on main section of form view.
 #. Adds a wizard to add manual taxes on invoices without. Needing such taxes to be added in each of the invoice lines.
+#. Adds to group by journal on invoices.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
