@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account Statement Move Import',
-    'version': '10.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -33,13 +33,13 @@
     ],
     'data': [
         'wizard/account_statement_move_import_wizard_view.xml',
-        'account_view.xml',
+        'views/account_views.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

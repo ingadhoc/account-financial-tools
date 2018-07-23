@@ -46,11 +46,23 @@ class AccountStatementMoveImportWizard(models.TransientModel):
         'line_id', 'move_line_id',
         'Journal Items',
         domain="[('journal_id', '=', journal_id), "
-        "('statement_id', '=', False), "
-        # mostramos los que se excluyen por defecto
-        # "('exclude_on_statements', '=', False), "
-        "('account_id', 'in', journal_account_ids[0][2])]"
+        "('statement_line_id', '=', False), "
+        "('account_id', 'in', journal_account_ids)]"
     )
+
+    @api.multi
+    def onchange(self, values, field_name, field_onchange):
+        """Necesitamos hacer esto porque los onchange que agregan lineas,
+        cuando se va a guardar el registro, terminan creando registros.
+        """
+        fields = []
+        for field in field_onchange.keys():
+            if field.startswith(('move_line_ids.')):
+                fields.append(field)
+        for field in fields:
+            del field_onchange[field]
+        return super(AccountStatementMoveImportWizard, self).onchange(
+            values, field_name, field_onchange)
 
     @api.multi
     @api.onchange('statement_id')
@@ -71,12 +83,7 @@ class AccountStatementMoveImportWizard(models.TransientModel):
         move_lines = self.move_line_ids.search([
             ('journal_id', '=', self.journal_id.id),
             ('account_id', 'in', self.journal_account_ids.ids),
-            ('statement_id', '=', False),
-            ('exclude_on_statements', '=', False),
-            # agregamos esta condicion porque hasta v10, inclusive, no se
-            # permite que un move este en mas de un statement, entonces
-            # solo ofrecemos lineas si el move no está en ningún statement
-            ('move_id.statement_line_id', '=', False),
+            ('statement_line_id', '=', False),
             ('date', '>=', self.from_date),
             ('date', '<=', self.to_date),
         ])
@@ -117,9 +124,9 @@ class AccountStatementMoveImportWizard(models.TransientModel):
                     'defaults, in this case %s') % (
                     ', '.join(self.journal_account_ids.mapped('name'))))
 
-            if line.statement_id:
+            if line.statement_line_id:
                 raise UserError(_(
-                    'Imported line must have "statement_id" == False'))
+                    'Imported line must have "statement_line_id" == False'))
 
             # si el statement es en otra moneda, odoo interpreta que el amount
             # de las lineas es en esa moneda y no tendria sentido importar
@@ -156,6 +163,5 @@ class AccountStatementMoveImportWizard(models.TransientModel):
 
             # create statement line
             statement_line = statement.line_ids.create(line_vals)
-            line.move_id.statement_line_id = statement_line.id
-            line.statement_id = statement.id
+            line.statement_line_id = statement_line.id
         return True
