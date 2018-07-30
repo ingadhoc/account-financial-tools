@@ -3,28 +3,13 @@
 # directory
 ##############################################################################
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 import logging
 _logger = logging.getLogger(__name__)
 
 
-class res_company(models.Model):
-
-    """"""
-
-    _inherit = 'res.company'
-
-    interest_ids = fields.One2many(
-        'res.company.interest',
-        'company_id',
-        'Interest',
-    )
-
-
-class res_company_interest(models.Model):
-
-    """"""
+class ResCompanyInterest(models.Model):
 
     _name = 'res.company.interest'
 
@@ -39,14 +24,16 @@ class res_company_interest(models.Model):
         string='Cuentas a Cobrar',
         help='Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda',
         required=True,
-        domain="[('type', '=', 'receivable'),('company_id', '=', company_id)]",
+        domain="[('user_type_id.type', '=', 'receivable'),"
+        "('company_id', '=', company_id)]",
     )
     invoice_receivable_account_id = fields.Many2one(
         'account.account',
         string='Invoice Receivable Account',
         help='If no account is sellected, then partner receivable account is '
         'used',
-        domain="[('type', '=', 'receivable'),('company_id', '=', company_id)]",
+        domain="[('user_type_id.type', '=', 'receivable'),"
+        "('company_id', '=', company_id)]",
     )
     interest_product_id = fields.Many2one(
         'product.product',
@@ -100,9 +87,10 @@ class res_company_interest(models.Model):
         self.search([
             ('next_date', '<=', current_date)]).create_interest_invoices()
 
-    @api.one
+    @api.multi
     def create_interest_invoices(self):
-        _logger.info('Creating Interests id %s' % self.id)
+        self.ensure_one()
+        _logger.info('Creating Interests id %s', self.id)
         interests_date = self.next_date
 
         rule_type = self.rule_type
@@ -133,23 +121,24 @@ class res_company_interest(models.Model):
         self.next_date = fields.Date.to_string(
             interests_date_date + next_delta)
 
-    @api.one
+    @api.multi
     def create_invoices(self, to_date):
+        self.ensure_one()
         move_line_domain = [
             ('account_id', 'in', self.receivable_account_ids.ids),
-            ('reconcile_id', '=', False),
+            ('reconcile', '=', False),
             ('date_maturity', '<', to_date)
         ]
         move_line = self.env['account.move.line']
         grouped_lines = move_line.read_group(
             domain=move_line_domain,
-            fields=['id', 'debit', 'credit', 'partner_id', 'account_id'],
+            fields=['id', 'amount_residual', 'partner_id', 'account_id'],
             groupby=['partner_id'],
         )
         for line in grouped_lines:
-            _logger.info('Creating Interest Invoices for values:\n%s' % line)
+            _logger.info('Creating Interest Invoices for values:\n%s', line)
             partner_id = line['partner_id'][0]
-            debt = line['debit'] - line['credit']
+            debt = line['amount_residual']
 
             # consideramos las lineas conciliadas parcialmente
             # buscamos las conciladas parcialmente
@@ -157,8 +146,8 @@ class res_company_interest(models.Model):
                 line['__domain'] + [('reconcile_partial_id', '!=', False)])
             # vemos la diferencia entre el saldo total y el conciliado
             reconciled_amount = (
-                sum(partial_lines.mapped('debit')) -
-                sum(partial_lines.mapped('credit')) -
+                # sum(partial_lines.mapped('debit')) -
+                # sum(partial_lines.mapped('credit')) -
                 sum(partial_lines.mapped('amount_residual'))
             )
             # la diferencia es la cantidad conciliada y la restamos a la deuda
@@ -170,9 +159,12 @@ class res_company_interest(models.Model):
             partner = self.env['res.partner'].browse(partner_id)
             invoice_vals = self._prepare_interest_invoice(
                 partner, debt, to_date)
-            # we send document type for compatibility with argentinian invoices
+
+            # we send document type for compatibility with argentinian
+            # invoices
             invoice = self.env['account.invoice'].with_context(
                 document_type='debit_note').create(invoice_vals)
+
             # update amounts for new invoice
             invoice.button_reset_taxes()
             if self.automatic_validation:
@@ -183,12 +175,12 @@ class res_company_interest(models.Model):
         self.ensure_one()
         if journal is None:
             company = self.company_id
-            journal = self.env['account.journal'].search([
-                ('type', '=', 'sale'),
-                ('company_id', '=', company.id)],
+            journal = self.env['account.journal'].search(
+                [('type', '=', 'sale'),
+                 ('company_id', '=', company.id)],
                 limit=1)
             if not journal:
-                raise ValidationError(_(
+                raise UserError(_(
                     'Please define sales journal for this company: "%s"') % (
                         company.name))
 
@@ -207,7 +199,8 @@ class res_company_interest(models.Model):
             'partner_id': partner.id,
             'journal_id': journal.id,
             'reference': self.interest_product_id.name,
-            # TODO revisar porque en la localizacion usamos reference y no name
+            # TODO revisar porque en la localizacion usamos reference y no
+            # name
             # 'name': self.interest_product_id.name,
             'comment': comment,
             'invoice_line': [
@@ -231,31 +224,31 @@ class res_company_interest(models.Model):
             '%s.\n'
             'Deuda Vencida al %s: %s\n'
             'Tasa de interés: %s') % (
-            self.interest_product_id.name,
-            to_date, debt, self.rate)
+                self.interest_product_id.name,
+                to_date, debt, self.rate)
 
         amount = self.rate * debt
         line_data = self.env['account.invoice.line'].with_context(
             force_company=company.id).product_id_change(
-            self.interest_product_id.id,
-            self.interest_product_id.uom_id.id,
-            qty=1.0,
-            name='',
-            type='out_invoice',
-            partner_id=partner.id,
-            fposition_id=partner.property_account_position.id,
-            company_id=company.id)
+                self.interest_product_id.id,
+                self.interest_product_id.uom_id.id,
+                qty=1.0,
+                name='',
+                type='out_invoice',
+                partner_id=partner.id,
+                fposition_id=partner.property_account_position.id,
+                company_id=company.id)
 
         account_id = line_data['value'].get('account_id')
         if not account_id:
             prop = self.env['ir.property'].with_context(
                 force_company=company.id).get(
-                'property_account_income_categ',
-                'product.category')
-            prop_id = prop and prop.id or False
+                    'property_account_income_categ',
+                    'product.category')
+            prop_id = prop.id if prop else False
             account_id = self.fiscal_position.map_account(prop_id)
             if not account_id:
-                raise ValidationError(_(
+                raise UserError(_(
                     'There is no income account defined as global '
                     'property.'))
         line_vals = {
