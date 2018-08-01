@@ -39,9 +39,15 @@ class account_invoice_line(models.Model):
                 invoice.document_type_id and
                 invoice.document_type_id.get_taxes_included() or False)
             if not taxes_included:
-                report_price_unit = line.price_unit
-                report_price_subtotal = line.price_subtotal
                 not_included_taxes = line.invoice_line_tax_ids
+                # no usamos directamente line.price_unit porque puede ser
+                # que se esten usando impuestos que se incluyen en el precio
+                # en cuyo caso deberiamos sacarle el impuesto al precio
+                # unitario
+                report_price_unit = not_included_taxes.compute_all(
+                    line.price_unit, invoice.currency_id, 1.0,
+                    line.product_id, invoice.partner_id)['total_excluded']
+                report_price_subtotal = line.price_subtotal
                 report_price_net = report_price_unit * (
                     1 - (line.discount or 0.0) / 100.0)
             else:
