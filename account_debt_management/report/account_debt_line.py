@@ -213,7 +213,7 @@ class AccountDebtLine(models.Model):
                 [('id', 'in', move_lines_str)])
 
             rec.move_line_ids = move_lines
-            rec.name = ', '.join(move_lines.mapped('name'))
+            rec.name = ', '.join(move_lines.filtered('name').mapped('name'))
             rec.move_ids = rec.move_line_ids.mapped('move_id')
             if len(rec.move_ids) == 1:
                 rec.move_id = rec.move_ids
