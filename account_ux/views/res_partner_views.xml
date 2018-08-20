@@ -20,7 +20,9 @@
         <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
-                <button class="oe_stat_button" type="object" name="action_open_reconcile" icon="fa-usd" string="Match payments">
+                <button class="oe_stat_button" type="object" name="action_open_reconcile" icon="fa-usd" string="Match Customer payments" attrs="{'invisible': [('customer', '=', False)]}">
+                </button>
+                <button class="oe_stat_button" type="object" name="action_open_reconcile" icon="fa-usd" string="Match Supplier payments" context="{'supplier_payments': 1}" attrs="{'invisible': [('supplier', '=', False)]}">
                 </button>
             </div>
         </field>
