@@ -89,6 +89,9 @@ class ResCompanyInterest(models.Model):
 
     @api.multi
     def create_interest_invoices(self):
+        if not self:
+            return
+
         self.ensure_one()
         _logger.info('Creating Interests id %s', self.id)
         interests_date = self.next_date
@@ -126,7 +129,7 @@ class ResCompanyInterest(models.Model):
         self.ensure_one()
         move_line_domain = [
             ('account_id', 'in', self.receivable_account_ids.ids),
-            ('reconcile', '=', False),
+            ('reconciled', '=', False),
             ('date_maturity', '<', to_date)
         ]
         move_line = self.env['account.move.line']
@@ -143,7 +146,11 @@ class ResCompanyInterest(models.Model):
             # consideramos las lineas conciliadas parcialmente
             # buscamos las conciladas parcialmente
             partial_lines = move_line.search(
-                line['__domain'] + [('reconcile_partial_id', '!=', False)])
+                line['__domain'] + [
+                    '|',
+                    ('matched_credit_ids', '!=', False),
+                    ('matched_debit_ids', '!=', False),
+                ])
             # vemos la diferencia entre el saldo total y el conciliado
             reconciled_amount = (
                 # sum(partial_lines.mapped('debit')) -
@@ -163,10 +170,10 @@ class ResCompanyInterest(models.Model):
             # we send document type for compatibility with argentinian
             # invoices
             invoice = self.env['account.invoice'].with_context(
-                document_type='debit_note').create(invoice_vals)
+                internal_type='debit_note').create(invoice_vals)
 
             # update amounts for new invoice
-            invoice.button_reset_taxes()
+            invoice.compute_taxes()
             if self.automatic_validation:
                 invoice.action_invoice_open()
 
@@ -191,7 +198,7 @@ class ResCompanyInterest(models.Model):
         if self.invoice_receivable_account_id:
             account_id = self.invoice_receivable_account_id.id
         else:
-            account_id = partner.property_account_receivable.id
+            account_id = partner.property_account_receivable_id.id
 
         invoice_vals = {
             'type': 'out_invoice',
@@ -203,12 +210,12 @@ class ResCompanyInterest(models.Model):
             # name
             # 'name': self.interest_product_id.name,
             'comment': comment,
-            'invoice_line': [
+            'invoice_line_ids': [
                 (0, 0, self._prepare_interest_invoice_line(
                     partner, debt, to_date))],
             'currency_id': self.company_id.currency_id.id,
-            'payment_term': partner.property_payment_term.id or False,
-            'fiscal_position': partner.property_account_position.id,
+            'payment_term_id': partner.property_payment_term_id.id or False,
+            'fiscal_position_id': partner.property_account_position_id.id,
             'date_invoice': self.next_date,
             'company_id': self.company_id.id,
             'user_id': partner.user_id.id or False
@@ -229,37 +236,38 @@ class ResCompanyInterest(models.Model):
 
         amount = self.rate * debt
         line_data = self.env['account.invoice.line'].with_context(
-            force_company=company.id).product_id_change(
-                self.interest_product_id.id,
-                self.interest_product_id.uom_id.id,
-                qty=1.0,
-                name='',
+            force_company=company.id).new(dict(
+                product_id=self.interest_product_id.id,
+                product_uom_id=self.interest_product_id.uom_id.id,
+                quantity=1.0,
+                name=name,
                 type='out_invoice',
                 partner_id=partner.id,
-                fposition_id=partner.property_account_position.id,
-                company_id=company.id)
+                company_id=company.id))
+        line_data._onchange_product_id()
 
-        account_id = line_data['value'].get('account_id')
+        account_id = line_data.account_id
         if not account_id:
             prop = self.env['ir.property'].with_context(
                 force_company=company.id).get(
-                    'property_account_income_categ',
+                    'property_account_income_categ_id',
                     'product.category')
             prop_id = prop.id if prop else False
-            account_id = self.fiscal_position.map_account(prop_id)
+            account_id = \
+                partner.property_account_position_id.map_account(prop_id)
+
             if not account_id:
                 raise UserError(_(
                     'There is no income account defined as global '
                     'property.'))
-        line_vals = {
-            'product_id': self.interest_product_id.id,
-            'name': name,
-            'account_analytic_id': self.analytic_account_id.id,
-            'price_unit': amount,
-            'quantity': 1.0,
-            'account_id': account_id,
-            'invoice_line_tax_id': [
-                (6, 0, line_data['value'].get(
-                    'invoice_line_tax_id', []))],
-        }
-        return line_vals
+
+            line_data['account_id'] = account_id
+            line_data._onchange_account_id()
+            line_data._set_taxes()
+
+        line_data['price_unit'] = amount
+        line_data['account_analytic_id'] = self.analytic_account_id.id
+
+        line_values = line_data._convert_to_write(
+            {field: line_data[field] for field in line_data._cache})
+        return line_values
