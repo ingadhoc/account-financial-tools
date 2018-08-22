@@ -253,6 +253,7 @@ class AccountDebtLine(models.Model):
 
     @api.model_cr
     def init(self):
+        # pylint: disable=E8103
         tools.drop_view_if_exists(self._cr, self._table)
         date_maturity_type = self.env['ir.config_parameter'].sudo().get_param(
             'account_debt_management.date_maturity_type')

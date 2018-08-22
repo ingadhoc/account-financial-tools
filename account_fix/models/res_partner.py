@@ -12,6 +12,7 @@ class ResPartner(models.Model):
 
     @api.multi
     def _credit_debit_get(self):
+        # pylint: disable=E8103
         tables, where_clause, where_params = self.env['account.move.line']._query_get()
         # child_companies = self.env.user.company_id.child_ids
         # TODO habria que mejorarlo y evitar esta consulta adicional
