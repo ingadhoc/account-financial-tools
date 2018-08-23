@@ -3,4 +3,5 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from . import models
+from . import res_company_interest
+from . import res_company
