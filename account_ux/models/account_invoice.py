@@ -33,11 +33,7 @@ class AccountInvoice(models.Model):
             if not rec.payment_move_line_ids and rec.state == 'paid':
                 rec.action_cancel()
 
-    @api.onchange('partner_id', 'company_id')
-    def _onchange_partner_id(self):
-        res = super(AccountInvoice, self)._onchange_partner_id()
-        if self.partner_id and self.partner_id.user_id:
+    @api.onchange('partner_id')
+    def _onchange_partner_commercial(self):
+        if self.partner_id.user_id:
             self.user_id = self.partner_id.user_id.id
-        else:
-            self.user_id = self.env.uid
-        return res
