@@ -8,22 +8,6 @@
             <button name="check_confirm_bank" position="after">
                 <button name="cancel_all_lines" string="Cancel All" type="object" states="open" groups="base.group_no_one" confirm="Si confirma se van a cancelar las conciliaciones de todas las líneas (y borrar los asientos que se hayan generado con las mismas), esto no puede deshacerce. Seguro que desea continuar?"/>
             </button>
-            <field name="bank_account_id" position="after">
-                <field name="sent" invisible="1"/>
-                <button
-                    name="send_mail"
-                    string="Send payment confirmation email"
-                    type="object"
-                    attrs="{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',True)]}"
-                    help="Send payment confirmation email" icon="fa-envelope-o"/>
-                <button
-                    name="send_mail_copy"
-                    string="Forward payment confirmation email" 
-                    type="object"
-                    confirm="An email has already been sent to this partner. Do you want to send it again?"
-                    icon="fa-envelope" 
-                    attrs="{'invisible':['|','|','&amp;',('journal_entry_ids', '=', []),('partner_id','=',False),('amount','&lt;',0),('sent','=',False)]}"/>
-            </field>
         </field>
     </record>
 
