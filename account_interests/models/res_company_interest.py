@@ -259,24 +259,15 @@ class ResCompanyInterest(models.Model):
                 company_id=company.id))
         line_data._onchange_product_id()
 
-        account_id = line_data.account_id
-        if not account_id:
-            prop = self.env['ir.property'].with_context(
-                force_company=company.id).get(
-                    'property_account_income_categ_id',
-                    'product.category')
-            prop_id = prop.id if prop else False
-            account_id = \
-                partner.property_account_position_id.map_account(prop_id)
+        if not line_data.account_id:
+            raise UserError(_(
+                'The interest product is not properly configured, '
+                'missing account.'))
 
-            if not account_id:
-                raise UserError(_(
-                    'There is no income account defined as global '
-                    'property.'))
-
-            line_data['account_id'] = account_id
-            line_data._onchange_account_id()
-            line_data._set_taxes()
+        # TODO K review not sure if needed
+        # line_data['account_id'] = account_id
+        # line_data._onchange_account_id()
+        # line_data._set_taxes()
 
         line_data['price_unit'] = amount
         line_data['account_analytic_id'] = self.analytic_account_id.id
