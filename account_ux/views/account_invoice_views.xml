@@ -11,9 +11,9 @@
             </form>
 
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
-            <field name="origin" position="attributes">
+            <xpath expr="//page[@name='other_info']//field[@name='origin']" position="attributes">
                 <attribute name="attrs"></attribute>
-            </field>
+            </xpath>
 
             <button name="action_invoice_draft" position="after">
                 <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
