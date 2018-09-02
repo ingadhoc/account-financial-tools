@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="account_bank_statement_import_csv_wizard" model="ir.ui.view">
+            <field name="name">Import CSV Bank Statement Wizard</field>
+            <field name="model">account.bank.statement.import.csv</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="template_id" />
+                        <field name="name" />
+                        <field name="date" />
+                    </group>
+                    <footer>
+                        <button name="import_file" string="OK" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>
