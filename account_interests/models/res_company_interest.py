@@ -189,9 +189,8 @@ class ResCompanyInterest(models.Model):
         # For some reason there is not context pass, not lang, so we
         # force it here
         lang_code = self.env.context.get('lang', self.env.user.lang)
-        lang = self.env['res.lang']
-        lang_id = lang._lang_get(lang_code)
-        date_format = lang.browse(lang_id).date_format
+        lang = self.env['res.lang']._lang_get(lang_code)
+        date_format = lang.date_format
         to_date_format = fields.Date.from_string(
             to_date).strftime(date_format)
 
