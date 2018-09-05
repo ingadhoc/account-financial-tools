@@ -179,6 +179,27 @@ class ResCompanyInterest(models.Model):
                 invoice.signal_workflow('invoice_open')
 
     @api.multi
+    def prepare_info(self, to_date, debt):
+        self.ensure_one()
+
+        # Format date to customer langague
+        # For some reason there is not context pass, not lang, so we
+        # force it here
+        lang_code = self.env.context.get('lang', self.env.user.lang)
+        lang = self.env['res.lang']
+        lang_id = lang._lang_get(lang_code)
+        date_format = lang.browse(lang_id).date_format
+        to_date_format = fields.Date.from_string(
+            to_date).strftime(date_format)
+
+        res = _(
+            'Deuda Vencida al %s: %s\n'
+            'Tasa de interés: %s') % (
+                to_date_format, debt, self.rate)
+
+        return res
+
+    @api.multi
     def _prepare_interest_invoice(self, partner, debt, to_date, journal=None):
         self.ensure_one()
         if journal is None:
@@ -192,9 +213,7 @@ class ResCompanyInterest(models.Model):
                     'Please define sales journal for this company: "%s"') % (
                         company.name))
 
-        comment = _(
-            'Deuda Vencida al %s: %s\n'
-            'Tasa de interés: %s') % (to_date, debt, self.rate)
+        comment = self.prepare_info(to_date, debt)
 
         if self.invoice_receivable_account_id:
             account_id = self.invoice_receivable_account_id.id
@@ -228,12 +247,8 @@ class ResCompanyInterest(models.Model):
         self.ensure_one()
         company = self.company_id
 
-        name = _(
-            '%s.\n'
-            'Deuda Vencida al %s: %s\n'
-            'Tasa de interés: %s') % (
-                self.interest_product_id.name,
-                to_date, debt, self.rate)
+        name =  '%s.\n' % (self.interest_product_id.name) + self.prepare_info(
+            to_date, debt)
 
         amount = self.rate * debt
         line_data = self.env['account.invoice.line'].with_context(
