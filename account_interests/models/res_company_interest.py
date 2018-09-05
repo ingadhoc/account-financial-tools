@@ -44,7 +44,7 @@ class ResCompanyInterest(models.Model):
     analytic_account_id = fields.Many2one(
         'account.analytic.account',
         'Analytic account',
-        domain=[('type', '!=', 'view')]
+        domain=[('account_type', '=', 'normal')]
     )
     rate = fields.Float(
         'Interest',
