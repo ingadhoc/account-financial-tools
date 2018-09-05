@@ -173,6 +173,11 @@ class ResCompanyInterest(models.Model):
             invoice = self.env['account.invoice'].with_context(
                 internal_type='debit_note').create(invoice_vals)
 
+            invoice.write({'invoice_line_ids': [
+                (0, 0, self._prepare_interest_invoice_line(
+                    invoice, partner, debt, to_date))],
+            })
+
             # update amounts for new invoice
             invoice.compute_taxes()
             if self.automatic_validation:
@@ -227,9 +232,6 @@ class ResCompanyInterest(models.Model):
             'journal_id': journal.id,
             'name': self.interest_product_id.name,
             'comment': comment,
-            'invoice_line_ids': [
-                (0, 0, self._prepare_interest_invoice_line(
-                    partner, debt, to_date))],
             'currency_id': self.company_id.currency_id.id,
             'payment_term_id': partner.property_payment_term_id.id or False,
             'fiscal_position_id': partner.property_account_position_id.id,
@@ -240,23 +242,19 @@ class ResCompanyInterest(models.Model):
         return invoice_vals
 
     @api.multi
-    def _prepare_interest_invoice_line(self, partner, debt, to_date):
+    def _prepare_interest_invoice_line(self, invoice, partner, debt, to_date):
         self.ensure_one()
         company = self.company_id
-
-        name =  '%s.\n' % (self.interest_product_id.name) + self.prepare_info(
-            to_date, debt)
-
         amount = self.rate * debt
         line_data = self.env['account.invoice.line'].with_context(
+            # TODO really need to force company here? already have invoice
+            # company
             force_company=company.id).new(dict(
                 product_id=self.interest_product_id.id,
-                product_uom_id=self.interest_product_id.uom_id.id,
                 quantity=1.0,
-                name=name,
-                type='out_invoice',
+                invoice_id=invoice.id,
                 partner_id=partner.id,
-                company_id=company.id))
+            ))
         line_data._onchange_product_id()
 
         if not line_data.account_id:
@@ -264,13 +262,9 @@ class ResCompanyInterest(models.Model):
                 'The interest product is not properly configured, '
                 'missing account.'))
 
-        # TODO K review not sure if needed
-        # line_data['account_id'] = account_id
-        # line_data._onchange_account_id()
-        # line_data._set_taxes()
-
         line_data['price_unit'] = amount
         line_data['account_analytic_id'] = self.analytic_account_id.id
+        line_data['name'] = line_data.product_id.name + '.\n' + invoice.comment
 
         line_values = line_data._convert_to_write(
             {field: line_data[field] for field in line_data._cache})
