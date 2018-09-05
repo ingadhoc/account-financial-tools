@@ -225,10 +225,7 @@ class ResCompanyInterest(models.Model):
             'account_id': account_id,
             'partner_id': partner.id,
             'journal_id': journal.id,
-            'reference': self.interest_product_id.name,
-            # TODO revisar porque en la localizacion usamos reference y no
-            # name
-            # 'name': self.interest_product_id.name,
+            'name': self.interest_product_id.name,
             'comment': comment,
             'invoice_line_ids': [
                 (0, 0, self._prepare_interest_invoice_line(
