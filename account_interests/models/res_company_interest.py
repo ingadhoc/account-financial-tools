@@ -171,10 +171,9 @@ class ResCompanyInterest(models.Model):
             invoice = self.env['account.invoice'].with_context(
                 internal_type='debit_note').create(invoice_vals)
 
-            invoice.write({'invoice_line_ids': [
-                (0, 0, self._prepare_interest_invoice_line(
-                    invoice, partner, debt, to_date))],
-            })
+            invoice.invoice_line_ids.create(
+                self._prepare_interest_invoice_line(
+                    invoice, partner, debt, to_date))
 
             # update amounts for new invoice
             invoice.compute_taxes()
