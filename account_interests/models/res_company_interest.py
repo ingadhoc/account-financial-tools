@@ -43,7 +43,6 @@ class ResCompanyInterest(models.Model):
     analytic_account_id = fields.Many2one(
         'account.analytic.account',
         'Analytic account',
-        domain=[('type', '!=', 'view')]
     )
     rate = fields.Float(
         'Interest',
@@ -172,10 +171,34 @@ class ResCompanyInterest(models.Model):
             invoice = self.env['account.invoice'].with_context(
                 internal_type='debit_note').create(invoice_vals)
 
+            invoice.invoice_line_ids.create(
+                self._prepare_interest_invoice_line(
+                    invoice, partner, debt, to_date))
+
             # update amounts for new invoice
             invoice.compute_taxes()
             if self.automatic_validation:
                 invoice.action_invoice_open()
+
+    @api.multi
+    def prepare_info(self, to_date, debt):
+        self.ensure_one()
+
+        # Format date to customer langague
+        # For some reason there is not context pass, not lang, so we
+        # force it here
+        lang_code = self.env.context.get('lang', self.env.user.lang)
+        lang = self.env['res.lang']._lang_get(lang_code)
+        date_format = lang.date_format
+        to_date_format = fields.Date.from_string(
+            to_date).strftime(date_format)
+
+        res = _(
+            'Deuda Vencida al %s: %s\n'
+            'Tasa de interés: %s') % (
+                to_date_format, debt, self.rate)
+
+        return res
 
     @api.multi
     def _prepare_interest_invoice(self, partner, debt, to_date, journal=None):
@@ -191,9 +214,7 @@ class ResCompanyInterest(models.Model):
                     'Please define sales journal for this company: "%s"') % (
                         company.name))
 
-        comment = _(
-            'Deuda Vencida al %s: %s\n'
-            'Tasa de interés: %s') % (to_date, debt, self.rate)
+        comment = self.prepare_info(to_date, debt)
 
         if self.invoice_receivable_account_id:
             account_id = self.invoice_receivable_account_id.id
@@ -205,14 +226,8 @@ class ResCompanyInterest(models.Model):
             'account_id': account_id,
             'partner_id': partner.id,
             'journal_id': journal.id,
-            'reference': self.interest_product_id.name,
-            # TODO revisar porque en la localizacion usamos reference y no
-            # name
-            # 'name': self.interest_product_id.name,
+            'name': self.interest_product_id.name,
             'comment': comment,
-            'invoice_line_ids': [
-                (0, 0, self._prepare_interest_invoice_line(
-                    partner, debt, to_date))],
             'currency_id': self.company_id.currency_id.id,
             'payment_term_id': partner.property_payment_term_id.id or False,
             'fiscal_position_id': partner.property_account_position_id.id,
@@ -223,50 +238,29 @@ class ResCompanyInterest(models.Model):
         return invoice_vals
 
     @api.multi
-    def _prepare_interest_invoice_line(self, partner, debt, to_date):
+    def _prepare_interest_invoice_line(self, invoice, partner, debt, to_date):
         self.ensure_one()
         company = self.company_id
-
-        name = _(
-            '%s.\n'
-            'Deuda Vencida al %s: %s\n'
-            'Tasa de interés: %s') % (
-                self.interest_product_id.name,
-                to_date, debt, self.rate)
-
         amount = self.rate * debt
         line_data = self.env['account.invoice.line'].with_context(
+            # TODO really need to force company here? already have invoice
+            # company
             force_company=company.id).new(dict(
                 product_id=self.interest_product_id.id,
-                product_uom_id=self.interest_product_id.uom_id.id,
                 quantity=1.0,
-                name=name,
-                type='out_invoice',
+                invoice_id=invoice.id,
                 partner_id=partner.id,
-                company_id=company.id))
+            ))
         line_data._onchange_product_id()
 
-        account_id = line_data.account_id
-        if not account_id:
-            prop = self.env['ir.property'].with_context(
-                force_company=company.id).get(
-                    'property_account_income_categ_id',
-                    'product.category')
-            prop_id = prop.id if prop else False
-            account_id = \
-                partner.property_account_position_id.map_account(prop_id)
-
-            if not account_id:
-                raise UserError(_(
-                    'There is no income account defined as global '
-                    'property.'))
-
-            line_data['account_id'] = account_id
-            line_data._onchange_account_id()
-            line_data._set_taxes()
+        if not line_data.account_id:
+            raise UserError(_(
+                'The interest product is not properly configured, '
+                'missing account.'))
 
         line_data['price_unit'] = amount
         line_data['account_analytic_id'] = self.analytic_account_id.id
+        line_data['name'] = line_data.product_id.name + '.\n' + invoice.comment
 
         line_values = line_data._convert_to_write(
             {field: line_data[field] for field in line_data._cache})
