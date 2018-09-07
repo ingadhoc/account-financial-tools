@@ -2,9 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, api, fields
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from datetime import datetime
+from odoo import models, api
 
 
 class AccountBankStatement(models.Model):
