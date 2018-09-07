@@ -35,6 +35,13 @@ class AccountJournal(models.Model):
         help='Acquirer that use this journal to register online payments '
         'journal entries',
     )
+    mail_template_id = fields.Many2one(
+        'mail.template',
+        'Email Template',
+        domain=[('model', '=', 'account.invoice')],
+        help="If set an email will be sent to the customer after the invoices"
+        " related to this journal has been validated.",
+    )
 
     @api.multi
     def get_journal_dashboard_datas(self):

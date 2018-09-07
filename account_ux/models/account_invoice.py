@@ -37,3 +37,15 @@ class AccountInvoice(models.Model):
     def _onchange_partner_commercial(self):
         if self.partner_id.user_id:
             self.user_id = self.partner_id.user_id.id
+
+    @api.multi
+    def action_invoice_open(self):
+        """ After validate invoice will sent an email to the partner if the
+        related journal has mail_template_id set.
+        """
+        res = super(AccountInvoice, self). action_invoice_open()
+        for rec in self.filtered('journal_id.mail_template_id'):
+            rec.message_post_with_template(
+                rec.journal_id.mail_template_id.id,
+            )
+        return res
