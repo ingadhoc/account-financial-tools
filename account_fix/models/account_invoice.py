@@ -112,3 +112,45 @@ class AccountInvoice(models.Model):
                     'ref': payment_ref,
                 })
             self.payments_widget = json.dumps(info)
+
+    @api.one
+    def _get_outstanding_info_JSON(self):
+        """Arreglo vinculado al parche de assign_outstanding_credit,
+        mostramos al usuario el importe a la fecha de factura y no a la fecha
+        del pago.
+        fix between start fix / end fix comments
+        """
+        self.outstanding_credits_debits_widget = json.dumps(False)
+        if self.state == 'open':
+            domain = [('account_id', '=', self.account_id.id), ('partner_id', '=', self.env['res.partner']._find_accounting_partner(self.partner_id).id), ('reconciled', '=', False), ('amount_residual', '!=', 0.0)]
+            if self.type in ('out_invoice', 'in_refund'):
+                domain.extend([('credit', '>', 0), ('debit', '=', 0)])
+                type_payment = _('Outstanding credits')
+            else:
+                domain.extend([('credit', '=', 0), ('debit', '>', 0)])
+                type_payment = _('Outstanding debits')
+            info = {'title': '', 'outstanding': True, 'content': [], 'invoice_id': self.id}
+            lines = self.env['account.move.line'].search(domain)
+            currency_id = self.currency_id
+            if len(lines) != 0:
+                for line in lines:
+                    # get the outstanding residual value in invoice currency
+                    if line.currency_id and line.currency_id == self.currency_id:
+                        amount_to_show = abs(line.amount_residual_currency)
+                    else:
+                        # start fix
+                        amount_to_show = line.company_id.currency_id.with_context(date=self.date).compute(abs(line.amount_residual), self.currency_id)
+                        # end fix
+                    if float_is_zero(amount_to_show, precision_rounding=self.currency_id.rounding):
+                        continue
+                    info['content'].append({
+                        'journal_name': line.ref or line.move_id.name,
+                        'amount': amount_to_show,
+                        'currency': currency_id.symbol,
+                        'id': line.id,
+                        'position': currency_id.position,
+                        'digits': [69, self.currency_id.decimal_places],
+                    })
+                info['title'] = type_payment
+                self.outstanding_credits_debits_widget = json.dumps(info)
+                self.has_outstanding = True
