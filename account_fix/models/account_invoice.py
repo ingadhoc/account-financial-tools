@@ -154,3 +154,14 @@ class AccountInvoice(models.Model):
                 info['title'] = type_payment
                 self.outstanding_credits_debits_widget = json.dumps(info)
                 self.has_outstanding = True
+
+    @api.v7
+    def assign_outstanding_credit(self, cr, uid, id, credit_aml_id, context=None):
+        """ aplicación de este parche
+        https://github.com/odoo/odoo/pull/25485/files
+        """
+        credit_aml = self.pool.get('account.move.line').browse(cr, uid, credit_aml_id, context=context)
+        inv = self.browse(cr, uid, id, context=context)
+        if credit_aml.payment_id:
+            credit_aml.payment_id.write({'invoice_ids': [(4, id, None)]})
+        return inv.register_payment(credit_aml)
