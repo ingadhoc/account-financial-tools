@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+
+        <record id="account_bank_statement_import_csv_template" model="ir.ui.view">
+            <field name="name">CSV Bank Statement Template</field>
+            <field name="model">account.bank.statement.import.csv.template</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="name" />
+                        </group>
+                        <group>
+                            <field name="encoding" />
+                            <field name="separator" />
+                            <field name="quoting" />
+                        </group>
+                        <group>
+                            <field name="error_handling" />
+                            <field name="headers" />
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <tree>
+                            <field name="field"/>
+                            <field name="description" />
+                        </tree>
+                    </field>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="account_bank_statement_import_csv_template_line" model="ir.ui.view">
+            <field name="name">CSV Bank Statement Template Line</field>
+            <field name="model">account.bank.statement.import.csv.template.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="type" />
+                        </group>
+
+                        <group>
+                            <field name="col_number" attrs="{'invisible': [('type', '!=', 'number')], 'required': [('type', '=', 'number')]}" />
+                            <field name="col_header" attrs="{'invisible': [('type', '!=', 'header')], 'required': [('type', '=', 'header')]}" />
+                        </group>
+                        
+                        <group>
+                            <field name="field" />
+                        </group>
+
+                        <group>
+                            <field name="custom_field" attrs="{'invisible': [('field', '!=', 'other')], 'required': [('field', '=', 'other')]}" />
+                            <field name="date_format" attrs="{'invisible': [('field', '!=', 'date')], 'required': [('field', '=', 'date')]}" />
+                            <field name="replace_comma" attrs="{'invisible': [('field', '!=', 'amount')]}" />
+                        </group>
+                    </group>
+
+                    <label for="expr" />
+                    <field name="expr" />
+                </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>
