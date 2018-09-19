@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': '11.0.1.3.1',
+    'version': '11.0.1.4.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -32,6 +32,7 @@
         'account',
         "payment",
         "account_payment_group",
+        "web_notify",
     ],
     'data': [
         'security/account_ux_security.xml',
