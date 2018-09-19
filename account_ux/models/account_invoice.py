@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 
 class AccountInvoice(models.Model):
@@ -45,7 +45,29 @@ class AccountInvoice(models.Model):
         """
         res = super(AccountInvoice, self). action_invoice_open()
         for rec in self.filtered('journal_id.mail_template_id'):
-            rec.message_post_with_template(
-                rec.journal_id.mail_template_id.id,
-            )
+            try:
+                rec.message_post_with_template(
+                    rec.journal_id.mail_template_id.id,
+                )
+            except Exception as error:
+                title = _(
+                    "ERROR: Invoice was not sent via email"
+                )
+                message = _(
+                    "Invoice %s was correctly validate but was not send"
+                    " via email. Please review invoice chatter for more"
+                    " information" % rec.display_name
+                )
+                self.env.user.notify_warning(
+                    title=title,
+                    message=message,
+                    sticky=True,
+                )
+                rec.message_post("<br/><br/>".join([
+                    "<b>" + title + "</b>",
+                    _("Please check the email template associated with"
+                      " the invoice journal."),
+                    "<code>" + str(error) + "</code>"
+                    ]),
+                )
         return res
