@@ -20,6 +20,7 @@ Account Fixes
 #. Overwrite create_bank_statement method so that users are allow to create statement without perm to write on journals.
 #. Do not allow to recompute taxes on invoices that are not on draft state because tax and invoice amounts could change
 #. Disable currency change when journal is changed
+#. Fix the account onchage in invoice line to carry the tax setting in the account.
 
 Installation
 ============
