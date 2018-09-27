@@ -1,0 +1,27 @@
+<odoo>
+
+    <record id="view_journal_security_account_journal_form" model="ir.ui.view">
+        <field name="name">journal_security.account.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='advanced_settings']/group" position="inside">
+                <group string="Restringir de Usuarios">
+                    <field name="journal_restriction" widget="radio" groups="base.group_erp_manager"/>
+                    <field name="user_ids" widget="many2many_tags" groups="base.group_erp_manager" attrs="{'invisible': [('journal_restriction', '!=', 'total')]}"/>
+                    <field name="modification_user_ids" widget="many2many_tags" groups="base.group_erp_manager" attrs="{'invisible': [('journal_restriction', '!=', 'modification')]}"/>
+                    <div class="alert alert-warning" attrs="{'invisible': [('journal_restriction', '!=', 'total')]}" colspan="2">
+                        <p>
+                        Tenga mucho cuidado al elegir esta opción ya que puede bloquear acciones de odoo. No lo recomendamos para diarios de ventas, compras, liquidez o cualquier diario en el cual se generen registros desde otro acción. Un caso tipico para este tipo de restricción es el diario de sueldos.
+                        </p>
+                        <p>
+                        <b>IMPORTANTE:</b> Los usuarios que no estén en la lista no podrán ver facturas, pagos, asiento o apuntes contables en este diario, pero si podrán ver información relativa a este diario en, por ejemplo, resumen de cuenta, detalle de deuda e informes contables.
+                        </p>
+                    </div>
+                </group>
+
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

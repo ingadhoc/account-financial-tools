@@ -19,10 +19,10 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-    'version': '10.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
-    'summary': '',
+    'summary': 'Restrict the use of certain journals to certain users',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -32,16 +32,14 @@
         'account',
     ],
     'data': [
-        'views/res_users_view.xml',
-        'views/account_view.xml',
-        'security/restricted_journal_security.xml',
-        'security/modification_journal_security.xml',
+        'views/account_journal_views.xml',
+        'security/journal_security_security.xml',
     ],
     'demo': [
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

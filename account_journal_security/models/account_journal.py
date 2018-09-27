@@ -5,40 +5,6 @@
 from odoo import fields, models, api, SUPERUSER_ID, _
 from odoo.exceptions import ValidationError
 
-# agregamos lo auto join para evitar problemas de performance
-
-
-class AccountInvoice(models.Model):
-    _inherit = 'account.invoice'
-
-    journal_id = fields.Many2one(
-        auto_join=True
-    )
-
-
-class AccountMove(models.Model):
-    _inherit = 'account.move'
-
-    journal_id = fields.Many2one(
-        auto_join=True
-    )
-
-
-class AccountMoveLine(models.Model):
-    _inherit = 'account.move.line'
-
-    journal_id = fields.Many2one(
-        auto_join=True
-    )
-
-
-class AccountPayment(models.Model):
-    _inherit = 'account.payment'
-
-    journal_id = fields.Many2one(
-        auto_join=True
-    )
-
 
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
@@ -52,7 +18,7 @@ class AccountJournal(models.Model):
         string='Totally restricted to',
         help='If choose some users, then this journal and the information'
         ' related to it will be only visible for those users.',
-        copy=False
+        copy=False,
     )
 
     modification_user_ids = fields.Many2many(
@@ -64,8 +30,27 @@ class AccountJournal(models.Model):
         help='If choose some users, then only this users will be allow to '
         ' create, write or delete accounting data related of this journal. '
         'Information will still be visible for other users.',
-        copy=False
+        copy=False,
     )
+
+    journal_restriction = fields.Selection(
+        [('none', 'Ninguna'),
+         ('modification', 'Modificacion'),
+         ('total', 'Total')],
+        string="Tipo de Restriccion",
+        compute='_compute_journal_restriction',
+        readonly=False,
+    )
+
+    @api.depends()
+    def _compute_journal_restriction(self):
+        for rec in self:
+            if rec.user_ids:
+                rec.journal_restriction = 'total'
+            elif rec.modification_user_ids:
+                rec.journal_restriction = 'modification'
+            else:
+                rec.journal_restriction = 'none'
 
     @api.multi
     @api.constrains('user_ids')

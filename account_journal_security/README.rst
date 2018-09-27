@@ -14,9 +14,14 @@
 Journal Security
 ================
 
-This module it creates a many2many field between journals and users. If you set users to journal or viceversa, then this journals and the related moves, will be only seen by selected users.
-Usually used for payroll journals.
-This fields are only seen by users with 'access right management'.
+Users can be assigned many Account Journals and then they can be restricted to
+see only this Journals.
+
+You can specify for each day that users can write, this module it creates a many2many field between journals and users. If you set users to journal, then this journals and the related moves, will be only seen by selected users. This i usually used for payroll journals.
+
+This fields are only seen by users with 'access right management'::
+
+    *NOTE:* We add auto_joinr to journal_id fields in order to avoid performance issues.
 
 Installation
 ============
@@ -30,8 +35,7 @@ Configuration
 
 To configure this module, you need to:
 
-#. Go to Users / Access Rigths / Restricted Journals
-#. Set the journals to restrict.
+#. Go to Accounting / Configuration / Journals and set the journals restrictions. use radio button to select what kind of restriction applies to the journal and set the related users.
 
 Usage
 =====
