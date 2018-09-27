@@ -33,6 +33,25 @@ class AccountJournal(models.Model):
         copy=False,
     )
 
+    journal_restriction = fields.Selection(
+        [('none', 'Ninguna'),
+         ('modification', 'Modificacion'),
+         ('total', 'Total')],
+        string="Tipo de Restriccion",
+        compute='_compute_journal_restriction',
+        readonly=False,
+    )
+
+    @api.depends()
+    def _compute_journal_restriction(self):
+        for rec in self:
+            if rec.user_ids:
+                rec.journal_restriction = 'total'
+            elif rec.modification_user_ids:
+                rec.journal_restriction = 'modification'
+            else:
+                rec.journal_restriction = 'none'
+
     @api.multi
     @api.constrains('user_ids')
     def check_restrict_users(self):
