@@ -3,15 +3,14 @@
 # * account_fix
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
-# Javier Diez <jd@adhoc.com.ar>, 2018
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 23:17+0000\n"
-"PO-Revision-Date: 2018-03-20 23:17+0000\n"
-"Last-Translator: Javier Diez <jd@adhoc.com.ar>, 2018\n"
+"POT-Creation-Date: 2018-09-27 20:09+0000\n"
+"PO-Revision-Date: 2018-09-27 20:09+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +21,12 @@ msgstr ""
 #. module: account_fix
 #: model:ir.model,name:account_fix.model_account_bank_statement
 msgid "Bank Statement"
-msgstr ""
+msgstr "Extracto bancario"
+
+#. module: account_fix
+#: model:ir.model,name:account_fix.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
 
 #. module: account_fix
 #: model:ir.model,name:account_fix.model_account_invoice
@@ -30,16 +34,20 @@ msgid "Invoice"
 msgstr "Factura"
 
 #. module: account_fix
+#: model:ir.model,name:account_fix.model_account_invoice_line
+msgid "Invoice Line"
+msgstr "Líneas de factura"
+
+#. module: account_fix
 #: model:ir.model,name:account_fix.model_account_journal
 msgid "Journal"
 msgstr "Diario"
 
 #. module: account_fix
-#: model:ir.model,name:account_fix.model_account_move_line
-msgid "Journal Item"
-msgstr "Elementos del diario"
-
-#. module: account_fix
-#: model:ir.model,name:account_fix.model_res_partner
-msgid "Partner"
-msgstr "Partner"
+#: code:addons/account_fix/models/account_invoice.py:61
+#, python-format
+msgid ""
+"You can compute taxes invoices that are not in draft only if you send "
+"\"force_compute_taxes=True\" on context. Be awareinvoices amounts could "
+"change"
+msgstr ""

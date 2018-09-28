@@ -3,15 +3,14 @@
 # * account_debt_management
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
-# Gonzalo Ruzafa <gr@ingadhoc.com>, 2017
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-06 22:21+0000\n"
-"PO-Revision-Date: 2017-09-06 22:21+0000\n"
-"Last-Translator: Gonzalo Ruzafa <gr@ingadhoc.com>, 2017\n"
+"POT-Creation-Date: 2018-09-27 20:09+0000\n"
+"PO-Revision-Date: 2018-09-27 20:09+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -64,51 +63,8 @@ msgid ""
 "        <p></p>\n"
 "    </div>\n"
 "</div>\n"
-"            "
+"        "
 msgstr ""
-"\n"
-"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
-"\n"
-"    <p>Hola ${object.name},</p>\n"
-"\n"
-"    <p>Puede encontrar adjunto sus resumen de cuenta de ${object.company_id.name}: </p>\n"
-"    <br/>\n"
-"    <p>Si tiene cualquier consulta, no dude en contactarnos.</p>\n"
-"    <p>Gracias por elegir ${object.company_id.name or 'us'}!</p>\n"
-"    <br/>\n"
-"    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
-"        <h3 style=\"margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n"
-"            <strong style=\"text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n"
-"    </div>\n"
-"    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n"
-"        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n"
-"        % if object.company_id.street:\n"
-"            ${object.company_id.street}<br/>\n"
-"        % endif\n"
-"        % if object.company_id.street2:\n"
-"            ${object.company_id.street2}<br/>\n"
-"        % endif\n"
-"        % if object.company_id.city or object.company_id.zip:\n"
-"            ${object.company_id.zip} ${object.company_id.city}<br/>\n"
-"        % endif\n"
-"        % if object.company_id.country_id:\n"
-"            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>\n"
-"        % endif\n"
-"        </span>\n"
-"        % if object.company_id.phone:\n"
-"            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n"
-"                Phone:&nbsp; ${object.company_id.phone}\n"
-"            </div>\n"
-"        % endif\n"
-"        % if object.company_id.website:\n"
-"            <div>\n"
-"                Web :&nbsp;<a href=\"${object.company_id.website}\">${object.company_id.website}</a>\n"
-"            </div>\n"
-"        % endif\n"
-"        <p></p>\n"
-"    </div>\n"
-"</div>\n"
-"            "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_partner_inherit_debt_form
@@ -133,7 +89,7 @@ msgstr "Líneas de Deuda"
 
 #. module: account_debt_management
 #: model:ir.actions.act_window,name:account_debt_management.action_account_debt_report_wizard
-#: model:ir.actions.report.xml,name:account_debt_management.account_debt_report
+#: model:ir.actions.report,name:account_debt_management.account_debt_report
 msgid "Account Debt Report"
 msgstr "Resumen de Cuenta"
 
@@ -174,8 +130,8 @@ msgstr "Importe"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount_currency
-msgid "Amount currency"
-msgstr "Importe en moneda"
+msgid "Amount Currency"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
@@ -186,15 +142,14 @@ msgstr "Cancelar"
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_company_id
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_company_id
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Company"
 msgstr "Compañía"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_company_type
-msgid "Company type"
-msgstr "Tipo de Compañía"
+msgid "Company Type"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
@@ -205,6 +160,11 @@ msgstr "Confirmar"
 #: selection:account.debt.report.wizard,company_type:0
 msgid "Consolidate all Companies"
 msgstr "Consolidar todas las Compañías"
+
+#. module: account_debt_management
+#: model:ir.model,name:account_debt_management.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_create_uid
@@ -234,14 +194,16 @@ msgid "Date"
 msgstr "Fecha"
 
 #. module: account_debt_management
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_date_maturity
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Date Maturity"
 msgstr "Fecha de Madurez"
 
 #. module: account_debt_management
-#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_date_maturity
-msgid "Date maturity"
-msgstr "Fecha de Vencimiento"
+#: model:ir.model.fields,field_description:account_debt_management.field_res_partner_debt_balance
+#: model:ir.model.fields,field_description:account_debt_management.field_res_users_debt_balance
+msgid "Debt Balance"
+msgstr ""
 
 #. module: account_debt_management
 #: model:mail.template,subject:account_debt_management.email_template_debt_detail
@@ -266,23 +228,26 @@ msgid "Debt Lines Analysis"
 msgstr "Analisis de Lineas de Deuda"
 
 #. module: account_debt_management
-#: model:ir.model.fields,field_description:account_debt_management.field_res_partner_debt_balance
-msgid "Debt balance"
-msgstr "Saldo de Deuda"
-
-#. module: account_debt_management
 #: model:mail.template,report_name:account_debt_management.email_template_debt_detail
 msgid "Debt_Detail_${(object.name or '').replace('/','_')}"
 msgstr "Resumen_de_Cuenta_${(object.name or '').replace('/','_')}"
 
 #. module: account_debt_management
-#: model:ir.model.fields,help:account_debt_management.field_account_config_settings_group_account_use_financial_amounts
+#: model:ir.model.fields,help:account_debt_management.field_res_config_settings_group_account_use_financial_amounts
 msgid ""
 "Display Financial amounts on partner debts views and reports.\n"
 "Financial amounts are amounts on other currency converted to company currency on todays exchange."
 msgstr ""
 "Mostrar importes financieros en las vistas y reportes de deuda de partners.\n"
 "Los importes financieros son importes en otra moneda convertidos a la moneda de la compañía a la tasa de cambio del día."
+
+#. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.res_config_settings_view_form
+msgid ""
+"Display Financial amounts on partner debts views and reports. Financial "
+"amounts are amounts on other currency converted to company currency on "
+"todays exchange"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_display_name
@@ -328,18 +293,18 @@ msgstr "Apuntes Contables"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount
-msgid "Financial amount"
-msgstr "Importe financiero"
+msgid "Financial Amount"
+msgstr "Importe Financiero"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount_residual
-msgid "Financial amount residual"
-msgstr "Importe financiero residual"
+msgid "Financial Amount Residual"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_financial_amounts
-msgid "Financial amounts"
-msgstr "Importes financieros"
+msgid "Financial Amounts"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_from_date
@@ -358,8 +323,8 @@ msgstr "Agrupar por Compañía"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_historical_full
-msgid "Historical full"
-msgstr "Historial Completo"
+msgid "Historical Full"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_id
@@ -368,7 +333,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/models/res_partner.py:128
+#: code:addons/account_debt_management/models/res_partner.py:127
 #, python-format
 msgid "INITIAL BALANCE"
 msgstr "SALDO INICIAL"
@@ -399,11 +364,6 @@ msgstr "Factura"
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_form
 msgid "Journal Entries"
 msgstr "Lineas de Diari"
-
-#. module: account_debt_management
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
-msgid "Journal Entry"
-msgstr "Entrada de Diario"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line___last_update
@@ -444,7 +404,6 @@ msgid "Open Related Accounting Document"
 msgstr "Abrie documento contable relacionado"
 
 #. module: account_debt_management
-#: model:ir.model,name:account_debt_management.model_res_partner
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_partner_id
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Partner"
@@ -457,7 +416,6 @@ msgstr "Partners con balance receptor o pagable diferente de 0"
 
 #. module: account_debt_management
 #: selection:account.debt.line,internal_type:0
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Payable"
 msgstr "Cuenta por Pagar"
@@ -469,11 +427,11 @@ msgstr "Cuentas a Pagar"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_res_partner_payable_debt_ids
-msgid "Payable debt ids"
-msgstr "Ids de deudas a pagar"
+#: model:ir.model.fields,field_description:account_debt_management.field_res_users_payable_debt_ids
+msgid "Payable Debt"
+msgstr ""
 
 #. module: account_debt_management
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Payable payments"
 msgstr "Pagos pagables"
@@ -485,7 +443,6 @@ msgstr "Grupo de Pago"
 
 #. module: account_debt_management
 #: selection:account.debt.line,internal_type:0
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Receivable"
 msgstr "Cuenta por Cobrar"
@@ -496,17 +453,17 @@ msgid "Receivable Accounts"
 msgstr "Cuentas a Cobrar"
 
 #. module: account_debt_management
+#: model:ir.model.fields,field_description:account_debt_management.field_res_partner_receivable_debt_ids
+#: model:ir.model.fields,field_description:account_debt_management.field_res_users_receivable_debt_ids
+msgid "Receivable Debt"
+msgstr ""
+
+#. module: account_debt_management
 #: selection:account.debt.report.wizard,result_selection:0
 msgid "Receivable and Payable Accounts"
 msgstr "Cuentas a Cobrar y a Pagar"
 
 #. module: account_debt_management
-#: model:ir.model.fields,field_description:account_debt_management.field_res_partner_receivable_debt_ids
-msgid "Receivable debt ids"
-msgstr "Ids de deudas a cobrar"
-
-#. module: account_debt_management
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Receivable payments"
 msgstr "Pagos Recibibles "
@@ -533,11 +490,11 @@ msgstr "Importe Residual en Moneda"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_secondary_currency
-msgid "Secondary currency"
-msgstr "Moneda Secundaria"
+msgid "Secondary Currency"
+msgstr ""
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:101
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:112
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
 #, python-format
 msgid "Send by Email"
@@ -576,7 +533,6 @@ msgstr "Balance Total"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_internal_type
-#: model:ir.ui.view,arch_db:account_debt_management.account_move_line_partner_debt_search
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Type"
 msgstr "Tipo"
@@ -592,31 +548,31 @@ msgid "Unreconciled Journal Items"
 msgstr "Items de diarios no conciliados"
 
 #. module: account_debt_management
-#: model:ir.model.fields,field_description:account_debt_management.field_account_config_settings_group_account_use_financial_amounts
+#: model:ir.model.fields,field_description:account_debt_management.field_res_config_settings_group_account_use_financial_amounts
 #: model:res.groups,name:account_debt_management.account_use_financial_amounts
 msgid "Use Financial Amounts"
 msgstr "Usar Importes Financieros"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:360
+#: code:addons/account_debt_management/report/account_debt_line.py:380
 #, python-format
 msgid "View Bank Statement"
 msgstr "Ver estado de cuenta bancaria"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:371
+#: code:addons/account_debt_management/report/account_debt_line.py:391
 #, python-format
 msgid "View Invoice"
 msgstr "Ver factura"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:377
+#: code:addons/account_debt_management/report/account_debt_line.py:397
 #, python-format
 msgid "View Move"
 msgstr "Ver Movimiento"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:365
+#: code:addons/account_debt_management/report/account_debt_line.py:385
 #, python-format
 msgid "View Payment Group"
 msgstr "Ver Grupo de Pago"
@@ -636,7 +592,7 @@ msgstr ""
 "litigio con el partner asociado"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:50
+#: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:49
 #, python-format
 msgid ""
 "You can only select \"Consolidate all Companies if no company is selected"
@@ -645,16 +601,11 @@ msgstr ""
 "compañía seleccionada"
 
 #. module: account_debt_management
-#: model:ir.model,name:account_debt_management.model_account_config_settings
-msgid "account.config.settings"
-msgstr "account.config.settings"
-
-#. module: account_debt_management
-#: model:ir.model,name:account_debt_management.model_ir_config_parameter
-msgid "ir.config_parameter"
-msgstr "ir.config_parameter"
-
-#. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
 msgid "or"
 msgstr "o"
+
+#. module: account_debt_management
+#: model:ir.model,name:account_debt_management.model_res_config_settings
+msgid "res.config.settings"
+msgstr "res.config.settings"

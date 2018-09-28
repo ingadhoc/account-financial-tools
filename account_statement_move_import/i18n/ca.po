@@ -3,14 +3,14 @@
 # * account_statement_move_import
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-20 18:37+0000\n"
-"PO-Revision-Date: 2017-07-20 18:37+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017\n"
+"POT-Creation-Date: 2018-09-27 20:09+0000\n"
+"PO-Revision-Date: 2018-09-27 20:09+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018\n"
 "Language-Team: Catalan (https://www.transifex.com/adhoc/teams/46451/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -49,23 +49,8 @@ msgid "Display Name"
 msgstr ""
 
 #. module: account_statement_move_import
-#: model:ir.model.fields,field_description:account_statement_move_import.field_account_move_line_exclude_on_statements
-msgid "Exclude on Statements"
-msgstr ""
-
-#. module: account_statement_move_import
-#: model:ir.model.fields,help:account_statement_move_import.field_account_move_line_exclude_on_statements
-msgid "Exclude this move line suggestion on statements"
-msgstr ""
-
-#. module: account_statement_move_import
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_from_date
 msgid "From Date"
-msgstr ""
-
-#. module: account_statement_move_import
-#: model:ir.ui.view,arch_db:account_statement_move_import.account_statement_move_import_wizard_form_view
-msgid "Get Lines"
 msgstr ""
 
 #. module: account_statement_move_import
@@ -80,35 +65,26 @@ msgid "Import Journal Items"
 msgstr ""
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:109
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:122
 #, python-format
 msgid ""
 "Imported line account must be one of the journals defaults, in this case %s"
 msgstr ""
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:115
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:128
 #, python-format
-msgid "Imported line must have \"statement_id\" == False"
+msgid "Imported line must have \"statement_line_id\" == False"
 msgstr ""
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:37
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_journal_id
-#, python-format
 msgid "Journal"
 msgstr "Diari"
 
 #. module: account_statement_move_import
-#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:43
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_journal_account_ids
-#, python-format
 msgid "Journal Accounts"
-msgstr ""
-
-#. module: account_statement_move_import
-#: model:ir.model,name:account_statement_move_import.model_account_move_line
-msgid "Journal Item"
 msgstr ""
 
 #. module: account_statement_move_import
@@ -129,6 +105,14 @@ msgstr ""
 #. module: account_statement_move_import
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard_write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: account_statement_move_import
+#: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:137
+#, python-format
+msgid ""
+"Si el diario del extracto es en otra moneda distinta a la de la compaÃ±Ã­a, "
+"los apuntes a importar deben tener como otra moneda esa misma moneda (%s)"
 msgstr ""
 
 #. module: account_statement_move_import
@@ -153,7 +137,7 @@ msgstr ""
 
 #. module: account_statement_move_import
 #: model:ir.model,name:account_statement_move_import.model_account_statement_move_import_wizard
-msgid "account_statement_move_import_wizard"
+msgid "account.statement.move.import.wizard"
 msgstr ""
 
 #. module: account_statement_move_import
