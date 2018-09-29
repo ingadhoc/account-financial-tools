@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class AccountInvoice(models.Model):
@@ -43,6 +44,19 @@ class AccountInvoice(models.Model):
         """ After validate invoice will sent an email to the partner if the
         related journal has mail_template_id set.
         """
+        for rec in self:
+            line_taxes = rec.invoice_line_ids.mapped('invoice_line_tax_ids')
+            invoice_taxes = rec.tax_line_ids.filtered(
+                lambda x: not x.manual).mapped('tax_id')
+            wrong_taxes = set(line_taxes) - set(invoice_taxes)
+            if wrong_taxes:
+                raise UserError(_(
+                    'Los impuestos "%s" están definidos en líneas '
+                    'de factura pero no están presentes en los impuestos de '
+                    'factura, es probable que los haya borrado sin querer. '
+                    'Por favor, recalcule los impuestos modificando alguna '
+                    'línea de la factura. ') % (
+                        ', '.join([x.name for x in wrong_taxes])))
         res = super(AccountInvoice, self). action_invoice_open()
         for rec in self.filtered('journal_id.mail_template_id'):
             try:
