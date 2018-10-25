@@ -28,7 +28,7 @@ class AccountAccount(models.Model):
             move_line = AccountMoveLine.search([
                 ('move_id', '=', move_id),
                 ('account_id', '=', rec.id)], limit=1)
-            rec.update({'new_balance': rec.balance + move_line.balance})
+            rec.new_balance = rec.balance + move_line.balance
 
     @api.multi
     def _compute_balance(self):
@@ -42,10 +42,7 @@ class AccountAccount(models.Model):
             ]
             if move:
                 domain.append(('date', '<=', move.date))
-            rec.update({
-                'balance': sum(
-                    AccountMoveLine.search(domain).mapped('balance'))
-            })
+            rec.balance = sum(AccountMoveLine.search(domain).mapped('balance'))
 
     @api.multi
     def _inverse_new_balance(self):

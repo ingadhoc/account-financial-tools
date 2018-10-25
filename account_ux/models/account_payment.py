@@ -30,5 +30,5 @@ class AccountPayment(models.Model):
         payments. TODO: this could be parametrizable
         """
         res = super(AccountPayment, self).cancel()
-        self.update({'move_name': False})
+        self.write({'move_name': False})
         return res

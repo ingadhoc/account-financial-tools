@@ -52,7 +52,7 @@ class ResPartner(models.Model):
                     ('partner_id', '=', rec.id),
                     ('account_id', '=', account.id),
                 ], limit=1)
-                rec.update({field: rec[from_field] + move_line.balance})
+                rec[field] = rec[from_field] + move_line.balance
 
     @api.multi
     def _compute_debit_credit(self):
@@ -74,9 +74,8 @@ class ResPartner(models.Model):
                     domain.append(('company_id', '=', company_id))
                 if move:
                     domain.append(('date', '<=', move.date))
-                rec.update({
-                    field: sum(AccountMoveLine.search(
-                        domain).mapped('balance'))})
+                rec[field] = sum(
+                    AccountMoveLine.search(domain).mapped('balance'))
 
     @api.multi
     def _inverse_new_debit(self):
