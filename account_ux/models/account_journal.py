@@ -2,8 +2,8 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, api, fields
-# from odoo.exceptions import UserError
+from odoo import models, api, fields, _
+from odoo.exceptions import ValidationError
 from odoo.tools.misc import formatLang
 
 
@@ -64,3 +64,11 @@ class AccountJournal(models.Model):
                 self.env, sum_waiting or 0.0,
                 currency_obj=self.currency_id or self.company_id.currency_id)})
         return res
+
+    @api.constrains('currency_id')
+    def check_currency(self):
+        for rec in self.filtered(lambda x: x.currency_id ==
+                                 x.company_id.currency_id):
+            raise ValidationError(_(
+                'You only can use a second Currency diferent of Company (%s).'
+                % rec.company_id.currency_id.name))
