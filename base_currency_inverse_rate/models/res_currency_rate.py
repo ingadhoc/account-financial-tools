@@ -14,6 +14,7 @@ class ResCurrencyRate(models.Model):
         inverse='_inverse_inverse_rate',
         help='The rate of the currency from the currency of rate 1',
     )
+    rate = fields.Float(digits=(7, 9))
 
     @api.multi
     @api.depends('rate')

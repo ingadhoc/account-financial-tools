@@ -14,6 +14,7 @@ class ResCurrency(models.Model):
         help='The rate of the currency from the currency of rate 1 (0 if no '
                 'rate defined).'
     )
+    rate = fields.Float(digits=(7, 9))
 
     @api.multi
     @api.depends('rate')
