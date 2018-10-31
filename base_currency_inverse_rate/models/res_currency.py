@@ -17,6 +17,7 @@ class res_currency(models.Model):
         help='The rate of the currency from the currency of rate 1 (0 if no '
                 'rate defined).'
     )
+    rate = fields.Float(digits=(7, 9))
 
     @api.one
     @api.depends('rate')
@@ -34,6 +35,13 @@ class res_currency_rate(models.Model):
         inverse='set_inverse_rate',
         help='The rate of the currency from the currency of rate 1',
     )
+    # we add more digits because we usually use argentinian currency as base
+    # currency and this way better rate could be achived, for eg "37,4000"
+    # would give differences on amounts like 2000 USD
+    # TODO this is not a good solution and we should improve it, perhups not
+    # to use arg as base currency but we should change method where we get
+    # rate from afip
+    rate = fields.Float(digits=(7, 9))
 
     @api.one
     @api.depends('rate')
