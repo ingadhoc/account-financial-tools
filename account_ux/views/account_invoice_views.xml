@@ -24,7 +24,7 @@
             </button>
 
             <field name="currency_id" position="after">
-                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="account.group_account_user"/>
+                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="base.group_multi_currency"/>
             </field>
 
             <field name="currency_id" position="attributes">
@@ -59,7 +59,7 @@
                 <label for="currency_id" groups="base.group_multi_currency"/>
                 <div groups="base.group_multi_currency">
                     <field name="currency_id" options="{'no_create': True, 'no_open': True}" class="oe_inline" readonly="1"/>
-                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="account.group_account_user"/>
+                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="base.group_multi_currency"/>
                 </div>
             </field>
             <xpath expr="//field[@name='tax_line_ids']/tree" position="attributes">
