@@ -1,0 +1,110 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * account_move_chatter
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0c\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-20 18:37+0000\n"
+"PO-Revision-Date: 2017-07-20 18:37+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2016\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_move_chatter
+#: model:ir.model,name:account_move_chatter.model_account_move
+#: model:ir.ui.view,arch_db:account_move_chatter.view_move_form
+msgid "Account Entry"
+msgstr "Asiento contable"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_needaction
+msgid "Action Needed"
+msgstr "Se necesita una acción"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_balance
+msgid "Balance"
+msgstr "Saldo"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,help:account_move_chatter.field_account_move_message_last_post
+msgid "Date of the last message posted on the record."
+msgstr "Fecha del último mensaje publicado en el registro."
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Seguidores (Canales)"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (Partners)"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,help:account_move_chatter.field_account_move_message_unread
+msgid "If checked new messages require your attention."
+msgstr "Si esta chequeado nuevos mensajes requiere su atención."
+
+#. module: account_move_chatter
+#: model:ir.model.fields,help:account_move_chatter.field_account_move_message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Si esta marcado, nuevos mensajes requiere su atención."
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_is_follower
+msgid "Is Follower"
+msgstr "Ese seguidor"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_last_post
+msgid "Last Message Date"
+msgstr "Fecha de Último Mensaje"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número de acciones"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,help:account_move_chatter.field_account_move_message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Número de mensajes que requieren una acción"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,help:account_move_chatter.field_account_move_message_unread_counter
+msgid "Number of unread messages"
+msgstr "Número de mensajes no léidos"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_to_check
+msgid "To check"
+msgstr "A chequear"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_unread
+msgid "Unread Messages"
+msgstr "Mensajes No Leídos"
+
+#. module: account_move_chatter
+#: model:ir.model.fields,field_description:account_move_chatter.field_account_move_message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Contador de mensajes no leídos"
