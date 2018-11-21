@@ -43,6 +43,7 @@ Several Improvements to accounting:
 #. Adds a wizard to add manual taxes on invoices without. Needing such taxes to be added in each of the invoice lines.
 #. Adds to group by journal on invoices.
 #. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
+#. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
@@ -51,7 +52,7 @@ Several Improvements to accounting:
   * Change currency wizard only works when multi currency is activated
   * In order to see the change button in the invoice we should be added to the "Technical Settings / Show Full Accounting Features" group
   * We can restrict the change of the currency for a group of users by adding them to "Restrict Change Invoice Currency Exchange" group
-#. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
+
 
 
 Installation
