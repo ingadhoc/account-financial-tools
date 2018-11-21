@@ -70,5 +70,6 @@ class AccountJournal(models.Model):
         for rec in self.filtered(lambda x: x.currency_id ==
                                  x.company_id.currency_id):
             raise ValidationError(_(
-                'You only can use a second Currency diferent of Company (%s).'
-                % rec.company_id.currency_id.name))
+                'Solo puede utilizar una moneda secundaria distinta a la '
+                'moneda de la compañía (%s).' % (
+                    rec.company_id.currency_id.name)))
