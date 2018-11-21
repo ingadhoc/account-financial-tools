@@ -153,7 +153,7 @@ class AccountStatementMoveImportWizard(models.TransientModel):
             line_vals = {
                 'statement_id': statement.id,
                 'date': line.date,
-                'name': line.name,
+                'name': line.name or '/',
                 'ref': line.ref,
                 'amount': amount,
                 'currency_id': currency_id,
