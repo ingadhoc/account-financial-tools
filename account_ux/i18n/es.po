@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-24 14:06+0000\n"
+"POT-Creation-Date: 2018-12-07 13:35+0000\n"
 "PO-Revision-Date: 2018-05-14 17:46+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -175,6 +175,11 @@ msgstr "Análisis de Apuntes Contables"
 #: model:ir.model,name:account_ux.model_account_bank_statement
 msgid "Bank Statement"
 msgstr "Extracto bancario"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr "Línea de extracto bancario"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard_base
