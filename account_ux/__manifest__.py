@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': '11.0.1.6.0',
+    'version': '11.0.1.7.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -47,6 +47,8 @@
         'views/account_move_line_views.xml',
         'views/account_reconcile_views.xml',
         'views/res_partner_views.xml',
+        'views/account_account_type_views.xml',
+        'views/account_account_views.xml',
         'data/account_payment_method_data.xml',
         'data/mail_data.xml',
         'data/ir_parameters_data.xml',
