@@ -82,6 +82,14 @@ class AccountInvoice(models.Model):
                     _("Please check the email template associated with"
                       " the invoice journal."),
                     "<code>" + str(error) + "</code>"
-                    ]),
+                ]),
                 )
+        return res
+
+    @api.multi
+    def action_invoice_draft(self):
+        invoice_data = [(x, x.date) for x in self.filtered('date')]
+        res = super(AccountInvoice, self).action_invoice_draft()
+        for rec, date in invoice_data:
+            rec.date = date
         return res
