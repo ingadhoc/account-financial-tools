@@ -3,14 +3,15 @@
 # * account_debt_management
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-27 20:09+0000\n"
-"PO-Revision-Date: 2018-09-27 20:09+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2018\n"
+"POT-Creation-Date: 2019-01-17 15:55+0000\n"
+"PO-Revision-Date: 2018-05-24 12:55+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -65,6 +66,49 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"\n"
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\n"
+"    Hola ${object.name},</p>\n"
+"\n"
+"    <p>Por favor encuentre adjunto su detalle de deuda de ${object.company_id.name}: </p>\n"
+"    <br/>\n"
+"    <p>Si tiene alguna duda, no dudes en contactar con nosotros.</p>\n"
+"    <p>Gracias por elegir ${object.company_id.name or 'us'}!</p>\n"
+"    <br/>\n"
+"    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
+"        <h3 style=\"margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n"
+"            <strong style=\"text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n"
+"    </div>\n"
+"    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n"
+"        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n"
+"        % if object.company_id.street:\n"
+"            ${object.company_id.street}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.street2:\n"
+"            ${object.company_id.street2}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.city or object.company_id.zip:\n"
+"            ${object.company_id.zip} ${object.company_id.city}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.country_id:\n"
+"            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>\n"
+"        % endif\n"
+"        </span>\n"
+"        % if object.company_id.phone:\n"
+"            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n"
+"                Teléfono:&nbsp; ${object.company_id.phone}\n"
+"            </div>\n"
+"        % endif\n"
+"        % if object.company_id.website:\n"
+"            <div>\n"
+"                Web :&nbsp;<a href=\"${object.company_id.website}\">${object.company_id.website}</a>\n"
+"            </div>\n"
+"        % endif\n"
+"        <p></p>\n"
+"    </div>\n"
+"</div>\n"
+"        "
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_partner_inherit_debt_form
@@ -131,7 +175,7 @@ msgstr "Importe"
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount_currency
 msgid "Amount Currency"
-msgstr ""
+msgstr "Importe en Moneda"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
@@ -149,7 +193,7 @@ msgstr "Compañía"
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_company_type
 msgid "Company Type"
-msgstr ""
+msgstr "Tipo de Empresa"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
@@ -203,7 +247,7 @@ msgstr "Fecha de Madurez"
 #: model:ir.model.fields,field_description:account_debt_management.field_res_partner_debt_balance
 #: model:ir.model.fields,field_description:account_debt_management.field_res_users_debt_balance
 msgid "Debt Balance"
-msgstr ""
+msgstr "Saldo de Deuda"
 
 #. module: account_debt_management
 #: model:mail.template,subject:account_debt_management.email_template_debt_detail
@@ -248,6 +292,9 @@ msgid ""
 "amounts are amounts on other currency converted to company currency on "
 "todays exchange"
 msgstr ""
+"Mostrar los importes financieros en las vistas e informes de las deudas de "
+"las empresas. Los importes financieros son importes en otra moneda "
+"convertida a la moneda de la compañía a la cotización de hoy"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_display_name
@@ -299,12 +346,12 @@ msgstr "Importe Financiero"
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_financial_amount_residual
 msgid "Financial Amount Residual"
-msgstr ""
+msgstr "Importe Financiero Residual"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_financial_amounts
 msgid "Financial Amounts"
-msgstr ""
+msgstr "Importes Financieros"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_from_date
@@ -324,7 +371,7 @@ msgstr "Agrupar por Compañía"
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_historical_full
 msgid "Historical Full"
-msgstr ""
+msgstr "Histórico Completo"
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_id
@@ -429,7 +476,7 @@ msgstr "Cuentas a Pagar"
 #: model:ir.model.fields,field_description:account_debt_management.field_res_partner_payable_debt_ids
 #: model:ir.model.fields,field_description:account_debt_management.field_res_users_payable_debt_ids
 msgid "Payable Debt"
-msgstr ""
+msgstr "Deuda a pagar"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
@@ -456,7 +503,7 @@ msgstr "Cuentas a Cobrar"
 #: model:ir.model.fields,field_description:account_debt_management.field_res_partner_receivable_debt_ids
 #: model:ir.model.fields,field_description:account_debt_management.field_res_users_receivable_debt_ids
 msgid "Receivable Debt"
-msgstr ""
+msgstr "Deuda a cobrar"
 
 #. module: account_debt_management
 #: selection:account.debt.report.wizard,result_selection:0
@@ -491,7 +538,7 @@ msgstr "Importe Residual en Moneda"
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_secondary_currency
 msgid "Secondary Currency"
-msgstr ""
+msgstr "Moneda Secundaria"
 
 #. module: account_debt_management
 #: code:addons/account_debt_management/wizard/account_debt_report_wizard.py:112
