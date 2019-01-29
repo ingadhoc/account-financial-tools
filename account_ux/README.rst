@@ -32,6 +32,7 @@ Several Improvements to accounting:
 #. Add journal items menu item menu on reports with tree, grahp and pivot views (no debug mode required)
 #. Add on move lines a button to open related documents
 #. Add on move lines a related field to account type and allow to search and group by this field
+#. On journal entries make date_maturity always visible on the journal items
 #. Add a button on statemens (only with on dev mode) to cancell all statement lines
 #. Add on journal items availability to search and group by analytic account and to search by analytic tags
 #. Add button to cancel paid invoices that don't have related payments. This happends, for eg, if invoice amount is zero or if counterpart account is no receivable or payable.
