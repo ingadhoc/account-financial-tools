@@ -17,6 +17,9 @@
                 <filter string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
                 <filter string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
             </group>
+            <filter context="{'group_by':'date'}" position="after">
+                <filter string="Due date" context="{'group_by':'date_maturity'}"/>
+            </filter>
             <!-- add name to this group so it can be send as default by other modules -->
             <filter context="{'group_by':'account_id'}" position="attributes">
                 <attribute name="name">group_by_account</attribute>
