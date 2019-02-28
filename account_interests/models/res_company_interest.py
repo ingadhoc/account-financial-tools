@@ -126,63 +126,6 @@ class ResCompanyInterest(models.Model):
     @api.multi
     def create_invoices(self, to_date):
         self.ensure_one()
-        move_line_domain = [
-            ('account_id', 'in', self.receivable_account_ids.ids),
-            ('reconciled', '=', False),
-            ('date_maturity', '<', to_date)
-        ]
-        move_line = self.env['account.move.line']
-        grouped_lines = move_line.read_group(
-            domain=move_line_domain,
-            fields=['id', 'amount_residual', 'partner_id', 'account_id'],
-            groupby=['partner_id'],
-        )
-        for line in grouped_lines:
-            _logger.info('Creating Interest Invoices for values:\n%s', line)
-            partner_id = line['partner_id'][0]
-            debt = line['amount_residual']
-
-            # consideramos las lineas conciliadas parcialmente
-            # buscamos las conciladas parcialmente
-            partial_lines = move_line.search(
-                line['__domain'] + [
-                    '|',
-                    ('matched_credit_ids', '!=', False),
-                    ('matched_debit_ids', '!=', False),
-                ])
-            # vemos la diferencia entre el saldo total y el conciliado
-            reconciled_amount = (
-                # sum(partial_lines.mapped('debit')) -
-                # sum(partial_lines.mapped('credit')) -
-                sum(partial_lines.mapped('amount_residual'))
-            )
-            # la diferencia es la cantidad conciliada y la restamos a la deuda
-            debt -= reconciled_amount
-
-            if not debt or debt <= 0.0:
-                continue
-
-            partner = self.env['res.partner'].browse(partner_id)
-            invoice_vals = self._prepare_interest_invoice(
-                partner, debt, to_date)
-
-            # we send document type for compatibility with argentinian
-            # invoices
-            invoice = self.env['account.invoice'].with_context(
-                internal_type='debit_note').create(invoice_vals)
-
-            invoice.invoice_line_ids.create(
-                self._prepare_interest_invoice_line(
-                    invoice, partner, debt, to_date))
-
-            # update amounts for new invoice
-            invoice.compute_taxes()
-            if self.automatic_validation:
-                invoice.action_invoice_open()
-
-    @api.multi
-    def prepare_info(self, to_date, debt):
-        self.ensure_one()
 
         # Format date to customer langague
         # For some reason there is not context pass, not lang, so we
@@ -193,6 +136,54 @@ class ResCompanyInterest(models.Model):
         to_date_format = fields.Date.from_string(
             to_date).strftime(date_format)
 
+        journal = self.env['account.journal'].search([
+            ('type', '=', 'sale'),
+            ('company_id', '=', self.company_id.id)], limit=1)
+
+        move_line_domain = [
+            ('account_id', 'in', self.receivable_account_ids.ids),
+            ('full_reconcile_id', '=', False),
+            ('date_maturity', '<', to_date)
+        ]
+        move_line = self.env['account.move.line']
+        grouped_lines = move_line.read_group(
+            domain=move_line_domain,
+            fields=['id', 'amount_residual', 'partner_id', 'account_id'],
+            groupby=['partner_id'],
+        )
+        self = self.with_context(mail_notrack=True, prefetch_fields=False)
+
+        for line in grouped_lines:
+            debt = line['amount_residual']
+
+            if not debt or debt <= 0.0:
+                continue
+
+            _logger.info('Creating Interest Invoices for values:\n%s', line)
+            partner_id = line['partner_id'][0]
+
+            partner = self.env['res.partner'].browse(partner_id)
+            invoice_vals = self._prepare_interest_invoice(
+                partner, debt, to_date, journal)
+
+            # we send document type for compatibility with argentinian
+            # invoices
+            invoice = self.env['account.invoice'].with_context(
+                internal_type='debit_note').create(invoice_vals)
+
+            invoice.invoice_line_ids.create(
+                self._prepare_interest_invoice_line(
+                    invoice, partner, debt, to_date_format))
+
+            # update amounts for new invoice
+            invoice.compute_taxes()
+            if self.automatic_validation:
+                invoice.action_invoice_open()
+
+    @api.multi
+    def prepare_info(self, to_date_format, debt):
+        self.ensure_one()
+
         res = _(
             'Deuda Vencida al %s: %s\n'
             'Tasa de interés: %s') % (
@@ -201,18 +192,8 @@ class ResCompanyInterest(models.Model):
         return res
 
     @api.multi
-    def _prepare_interest_invoice(self, partner, debt, to_date, journal=None):
+    def _prepare_interest_invoice(self, partner, debt, to_date, journal):
         self.ensure_one()
-        if journal is None:
-            company = self.company_id
-            journal = self.env['account.journal'].search(
-                [('type', '=', 'sale'),
-                 ('company_id', '=', company.id)],
-                limit=1)
-            if not journal:
-                raise UserError(_(
-                    'Please define sales journal for this company: "%s"') % (
-                        company.name))
 
         comment = self.prepare_info(to_date, debt)
 
