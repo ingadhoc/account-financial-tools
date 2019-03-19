@@ -73,3 +73,25 @@ class AccountJournal(models.Model):
                 'Solo puede utilizar una moneda secundaria distinta a la '
                 'moneda de la compañía (%s).' % (
                     rec.company_id.currency_id.name)))
+
+    @api.multi
+    def copy(self, default=None):
+        rec = super(AccountJournal, self).copy(default=default)
+        if rec.type in ('bank', 'cash'):
+            default_account = (
+                default.get('default_debit_account_id') or
+                default.get('default_credit_account_id')) if default else False
+            if not default_account:
+                company = self.company_id
+                account_vals = self._prepare_liquidity_account(
+                    rec.name,
+                    company,
+                    rec.currency_id.id,
+                    rec.type)
+                default_account = self.env['account.account'].create(
+                    account_vals)
+                rec.write({
+                    'default_debit_account_id': default_account.id,
+                    'default_credit_account_id': default_account.id,
+                })
+        return rec
