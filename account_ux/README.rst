@@ -47,6 +47,7 @@ Several Improvements to accounting:
 #. Adds to group by journal on invoices.
 #. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
 #. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
+#. Show the field partner bank in costumer and supplier invoice.(TODO Remove in v12)
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
