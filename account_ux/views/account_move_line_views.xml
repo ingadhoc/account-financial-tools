@@ -7,6 +7,20 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_account_move_line_filter"/>
         <field name="arch" type="xml">
+            <field name="date" position="after">
+                <filter name="month"
+                        string="This Month"
+                        domain="['&amp;', ('date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Last Month"
+                        name="last_month"
+                        domain="['&amp;', ('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%%Y-%%m-01')), ('date', '&lt;', context_today().strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year"
+                        name="year"
+                        domain="['|', ('date', '=', False), '&amp;',('date','&lt;=', time.strftime('%%Y-12-31')),('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <filter name="last_year"
+                        string="Last Year"
+                        domain="['&amp;', ('date', '&gt;=', (context_today()-relativedelta(years=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+            </field>
             <field name="account_id" position="after">
                 <field name="user_type_id"/>
                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
