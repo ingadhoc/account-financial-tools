@@ -24,8 +24,7 @@ class AccountChartTemplate(models.Model):
 
     @api.multi
     def _load_template(
-            self, company, code_digits=None, transfer_account_id=None,
-            account_ref=None, taxes_ref=None):
+            self, company, code_digits=None, account_ref=None, taxes_ref=None):
         """
         Set localization to company when installing chart of account.
         """
@@ -35,8 +34,7 @@ class AccountChartTemplate(models.Model):
         if company.localization:
             self.generate_receiptbooks(company)
         return super(AccountChartTemplate, self)._load_template(
-            company, code_digits, transfer_account_id,
-            account_ref, taxes_ref)
+            company, code_digits, account_ref, taxes_ref)
 
     @api.model
     def generate_receiptbooks(

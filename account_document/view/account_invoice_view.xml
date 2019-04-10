@@ -13,7 +13,7 @@
                 <field name="document_type_id"/>
             </field>
             <group position="inside">
-                <filter string="Document Type" domain="[]" context="{'group_by':'document_type_id'}"/>
+                <filter name="document_type_id" string="Document Type" domain="[]" context="{'group_by':'document_type_id'}"/>
             </group>
         </field>
     </record>
@@ -60,7 +60,7 @@
     </record>        -->
 
     <record id="view_invoice_form" model="ir.ui.view">
-        <field name="name">account.document invoice.form</field>
+        <field name="name">account.document_invoice.form</field>
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
@@ -83,7 +83,7 @@
 
             <field name="number" position="before">
                 <field name="display_name" attrs="{'invisible': [('display_name', '=', False)]}" class="oe_inline"/>
-                <label string="- Next Number: " attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
+                <label for="next_number" string="- Next Number: " attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
                 <field name="next_number" attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
             </field>
 
@@ -126,7 +126,7 @@
             </field>
 
             <h1 class="mt0" position="before">
-                <label string="- Next Number: " attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
+                <label for="next_number" string="- Next Number: " attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
                 <field name="next_number" attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
             </h1>
             <field name="number" position="before">
