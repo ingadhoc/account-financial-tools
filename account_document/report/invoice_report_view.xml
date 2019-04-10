@@ -9,7 +9,7 @@
                 <field name="document_type_id"/>
             </search>
             <filter name="user" position="after">
-                <filter domain="[]" string="Document Type" context="{'group_by':'document_type_id'}"/>
+                <filter name="document_type_id" domain="[]" string="Document Type" context="{'group_by':'document_type_id'}"/>
             </filter>
         </field>
     </record>
