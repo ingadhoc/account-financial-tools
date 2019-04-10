@@ -29,5 +29,5 @@
     'demo': [],
     'depends': ['account'],
     'test': [],
-    'installable': True,
+    'installable': False,
 }
