@@ -38,6 +38,10 @@
             <field name="tax_line_ids" position="after">
                 <button string="_Add_Tax" states="draft" class="oe_link" type="action" name="%(action_account_invoice_tax_wizard_form)d"/>
             </field>
+
+            <field name="journal_id" position="attributes">
+                <attribute name="groups">account.group_account_invoice</attribute>
+            </field>
         </field>
     </record>
 
@@ -77,6 +81,9 @@
             </xpath>
             <field name="tax_line_ids" position="after">
                 <button string="_Add_Tax" states="draft" class="oe_link" type="action" name="%(action_account_invoice_tax_wizard_form)d"/>
+            </field>
+            <field name="journal_id" position="attributes">
+                <attribute name="groups">account.group_account_invoice</attribute>
             </field>
         </field>
     </record>
