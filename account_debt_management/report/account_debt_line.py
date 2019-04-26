@@ -424,10 +424,15 @@ class AccountDebtLine(models.Model):
 
             partial_rec = aml.credit and aml.matched_debit_ids[0] or \
                 aml.matched_credit_ids[0]
+
+            exchange_move = self.env['account.move'].create(
+                self.env['account.full.reconcile']._prepare_exchange_diff_move(
+                    move_date=aml.date, company=aml.company_id))
             partial_rec.with_context(
                 skip_full_reconcile_check=True).create_exchange_rate_entry(
                     aml, 0.0, aml.amount_residual_currency,
-                    aml.currency_id, aml.date)
+                    aml.currency_id, exchange_move)
+            exchange_move.post()
 
             # verificamos que se haya conciliado correctamente
             if not float_is_zero(
