@@ -111,13 +111,7 @@ class AccountStatementMoveImportWizard(models.TransientModel):
         statement = self.statement_id
         statement_currency = statement.currency_id
         company_currency = statement.company_id.currency_id
-        moves = self.env['account.move']
         for line in self.move_line_ids:
-            # como odoo move solo en un extracto si ya se importo el move
-            # no volvemos a importar. TODO ver como sigue esto en v11
-            if line.move_id in moves:
-                continue
-            moves |= line.move_id
             if line.account_id not in self.journal_account_ids:
                 raise UserError(_(
                     'Imported line account must be one of the journals '
