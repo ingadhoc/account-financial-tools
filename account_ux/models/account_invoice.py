@@ -88,8 +88,26 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_draft(self):
-        invoice_data = [(x, x.date) for x in self.filtered('date')]
+        """ This is for supplier invoices where, if you force an accounting
+        date and if you need to cancel the invoice to fix something on the
+        invoice, you don't want the accounting date to get lost.
+        We only keep the accounting date if it was forced (different to the
+        invoice date)
+        """
+        invoice_data = [(x, x.date) for x in self.filtered(
+            lambda x: x.type in ['in_invoice', 'in_refund'] and
+            x.date != x.date_invoice)]
         res = super(AccountInvoice, self).action_invoice_draft()
         for rec, date in invoice_data:
             rec.date = date
         return res
+
+    @api.onchange('date_invoice')
+    def onchange_invoice_date(self):
+        if self.date:
+            return {'warning': {
+                'title': _("Warning!"),
+                'message': _(
+                    'You are changing the Invoice Date but you have force an '
+                    'accounting date.\n Please check if you need to update '
+                    'the accounting date too.')}}
