@@ -27,6 +27,12 @@ class AccountAccount(models.Model):
         "type",
     )
 
+    group_id = fields.Many2one(
+        'account.group',
+        # we restrict those who do not have childs categories
+        domain=[('child_ids', '=', False)],
+    )
+
     @api.constrains('currency_id')
     def check_currency(self):
         for rec in self.filtered(lambda x: x.currency_id ==
