@@ -13,5 +13,5 @@
     ],
     'images': [
     ],
-    'installable': False,
+    'installable': True,
 }

@@ -56,7 +56,7 @@
     ],
     'demo': [
     ],
-    'installable': False,
+    'installable': True,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale
