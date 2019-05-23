@@ -83,45 +83,44 @@ class ResCompanyInterest(models.Model):
     def _cron_recurring_interests_invoices(self):
         _logger.info('Running interests invoices cron')
         current_date = fields.Date.today()
-        self.search([
-            ('next_date', '<=', current_date)]).create_interest_invoices()
+        self.search([('next_date', '<=', current_date)]
+                    ).create_interest_invoices()
 
     @api.multi
     def create_interest_invoices(self):
-        if not self:
-            return
+        for rec in self:
+            _logger.info('Creating Interests id %s', rec.id)
+            interests_date = rec.next_date
 
-        self.ensure_one()
-        _logger.info('Creating Interests id %s', self.id)
-        interests_date = self.next_date
+            rule_type = rec.rule_type
+            interval = rec.interval
+            tolerance_interval = rec.tolerance_interval
+            # next_date = fields.Date.from_string(interests_date)
+            if rule_type == 'daily':
+                next_delta = relativedelta(days=+interval)
+                tolerance_delta = relativedelta(days=+tolerance_interval)
+            elif rule_type == 'weekly':
+                next_delta = relativedelta(weeks=+interval)
+                tolerance_delta = relativedelta(weeks=+tolerance_interval)
+            elif rule_type == 'monthly':
+                next_delta = relativedelta(months=+interval)
+                tolerance_delta = relativedelta(months=+tolerance_interval)
+            else:
+                next_delta = relativedelta(years=+interval)
+                tolerance_delta = relativedelta(years=+tolerance_interval)
+            interests_date_date = fields.Date.from_string(interests_date)
+            # buscamos solo facturas que vencieron
+            # antes de hoy menos un periodo
+            # TODO ver si queremos que tambien se calcule interes proporcional
+            # para lo que vencio en este ultimo periodo
+            to_date = fields.Date.to_string(
+                interests_date_date - tolerance_delta)
 
-        rule_type = self.rule_type
-        interval = self.interval
-        tolerance_interval = self.tolerance_interval
-        # next_date = fields.Date.from_string(interests_date)
-        if rule_type == 'daily':
-            next_delta = relativedelta(days=+interval)
-            tolerance_delta = relativedelta(days=+tolerance_interval)
-        elif rule_type == 'weekly':
-            next_delta = relativedelta(weeks=+interval)
-            tolerance_delta = relativedelta(weeks=+tolerance_interval)
-        elif rule_type == 'monthly':
-            next_delta = relativedelta(months=+interval)
-            tolerance_delta = relativedelta(months=+tolerance_interval)
-        else:
-            next_delta = relativedelta(years=+interval)
-            tolerance_delta = relativedelta(years=+tolerance_interval)
-        interests_date_date = fields.Date.from_string(interests_date)
-        # buscamos solo facturas que vencieron antes de hoy menos un periodo
-        # TODO ver si queremos que tambien se calcule interes proporcional para
-        # lo que vencio en este ultimo periodo
-        to_date = fields.Date.to_string(interests_date_date - tolerance_delta)
+            rec.create_invoices(to_date)
 
-        self.create_invoices(to_date)
-
-        # seteamos proxima corrida en hoy mas un periodo
-        self.next_date = fields.Date.to_string(
-            interests_date_date + next_delta)
+            # seteamos proxima corrida en hoy mas un periodo
+            rec.next_date = fields.Date.to_string(
+                interests_date_date + next_delta)
 
     @api.multi
     def create_invoices(self, to_date):
