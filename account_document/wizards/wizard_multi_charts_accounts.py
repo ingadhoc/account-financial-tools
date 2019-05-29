@@ -1,15 +1,17 @@
 from odoo import models, api
 
-
+"""
 class WizardMultiChartsAccounts(models.TransientModel):
     _inherit = 'wizard.multi.charts.accounts'
 
     @api.multi
     def execute(self):
+"""
         """
         When we load a chart of account and set a default tax, add this tax
         to every product
         """
+"""
         res = super(WizardMultiChartsAccounts, self).execute()
 
         # get for detault tax and supplier tax setted for this company
@@ -31,3 +33,4 @@ class WizardMultiChartsAccounts(models.TransientModel):
                 'supplier_taxes_id': [(4, supplier_taxes_ids[0], None)],
             })
         return res
+"""
