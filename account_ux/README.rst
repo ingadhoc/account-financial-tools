@@ -50,6 +50,7 @@ Several Improvements to accounting:
 #. Show the field partner bank in costumer and supplier invoice.(TODO Remove in v12)
 #. Add quick search by this/last year/month on journal entries
 #. Add visible to group account invoice the field "Journal" in account invoice form.
+#. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
