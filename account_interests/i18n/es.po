@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-28 19:37+0000\n"
+"POT-Creation-Date: 2019-06-04 17:38+0000\n"
 "PO-Revision-Date: 2018-08-23 20:05+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -82,14 +82,12 @@ msgid "Day(s)"
 msgstr "Día(s)"
 
 #. module: account_interests
-#: code:addons/account_interests/models/res_company_interest.py:187
+#: code:addons/account_interests/models/res_company_interest.py:186
 #, python-format
 msgid ""
 "Deuda Vencida al %s: %s\n"
-"Tasa de interÃ©s: %s"
+"Tasa de interés: %s"
 msgstr ""
-"Deuda Vencida al %s: %s\n"
-"Tasa de interÃ©s: %s"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest_display_name
@@ -182,7 +180,7 @@ msgid "Repeat every (Days/Week/Month/Year)"
 msgstr "Repetir cada (Día/Semana/Mes/Año)"
 
 #. module: account_interests
-#: code:addons/account_interests/models/res_company_interest.py:238
+#: code:addons/account_interests/models/res_company_interest.py:237
 #, python-format
 msgid "The interest product is not properly configured, missing account."
 msgstr ""
