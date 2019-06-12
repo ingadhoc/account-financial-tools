@@ -29,7 +29,7 @@
             <group>
                 <filter name="user_type_id" string="Account Type" context="{'group_by':'user_type_id'}"/>
                 <filter name="analytic_account_id" string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
-                <filter name="company_id" string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                <filter name="group_company" string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
             </group>
             <filter name="groupby_date" context="{'group_by':'date'}" position="after">
                 <filter string="Due date" context="{'group_by':'date_maturity'}"/>
