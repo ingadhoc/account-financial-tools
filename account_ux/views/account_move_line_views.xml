@@ -32,7 +32,7 @@
                 <filter name="group_company" string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
             </group>
             <filter name="groupby_date" context="{'group_by':'date'}" position="after">
-                <filter string="Due date" context="{'group_by':'date_maturity'}"/>
+                <filter name="groupby_due_date" string="Due date" context="{'group_by':'date_maturity'}"/>
             </filter>
         </field>
     </record>
