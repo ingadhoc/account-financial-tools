@@ -111,3 +111,9 @@ class AccountInvoice(models.Model):
                     'You are changing the Invoice Date but you have force an '
                     'accounting date.\n Please check if you need to update '
                     'the accounting date too.')}}
+
+    @api.multi
+    def copy(self, default=None):
+        res = super(AccountInvoice, self).copy(default=default)
+        res._onchange_partner_commercial()
+        return res
