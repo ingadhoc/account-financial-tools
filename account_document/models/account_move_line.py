@@ -3,8 +3,6 @@ from odoo import models, api, fields
 from odoo.osv import expression
 from odoo.addons.account.models import account_move
 
-#old_method = account_move.AccountMoveLine.domain_move_lines_for_reconciliation
-
 
 class AccountMoveLine(models.Model):
     """

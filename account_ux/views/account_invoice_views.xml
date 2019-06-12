@@ -15,11 +15,6 @@
                 <attribute name="attrs"></attribute>
             </xpath>
 
-            <!-- TODO Remove in v12 -->
-            <field name="partner_bank_id" position="attributes">
-                <attribute name="invisible">0</attribute>
-            </field>
-
             <button name="action_invoice_draft" position="after">
                 <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
             </button>
@@ -60,11 +55,6 @@
                 <attribute name="attrs"></attribute>
             </field>
 
-            <!-- TODO Remove in v12 -->
-            <field name="partner_bank_id" position="attributes">
-                <attribute name="invisible">0</attribute>
-                <attribute name="attrs">{'invisible': [('type', '!=', 'in_invoice')]}</attribute>
-            </field>
             <button name="action_invoice_draft" position="after">
                 <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
             </button>
