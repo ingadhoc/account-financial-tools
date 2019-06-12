@@ -4,7 +4,6 @@
 ##############################################################################
 from odoo import models, api, fields, _
 from odoo.exceptions import ValidationError
-from odoo.tools.misc import formatLang
 
 
 class AccountJournal(models.Model):

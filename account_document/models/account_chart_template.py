@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import models, api, fields, _
+from odoo.http import request
 import logging
 _logger = logging.getLogger(__name__)
 
