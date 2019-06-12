@@ -19,10 +19,6 @@
                 <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
             </button>
 
-            <button name="invoice_print" position="after">
-                <button name="invoice_print" string="Print" type="object" states="paid" groups="base.group_user"/>
-            </button>
-
             <field name="currency_id" position="after">
                     <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="base.group_multi_currency"/>
             </field>
@@ -87,7 +83,7 @@
                 <field name="company_id" groups="base.group_multi_company"/>
                 </field>
             <xpath expr="//group/filter[@name='group_by_partner_id']" position="before">
-                <filter string="Journal" context="{'group_by':'journal_id'}"/>
+                <filter name="journal_id" string="Journal" context="{'group_by':'journal_id'}"/>
                 <filter name="company_id" string="Company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
             </xpath>
         </field>

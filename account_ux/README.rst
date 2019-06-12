@@ -26,7 +26,6 @@ Several Improvements to accounting:
 #. Add link between payment acquirer and journals
 #. On payments cancelation clean "move_name" field to allow unlink of payments (TODO, this could be parametrizable)
 #. Fix the balance of the "journals" in the accounting table, so that it shows the value of the column "to pay" not "total" as it does until now.
-#. Add print invoice button on paid and proforma states.
 #. On cancelling reconciliation from statement lines, clean move_name to allow reconciling with new line.
 #. Add send email button on bank statement lines to confirm payment to customers.
 #. Add journal items menu item menu on reports with tree, grahp and pivot views (no debug mode required)

@@ -27,16 +27,12 @@
                 <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"/>
             </field>
             <group>
-                <filter string="Account Type" context="{'group_by':'user_type_id'}"/>
-                <filter string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
-                <filter string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                <filter name="user_type_id" string="Account Type" context="{'group_by':'user_type_id'}"/>
+                <filter name="analytic_account_id" string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+                <filter name="company_id" string="Company" domain="[]" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
             </group>
-            <filter context="{'group_by':'date'}" position="after">
+            <filter name="groupby_date" context="{'group_by':'date'}" position="after">
                 <filter string="Due date" context="{'group_by':'date_maturity'}"/>
-            </filter>
-            <!-- add name to this group so it can be send as default by other modules -->
-            <filter context="{'group_by':'account_id'}" position="attributes">
-                <attribute name="name">group_by_account</attribute>
             </filter>
         </field>
     </record>
@@ -73,6 +69,6 @@
         <field name="view_mode">tree,graph,pivot</field>
     </record>
 
-    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.account_reports_business_intelligence_menu" action="action_move_line_analisis"/>
+    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.menu_finance_reports" action="action_move_line_analisis"/>
 
 </odoo>
