@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '11.0.1.2.0',
+    'version': '12.0.1.0.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
@@ -50,5 +50,5 @@
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
 }

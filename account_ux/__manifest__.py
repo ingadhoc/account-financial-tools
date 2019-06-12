@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': '11.0.1.12.0',
+    'version': '12.0.1.0.0',
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -56,7 +56,7 @@
     ],
     'demo': [
     ],
-    'installable': False,
+    'installable': True,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale

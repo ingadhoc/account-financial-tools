@@ -1,6 +1,6 @@
 {
     "name": "Accounting Documents Management",
-    "version": "11.0.1.4.2",
+    "version": "12.0.1.0.0",
     "author": "Moldeo Interactive,ADHOC SA",
     "license": "AGPL-3",
     "category": "Accounting",
@@ -34,6 +34,6 @@
     ],
     'images': [
     ],
-    'installable': False,
+    'installable': True,
     'post_init_hook': 'post_init_hook',
 }
