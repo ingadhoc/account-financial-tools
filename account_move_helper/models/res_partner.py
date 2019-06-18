@@ -66,7 +66,7 @@ class ResPartner(models.Model):
                 domain = [
                     ('partner_id', '=', rec.id),
                     # not reconciled for performance
-                    ('reconciled', '=', False),
+                    ('full_reconcile_id', '=', False),
                     ('account_id.internal_type', '=', internal_type),
                     ('move_id.state', '=', 'posted'),
                 ]
