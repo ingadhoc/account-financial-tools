@@ -60,13 +60,12 @@ class ResPartner(models.Model):
         move = self.env['account.move'].browse(move_id)
         company_id = self._context.get('company_id', False)
         AccountMoveLine = self.env['account.move.line']
+        # TODO use sql with groupby and sum
         for rec in self:
             for internal_type, field in [
                     ('receivable', 'credit_copy'), ('payable', 'debit_copy')]:
                 domain = [
                     ('partner_id', '=', rec.id),
-                    # not reconciled for performance
-                    ('full_reconcile_id', '=', False),
                     ('account_id.internal_type', '=', internal_type),
                     ('move_id.state', '=', 'posted'),
                 ]
