@@ -9,7 +9,8 @@ from odoo import api, models, fields, _
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    unreconciled_domain = [('reconciled', '=', False)]
+    unreconciled_domain = [
+        ('reconciled', '=', False), ('full_reconcile_id', '=', False)]
     receivable_domain = [('internal_type', '=', 'receivable')]
     payable_domain = [('internal_type', '=', 'payable')]
 

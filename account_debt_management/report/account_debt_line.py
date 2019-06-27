@@ -91,6 +91,10 @@ class AccountDebtLine(models.Model):
     #     'Status',
     #     readonly=True
     # )
+    full_reconcile_id = fields.Many2one(
+        'account.full.reconcile',
+        readonly=True,
+    )
     reconciled = fields.Boolean(
     )
     partner_id = fields.Many2one(
@@ -280,6 +284,7 @@ class AccountDebtLine(models.Model):
                 %s
                 am.document_type_id as document_type_id,
                 c.document_number as document_number,
+                full_reconcile_id,
                 bool_and(l.reconciled) as reconciled,
                 -- l.blocked as blocked,
                 -- si cualquier deuda esta bloqueada de un comprobante,
@@ -344,6 +349,7 @@ class AccountDebtLine(models.Model):
                 a.internal_type IN ('payable', 'receivable')
             GROUP BY
                 l.partner_id, am.company_id, l.account_id, l.currency_id,
+                l.full_reconcile_id,
                 a.internal_type, a.user_type_id, c.document_number,
                 am.document_type_id %s
                 -- dt.doc_code_prefix, am.document_number

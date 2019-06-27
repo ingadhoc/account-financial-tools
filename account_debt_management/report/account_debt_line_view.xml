@@ -14,8 +14,8 @@
                 <filter string="Receivable" domain="[('internal_type','=','receivable')]" help="Receivable payments"/>
                 <filter string="Payable" domain="[('internal_type','=','payable')]" help="Payable payments"/>
                 <separator/>
-                <filter string="Unreconciled" domain="[('reconciled','=',False), ('account_id.reconcile','=',True)]" help="Unreconciled Journal Items" name="unreconciled"/>
-                <filter string="Unreconciled on currency" domain="[('amount_residual_currency', '!=', 0.0), ('amount_residual', '=', 0.0)]" help="Items saldados en moneda de la compañía pero no saldados en la moneda secundaria" name="currency_unreconciled"/>
+                <filter string="Unreconciled" domain="[('full_reconcile_id', '=', False), ('reconciled','=',False), ('account_id.reconcile','=',True)]" help="Unreconciled Journal Items" name="unreconciled"/>
+                <filter string="Unreconciled on currency" domain="[('amount_residual_currency', '!=', 0.0), ('amount_residual', '=', 0.0), ('full_reconcile_id', '=', False)]" help="Items saldados en moneda de la compañía pero no saldados en la moneda secundaria" name="currency_unreconciled"/>
                 <group expand="0" string="Group By...">
                     <filter string="Type" context="{'group_by': 'internal_type'}"/>
                     <filter string="Date" context="{'group_by': 'date'}"/>
