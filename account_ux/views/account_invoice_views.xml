@@ -15,17 +15,8 @@
                 <attribute name="attrs"></attribute>
             </xpath>
 
-            <!-- TODO Remove in v12 -->
-            <field name="partner_bank_id" position="attributes">
-                <attribute name="invisible">0</attribute>
-            </field>
-
             <button name="action_invoice_draft" position="after">
                 <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
-            </button>
-
-            <button name="invoice_print" position="after">
-                <button name="invoice_print" string="Print" type="object" states="paid" groups="base.group_user"/>
             </button>
 
             <field name="currency_id" position="after">
@@ -37,6 +28,10 @@
             </field>
             <field name="tax_line_ids" position="after">
                 <button string="_Add_Tax" states="draft" class="oe_link" type="action" name="%(action_account_invoice_tax_wizard_form)d"/>
+            </field>
+
+            <field name="journal_id" position="attributes">
+                <attribute name="groups">account.group_account_invoice</attribute>
             </field>
         </field>
     </record>
@@ -56,11 +51,6 @@
                 <attribute name="attrs"></attribute>
             </field>
 
-            <!-- TODO Remove in v12 -->
-            <field name="partner_bank_id" position="attributes">
-                <attribute name="invisible">0</attribute>
-                <attribute name="attrs">{'invisible': [('type', '!=', 'in_invoice')]}</attribute>
-            </field>
             <button name="action_invoice_draft" position="after">
                 <button name="invoice_cancel_from_done" type="object" string="Cancel Invoice" groups="base.group_no_one" attrs="{'invisible': ['|', ('payment_move_line_ids', '!=', []), ('state', '!=', 'paid')]}"/>
             </button>
@@ -78,6 +68,9 @@
             <field name="tax_line_ids" position="after">
                 <button string="_Add_Tax" states="draft" class="oe_link" type="action" name="%(action_account_invoice_tax_wizard_form)d"/>
             </field>
+            <field name="journal_id" position="attributes">
+                <attribute name="groups">account.group_account_invoice</attribute>
+            </field>
         </field>
     </record>
 
@@ -90,7 +83,7 @@
                 <field name="company_id" groups="base.group_multi_company"/>
                 </field>
             <xpath expr="//group/filter[@name='group_by_partner_id']" position="before">
-                <filter string="Journal" context="{'group_by':'journal_id'}"/>
+                <filter name="journal_id" string="Journal" context="{'group_by':'journal_id'}"/>
                 <filter name="company_id" string="Company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
             </xpath>
         </field>

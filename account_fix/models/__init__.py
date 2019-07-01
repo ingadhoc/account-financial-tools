@@ -5,5 +5,3 @@
 from . import res_partner
 from . import account_invoice
 from . import account_invoice_line
-from . import account_bank_statement
-from . import account_journal
