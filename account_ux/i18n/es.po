@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-04 17:38+0000\n"
+"POT-Creation-Date: 2019-07-05 14:36+0000\n"
 "PO-Revision-Date: 2018-05-14 17:46+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -256,6 +256,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard_invoice_company_id
 #: model:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+#: model:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
 #: model:ir.ui.view,arch_db:account_ux.view_invioce_filter
 msgid "Company"
 msgstr "Compañía"
@@ -292,6 +293,11 @@ msgstr "Credit Card"
 #: model:ir.model.fields,field_description:account_ux.field_account_journal_credit_card_days_for_collection
 msgid "Credit Card Days For Collection"
 msgstr "Credit Card Days For Collection"
+
+#. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Credit Jouranl Entry"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency_currency_from_id
@@ -333,6 +339,11 @@ msgid "Debit Card Days For Collection"
 msgstr "Debit Card Days For Collection"
 
 #. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Debit Jouranl Entry"
+msgstr ""
+
+#. module: account_ux
 #: selection:account.account,analytic_tag_required:0
 msgid "Defined by account type"
 msgstr "Definido por tipo de cuenta"
@@ -349,7 +360,7 @@ msgid "Due date"
 msgstr ""
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_invoice.py:67
+#: code:addons/account_ux/models/account_invoice.py:64
 #, python-format
 msgid "ERROR: Invoice was not sent via email"
 msgstr "ERROR: La factura no fue enviada por correo electrónico"
@@ -363,6 +374,11 @@ msgstr "Plantilla de correo electrónico"
 #: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
 msgid "Full Reconciliations"
 msgstr "Conciliaciones totales"
+
+#. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Group By..."
+msgstr "Agrupar por..."
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency_id
@@ -396,7 +412,7 @@ msgid "Invoice"
 msgstr "Factura"
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_invoice.py:70
+#: code:addons/account_ux/models/account_invoice.py:67
 #, python-format
 msgid ""
 "Invoice %s was correctly validate but was not send via email. Please review "
@@ -460,7 +476,7 @@ msgid "Last Year"
 msgstr ""
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_invoice.py:53
+#: code:addons/account_ux/models/account_invoice.py:50
 #, python-format
 msgid ""
 "Los impuestos \"%s\" están definidos en líneas de factura pero no están "
@@ -533,7 +549,7 @@ msgid "Payments"
 msgstr "Pagos"
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_invoice.py:82
+#: code:addons/account_ux/models/account_invoice.py:79
 #, python-format
 msgid "Please check the email template associated with the invoice journal."
 msgstr ""
@@ -554,6 +570,11 @@ msgstr "Reconciliations"
 #: selection:account.account,analytic_tag_required:0
 msgid "Required"
 msgstr "Requerido"
+
+#. module: account_ux
+#: model:ir.ui.view,arch_db:account_ux.view_move_line_form
+msgid "Residuals"
+msgstr ""
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
@@ -711,7 +732,7 @@ msgid "View Payment"
 msgstr "View Payment"
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_invoice.py:109
+#: code:addons/account_ux/models/account_invoice.py:106
 #, python-format
 msgid "Warning!"
 msgstr ""
@@ -722,7 +743,7 @@ msgid "We confirm receipt of your payment"
 msgstr "We confirm receipt of your payment"
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_invoice.py:110
+#: code:addons/account_ux/models/account_invoice.py:107
 #, python-format
 msgid ""
 "You are changing the Invoice Date but you have force an accounting date.\n"
