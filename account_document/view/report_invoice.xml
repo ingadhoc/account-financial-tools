@@ -13,8 +13,8 @@
         </h2>
     </xpath>
 
-    <xpath expr="//span[@t-field='l.price_unit']" position="attributes">
-        <attribute name="t-field">l.report_price_unit</attribute>
+    <xpath expr="//span[@t-field='line.price_unit']" position="attributes">
+        <attribute name="t-field">line.report_price_unit</attribute>
     </xpath>
 
 <!-- TODO aca podriamos imprimir los report_tax_ids -->

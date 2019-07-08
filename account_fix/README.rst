@@ -16,8 +16,6 @@ Account Fixes
 
 #. Fix related to partner credit / debit fields and computation on multi company
 #. Fix the tax computation when creating a refund invoice from an invoice.
-#. Make readonly the journal_type related field of bank statements so that users are allow to create statement without perm to write on journals.
-#. Overwrite create_bank_statement method so that users are allow to create statement without perm to write on journals.
 #. Do not allow to recompute taxes on invoices that are not on draft state because tax and invoice amounts could change
 #. Disable currency change when journal is changed
 #. Fix the account onchage in invoice line to carry the tax setting in the account.

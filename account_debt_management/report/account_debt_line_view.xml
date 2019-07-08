@@ -11,19 +11,19 @@
                 <field name="partner_id"/>
                 <field name="document_type_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-                <filter string="Receivable" domain="[('internal_type','=','receivable')]" help="Receivable payments"/>
-                <filter string="Payable" domain="[('internal_type','=','payable')]" help="Payable payments"/>
+                <filter name="receivable" string="Receivable" domain="[('internal_type','=','receivable')]" help="Receivable payments"/>
+                <filter name="payable" string="Payable" domain="[('internal_type','=','payable')]" help="Payable payments"/>
                 <separator/>
                 <filter string="Unreconciled" domain="[('full_reconcile_id', '=', False), ('reconciled','=',False), ('account_id.reconcile','=',True)]" help="Unreconciled Journal Items" name="unreconciled"/>
                 <filter string="Unreconciled on currency" domain="[('amount_residual_currency', '!=', 0.0), ('amount_residual', '=', 0.0), ('full_reconcile_id', '=', False)]" help="Items saldados en moneda de la compañía pero no saldados en la moneda secundaria" name="currency_unreconciled"/>
                 <group expand="0" string="Group By...">
-                    <filter string="Type" context="{'group_by': 'internal_type'}"/>
-                    <filter string="Date" context="{'group_by': 'date'}"/>
-                    <filter string="Partner" context="{'group_by': 'partner_id'}"/>
-                    <filter string="Document Type" context="{'group_by': 'document_type_id'}"/>
-                    <filter string="Account" context="{'group_by': 'account_id'}"/>
-                    <filter string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
-                    <filter string="Date Maturity" context="{'group_by': 'date_maturity'}"/>
+                    <filter name="internal_type" string="Type" context="{'group_by': 'internal_type'}"/>
+                    <filter name="date" string="Date" context="{'group_by': 'date'}"/>
+                    <filter name="partner_id" string="Partner" context="{'group_by': 'partner_id'}"/>
+                    <filter name="document_type_id" string="Document Type" context="{'group_by': 'document_type_id'}"/>
+                    <filter name="account_id" string="Account" context="{'group_by': 'account_id'}"/>
+                    <filter name="company_id" string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter name="date_maturity" string="Date Maturity" context="{'group_by': 'date_maturity'}"/>
                </group>
             </search>
          </field>

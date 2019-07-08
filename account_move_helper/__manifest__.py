@@ -33,5 +33,5 @@
         'views/res_partner_views.xml',
     ],
     'demo': [],
-    'installable': True,
+    'installable': False,
 }
