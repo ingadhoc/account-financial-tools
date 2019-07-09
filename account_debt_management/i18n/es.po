@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-27 23:50+0000\n"
+"POT-Creation-Date: 2019-07-05 14:35+0000\n"
 "PO-Revision-Date: 2018-05-24 12:55+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -587,11 +587,6 @@ msgid "Residual Amount in Currency"
 msgstr "Importe Residual en Moneda"
 
 #. module: account_debt_management
-#: model:ir.ui.view,arch_db:account_debt_management.view_move_line_form
-msgid "Residuals"
-msgstr ""
-
-#. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_report_wizard_secondary_currency
 msgid "Secondary Currency"
 msgstr "Moneda Secundaria"
@@ -625,7 +620,6 @@ msgstr "Hasta"
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_tree
-#: model:ir.ui.view,arch_db:account_debt_management.view_move_line_form
 #: model:ir.ui.view,arch_db:account_debt_management.view_partner_tree
 msgid "Total"
 msgstr "Total"
