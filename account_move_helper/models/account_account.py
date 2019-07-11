@@ -54,7 +54,8 @@ class AccountAccount(models.Model):
         for rec in self:
             new_balance = rec.company_id.currency_id.round(rec.new_balance)
             line_balance = new_balance - rec.balance
-            rec._helper_update_line(line_balance)
+            if not rec.company_id.currency_id.is_zero(line_balance):
+                rec._helper_update_line(line_balance)
 
     @api.multi
     def _helper_update_line(self, line_balance, partner=None):

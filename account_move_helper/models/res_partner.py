@@ -90,6 +90,7 @@ class ResPartner(models.Model):
     def _set_new_credit_debit(
             self, new_value_field, old_value_field, account_field):
         company_id = self._context.get('company_id', False)
+        company = self.env['res.company'].browse(company_id)
         if not company_id:
             raise UserError(_(
                 'Company is required in context to set partner balance'))
@@ -98,4 +99,5 @@ class ResPartner(models.Model):
                 rec.with_context(force_company=company_id), account_field)
             new_value = rec[new_value_field] or 0.0
             value_diff = new_value - (rec[old_value_field] or 0.0)
-            account._helper_update_line(value_diff, rec)
+            if not company.currency_id.is_zero(value_diff):
+                account._helper_update_line(value_diff, rec)
