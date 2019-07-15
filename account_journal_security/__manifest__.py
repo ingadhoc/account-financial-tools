@@ -19,11 +19,7 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-<<<<<<< Updated upstream
-    'version': '11.0.1.2.0',
-=======
     'version': '12.0.1.0.0',
->>>>>>> Stashed changes
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Restrict the use of certain journals to certain users',
