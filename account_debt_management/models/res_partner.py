@@ -67,7 +67,7 @@ class ResPartner(models.Model):
                 financial_amount=None, financial_amount_residual=None,
                 financial_balance=None,
                 amount_currency=None,
-                currency_name=None):
+                currency_name=None, move_line=None):
             if not detail_lines:
                 detail_lines = []
             return {
@@ -83,6 +83,7 @@ class ResPartner(models.Model):
                 'financial_balance': financial_balance,
                 'amount_currency': amount_currency,
                 'currency_name': currency_name,
+                'move_line': move_line,
             }
 
         self.ensure_one()
@@ -193,6 +194,7 @@ class ResPartner(models.Model):
                 financial_balance=financial_balance,
                 amount_currency=amount_currency,
                 currency_name=currency.name,
+                move_line=record.move_line_id,
             ))
         res += final_line
         return res
