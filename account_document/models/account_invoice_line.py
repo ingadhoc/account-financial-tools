@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import models, fields, api
+from odoo.addons import decimal_precision as dp
 # from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
@@ -11,17 +12,19 @@ _logger = logging.getLogger(__name__)
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
-    report_price_unit = fields.Monetary(
+    report_price_unit = fields.Float(
         string='Unit Price',
-        compute='_compute_report_prices_and_taxes'
+        compute='_compute_report_prices_and_taxes',
+        digits=dp.get_precision('Product Price'),
     )
     report_price_subtotal = fields.Monetary(
         string='Amount',
         compute='_compute_report_prices_and_taxes'
     )
-    report_price_net = fields.Monetary(
+    report_price_net = fields.Float(
         string='Net Amount',
-        compute='_compute_report_prices_and_taxes'
+        compute='_compute_report_prices_and_taxes',
+        digits=dp.get_precision('Product Price'),
     )
     report_invoice_line_tax_ids = fields.One2many(
         compute="_compute_report_prices_and_taxes",
