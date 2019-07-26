@@ -63,3 +63,14 @@ class AccountInvoice(models.Model):
                 'you send "force_compute_taxes=True" on context. Be aware'
                 'invoices amounts could change'))
         return super(AccountInvoice, self).compute_taxes()
+
+    @api.multi
+    def assign_outstanding_credit(self, credit_aml_id):
+        """ aplicación de este parche
+        https://github.com/odoo/odoo/pull/25485/files
+        """
+        self.ensure_one()
+        credit_aml = self.env['account.move.line'].browse(credit_aml_id)
+        if credit_aml.payment_id:
+            credit_aml.payment_id.write({'invoice_ids': [(4, self.id, None)]})
+        return self.register_payment(credit_aml)
