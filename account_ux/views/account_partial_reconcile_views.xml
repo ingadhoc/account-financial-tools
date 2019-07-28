@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_partial_reconcile_search" model="ir.ui.view">
+         <field name="name">account.partial.reconcile.search</field>
+         <field name="model">account.partial.reconcile</field>
+         <field name="arch" type="xml">
+            <search>
+                <field name="debit_move_id"/>
+                <field name="credit_move_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Debit Jouranl Entry" name="groupby_debit_move_id" context="{'group_by': 'debit_move_id'}"/>
+                    <filter string="Credit Jouranl Entry" name="groupby_credit_move_id" context="{'group_by': 'credit_move_id'}"/>
+                    <filter string="Company" context="{'group_by': 'company_id'}" name="groupby_company_id" groups="base.group_multi_company"/>
+               </group>
+            </search>
+         </field>
+    </record>
+
+    <record id="view_account_partial_reconcile_tree" model="ir.ui.view">
+         <field name="name">account.partial.reconcile.tree</field>
+         <field name="model">account.partial.reconcile</field>
+         <field name="arch" type="xml">
+            <tree create="0" default_order="create_date desc">
+                <field name="create_date"/>
+                <field name="debit_move_id"/>
+                <field name="credit_move_id"/>
+                <field name="full_reconcile_id"/>
+                <field name="amount"/>
+                <field name="amount_currency"/>
+                <field name="company_currency_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+         </field>
+    </record>
+
+    <record id="view_account_partial_reconcile_form" model="ir.ui.view">
+         <field name="name">account.partial.reconcile.form</field>
+         <field name="model">account.partial.reconcile</field>
+         <field name="arch" type="xml">
+            <form create="0">
+                <group>
+                    <group>
+                        <field name="debit_move_id" readonly="1"/>
+                        <field name="credit_move_id" readonly="1"/>
+                        <field name="amount" attrs="{'readonly': [('full_reconcile_id', '!=', False)]}"/>
+                        <field name="amount_currency" attrs="{'readonly': [('full_reconcile_id', '!=', False)]}"/>
+                        <field name="currency_id" attrs="{'readonly': [('full_reconcile_id', '!=', False)]}"/>
+                    </group>
+                    <group>
+                        <field name="full_reconcile_id" readonly="1"/>
+                        <field name="max_date" readonly="1"/>
+                        <field name="company_currency_id" invisible="1" readonly="1"/>
+                    </group>
+                </group>
+            </form>
+         </field>
+    </record>
+
+</odoo>

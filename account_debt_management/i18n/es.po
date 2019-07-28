@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-17 15:55+0000\n"
+"POT-Creation-Date: 2019-07-05 14:35+0000\n"
 "PO-Revision-Date: 2018-05-24 12:55+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -168,6 +168,12 @@ msgid "Add columns for secondary currency?"
 msgstr "Agregar colmnas para monedas secundarias?"
 
 #. module: account_debt_management
+#: code:addons/account_debt_management/report/account_debt_line.py:421
+#, python-format
+msgid "Ajuste manual de deuda en divisa"
+msgstr ""
+
+#. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount
 msgid "Amount"
 msgstr "Importe"
@@ -176,6 +182,13 @@ msgstr "Importe"
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_amount_currency
 msgid "Amount Currency"
 msgstr "Importe en Moneda"
+
+#. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_tree
+msgid ""
+"Are you sure this debt is not real? This will create a journal entry on rate"
+" exchange journal to cancel this residual amount"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
@@ -277,6 +290,16 @@ msgid "Debt_Detail_${(object.name or '').replace('/','_')}"
 msgstr "Resumen_de_Cuenta_${(object.name or '').replace('/','_')}"
 
 #. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
+msgid "Detallar desde"
+msgstr ""
+
+#. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.account_debt_report_wizard_form
+msgid "Detallar hasta"
+msgstr ""
+
+#. module: account_debt_management
 #: model:ir.model.fields,help:account_debt_management.field_res_config_settings_group_account_use_financial_amounts
 msgid ""
 "Display Financial amounts on partner debts views and reports.\n"
@@ -359,6 +382,11 @@ msgid "From"
 msgstr "Desde"
 
 #. module: account_debt_management
+#: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_full_reconcile_id
+msgid "Full Reconcile"
+msgstr ""
+
+#. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
 msgid "Group By..."
 msgstr "Agrupar por..."
@@ -380,7 +408,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/models/res_partner.py:127
+#: code:addons/account_debt_management/models/res_partner.py:128
 #, python-format
 msgid "INITIAL BALANCE"
 msgstr "SALDO INICIAL"
@@ -406,6 +434,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_invoice_id
 msgid "Invoice"
 msgstr "Factura"
+
+#. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
+msgid ""
+"Items saldados en moneda de la compañía pero no saldados en la moneda "
+"secundaria"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_form
@@ -437,6 +472,22 @@ msgstr "Nombre"
 #: model:ir.model.fields,field_description:account_debt_management.field_account_debt_line_blocked
 msgid "No Follow-up"
 msgstr "Sin seguimiento"
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/report/account_debt_line.py:427
+#, python-format
+msgid ""
+"No se puede cancelar el resisual en moneda porque el apunte %s aún tiene "
+"saldo contable."
+msgstr ""
+
+#. module: account_debt_management
+#: code:addons/account_debt_management/report/account_debt_line.py:447
+#, python-format
+msgid ""
+"No se puedo cancelar el residual en moneda automáticamente. Debe hacerlo "
+"manualmente. Id de apunte contable: %s"
+msgstr ""
 
 #. module: account_debt_management
 #: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_form
@@ -595,31 +646,36 @@ msgid "Unreconciled Journal Items"
 msgstr "Items de diarios no conciliados"
 
 #. module: account_debt_management
+#: model:ir.ui.view,arch_db:account_debt_management.view_account_debt_line_search
+msgid "Unreconciled on currency"
+msgstr ""
+
+#. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_res_config_settings_group_account_use_financial_amounts
 #: model:res.groups,name:account_debt_management.account_use_financial_amounts
 msgid "Use Financial Amounts"
 msgstr "Usar Importes Financieros"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:380
+#: code:addons/account_debt_management/report/account_debt_line.py:388
 #, python-format
 msgid "View Bank Statement"
 msgstr "Ver estado de cuenta bancaria"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:391
+#: code:addons/account_debt_management/report/account_debt_line.py:399
 #, python-format
 msgid "View Invoice"
 msgstr "Ver factura"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:397
+#: code:addons/account_debt_management/report/account_debt_line.py:405
 #, python-format
 msgid "View Move"
 msgstr "Ver Movimiento"
 
 #. module: account_debt_management
-#: code:addons/account_debt_management/report/account_debt_line.py:385
+#: code:addons/account_debt_management/report/account_debt_line.py:393
 #, python-format
 msgid "View Payment Group"
 msgstr "Ver Grupo de Pago"

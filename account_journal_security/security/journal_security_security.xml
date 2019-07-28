@@ -28,6 +28,8 @@
         <field name="name">Account Move Line of Jornals modifiable by users</field>
         <field name="model_id" ref="account.model_account_move_line"/>
         <field name="perm_read" eval="False"/>
+        <!-- allow write for reconciliations (for eg. pay one invoice with two journals) -->
+        <field name="perm_write" eval="False"/>
         <field name="domain_force">['|', ('move_id.journal_id.modification_user_ids', '=' ,False), ('move_id.journal_id.id', 'in', user.modification_journal_ids.ids)]</field>
         <!-- OJO: Parace que no esta manejando correctamente los campos related en las reglas, El campo aml.journal_id es related stored pero por alguna razon no esta funcionando en la regla no se calcula bien. usando el campo aml.move_id.journal_id soluciona el problema por ahora -->
     </record>
