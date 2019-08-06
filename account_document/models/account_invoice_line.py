@@ -58,7 +58,7 @@ class AccountInvoiceLine(models.Model):
                 report_price_net = report_price_unit * (
                     1 - (line.discount or 0.0) / 100.0)
                 report_price_subtotal = included_taxes.compute_all(
-                    line.price_unit, invoice.currency_id, line.quantity,
+                    line.price_subtotal, invoice.currency_id, 1.0,
                     line.product_id, invoice.partner_id)['total_included']
 
             line.report_price_subtotal = report_price_subtotal
