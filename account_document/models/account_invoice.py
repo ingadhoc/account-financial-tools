@@ -174,19 +174,12 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def name_get(self):
-        TYPES = {
-            'out_invoice': _('Invoice'),
-            'in_invoice': _('Vendor Bill'),
-            'out_refund': _('Refund'),
-            'in_refund': _('Vendor Refund'),
-        }
         result = []
         for inv in self:
             result.append((
                 inv.id,
                 "%s %s" % (
-                    inv.display_name or TYPES[inv.type],
-                    inv.name or '')))
+                    inv.display_name, inv.name or '')))
         return result
 
     @api.model
@@ -237,13 +230,19 @@ class AccountInvoice(models.Model):
         # mostrar igual si existe el numero, por ejemplo si es factura de
         # proveedor
         # if self.document_number and self.document_type_id and self.move_name:
+        TYPES = {
+            'out_invoice': _('Invoice'),
+            'in_invoice': _('Vendor Bill'),
+            'out_refund': _('Credit Note'),
+            'in_refund': _('Vendor Credit note'),
+        }
         for rec in self:
             if rec.document_number and rec.document_type_id:
                 display_name = ("%s%s" % (
                     rec.document_type_id.doc_code_prefix or '',
                     rec.document_number))
             else:
-                display_name = rec.move_name
+                display_name = rec.move_name or TYPES[rec.type]
             rec.display_name = display_name
 
     @api.multi
