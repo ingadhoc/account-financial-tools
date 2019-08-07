@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-19 15:08+0000\n"
+"POT-Creation-Date: 2019-08-06 19:24+0000\n"
 "PO-Revision-Date: 2018-05-17 18:22+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -128,7 +128,9 @@ msgid "Created on"
 msgstr "Creado el"
 
 #. module: account_document
+#: code:addons/account_document/models/account_invoice.py:236
 #: model:ir.model,name:account_document.model_account_invoice_refund
+#, python-format
 msgid "Credit Note"
 msgstr "Nota de Crédito"
 
@@ -223,7 +225,7 @@ msgstr ""
 "comportamiento podría ser sobrescrito por localizaciones!"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:446
+#: code:addons/account_document/models/account_invoice.py:445
 #, python-format
 msgid ""
 "El Tipo de Documento elegido \"%s\" no pertenece al diario \"%s\". Por favor"
@@ -244,7 +246,7 @@ msgid "Entry Sequence"
 msgstr "Secuencia de Asiento"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:304
+#: code:addons/account_document/models/account_invoice.py:303
 #, python-format
 msgid ""
 "Error!. Please define sequence on the journal related documents to this "
@@ -311,7 +313,7 @@ msgid "Internal Type"
 msgstr "Tipo interno"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:178
+#: code:addons/account_document/models/account_invoice.py:234
 #: model:ir.model,name:account_document.model_account_invoice
 #: model:ir.model.fields,field_description:account_document.field_account_invoice_refund_invoice_id_3944
 #, python-format
@@ -532,12 +534,6 @@ msgid "Receiptbooks"
 msgstr "Talonarios de recibos"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:180
-#, python-format
-msgid "Refund"
-msgstr "Reembolso"
-
-#. module: account_document
 #: code:addons/account_document/wizards/account_invoice_refund.py:18
 #, python-format
 msgid "Refund wizard must be call only from one invoice"
@@ -588,7 +584,7 @@ msgstr ""
 "facturas, notas de crédito y notas de débito."
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:259
+#: code:addons/account_document/models/account_invoice.py:258
 #, python-format
 msgid ""
 "Some invoices have a journal that require a document but not document type has been selected.\n"
@@ -722,16 +718,16 @@ msgid "Vendor"
 msgstr "Proveedor"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:179
+#: code:addons/account_document/models/account_invoice.py:235
 #, python-format
 msgid "Vendor Bill"
 msgstr "Factura de Proveedor"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:181
+#: code:addons/account_document/models/account_invoice.py:237
 #, python-format
-msgid "Vendor Refund"
-msgstr "Reembolso a proveedor"
+msgid "Vendor Credit note"
+msgstr ""
 
 #. module: account_document
 #: code:addons/account_document/models/account_journal.py:234
@@ -744,13 +740,13 @@ msgstr ""
 "este diario!"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:470
+#: code:addons/account_document/models/account_invoice.py:469
 #, python-format
 msgid "You can not use a %s document type with a invoice"
 msgstr "No puede utilizar un tipo de documento %s con una factura"
 
 #. module: account_document
-#: code:addons/account_document/models/account_invoice.py:465
+#: code:addons/account_document/models/account_invoice.py:464
 #, python-format
 msgid "You can not use a %s document type with a refund invoice"
 msgstr ""
