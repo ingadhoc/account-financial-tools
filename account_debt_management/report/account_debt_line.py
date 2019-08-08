@@ -146,7 +146,6 @@ class AccountDebtLine(models.Model):
     )
     company_currency_id = fields.Many2one(
         related='company_id.currency_id',
-        readonly=True,
     )
     payment_group_id = fields.Many2one(
         'account.payment.group',

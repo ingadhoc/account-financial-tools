@@ -14,7 +14,6 @@ class AccountMoveLine(models.Model):
     # useful to group by this field
     document_type_id = fields.Many2one(
         related='move_id.document_type_id',
-        readonly=True,
         auto_join=True,
         # stored required to group by
         store=True,

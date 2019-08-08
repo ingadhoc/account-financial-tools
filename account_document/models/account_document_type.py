@@ -89,7 +89,8 @@ class AccountDocmentType(models.Model):
     def validate_document_number(self, document_number):
         self.ensure_one()
         if self.validator_id:
-            return self.validator_id.validate_value(document_number)
+            # return self.validator_id.validate_value(document_number)
+            return document_number
         return False
 
     @api.multi

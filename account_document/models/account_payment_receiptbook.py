@@ -31,7 +31,8 @@ class AccountPaymentReceiptbook(models.Model):
         index=True,
     )
     next_number = fields.Integer(
-        related='sequence_id.number_next_actual'
+        related='sequence_id.number_next_actual',
+        readonly=False,
     )
 
     # payment_type = fields.Selection(

@@ -33,14 +33,14 @@ class AccountJournalDocumentType(models.Model):
     )
     journal_type = fields.Selection(
         related='journal_id.type',
-        readonly=True,
     )
     sequence = fields.Integer(
         'Sequence',
         index=True,
     )
     next_number = fields.Integer(
-        related='sequence_id.number_next_actual'
+        related='sequence_id.number_next_actual',
+        readonly=False,
     )
 
 
@@ -49,7 +49,6 @@ class AccountJournal(models.Model):
 
     localization = fields.Selection(
         related='company_id.localization',
-        readonly=True,
     )
     journal_document_type_ids = fields.One2many(
         'account.journal.document.type',

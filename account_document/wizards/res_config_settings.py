@@ -13,7 +13,7 @@ class ResConfigSettings(models.TransientModel):
     )
     localization = fields.Selection(
         related='company_id.localization',
-        # readonly=True,
+        readonly=False,
     )
 
     @api.onchange('chart_template_id')
@@ -30,11 +30,11 @@ class ResConfigSettings(models.TransientModel):
             self.purchase_use_documents = True
 
     @api.multi
-    def set_chart_of_accounts(self):
+    def set_values(self):
         """
         We send this value in context because to use them on journals creation
         """
         return super(ResConfigSettings, self.with_context(
             sale_use_documents=self.sale_use_documents,
             purchase_use_documents=self.purchase_use_documents,
-        )).set_chart_of_accounts()
+        )).set_values()

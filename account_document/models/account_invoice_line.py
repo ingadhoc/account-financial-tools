@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import models, fields, api
+from collections import OrderedDict
 from odoo.addons import decimal_precision as dp
 # from odoo.exceptions import UserError
 import logging
@@ -65,3 +66,25 @@ class AccountInvoiceLine(models.Model):
             line.report_price_unit = report_price_unit
             line.report_price_net = report_price_net
             line.report_invoice_line_tax_ids = not_included_taxes
+
+
+    # TODO remove on v13
+    def _get_onchange_create(self):
+        return OrderedDict([('_onchange_product_id', ['account_id', 'name', 'price_unit', 'uom_id', 'invoice_line_tax_ids'])])
+
+    # TODO remove on v13
+    @api.model_create_multi
+    def create(self, vals_list):
+        """ add missing values on ail creation """
+
+        onchanges = self._get_onchange_create()
+        for onchange_method, changed_fields in onchanges.items():
+            for vals in vals_list:
+                if any(f not in vals for f in changed_fields):
+                    line = self.new(vals)
+                    getattr(line, onchange_method)()
+                    for field in changed_fields:
+                        if field not in vals and line[field]:
+                            vals[field] = line._fields[field].convert_to_write(line[field], line)
+
+        return super().create(vals_list)

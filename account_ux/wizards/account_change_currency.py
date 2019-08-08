@@ -18,7 +18,6 @@ class AccountChangeCurrency(models.TransientModel):
     currency_from_id = fields.Many2one(
         'res.currency',
         string='Currency From',
-        readonly=True,
         related='invoice_id.currency_id',
         help="Currency from Invoice"
     )
@@ -35,7 +34,6 @@ class AccountChangeCurrency(models.TransientModel):
     )
     currency_rate_readonly = fields.Float(
         related='currency_rate',
-        readonly=True,
     )
     invoice_id = fields.Many2one(
         'account.invoice',
