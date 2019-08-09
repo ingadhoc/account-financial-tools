@@ -27,7 +27,6 @@ class AccountInvoiceRefund(models.TransientModel):
     use_documents = fields.Boolean(
         related='invoice_id.journal_id.use_documents',
         string='Use Documents?',
-        readonly=True,
     )
     journal_document_type_id = fields.Many2one(
         'account.journal.document.type',
@@ -36,7 +35,6 @@ class AccountInvoiceRefund(models.TransientModel):
     )
     document_sequence_id = fields.Many2one(
         related='journal_document_type_id.sequence_id',
-        readonly=True,
     )
     document_number = fields.Char(
         string='Document Number',

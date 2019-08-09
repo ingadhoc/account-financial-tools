@@ -59,14 +59,12 @@ class AccountInvoice(models.Model):
     document_type_id = fields.Many2one(
         related='journal_document_type_id.document_type_id',
         copy=False,
-        readonly=True,
         store=True,
         auto_join=True,
         index=True,
     )
     document_sequence_id = fields.Many2one(
         related='journal_document_type_id.sequence_id',
-        readonly=True,
     )
     document_number = fields.Char(
         string='Document Number',
@@ -87,15 +85,12 @@ class AccountInvoice(models.Model):
     use_documents = fields.Boolean(
         related='journal_id.use_documents',
         string='Use Documents?',
-        readonly=True,
     )
     localization = fields.Selection(
         related='company_id.localization',
-        readonly=True,
     )
     document_type_internal_type = fields.Selection(
         related='document_type_id.internal_type',
-        readonly=True,
     )
 
 # @api.multi

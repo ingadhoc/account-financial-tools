@@ -6,7 +6,7 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     @api.multi
-    def post(self):
+    def post(self, invoice=False):
         move_lines = self.mapped('line_ids').filtered(
             lambda x: (
                 x.account_id.user_type_id.analytic_tag_required and
@@ -23,4 +23,4 @@ class AccountMove(models.Model):
                     move_lines.ids
                 )
             ))
-        return super(AccountMove, self).post()
+        return super(AccountMove, self).post(invoice=invoice)
