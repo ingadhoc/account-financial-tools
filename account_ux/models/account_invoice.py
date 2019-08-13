@@ -74,7 +74,7 @@ class AccountInvoice(models.Model):
                     message=message,
                     sticky=True,
                 )
-                rec.message_post("<br/><br/>".join([
+                rec.message_post(body="<br/><br/>".join([
                     "<b>" + title + "</b>",
                     _("Please check the email template associated with"
                       " the invoice journal."),
