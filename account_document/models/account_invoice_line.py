@@ -67,7 +67,6 @@ class AccountInvoiceLine(models.Model):
             line.report_price_net = report_price_net
             line.report_invoice_line_tax_ids = not_included_taxes
 
-
     # TODO remove on v13
     def _get_onchange_create(self):
         return OrderedDict([('_onchange_product_id', ['account_id', 'name', 'price_unit', 'uom_id', 'invoice_line_tax_ids'])])

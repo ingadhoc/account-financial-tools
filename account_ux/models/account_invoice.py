@@ -2,34 +2,14 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, fields, api, _
+from odoo import models, api, _
 from odoo.exceptions import UserError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
-
-    # this field should be named amount_untaxed_signed and the odoo
-    # amount_untaxed_signed should be named amount_untaxed_company_signed
-    amount_untaxed_signed_real = fields.Monetary(
-        string="Untaxed Amount",
-        store=True,
-        readonly=True,
-        compute='_compute_amount'
-    )
-
-    def _compute_amount(self):
-        # because super method is api.one
-        for rec in self:
-            super(AccountInvoice, rec)._compute_amount()
-            sign = rec.type in ['in_refund', 'out_refund'] and -1 or 1
-            rec.amount_untaxed_signed_real = rec.amount_untaxed * sign
-
-    @api.multi
-    def invoice_cancel_from_done(self):
-        for rec in self:
-            if not rec.payment_move_line_ids and rec.state == 'paid':
-                rec.action_cancel()
 
     @api.onchange('partner_id')
     def _onchange_partner_commercial(self):
@@ -114,3 +94,49 @@ class AccountInvoice(models.Model):
         res = super(AccountInvoice, self).copy(default=default)
         res._onchange_partner_commercial()
         return res
+
+    # TODO parece no ser necesario, ver si borramos en v13 o mas adelante en
+    # v12
+    # # TODO borrar porque al fianl estamos desactivando cambio de moneda
+    # # sin importar si viene o no la clave en el contexto
+    # # We do this for a bug when creating an invoice from
+    # # the PO that does not get the correct currency from the PO, by default
+    # # bring the currency of the newspaper.
+    # # we also add this so that in a multic environment if you change company
+    # # currency is not changed
+    # @api.onchange('journal_id')
+    # def _onchange_journal_id(self):
+    #     """
+    #     desactivamos cambio de moneda ya que el cambio de moneda no actualiza
+    #     precios y en realidad en la mayoria de los casos no quermeos que
+    #     cambiar diario cambie moneda.
+    #     """
+    #     currency = self.currency_id
+    #     super(AccountInvoice, self)._onchange_journal_id()
+    #     self.currency_id = currency
+    #     # if self._context.get('default_currency_id', False):
+    #     #     self.currency_id = self._context.get('default_currency_id')
+    #     # else:
+    #     #     super(AccountInvoice, self)._onchange_journal_id()
+
+    @api.multi
+    def compute_taxes(self):
+        _logger.info('Checking compute taxes on draft invoices')
+        if not self._context.get('force_compute_taxes') and self.filtered(
+                lambda x: x.state != 'draft'):
+            raise UserError(_(
+                'You can compute taxes invoices that are not in draft only if '
+                'you send "force_compute_taxes=True" on context. Be aware'
+                'invoices amounts could change'))
+        return super().compute_taxes()
+
+    @api.multi
+    def assign_outstanding_credit(self, credit_aml_id):
+        """ aplicación de este parche
+        https://github.com/odoo/odoo/pull/25485/files
+        """
+        self.ensure_one()
+        credit_aml = self.env['account.move.line'].browse(credit_aml_id)
+        if credit_aml.payment_id:
+            credit_aml.payment_id.write({'invoice_ids': [(4, self.id, None)]})
+        return self.register_payment(credit_aml)
