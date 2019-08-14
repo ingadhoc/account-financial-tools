@@ -30,7 +30,6 @@ class AccountChartTemplate(models.Model):
         Set localization to company when installing chart of account.
         """
         self.ensure_one()
-        import pdb; pdb.set_trace()
         if not company.localization:
             company.localization = self and self.localization
         if company.localization:
