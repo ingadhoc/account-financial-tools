@@ -29,26 +29,22 @@ class AccountInvoice(models.Model):
     # _order = "document_number desc, number desc, id desc"
 
     report_amount_tax = fields.Monetary(
-        string='Tax',
         compute='_compute_report_amount_and_taxes'
     )
     report_amount_untaxed = fields.Monetary(
-        string='Untaxed Amount',
         compute='_compute_report_amount_and_taxes'
     )
     report_tax_line_ids = fields.One2many(
         compute="_compute_report_amount_and_taxes",
         comodel_name='account.invoice.tax',
-        string='Taxes'
     )
     available_journal_document_type_ids = fields.Many2many(
         'account.journal.document.type',
         compute='_compute_available_journal_document_types',
-        string='Available Journal Document Types',
     )
     journal_document_type_id = fields.Many2one(
         'account.journal.document.type',
-        'Document Type',
+        'Journal Document Type',
         readonly=True,
         ondelete='restrict',
         copy=False,
@@ -58,6 +54,7 @@ class AccountInvoice(models.Model):
     # we add this fields so we can search, group and analyze by this one
     document_type_id = fields.Many2one(
         related='journal_document_type_id.document_type_id',
+        string='Document Type',
         copy=False,
         store=True,
         auto_join=True,
@@ -80,7 +77,7 @@ class AccountInvoice(models.Model):
     )
     next_number = fields.Integer(
         compute='_compute_next_number',
-        string='Next Number',
+        string='Next Number (Computed)',
     )
     use_documents = fields.Boolean(
         related='journal_id.use_documents',
