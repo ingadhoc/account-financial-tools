@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
 
-    <record id="account_use_financial_amounts" model="res.groups">
-        <field name="name">Use Financial Amounts</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
-    </record>
-
-    <!-- activar por defecto para empleados-->
-    <!-- mejor no activamos por ahora -->
-<!--     <record id="base.group_user" model="res.groups">
-        <field name="implied_ids" eval="[(4, ref('account_use_financial_amounts'))]"/>
-    </record> -->
-
     <record id="account_debt_line_company_rule" model="ir.rule">
         <field name="name">account.debt.line company rule</field>
         <field name="model_id" ref="model_account_debt_line"/>

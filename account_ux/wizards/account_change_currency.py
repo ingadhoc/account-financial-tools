@@ -32,9 +32,6 @@ class AccountChangeCurrency(models.TransientModel):
         required=True,
         help="Select a rate to apply on the invoice"
     )
-    currency_rate_readonly = fields.Float(
-        related='currency_rate',
-    )
     invoice_id = fields.Many2one(
         'account.invoice',
         default=get_invoice
