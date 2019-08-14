@@ -18,8 +18,8 @@
         <field name="inherit_id" ref="account_payment_group.view_move_line_tree"/>
         <field name="arch" type="xml">
             <field name="payment_group_matched_amount" position="after">
-                <field name="financial_amount" groups="account_debt_management.account_use_financial_amounts"/>
-                <field name="financial_amount_residual" sum="Total" groups="account_debt_management.account_use_financial_amounts" invisible="context.get('matched_lines')"/>
+                <field name="financial_amount" groups="account_financial_amount.account_use_financial_amounts"/>
+                <field name="financial_amount_residual" sum="Total" groups="account_financial_amount.account_use_financial_amounts" invisible="context.get('matched_lines')"/>
             </field>
             </field>
         </record>

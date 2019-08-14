@@ -13,4 +13,4 @@ class ResConfigSettings(models.TransientModel):
         help='Display Financial amounts on partner debts views and reports.\n'
         'Financial amounts are amounts on other currency converted to company '
         'currency on todays exchange.',
-        implied_group='account_debt_management.account_use_financial_amounts')
+        implied_group='account_financial_amount.account_use_financial_amounts')

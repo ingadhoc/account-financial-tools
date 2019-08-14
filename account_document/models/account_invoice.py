@@ -4,9 +4,10 @@
 ##############################################################################
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from functools import partial
 # import odoo.addons.decimal_precision as dp
 # import re
-# from odoo.tools.misc import formatLang
+from odoo.tools.misc import formatLang
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -90,21 +91,25 @@ class AccountInvoice(models.Model):
         related='document_type_id.internal_type',
     )
 
-# @api.multi
-# def _get_tax_amount_by_group(self):
-#     """ Method used by qweb invoice report. We are not using this report
-#     for now.
-#     """
-#     self.ensure_one()
-#     res = {}
-#     currency = self.currency_id or self.company_id.currency_id
-#     for line in self.report_tax_line_ids:
-#         res.setdefault(line.tax_id.tax_group_id, 0.0)
-#         res[line.tax_id.tax_group_id] += line.amount
-#     res = sorted(res.items(), key=lambda l: l[0].sequence)
-#     res = map(lambda l: (
-#         l[0].name, formatLang(self.env, l[1], currency_obj=currency)), res)
-#     return res
+    def _amount_by_group(self):
+        invoice_with_doc_type = self.filtered('document_type_id')
+        for invoice in invoice_with_doc_type:
+            currency = invoice.currency_id or invoice.company_id.currency_id
+            fmt = partial(formatLang, invoice.with_context(lang=invoice.partner_id.lang).env, currency_obj=currency)
+            res = {}
+            for line in invoice.report_tax_line_ids:
+                tax = line.tax_id
+                group_key = (tax.tax_group_id, tax.amount_type, tax.amount)
+                res.setdefault(group_key, {'base': 0.0, 'amount': 0.0})
+                res[group_key]['amount'] += line.amount_total
+                res[group_key]['base'] += line.base
+            res = sorted(res.items(), key=lambda l: l[0][0].sequence)
+            invoice.amount_by_group = [(
+                r[0][0].name, r[1]['amount'], r[1]['base'],
+                fmt(r[1]['amount']), fmt(r[1]['base']),
+                len(res),
+            ) for r in res]
+        super(AccountInvoice, self - invoice_with_doc_type)._amount_by_group()
 
     @api.depends(
         'amount_untaxed', 'amount_tax', 'tax_line_ids', 'document_type_id')
