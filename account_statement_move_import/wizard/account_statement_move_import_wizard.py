@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 class AccountStatementMoveImportWizard(models.TransientModel):
     _name = "account.statement.move.import.wizard"
+    _description = "account.statement.move.import.wizard"
 
     @api.model
     def _get_statement(self):
