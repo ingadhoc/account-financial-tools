@@ -51,6 +51,7 @@ Several Improvements to accounting:
 #. Add quick search by this/last year/month on journal entries
 #. Add visible to group account invoice the field "Journal" in account invoice form.
 #. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
+#. Solo conciliamos en moneda secundaria si la cuenta contable tiene definida moneda secundaria.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
