@@ -17,3 +17,4 @@ from . import res_currency_rate
 from . import account_bank_statement_line
 from . import account_account_type
 from . import account_move
+from . import account_partial_reconcile

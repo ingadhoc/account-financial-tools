@@ -114,3 +114,19 @@ class AccountMoveLine(models.Model):
 #     rate_rec_move_ids.unlink()
 #     exchange_rate_entries.unlink()
 #     return res
+
+    def reconcile(self, writeoff_acc_id=False, writeoff_journal_id=False):
+        """ Modificamos contexto para que odoo solo concilie el metodo
+        auto_reconcile_lines teniendo en cuenta la moneda de cia si la cuenta
+        no tiene moneda.
+        Va de la mano de la modificación de "create" en
+        account.partial.reconcile
+        """
+        if self._context.get(
+            'skip_full_reconcile_check') != 'amount_currency_excluded' and \
+                self and not self[0].account_id.currency_id:
+            self = self.with_context(
+                skip_full_reconcile_check='amount_currency_excluded')
+        return super().reconcile(
+            writeoff_acc_id=writeoff_acc_id,
+            writeoff_journal_id=writeoff_journal_id)
