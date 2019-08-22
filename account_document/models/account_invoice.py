@@ -29,9 +29,6 @@ class AccountInvoice(models.Model):
     _order = "date_invoice desc, document_number desc, number desc, id desc"
     # _order = "document_number desc, number desc, id desc"
 
-    report_amount_tax = fields.Monetary(
-        compute='_compute_report_amount_and_taxes'
-    )
     report_amount_untaxed = fields.Monetary(
         compute='_compute_report_amount_and_taxes'
     )
@@ -119,7 +116,6 @@ class AccountInvoice(models.Model):
                 invoice.document_type_id and
                 invoice.document_type_id.get_taxes_included() or False)
             if not taxes_included:
-                report_amount_tax = invoice.amount_tax
                 report_amount_untaxed = invoice.amount_untaxed
                 not_included_taxes = invoice.tax_line_ids
             else:
@@ -127,10 +123,8 @@ class AccountInvoice(models.Model):
                     lambda x: x.tax_id in taxes_included)
                 not_included_taxes = (
                     invoice.tax_line_ids - included_taxes)
-                report_amount_tax = sum(not_included_taxes.mapped('amount'))
                 report_amount_untaxed = invoice.amount_untaxed + sum(
                     included_taxes.mapped('amount'))
-            invoice.report_amount_tax = report_amount_tax
             invoice.report_amount_untaxed = report_amount_untaxed
             invoice.report_tax_line_ids = not_included_taxes
 
