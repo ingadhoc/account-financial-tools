@@ -41,7 +41,11 @@ class AccountInvoiceLine(models.Model):
                 invoice.document_type_id and
                 invoice.document_type_id.get_taxes_included() or False)
             if not taxes_included:
-                report_price_unit = line.price_unit
+                price_unit = line.invoice_line_tax_ids.with_context(
+                    round=False).compute_all(
+                        line.price_unit, invoice.currency_id, 1.0,
+                        line.product_id, invoice.partner_id)
+                report_price_unit = price_unit['total_excluded']
                 report_price_subtotal = line.price_subtotal
                 not_included_taxes = line.invoice_line_tax_ids
                 report_price_net = report_price_unit * (
@@ -58,7 +62,7 @@ class AccountInvoiceLine(models.Model):
                 report_price_net = report_price_unit * (
                     1 - (line.discount or 0.0) / 100.0)
                 report_price_subtotal = included_taxes.compute_all(
-                    line.price_subtotal, invoice.currency_id, 1.0,
+                    line.price_unit, invoice.currency_id, line.quantity,
                     line.product_id, invoice.partner_id)['total_included']
 
             line.report_price_subtotal = report_price_subtotal
