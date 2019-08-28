@@ -18,7 +18,6 @@ class AccountChangeCurrency(models.TransientModel):
     currency_from_id = fields.Many2one(
         'res.currency',
         string='Currency From',
-        readonly=True,
         related='invoice_id.currency_id',
         help="Currency from Invoice"
     )
@@ -32,10 +31,6 @@ class AccountChangeCurrency(models.TransientModel):
         'Currency Rate',
         required=True,
         help="Select a rate to apply on the invoice"
-    )
-    currency_rate_readonly = fields.Float(
-        related='currency_rate',
-        readonly=True,
     )
     invoice_id = fields.Many2one(
         'account.invoice',
@@ -54,10 +49,11 @@ class AccountChangeCurrency(models.TransientModel):
             self.currency_rate = False
         else:
             currency = self.currency_from_id.with_context(
+                )
+            self.currency_rate = currency._convert(
+                1.0, self.currency_to_id, self.invoice_id.company_id,
                 date=self.invoice_id.date_invoice or
                 fields.Date.context_today(self))
-            self.currency_rate = currency.compute(
-                1.0, self.currency_to_id)
 
     @api.multi
     def change_currency(self):
@@ -79,5 +75,5 @@ class AccountChangeCurrency(models.TransientModel):
                 line.amount * self.currency_rate)
 
         self.invoice_id.compute_taxes()
-        self.invoice_id.message_post(message)
+        self.invoice_id.message_post(body=message)
         return {'type': 'ir.actions.act_window_close'}

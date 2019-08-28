@@ -9,7 +9,7 @@
             <xpath expr="//div[@data-key='account']//field[@name='group_multi_currency']/../.." position="after">
                 <div class="col-xs-12 col-md-6 o_setting_box" attrs="{'invisible': [('group_multi_currency', '=', False)]}">
                     <div class="o_setting_left_pane">
-                        <field name="group_account_use_financial_amounts" widget="upgrade_boolean"/>
+                        <field name="group_account_use_financial_amounts"/>
                     </div>
                     <div class="o_setting_right_pane">
                         <label for="group_account_use_financial_amounts"/>

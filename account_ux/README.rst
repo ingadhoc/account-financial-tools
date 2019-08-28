@@ -16,7 +16,7 @@ Account UX
 
 Several Improvements to accounting:
 
-#. On invoice validation check that use hasn't delete any "automatic" tax from invoice
+#. On invoice validation check that user hasn't delete any "automatic" tax from invoice
 #. Add reconciliations menu on accounting (only with debug mode)
 #. When creatin banks from bank menu, use bank name + account number for journal name (by default only account number is used). And also allow user to change this value (by default user can't)
 #. Make company id not required and false by default on payment term. This field was added on v9 and it is not used anywhere
@@ -49,6 +49,9 @@ Several Improvements to accounting:
 #. Add quick search by this/last year/month on journal entries
 #. Add visible to group account invoice the field "Journal" in account invoice form.
 #. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
+#. Do not allow to recompute taxes on invoices that are not on draft state because tax and invoice amounts could change
+#. DISABLED, REMOVE IF NO NEEDED: Disable currency change when journal is changed
+#. Do not add currency info when reconciling from invoice
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.

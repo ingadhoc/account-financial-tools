@@ -3,4 +3,3 @@
 # directory
 ##############################################################################
 from . import account_debt_report_wizard
-from . import res_config_settings

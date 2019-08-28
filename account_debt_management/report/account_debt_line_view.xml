@@ -46,11 +46,11 @@
                 <field name="amount_currency" groups="base.group_multi_currency"/>
                 <field name="amount_residual_currency" groups="base.group_multi_currency"/>
                 <!-- usamos grupo "account.group_account_manager" para restringir y no agregamos base.group_multi_currency ya que si no hay multicurrency entonces no debería haber residual en currency y nunca debería verse -->
-                <button name="cancel_amount_residual_currency" icon="fa-ban" type="object" groups="account.group_account_manager" attrs="{'invisible': ['|', ('amount_residual_currency', '=', 0.0), ('amount_residual', '!=', 0.0)]}" confirm="Are you sure this debt is not real? This will create a journal entry on rate exchange journal to cancel this residual amount"/>
-                <field name="financial_amount_residual" sum="Total" groups="account_debt_management.account_use_financial_amounts"/>
+                <button name="cancel_amount_residual_currency" icon="fa-ban" type="object" groups="account.group_account_manager" attrs="{'invisible': ['|', ('amount_residual_currency', '=', 0.0), ('amount_residual', '!=', 0.0)]}" confirm="Are you sure this debt is not real? This will create a journal entry on rate exchange journal to cancel this residual amount" string="Cancel residual amount on secondary currency"/>
+                <field name="financial_amount_residual" sum="Total" groups="account_financial_amount.account_use_financial_amounts"/>
                 <!-- no queremos mostrarlo mas, es util? -->
-                <!-- <field name="financial_amount" sum="Total" groups="account_debt_management.account_use_financial_amounts"/> -->
-                <!-- <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_debt_management.account_use_financial_amounts"/> -->
+                <!-- <field name="financial_amount" sum="Total" groups="account_financial_amount.account_use_financial_amounts"/> -->
+                <!-- <field name="financial_balance" invisible="not context.get('show_balance', False)" groups="account_financial_amount.account_use_financial_amounts"/> -->
                 <button type="object" string="Open Document" icon="fa-external-link" help="Open Related Accounting Document" name="action_open_related_document"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="company_currency_id" invisible="1"/>
@@ -85,7 +85,7 @@
                             <field name="amount_residual"/>
                             <field name="amount_currency" groups="base.group_multi_currency"/>
                             <field name="amount_residual_currency" groups="base.group_multi_currency"/>
-                            <field name="financial_amount_residual" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_debt_management.account_use_financial_amounts"/>
+                            <field name="financial_amount_residual" attrs="{'invisible': [('currency_id', '=', False)]}" groups="account_financial_amount.account_use_financial_amounts"/>
                             <field name="date"/>
                             <field name="date_maturity"/>
                             <field name="company_id" groups="base.group_multi_company"/>

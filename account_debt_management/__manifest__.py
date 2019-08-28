@@ -36,15 +36,14 @@
         'report_aeroo',
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'security/account_debt_management_security.xml',
         'report/account_debt_report.xml',
         'report/account_debt_line_view.xml',
         'data/mail_data.xml',
         'wizard/account_debt_report_wizard_view.xml',
-        'wizard/res_config_settings_views.xml',
         'views/account_move_line_view.xml',
         'views/res_partner_view.xml',
-        'security/ir.model.access.csv',
-        'security/account_debt_management_security.xml',
     ],
     'demo': [
     ],

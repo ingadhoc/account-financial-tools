@@ -39,11 +39,9 @@ class AccountPayment(models.Model):
     )
     document_sequence_id = fields.Many2one(
         related='receiptbook_id.sequence_id',
-        readonly=True,
     )
     localization = fields.Selection(
         related='company_id.localization',
-        readonly=True,
     )
     # por ahora no agregamos esto, vamos a ver si alguien lo pide
     # manual_prefix = fields.Char(
@@ -75,7 +73,6 @@ class AccountPayment(models.Model):
     )
     document_type_id = fields.Many2one(
         related='receiptbook_id.document_type_id',
-        readonly=True,
     )
     next_number = fields.Integer(
         # related='receiptbook_id.sequence_id.number_next_actual',
@@ -158,7 +155,7 @@ class AccountPayment(models.Model):
     #         'Document number must be unique per receiptbook!')]
 
     @api.multi
-    @api.constrains('company_id', 'partner_type')
+    @api.constrains('journal_id', 'partner_type')
     def _force_receiptbook(self):
         # we add cosntrins to fix odoo tests and also help in inmpo of data
         for rec in self:
@@ -209,14 +206,14 @@ class AccountPayment(models.Model):
         return vals
 
     @api.multi
-    @api.constrains('receiptbook_id', 'company_id')
+    @api.constrains('receiptbook_id', 'journal_id')
     def _check_company_id(self):
         """
         Check receiptbook_id and voucher company
         """
-        for rec in self:
-            if (rec.receiptbook_id and
-                    rec.receiptbook_id.company_id != rec.company_id):
-                raise ValidationError(_(
-                    'The company of the receiptbook and of the '
-                    'payment must be the same!'))
+        if self.filtered(
+                lambda x: x.receiptbook_id and
+                x.receiptbook_id.company_id != x.journal_id.company_id):
+            raise ValidationError(_(
+                'The company of the receiptbook and of the '
+                'payment must be the same!'))

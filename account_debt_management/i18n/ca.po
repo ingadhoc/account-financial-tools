@@ -543,7 +543,7 @@ msgstr ""
 
 #. module: account_debt_management
 #: model:ir.model.fields,field_description:account_debt_management.field_account_config_settings_group_account_use_financial_amounts
-#: model:res.groups,name:account_debt_management.account_use_financial_amounts
+#: model:res.groups,name:account_financial_amount.account_use_financial_amounts
 msgid "Use Financial Amounts"
 msgstr ""
 

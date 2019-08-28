@@ -43,13 +43,11 @@ class AccountInvoiceTaxWizard(models.TransientModel):
     invoice_type = fields.Selection(
         related='invoice_id.type',
         string='Invoice Type',
-        readonly=True,
     )
     invoice_company_id = fields.Many2one(
         'res.company',
         'Company',
         related='invoice_id.company_id',
-        readonly=True,
     )
 
     @api.onchange('invoice_id')

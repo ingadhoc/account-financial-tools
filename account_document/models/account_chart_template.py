@@ -31,7 +31,7 @@ class AccountChartTemplate(models.Model):
         """
         self.ensure_one()
         if not company.localization:
-            company.localization = self.localization
+            company.localization = self and self.localization
         if company.localization:
             self.generate_receiptbooks(company)
         return super(AccountChartTemplate, self)._load_template(
