@@ -92,19 +92,19 @@
             <field name="matched_debit_ids" position="replace"/>
             <label for="full_reconcile_id" position="before">
                 <field name="matched_credit_ids" readonly="1" >
-                    <tree create="0" default_order="create_date desc">
+                    <tree create="0">
                         <field name="credit_move_id"/>
-                        <field name="amount"/>
-                        <field name="amount_currency"/>
+                        <field name="amount" sum="Total"/>
+                        <field name="amount_currency" sum="Total"/>
                         <field name="company_currency_id" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                     </tree>
                 </field>
                 <field name="matched_debit_ids" readonly="1" >
-                    <tree create="0" default_order="create_date desc">
+                    <tree create="0">
                         <field name="debit_move_id"/>
-                        <field name="amount"/>
-                        <field name="amount_currency"/>
+                        <field name="amount" sum="Total"/>
+                        <field name="amount_currency" sum="Total"/>
                         <field name="company_currency_id" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                     </tree>
