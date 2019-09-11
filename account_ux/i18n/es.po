@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-05 14:36+0000\n"
+"POT-Creation-Date: 2019-09-10 18:20+0000\n"
 "PO-Revision-Date: 2018-05-14 17:46+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -529,6 +529,11 @@ msgid "Partial"
 msgstr "Parcial"
 
 #. module: account_ux
+#: model:ir.model,name:account_ux.model_account_partial_reconcile
+msgid "Partial Reconcile"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_move_partial_reconcile
 msgid "Partial reconciliations"
 msgstr "Conciliaciones Parciales"
@@ -694,6 +699,7 @@ msgstr "This wizard will change the currency of the invoice"
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
 #: model:ir.ui.view,arch_db:account_ux.invoice_supplier_tree
 #: model:ir.ui.view,arch_db:account_ux.invoice_tree
+#: model:ir.ui.view,arch_db:account_ux.view_move_line_form
 msgid "Total"
 msgstr "Total"
 
