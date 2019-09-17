@@ -1,6 +1,6 @@
 {
     "name": "Accounting Documents Management",
-    "version": "11.0.1.5.0",
+    "version": "11.0.1.6.0",
     "author": "Moldeo Interactive,ADHOC SA",
     "license": "AGPL-3",
     "category": "Accounting",
@@ -25,6 +25,7 @@
         'report/invoice_report_view.xml',
         'data/account.document.type.csv',
         'data/mail_template_invoice.xml',
+        'data/decimal_precision_data.xml',
         'wizards/account_invoice_refund_view.xml',
         'wizards/res_config_view.xml',
         'security/ir.model.access.csv',
