@@ -15,14 +15,14 @@ class AccountInvoiceLine(models.Model):
 
     report_price_unit = fields.Float(
         compute='_compute_report_prices_and_taxes',
-        digits=dp.get_precision('Product Price'),
+        digits=dp.get_precision('Report Product Price'),
     )
     report_price_subtotal = fields.Monetary(
         compute='_compute_report_prices_and_taxes'
     )
     report_price_net = fields.Float(
         compute='_compute_report_prices_and_taxes',
-        digits=dp.get_precision('Product Price'),
+        digits=dp.get_precision('Report Product Price'),
     )
     report_invoice_line_tax_ids = fields.One2many(
         compute="_compute_report_prices_and_taxes",
