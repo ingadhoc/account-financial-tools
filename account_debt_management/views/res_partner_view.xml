@@ -19,9 +19,10 @@
         <field name="name">res.partner.tree</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
         <field name="arch" type="xml">
             <field name="email" position="after">
-                <field name="debt_balance" groups="account.group_account_invoice" sum="Total"/>
+                <field name="debt_balance" sum="Total"/>
             </field>
         </field>
     </record>
