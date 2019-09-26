@@ -125,9 +125,7 @@ class AccountJournal(models.Model):
             self.user_ids = self.modification_user_ids
             self.modification_user_ids = None
         else:
-            """
-            Es necesario que se limpien ambos campos cuando se seleccione
-            "Ninguna", sino no se guardan los cambios.
-            """
+            # Es necesario que se limpien ambos campos cuando se seleccione
+            # "Ninguna", sino no se guardan los cambios.
             self.user_ids = None
             self.modification_user_ids = None

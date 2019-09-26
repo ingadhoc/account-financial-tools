@@ -70,7 +70,10 @@ class AccountInvoiceLine(models.Model):
 
     # TODO remove on v13
     def _get_onchange_create(self):
-        return OrderedDict([('_onchange_product_id', ['account_id', 'name', 'price_unit', 'uom_id', 'invoice_line_tax_ids'])])
+        return OrderedDict(
+            [('_onchange_product_id',
+              ['account_id', 'name', 'price_unit', 'uom_id',
+               'invoice_line_tax_ids'])])
 
     # TODO remove on v13
     @api.model_create_multi
@@ -85,6 +88,7 @@ class AccountInvoiceLine(models.Model):
                     getattr(line, onchange_method)()
                     for field in changed_fields:
                         if field not in vals and line[field]:
-                            vals[field] = line._fields[field].convert_to_write(line[field], line)
+                            vals[field] = line._fields[field].convert_to_write(
+                                line[field], line)
 
         return super().create(vals_list)
