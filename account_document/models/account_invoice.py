@@ -92,7 +92,8 @@ class AccountInvoice(models.Model):
         invoice_with_doc_type = self.filtered('document_type_id')
         for invoice in invoice_with_doc_type:
             currency = invoice.currency_id or invoice.company_id.currency_id
-            fmt = partial(formatLang, invoice.with_context(lang=invoice.partner_id.lang).env, currency_obj=currency)
+            fmt = partial(formatLang, invoice.with_context(
+                lang=invoice.partner_id.lang).env, currency_obj=currency)
             res = {}
             for line in invoice.report_tax_line_ids:
                 tax = line.tax_id

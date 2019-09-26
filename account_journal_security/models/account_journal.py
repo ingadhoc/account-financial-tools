@@ -72,7 +72,8 @@ class AccountJournal(models.Model):
         # que el cambio aplique en el momento
         self.env['ir.rule'].clear_caches()
 
-        # TODO: Con el onchange de journal_restriction esto ya no debería ocurrir.
+        # FIXME: Con el onchange de journal_restriction esto
+        # ya no debería ocurrir.
         if self.modification_user_ids and self.user_ids:
             raise ValidationError(_(
                 'No puede setear valores en "Totalmente restricto a:" y '
