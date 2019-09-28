@@ -14,8 +14,7 @@ class Users(models.Model):
         'journal_security_journal_users',
         'user_id',
         'journal_id',
-        'Restricted Journals (TOTAL)',
-        readonly=True,
+        'Restricted Journals (TOTAL)'
     )
 
     modification_journal_ids = fields.Many2many(
@@ -23,6 +22,5 @@ class Users(models.Model):
         'journal_security_journal_modification_users',
         'user_id',
         'journal_id',
-        'Modification Journals',
-        readonly=True,
+        'Modification Journals'
     )

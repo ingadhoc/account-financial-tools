@@ -72,6 +72,8 @@ class AccountJournal(models.Model):
         # que el cambio aplique en el momento
         self.env['ir.rule'].clear_caches()
 
+        # FIXME: Con el onchange de journal_restriction esto
+        # ya no debería ocurrir.
         if self.modification_user_ids and self.user_ids:
             raise ValidationError(_(
                 'No puede setear valores en "Totalmente restricto a:" y '
@@ -109,5 +111,22 @@ class AccountJournal(models.Model):
                 '|', ('modification_user_ids', '=', False),
                 ('id', 'in', user.modification_journal_ids.ids)]
 
-        return super(AccountJournal, self).search(
-            args, offset, limit, order, count=count)
+        return super().search(args, offset, limit, order, count=count)
+
+    @api.onchange('journal_restriction')
+    def unset_modification_user_ids(self):
+        """
+        Al cambiar una opción por otra, limpiar el campo M2M
+        que se oculta para evitar conflictos al guardar.
+        """
+        if self.journal_restriction == 'modification':
+            self.modification_user_ids = self.user_ids
+            self.user_ids = None
+        elif self.journal_restriction == 'total':
+            self.user_ids = self.modification_user_ids
+            self.modification_user_ids = None
+        else:
+            # Es necesario que se limpien ambos campos cuando se seleccione
+            # "Ninguna", sino no se guardan los cambios.
+            self.user_ids = None
+            self.modification_user_ids = None
