@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="action_bank_statement_line_tree" model="ir.actions.act_window">
+        <field name="name">Bank Statement Lines</field>
+        <field name="res_model">account.bank.statement.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="account.view_bank_statement_line_tree"/>
+        <field name="target">current</field>
+        <field name="domain"></field>
+        <field name="context">{ 'search_default_statement_id': active_id, 'search_default_group_by_company_id': 1, 'search_default_group_by_name': 1 }</field>
+    </record>
     <record id="view_account_bank_statement_form" model="ir.ui.view">
         <field name="name">account.bank.statement.form</field>
         <field name="model">account.bank.statement</field>
@@ -25,14 +34,5 @@
                 </group>
             </search>
         </field>
-    </record>
-    <record id="action_bank_statement_line_tree" model="ir.actions.act_window">
-        <field name="name">Bank Statement Lines</field>
-        <field name="res_model">account.bank.statement.line</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="account.view_bank_statement_line_tree"/>
-        <field name="target">current</field>
-        <field name="domain"></field>
-        <field name="context">{ 'search_default_statement_id': active_id, 'search_default_group_by_company_id': 1, 'search_default_group_by_name': 1 }</field>
     </record>
 </odoo>
