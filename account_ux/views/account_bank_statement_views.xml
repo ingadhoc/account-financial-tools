@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="action_bank_statement_line_tree" model="ir.actions.act_window">
+        <field name="name">Bank Statement Lines</field>
+        <field name="res_model">account.bank.statement.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="account.view_bank_statement_line_tree"/>
+        <field name="target">current</field>
+        <field name="domain"></field>
+        <field name="context">{ 'search_default_statement_id': active_id, 'search_default_group_by_partner_id': 1, 'search_default_group_by_name': 1 }</field>
+    </record>
     <record id="view_account_bank_statement_form" model="ir.ui.view">
         <field name="name">account.bank.statement.form</field>
         <field name="model">account.bank.statement</field>
         <field name="inherit_id" ref="account.view_bank_statement_form"/>
         <field name="arch" type="xml">
+            <div name="button_box">
+                <button class="oe_stat_button oe_read_only" name="%(action_bank_statement_line_tree)d" string="Statement Lines" type='action' groups="account.group_account_manager" attrs="{}" icon="fa-bars" />
+            </div>
             <button name="check_confirm_bank" position="after">
                 <button name="cancel_all_lines" string="Cancel All" type="object" states="open" groups="base.group_no_one" confirm="Si confirma se van a cancelar las conciliaciones de todas las líneas (y borrar los asientos que se hayan generado con las mismas), esto no puede deshacerce. Seguro que desea continuar?"/>
             </button>
         </field>
     </record>
-
+    <record id="account_bank_statement_line_search" model="ir.ui.view">
+        <field name="name">account.bank.statement.line.search.inherit</field>
+        <field name="inherit_id" ref="account.view_bank_statement_line_search" />
+        <field name="model">account.bank.statement.line</field>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <group expand="0">
+                    <filter name="group_by_partner_id" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_by_name" string="Description" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
 </odoo>
