@@ -436,8 +436,7 @@ class AccountDebtLine(models.Model):
                     move_date=aml.date, company=aml.company_id))
             partial_rec.with_context(
                 skip_full_reconcile_check=True).create_exchange_rate_entry(
-                    aml, 0.0, aml.amount_residual_currency,
-                    aml.currency_id, exchange_move)
+                    aml, exchange_move)
             exchange_move.post()
 
             # verificamos que se haya conciliado correctamente
