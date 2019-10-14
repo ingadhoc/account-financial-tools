@@ -359,16 +359,19 @@ class AccountInvoice(models.Model):
     @api.multi
     def write(self, vals):
         """
-        If someone change the type (for eg from sale order), we update
-        de document type
+        If someone change the type or the journal (for eg from sale order),
+        we update the document type
         """
         inv_type = vals.get('type')
+        journal_id = vals.get('journal_id')
         # if len(vals) == 1 and vals.get('type'):
         # podrian pasarse otras cosas ademas del type
-        if inv_type:
+        if inv_type or journal_id:
             for rec in self:
+                journal = journal_id and self.env['account.journal'].browse(
+                    journal_id) or rec.journal_id
                 res = rec._get_available_journal_document_types(
-                    rec.journal_id, inv_type, rec.partner_id)
+                    journal, inv_type, rec.partner_id)
                 vals['journal_document_type_id'] = res[
                     'journal_document_type'].id
                 # call write for each inoice
