@@ -45,8 +45,6 @@
                 <!-- <field name="balance" invisible="not context.get('show_balance', False)"/> -->
                 <field name="amount_currency" groups="base.group_multi_currency"/>
                 <field name="amount_residual_currency" groups="base.group_multi_currency"/>
-                <!-- usamos grupo "account.group_account_manager" para restringir y no agregamos base.group_multi_currency ya que si no hay multicurrency entonces no debería haber residual en currency y nunca debería verse -->
-                <button name="cancel_amount_residual_currency" icon="fa-ban" type="object" groups="account.group_account_manager" attrs="{'invisible': ['|', ('amount_residual_currency', '=', 0.0), ('amount_residual', '!=', 0.0)]}" confirm="Are you sure this debt is not real? This will create a journal entry on rate exchange journal to cancel this residual amount" string="Cancel residual amount on secondary currency"/>
                 <field name="financial_amount_residual" sum="Total" groups="account_financial_amount.account_use_financial_amounts"/>
                 <!-- no queremos mostrarlo mas, es util? -->
                 <!-- <field name="financial_amount" sum="Total" groups="account_financial_amount.account_use_financial_amounts"/> -->
@@ -56,6 +54,19 @@
                 <field name="company_currency_id" invisible="1"/>
             </tree>
          </field>
+    </record>
+
+    <record id="view_account_debt_line_tree2" model="ir.ui.view">
+        <field name="name">account.debt.line.tree2</field>
+        <field name="model">account.debt.line</field>
+        <field name="inherit_id" ref="view_account_debt_line_tree"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="arch" type="xml">
+            <field name="amount_residual_currency" position="after">
+                <!-- usamos grupo "account.group_account_manager" para restringir y no agregamos base.group_multi_currency ya que si no hay multicurrency entonces no debería haber residual en currency y nunca debería verse -->
+                <button name="cancel_amount_residual_currency" icon="fa-ban" type="object" groups="base.group_no_one" attrs="{'invisible': ['|', ('amount_residual_currency', '=', 0.0), ('amount_residual', '!=', 0.0)]}" confirm="Are you sure this debt is not real? This will create a journal entry on rate exchange journal to cancel this residual amount" string="Cancel residual amount on secondary currency"/>
+            </field>
+        </field>
     </record>
 
     <record id="view_account_debt_line_form" model="ir.ui.view">

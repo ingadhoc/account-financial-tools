@@ -428,14 +428,16 @@ class AccountDebtLine(models.Model):
                     'No se puede cancelar el resisual en moneda porque el '
                     'apunte %s aún tiene saldo contable.' % aml.id))
 
-            partial_rec = aml.credit and aml.matched_debit_ids[0] or \
-                aml.matched_credit_ids[0]
+            partial_rec = (aml.credit and aml.matched_debit_ids) \
+                and aml.matched_debit_ids[0] or aml.matched_credit_ids\
+                and aml.matched_credit_ids[0] or False
 
             exchange_move = self.env['account.move'].create(
                 self.env['account.full.reconcile']._prepare_exchange_diff_move(
                     move_date=aml.date, company=aml.company_id))
-            partial_rec.with_context(
-                skip_full_reconcile_check=True).create_exchange_rate_entry(
+            if partial_rec:
+                partial_rec.with_context(
+                    skip_full_reconcile_check=True).create_exchange_rate_entry(
                     aml, exchange_move)
             exchange_move.post()
 
