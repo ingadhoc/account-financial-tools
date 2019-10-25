@@ -150,8 +150,7 @@ class ResCompanyInterest(models.Model):
         move_line_domain = [
             ('account_id', 'in', self.receivable_account_ids.ids),
             ('full_reconcile_id', '=', False),
-            ('date_maturity', '<', to_date),
-            ('amount_residual', '>', 0.0)
+            ('date_maturity', '<', to_date)
         ]
 
         # Check if a filter is set
@@ -173,8 +172,8 @@ class ResCompanyInterest(models.Model):
 
             debt = line['amount_residual']
 
-            # if not debt or debt <= 0.0:
-            #     continue
+            if not debt or debt <= 0.0:
+                continue
 
             _logger.info(
                 'Creating Interest Invoice (%s of %s) with values:\n%s',
