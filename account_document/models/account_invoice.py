@@ -371,7 +371,7 @@ class AccountInvoice(models.Model):
                 journal = journal_id and self.env['account.journal'].browse(
                     journal_id) or rec.journal_id
                 res = rec._get_available_journal_document_types(
-                    journal, inv_type, rec.partner_id)
+                    journal, inv_type or rec.type, rec.partner_id)
                 vals['journal_document_type_id'] = res[
                     'journal_document_type'].id
                 # call write for each inoice
