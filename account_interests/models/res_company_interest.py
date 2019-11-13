@@ -84,6 +84,7 @@ class ResCompanyInterest(models.Model):
         default="[]",
         help="Extra filters that will be added to the standard search"
     )
+    has_domain = fields.Boolean(compute="_compute_has_domain")
 
     @api.model
     def _cron_recurring_interests_invoices(self):
@@ -264,3 +265,7 @@ class ResCompanyInterest(models.Model):
         line_values = line_data._convert_to_write(
             {field: line_data[field] for field in line_data._cache})
         return line_values
+
+    @api.depends('domain')
+    def _compute_has_domain(self):
+        self.has_domain = len(safe_eval(self.domain)) > 0

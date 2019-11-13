@@ -36,7 +36,7 @@
                             <field name="rule_type"/>
                             <field name="next_date"/>
                             <field name="tolerance_interval"/>
-                            <field name="domain" widget="boolean" readonly="1" />
+                            <field name="has_domain"/>
                         </tree>
                         <form>
                             <group>
