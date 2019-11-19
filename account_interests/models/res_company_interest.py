@@ -13,6 +13,7 @@ _logger = logging.getLogger(__name__)
 class ResCompanyInterest(models.Model):
 
     _name = 'res.company.interest'
+    _description = 'Account Interest'
 
     company_id = fields.Many2one(
         'res.company',
