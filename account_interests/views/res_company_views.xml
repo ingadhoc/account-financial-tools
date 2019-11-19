@@ -9,7 +9,7 @@
         <field name="arch" type="xml">
             <notebook position="inside">
                 <page string="Overdue Payments">
-    <!--                     <group string="Interests">
+                    <!--                     <group string="Interests">
                         <field name="automatic_interests"/>
                     </group>
                     <group attrs="{'invisible': [('automatic_interests','!=',True)]}">
@@ -24,7 +24,7 @@
                     <!-- <field name="interest_ids" context="{'default_company_id': id}" attrs="{'invisible': [('automatic_interests','!=',True)]}"> -->
                     <separator string="Interéses Automáticos"/>
                     <field name="interest_ids" context="{'default_company_id': id}">
-                        <tree editable="bottom">
+                        <tree>
                             <field name="company_id" invisible="1" required="0"/>
                             <field name="receivable_account_ids" widget="many2many_tags"/>
                             <field name="invoice_receivable_account_id"/>
@@ -36,11 +36,32 @@
                             <field name="rule_type"/>
                             <field name="next_date"/>
                             <field name="tolerance_interval"/>
+                            <field name="has_domain"/>
                         </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="company_id" invisible="1" required="0"/>
+                                    <field name="receivable_account_ids" widget="many2many_tags"/>
+                                    <field name="invoice_receivable_account_id"/>
+                                    <field name="interest_product_id"/>
+                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                </group>
+                                <group>
+                                    <field name="rate"/>
+                                    <field name="automatic_validation"/>
+                                    <field name="interval"/>
+                                    <field name="rule_type"/>
+                                    <field name="next_date"/>
+                                    <field name="tolerance_interval"/>
+                                </group>
+                                <field name="domain" widget="domain" options="{ 'model': 'account.move.line', 'in_dialog': True }" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <!-- <group name="account_grp" string="Accounting">   -->
-                        <!-- <field name="debt_interest_period" help="Number of months for imputation of default interest"/> -->
+                <!-- <field name="debt_interest_period" help="Number of months for imputation of default interest"/> -->
                 <!-- </group> -->
 
             </notebook>

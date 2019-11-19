@@ -1,4 +1,4 @@
-from odoo import models, api, fields
+from odoo import models, api
 from odoo.osv import expression
 
 
@@ -7,11 +7,14 @@ class AccountReconciliation(models.AbstractModel):
     _inherit = 'account.reconciliation.widget'
 
     @api.multi
-    def _prepare_move_lines(self, move_lines, target_currency=False, target_date=False, recs_count=0):
+    def _prepare_move_lines(
+            self, move_lines, target_currency=False, target_date=False,
+            recs_count=0):
         """ Show and allow to search by move display name (Document number) on bank statements and partner debt
         reconcile """
         res = super()._prepare_move_lines(
-            move_lines, target_currency=target_currency, target_date=target_date, recs_count=recs_count)
+            move_lines, target_currency=target_currency,
+            target_date=target_date, recs_count=recs_count)
 
         for rec in res:
             line = self.env['account.move.line'].browse(rec['id'])
@@ -29,4 +32,3 @@ class AccountReconciliation(models.AbstractModel):
             return domain
         domain_trans_ref = [('move_id.display_name', 'ilike', search_str)]
         return expression.OR([domain, domain_trans_ref])
-
