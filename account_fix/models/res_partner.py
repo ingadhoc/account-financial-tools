@@ -39,3 +39,30 @@ class ResPartner(models.Model):
                 partner.credit = val
             elif _type == 'payable':
                 partner.debit = -val
+
+    @api.multi
+    def _asset_difference_search(self, account_type, operator, operand):
+        if operator not in ('<', '=', '>', '>=', '<='):
+            return []
+        if type(operand) not in (float, int):
+            return []
+        sign = 1
+        if account_type == 'payable':
+            sign = -1
+        # We add to filter by childs companies if you are in parent company
+        child_companies = self.env['res.company'].search(
+            [('id', 'child_of', self.env.user.company_id.id)])
+        res = self._cr.execute('''
+            SELECT partner.id
+            FROM res_partner partner
+            LEFT JOIN account_move_line aml ON aml.partner_id = partner.id
+            RIGHT JOIN account_account acc ON aml.account_id = acc.id
+            WHERE acc.internal_type = %s
+              AND NOT acc.deprecated AND acc.company_id IN %s
+            GROUP BY partner.id
+            HAVING %s * COALESCE(SUM(aml.amount_residual), 0) ''' + operator + ''' %s''', (
+                account_type, tuple(child_companies.ids), sign, operand))
+        res = self._cr.fetchall()
+        if not res:
+            return [('id', '=', '0')]
+        return [('id', 'in', [r[0] for r in res])]
