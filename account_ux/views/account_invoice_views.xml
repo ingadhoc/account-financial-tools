@@ -5,11 +5,6 @@
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
-            <!-- agregamos boton para poder cancelar facturas pagadas sin pagos (facturas con importe 0 o que por que van contra cuenta no a cobrar/pagar)  -->
-            <form>
-                <field name="payment_move_line_ids" invisible="1"/>
-            </form>
-
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
             <xpath expr="//page[@name='other_info']//field[@name='origin']" position="attributes">
                 <attribute name="attrs"></attribute>
@@ -37,11 +32,6 @@
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_supplier_form"/>
         <field name="arch" type="xml">
-            <!-- agregamos boton para poder cancelar facturas pagadas sin pagos (facturas con importe 0 o que por que van contra cuenta no a cobrar/pagar)  -->
-            <form>
-                <field name="payment_move_line_ids" invisible="1"/>
-            </form>
-
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
             <field name="origin" position="attributes">
                 <attribute name="attrs"></attribute>
