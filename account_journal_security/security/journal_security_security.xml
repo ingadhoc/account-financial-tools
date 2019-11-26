@@ -64,8 +64,7 @@
     <record model="ir.rule" id="journal_security_rule_account_move_line">
         <field name="name">Account Move Line of Jornals restricted to user</field>
         <field name="model_id" ref="account.model_account_move_line"/>
-        <field name="domain_force">['|', ('move_id.journal_id.user_ids', '=' ,False), ('move_id.journal_id.id', 'in', user.journal_ids.ids)]</field>
-        <!-- OJO: Parace que no esta manejando correctamente los campos related en las reglas, El campo aml.journal_id es related stored pero por alguna razon no esta funcionando en la regla no se calcula bien. usando el campo aml.move_id.journal_id soluciona el problema por ahora -->
+        <field name="domain_force">['|', '|', ('journal_id', '=' ,False), ('journal_id.user_ids', '=' ,False), ('journal_id.id', 'in', user.journal_ids.ids)]</field>
     </record>
 
     <record model="ir.rule" id="journal_security_rule_account_payment">
