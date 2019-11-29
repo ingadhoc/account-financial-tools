@@ -77,18 +77,14 @@ class AccountJournal(models.Model):
         else:
             self.use_documents = False
 
-    @api.multi
-    @api.constrains(
-        'code',
-        'company_id',
-        'use_documents',
-    )
+    def action_update_journal_document_types(self):
+        """ button in journal form view to update the document types to use """
+        return self._update_journal_document_types()
+
+    @api.constrains('code', 'company_id', 'use_documents')
     def update_journal_document_types(self):
-        """
-        Tricky constraint to create documents on journal.
-        You should not inherit this function, inherit
-        "_update_journal_document_types" instead
-        """
+        """ Tricky constraint to create documents on journal. You should not inherit this function, inherit
+        "_update_journal_document_types" method instead """
         return self._update_journal_document_types()
 
     @api.multi
