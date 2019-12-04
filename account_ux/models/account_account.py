@@ -41,3 +41,17 @@ class AccountAccount(models.Model):
                 'Solo puede utilizar una moneda secundaria distinta a la '
                 'moneda de la compañía (%s).' % (
                     rec.company_id.currency_id.name)))
+
+    @api.multi
+    def write(self, vals):
+        """ If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable,
+        recompute amounts residual because they are used on liquidity accounts
+        """
+        user_type = self.env['account.account.type'].browse(vals.get('user_type_id'))
+        aml_to_recompute = self.env['account.move.line']
+        if user_type and user_type.type == 'liquidity':
+            accounts_to_re_compute = self.filtered(lambda x: not x.reconcile and x.user_type_id.type != 'liquidity')
+            aml_to_recompute = aml_to_recompute.search([('account_id', 'in', accounts_to_re_compute.ids)])
+        res = super(AccountAccount, self).write(vals=vals)
+        aml_to_recompute._amount_residual()
+        return res

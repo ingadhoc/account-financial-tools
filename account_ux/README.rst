@@ -16,6 +16,7 @@ Account UX
 
 Several Improvements to accounting:
 
+#. If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable, recompute amounts residual because they are used on liquidity accounts
 #. On invoice validation check that user hasn't delete any "automatic" tax from invoice
 #. Add reconciliations menu on accounting (only with debug mode)
 #. When creatin banks from bank menu, use bank name + account number for journal name (by default only account number is used). And also allow user to change this value (by default user can't)
