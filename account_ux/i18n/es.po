@@ -1,0 +1,812 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * account_ux
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019
+# Federico La Torre <3doeste@gmail.com>, 2019
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-26 00:51+0000\n"
+"PO-Revision-Date: 2019-07-28 11:54+0000\n"
+"Last-Translator: Federico La Torre <3doeste@gmail.com>, 2019\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_ux
+#: model:mail.template,body_html:account_ux.email_template_bank_statement
+msgid ""
+"\n"
+"    <div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\n"
+"    <p>Hello ${object.name},</p>\n"
+"\n"
+"    <p>We confirm receipt of your payment for $ ${ctx.get('statement_line').amount} of the day ${ctx.get('date')} </p>\n"
+"    <br/>\n"
+"    <p>If you have any question, do not hesitate to contact us.</p>\n"
+"    <p>Thank you for choosing ${object.company_id.name or 'us'}!</p>\n"
+"    <br/>\n"
+"    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
+"        <h3 style=\"margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n"
+"            <strong style=\"text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n"
+"    </div>\n"
+"    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n"
+"        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n"
+"        % if object.company_id.street:\n"
+"            ${object.company_id.street}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.street2:\n"
+"            ${object.company_id.street2}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.city or object.company_id.zip:\n"
+"            ${object.company_id.zip} ${object.company_id.city}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.country_id:\n"
+"            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>\n"
+"        % endif\n"
+"        </span>\n"
+"        % if object.company_id.phone:\n"
+"            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n"
+"                Phone:&nbsp; ${object.company_id.phone}\n"
+"            </div>\n"
+"        % endif\n"
+"        % if object.company_id.website:\n"
+"            <div>\n"
+"                Web :&nbsp;<a href=\"${object.company_id.website}\">${object.company_id.website}</a>\n"
+"            </div>\n"
+"        % endif\n"
+"        <p></p>\n"
+"    </div>\n"
+"    </div>\n"
+"            "
+msgstr ""
+"\n"
+"    <div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\n"
+"    <p>Hello ${object.name},</p>\n"
+"\n"
+"    <p>We confirm receipt of your payment for $ ${ctx.get('statement_line').amount} of the day ${ctx.get('date')} </p>\n"
+"    <br/>\n"
+"    <p>If you have any question, do not hesitate to contact us.</p>\n"
+"    <p>Thank you for choosing ${object.company_id.name or 'us'}!</p>\n"
+"    <br/>\n"
+"    <div style=\"width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;\">\n"
+"        <h3 style=\"margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;\">\n"
+"            <strong style=\"text-transform:uppercase;\">${object.company_id.name}</strong></h3>\n"
+"    </div>\n"
+"    <div style=\"width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;\">\n"
+"        <span style=\"color: #222; margin-bottom: 5px; display: block; \">\n"
+"        % if object.company_id.street:\n"
+"            ${object.company_id.street}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.street2:\n"
+"            ${object.company_id.street2}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.city or object.company_id.zip:\n"
+"            ${object.company_id.zip} ${object.company_id.city}<br/>\n"
+"        % endif\n"
+"        % if object.company_id.country_id:\n"
+"            ${object.company_id.state_id and ('%s, ' % object.company_id.state_id.name) or ''} ${object.company_id.country_id.name or ''}<br/>\n"
+"        % endif\n"
+"        </span>\n"
+"        % if object.company_id.phone:\n"
+"            <div style=\"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; \">\n"
+"                Phone:&nbsp; ${object.company_id.phone}\n"
+"            </div>\n"
+"        % endif\n"
+"        % if object.company_id.website:\n"
+"            <div>\n"
+"                Web :&nbsp;<a href=\"${object.company_id.website}\">${object.company_id.website}</a>\n"
+"            </div>\n"
+"        % endif\n"
+"        <p></p>\n"
+"    </div>\n"
+"    </div>\n"
+"            "
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.invoice_supplier_form
+#: model_terms:ir.ui.view,arch_db:account_ux.view_invoice_report_extended_form
+msgid "(change)"
+msgstr "(change)"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_account
+msgid "Account"
+msgstr "Cuenta"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_group
+msgid "Account Group"
+msgstr "Grupo de Cuentas"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_invoice_tax_wizard
+msgid "Account Invoice Tax Wizard"
+msgstr "Asistente de Impuestos en Factura"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_account_type
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Account Type"
+msgstr "Tipo de Cuenta"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__acquirer_ids
+msgid ""
+"Acquirer that use this journal to register online payments journal entries"
+msgstr ""
+"Comprador que utiliza esta revista para registrar entradas de diario de "
+"pagos en línea"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__acquirer_ids
+msgid "Acquirers"
+msgstr "Comprador"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_invoice_tax_wizard_form
+msgid "Add Invoice Tax"
+msgstr "Agregar impuesto de factura"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tax_wizard_form
+msgid "Add Tax"
+msgstr "Agregar impuesto"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__amount
+msgid "Amount"
+msgstr "Importe"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__account_analytic_id
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Analytic Account"
+msgstr "Cuenta Analítica"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_tag_required
+#: model:ir.model.fields,field_description:account_ux.field_account_account_type__analytic_tag_required
+msgid "Analytic tag required?"
+msgstr "¿Etiqueta analítica requerida?"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_move_line_analisis
+#: model:ir.ui.menu,name:account_ux.menu_move_line_analisis
+msgid "Análisis de Apuntes Contables"
+msgstr "Análisis de Apuntes Contables"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_bank_statement
+msgid "Bank Statement"
+msgstr "Extracto bancario"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr "Línea de extracto bancario"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_bank_statement_line_tree
+msgid "Bank Statement Lines"
+msgstr "Lineas de Extracto Bancario"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__base
+msgid "Base"
+msgstr "Base"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
+msgid "Cancel All"
+msgstr "Cancel All"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_change_currency
+#: model:ir.model,name:account_ux.model_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+msgid "Change Currency"
+msgstr "Change Currency"
+
+#. module: account_ux
+#: selection:account.change.currency,change_type:0
+msgid "Change Only Currency"
+msgstr "Change Only Currency"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__change_type
+msgid "Change Type"
+msgstr "Change Type"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_group__child_ids
+msgid "Child"
+msgstr "Hijo"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_account__analytic_tag_required
+msgid ""
+"Choose if you want analytic tags to be required when posting journal entries"
+" with this account. If you select:* Defined by account type: it will be "
+"required or not regarding the value of 'Analytic tag required?' on the "
+"account type* Required: it will be required, no matter the value on the "
+"account type* Optional: it won't be required, no matter the value on the "
+"account type"
+msgstr ""
+"Elija si desea que se requieran etiquetas analíticas al publicar asientos de"
+" diario con esta cuenta. Si selecciona: * Definido por tipo de cuenta: será "
+"necesario o no en relación con el valor de '¿Etiqueta analítica requerida?' "
+"en el tipo de cuenta * Requerido: será necesario, sin importar el valor en "
+"el tipo de cuenta * Opcional: no será necesario, sin importar el valor en el"
+" tipo de cuenta"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__invoice_company_id
+#: model:ir.model.fields,field_description:account_ux.field_account_payment_term__company_id
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+#: model_terms:ir.ui.view,arch_db:account_ux.view_invioce_filter
+msgid "Company"
+msgstr "Compañía"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_config_settings
+msgid "Config Settings"
+msgstr "Parámetros de Configuración"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tax_wizard_form
+msgid "Confirm"
+msgstr "Confirmar"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_date
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: account_ux
+#: model:account.payment.method,name:account_ux.account_payment_method_inbound_credit_card
+#: model:account.payment.method,name:account_ux.account_payment_method_outbound_credit_card
+msgid "Credit Card"
+msgstr "Credit Card"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__credit_card_days_for_collection
+msgid "Credit Card Days For Collection"
+msgstr "Credit Card Days For Collection"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Credit Jouranl Entry"
+msgstr "Entrada en el Diario de Crédito"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_from_id
+msgid "Currency From"
+msgstr "Currency From"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_currency_rate
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_rate
+msgid "Currency Rate"
+msgstr "Tasa Monetaria"
+
+#. module: account_ux
+#: code:addons/account_ux/wizards/account_change_currency.py:63
+#, python-format
+msgid "Currency changed from %s to %s with rate %s"
+msgstr "Currency changed from %s to %s with rate %s"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
+msgid "Currency from Invoice"
+msgstr "Currency from Invoice"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
+msgid "Currency to"
+msgstr "Currency to"
+
+#. module: account_ux
+#: model:account.payment.method,name:account_ux.account_payment_method_inbound_debit_card
+#: model:account.payment.method,name:account_ux.account_payment_method_outbound_debit_card
+msgid "Debit Card"
+msgstr "Debit Card"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__debit_card_days_for_collection
+msgid "Debit Card Days For Collection"
+msgstr "Debit Card Days For Collection"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Debit Jouranl Entry"
+msgstr "Entrada en el Diario de Débito"
+
+#. module: account_ux
+#: selection:account.account,analytic_tag_required:0
+msgid "Defined by account type"
+msgstr "Definido por tipo de cuenta"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
+msgid "Description"
+msgstr "Descripción"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__display_name
+msgid "Display Name"
+msgstr "Mostrar Nombre"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Due date"
+msgstr "Fecha de Vencimiento"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:44
+#, python-format
+msgid "ERROR: Invoice was not sent via email"
+msgstr "ERROR: La factura no fue enviada por correo electrónico"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__mail_template_id
+msgid "Email Template"
+msgstr "Plantilla de correo electrónico"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
+msgid "Full Reconciliations"
+msgstr "Conciliaciones totales"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__group_id
+msgid "Group"
+msgstr "Grupo"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Group By..."
+msgstr "Agrupar por..."
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_account_type__analytic_tag_required
+msgid ""
+"If True, then analytic tags will be required when posting journal entries "
+"with this type of account."
+msgstr ""
+"Si es Verdadero, se requerirán etiquetas analíticas al publicar entradas de "
+"diario con este tipo de cuenta."
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__mail_template_id
+msgid ""
+"If set an email will be sent to the customer after the invoices related to "
+"this journal has been validated."
+msgstr ""
+"Si se configura, se enviará un correo electrónico al cliente una vez que se "
+"hayan validado las facturas relacionadas con este diario."
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_invoice
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__invoice_id
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__invoice_id
+msgid "Invoice"
+msgstr "Factura"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:47
+#, python-format
+msgid ""
+"Invoice %s was correctly validate but was not send via email. Please review "
+"invoice chatter for more information"
+msgstr ""
+"La factura %s se validó correctamente pero no se envió por correo "
+"electrónico. Por favor revise la charla de facturas para más información"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+msgid "Invoice Currency"
+msgstr "Invoice Currency"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__group_reference_on_tree_and_main_form
+msgid "Invoice Reference/Description"
+msgstr "Refencia/Descripcion de Factura"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__invoice_type
+msgid "Invoice Type"
+msgstr "Tipo de factura"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_journal
+#: model_terms:ir.ui.view,arch_db:account_ux.view_invioce_filter
+msgid "Journal"
+msgstr "Diario"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_move
+msgid "Journal Entries"
+msgstr "Lineas de Diari"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency____last_update
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard____last_update
+msgid "Last Modified on"
+msgstr "Última modificación en"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Last Month"
+msgstr "Último Mes"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización realizada por"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_date
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Last Year"
+msgstr "Último Año"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:30
+#, python-format
+msgid ""
+"Los impuestos \"%s\" están definidos en líneas de factura pero no están "
+"presentes en los impuestos de factura, es probable que los haya borrado sin "
+"querer. Por favor, recalcule los impuestos modificando alguna línea de la "
+"factura. "
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.res_partner_view_buttons
+msgid "Match Customer payments"
+msgstr "Conciliar pagos de Clientes"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.res_partner_view_buttons
+msgid "Match Supplier payments"
+msgstr "Conciliar pagos de Proveedores"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_invoice_tax_wizard__base
+msgid "Not stored, only used to suggest amount"
+msgstr "No almacenado, solo se utiliza para sugerir cantidad"
+
+#. module: account_ux
+#: model:account.payment.method,name:account_ux.account_payment_method_inbound_online
+#: model:account.payment.method,name:account_ux.account_payment_method_outbound_online
+msgid "Online"
+msgstr "Online"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
+msgid "Open Document"
+msgstr "Abrir documento"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
+msgid "Open Related Document"
+msgstr "Open Related Document"
+
+#. module: account_ux
+#: selection:account.account,analytic_tag_required:0
+msgid "Optional"
+msgstr "Opcional"
+
+#. module: account_ux
+#: model:ir.ui.menu,name:account_ux.menu_partial_reconciliations
+msgid "Partial"
+msgstr "Parcial"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_move_partial_reconcile
+msgid "Partial reconciliations"
+msgstr "Conciliaciones Parciales"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
+msgid "Partner"
+msgstr "Partner"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_payment_acquirer
+msgid "Payment Acquirer"
+msgstr "Método de pago"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_payment_term
+msgid "Payment Terms"
+msgstr "Plazos de pago"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_payment
+msgid "Payments"
+msgstr "Pagos"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:59
+#, python-format
+msgid "Please check the email template associated with the invoice journal."
+msgstr ""
+"Compruebe la plantilla de correo electrónico asociada con el diario de "
+"facturas."
+
+#. module: account_ux
+#: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
+msgid "Reconciliations"
+msgstr "Reconciliations"
+
+#. module: account_ux
+#: selection:account.account,analytic_tag_required:0
+msgid "Required"
+msgstr "Requerido"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_form
+msgid "Residuals"
+msgstr "Residuales"
+
+#. module: account_ux
+#: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
+msgid "Restrict Change Invoice Currency Exchange"
+msgstr "Restrict Change Invoice Currency Exchange"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_to_id
+msgid "Select a currency to apply on the invoice"
+msgstr "Select a currency to apply on the invoice"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_rate
+msgid "Select a rate to apply on the invoice"
+msgstr "Select a rate to apply on the invoice"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
+msgid ""
+"Show Reference/Description in list view and in main section of form view"
+msgstr ""
+"Mostrar Referencia/Descripción en vista lista y en sección principal de la "
+"vista formulario"
+
+#. module: account_ux
+#: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
+msgid "Show invoice reference field on tree and main form views"
+msgstr ""
+"Mostrar campo referencia de la factura en la vista lista y en la vista "
+"formulario principal"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
+msgid ""
+"Si confirma se van a cancelar las conciliaciones de todas las líneas (y "
+"borrar los asientos que se hayan generado con las mismas), esto no puede "
+"deshacerce. Seguro que desea continuar?"
+msgstr ""
+"Si confirma se van a cancelar las conciliaciones de todas las líneas (y "
+"borrar los asientos que se hayan generado con las mismas), esto no puede "
+"deshacerce. Seguro que desea continuar?"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_account.py:42
+#: code:addons/account_ux/models/account_journal.py:51
+#, python-format
+msgid ""
+"Solo puede utilizar una moneda secundaria distinta a la moneda de la "
+"compañía (%s)."
+msgstr ""
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_move.py:22
+#, python-format
+msgid ""
+"Some move lines don't have analytic tags and analytic tags are required by the account type.\n"
+"* Accounts: %s\n"
+"* Move lines ids: %s"
+msgstr ""
+"Algunos apuntes contables no tienen etiquetas analíticas y las etiquetas analíticas son requeridas por el tipo de cuenta.\n"
+"* Cuentas: %s\n"
+"* Ids de apuntes contables: %s"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
+msgid "Statement Lines"
+msgstr "Lineas de Declaración"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__tax_id
+msgid "Tax"
+msgstr "Impuesto"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_tax_wizard__name
+msgid "Tax Description"
+msgstr "Descripción del Impuesto"
+
+#. module: account_ux
+#: code:addons/account_ux/models/payment_acquirer.py:17
+#, python-format
+msgid "The journal company must belong to the same company of the aquirer"
+msgstr "The journal company must belong to the same company of the aquirer"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "This Month"
+msgstr "Este Mes"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "This Year"
+msgstr "Este Año"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__credit_card_days_for_collection
+msgid ""
+"This number of days will be added to the date of inbound credit card "
+"payments to get the due date, usefull for cashflow analysis"
+msgstr ""
+"Este número de días se agregará a la fecha de los pagos de tarjetas de "
+"crédito entrantes para obtener la fecha de vencimiento, útil para el "
+"análisis de flujo de caja"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__debit_card_days_for_collection
+msgid ""
+"This number of days will be added to the date of inbound debit card payments"
+" to get the due date, usefull for cashflow analysis"
+msgstr ""
+"Este número de días se agregará a la fecha de los pagos de tarjetas de "
+"crédito entrantes para obtener la fecha de vencimiento, útil para el "
+"análisis de flujo de caja"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+msgid "This wizard will change the currency of the invoice"
+msgstr "This wizard will change the currency of the invoice"
+
+#. module: account_ux
+#: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_form
+msgid "Total"
+msgstr "Total"
+
+#. module: account_ux
+#: selection:account.change.currency,change_type:0
+msgid "Update both currency and values"
+msgstr "Update both currency and values"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_move_line.py:18
+#, python-format
+msgid "View Bank Statement"
+msgstr "View Bank Statement"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_move_line.py:25
+#, python-format
+msgid "View Invoice"
+msgstr "View Invoice"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_move_line.py:26
+#, python-format
+msgid "View Move"
+msgstr "View Move"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_move_line.py:21
+#, python-format
+msgid "View Payment"
+msgstr "View Payment"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:86
+#, python-format
+msgid "Warning!"
+msgstr "Precaución!"
+
+#. module: account_ux
+#: model:mail.template,subject:account_ux.email_template_bank_statement
+msgid "We confirm receipt of your payment"
+msgstr "We confirm receipt of your payment"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:87
+#, python-format
+msgid ""
+"You are changing the Invoice Date but you have force an accounting date.\n"
+" Please check if you need to update the accounting date too."
+msgstr ""
+"Está cambiando la Fecha de Factura pero forzó una fecha contable.\n"
+"Por favor revise si necesita actualizar la fecha contable también."
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_invoice.py:127
+#, python-format
+msgid ""
+"You can compute taxes invoices that are not in draft only if you send "
+"\"force_compute_taxes=True\" on context. Be awareinvoices amounts could "
+"change"
+msgstr ""
+"Puede computar los impuestos de facturas que no están en estado borrador "
+"SOLO si manda en el contexto \"force_compute_taxes=True\". Cuidado que los "
+"importes de las facturas pueden cambiar"
+
+#. module: account_ux
+#: code:addons/account_ux/models/res_currency_rate.py:20
+#, python-format
+msgid ""
+"You can not create a rate without company since you already have rates "
+"before %s with company set. The rate you want to create will not have any "
+"effect, will not be take into account."
+msgstr ""
+"No puede crear una cotización sin compañía ya que ya tiene cotizaciones "
+"antes de %s con la compañía definida. La cotización que desee crear no "
+"tendrá ningún efecto, no se tendrá en cuenta."
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.invoice_supplier_form
+#: model_terms:ir.ui.view,arch_db:account_ux.view_invoice_report_extended_form
+msgid "_Add_Tax"
+msgstr "_Agregar_Impuesto"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tax_wizard_form
+msgid "_Cancel"
+msgstr "_Cancelar"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tax_wizard_form
+msgid "or"
+msgstr "or"
