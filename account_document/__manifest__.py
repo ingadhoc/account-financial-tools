@@ -35,6 +35,6 @@
     ],
     'images': [
     ],
-    'installable': True,
+    'installable': False,
     'post_init_hook': 'post_init_hook',
 }
