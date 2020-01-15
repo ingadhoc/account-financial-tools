@@ -135,15 +135,8 @@ class AccountStatementMoveImportWizard(models.TransientModel):
                         'tener como otra moneda esa misma moneda (%s)') % (
                             statement_currency.name))
                 amount = line.amount_currency
-                currency_id = False
-                amount_currency = False
-            # si el estatement es en moneda de la cia, importamos por las dudas
-            # currency y amount currency pero en realidad no son necesarios
-            # y de hecho son invisibles por defecto
             else:
                 amount = line.balance
-                currency_id = line.currency_id.id
-                amount_currency = line.amount_currency
 
             line_vals = {
                 'statement_id': statement.id,
@@ -151,8 +144,6 @@ class AccountStatementMoveImportWizard(models.TransientModel):
                 'name': line.name or '/',
                 'ref': line.ref,
                 'amount': amount,
-                'currency_id': currency_id,
-                'amount_currency': amount_currency,
                 'partner_id': line.partner_id.id,
             }
 
