@@ -19,7 +19,6 @@ class AccountMoveLine(models.Model):
         currency_field='company_currency_id',
     )
 
-    @api.multi
     @api.depends('debit', 'credit')
     def _compute_financial_amounts(self):
         date = fields.Date.today()
