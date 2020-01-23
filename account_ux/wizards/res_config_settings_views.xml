@@ -18,6 +18,26 @@
                     </div>
                 </div>
             </div>
+            <!-- on sale we use xpath because website_sale adds same field -->
+            <xpath expr="//div[@data-key='account_invoicing']//label[@for='default_sale_tax_id']" position="attributes">
+                <attribute name="for">default_sale_tax_ids</attribute>
+            </xpath>
+            <xpath expr="//div[@data-key='account_invoicing']//field[@name='default_sale_tax_id']" position="attributes">
+                <attribute name="name">default_sale_tax_ids</attribute>
+                <attribute name="domain">[('type_tax_use', 'in', ('sale', 'all')), ('company_id', 'child_of', company_id)]</attribute>
+                <attribute name="widget">many2many_tags</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+            </xpath>
+
+            <label for="default_purchase_tax_id" position="attributes">
+                <attribute name="for">default_purchase_tax_ids</attribute>
+            </label>
+            <field name="default_purchase_tax_id" position="attributes">
+                <attribute name="name">default_purchase_tax_ids</attribute>
+                <attribute name="domain">[('type_tax_use', 'in', ('purchase', 'all')), ('company_id', 'child_of', company_id)]</attribute>
+                <attribute name="widget">many2many_tags</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+            </field>
         </field>
     </record>
 </odoo>
