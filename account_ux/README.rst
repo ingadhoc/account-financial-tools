@@ -52,6 +52,7 @@ Several Improvements to accounting:
 #. Do not allow to recompute taxes on invoices that are not on draft state because tax and invoice amounts could change
 #. DISABLED, REMOVE IF NO NEEDED: Disable currency change when journal is changed
 #. Do not add currency info when reconciling from invoice
+#. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
