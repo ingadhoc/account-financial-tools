@@ -52,6 +52,7 @@ Several Improvements to accounting:
 #. Add visible to group account invoice the field "Journal" in account invoice form.
 #. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
 #. Solo conciliamos en moneda secundaria si la cuenta contable tiene definida moneda secundaria.
+#. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.2
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
