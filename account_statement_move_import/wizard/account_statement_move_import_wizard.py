@@ -11,11 +11,6 @@ class AccountStatementMoveImportWizard(models.TransientModel):
     _name = "account.statement.move.import.wizard"
     _description = "account.statement.move.import.wizard"
 
-    @api.model
-    def _get_statement(self):
-        return self.env['account.bank.statement'].browse(
-            self._context.get('active_id', False))
-
     from_date = fields.Date(
         'From Date',
         required=True,
@@ -27,7 +22,7 @@ class AccountStatementMoveImportWizard(models.TransientModel):
     statement_id = fields.Many2one(
         'account.bank.statement',
         'Statement',
-        default=_get_statement,
+        default=lambda s: s.env['account.bank.statement'].browse(s._context.get('active_id', False)),
         required=True,
         ondelete='cascade',
     )
@@ -51,7 +46,6 @@ class AccountStatementMoveImportWizard(models.TransientModel):
         "('account_id', 'in', journal_account_ids)]"
     )
 
-    @api.multi
     def onchange(self, values, field_name, field_onchange):
         """Necesitamos hacer esto porque los onchange que agregan lineas,
         cuando se va a guardar el registro, terminan creando registros.
@@ -62,23 +56,19 @@ class AccountStatementMoveImportWizard(models.TransientModel):
                 fields.append(field)
         for field in fields:
             del field_onchange[field]
-        return super(AccountStatementMoveImportWizard, self).onchange(
-            values, field_name, field_onchange)
+        return super().onchange(values, field_name, field_onchange)
 
-    @api.multi
     @api.onchange('statement_id')
     def onchange_statement(self):
         if self.statement_id.date:
-            date = fields.Date.from_string(self.statement_id.date)
+            date = self.statement_id.date
             self.from_date = date + relativedelta(day=1)
             self.to_date = date + relativedelta(day=1, months=+1, days=-1)
 
-    @api.multi
     @api.depends('statement_id')
     def _compute_get_journal(self):
         self.journal_id = self.statement_id.journal_id
 
-    @api.multi
     @api.onchange('from_date', 'to_date', 'journal_id')
     def get_move_lines(self):
         move_lines = self.move_line_ids.search([
@@ -98,14 +88,12 @@ class AccountStatementMoveImportWizard(models.TransientModel):
             'target': 'new',
         }
 
-    @api.multi
     @api.depends('journal_id')
     def _compute_get_accounts(self):
         self.journal_account_ids = (
             self.journal_id.default_credit_account_id +
             self.journal_id.default_debit_account_id)
 
-    @api.multi
     def confirm(self):
         self.ensure_one()
 
