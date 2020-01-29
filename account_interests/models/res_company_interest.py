@@ -94,7 +94,6 @@ class ResCompanyInterest(models.Model):
         self.search([('next_date', '<=', current_date)]
                     ).create_interest_invoices()
 
-    @api.multi
     def create_interest_invoices(self):
         for rec in self:
             _logger.info(
@@ -132,7 +131,6 @@ class ResCompanyInterest(models.Model):
             rec.next_date = fields.Date.to_string(
                 interests_date_date + next_delta)
 
-    @api.multi
     def create_invoices(self, to_date):
         self.ensure_one()
 
@@ -200,7 +198,6 @@ class ResCompanyInterest(models.Model):
             if self.automatic_validation:
                 invoice.action_invoice_open()
 
-    @api.multi
     def prepare_info(self, to_date_format, debt):
         self.ensure_one()
 
@@ -211,7 +208,6 @@ class ResCompanyInterest(models.Model):
 
         return res
 
-    @api.multi
     def _prepare_interest_invoice(self, partner, debt, to_date, journal):
         self.ensure_one()
 
@@ -238,7 +234,6 @@ class ResCompanyInterest(models.Model):
         }
         return invoice_vals
 
-    @api.multi
     def _prepare_interest_invoice_line(self, invoice, partner, debt, to_date):
         self.ensure_one()
         company = self.company_id
