@@ -3,15 +3,16 @@
 # * account_interests
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019
+# Federico La Torre <3doeste@gmail.com>, 2019
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-04 17:38+0000\n"
-"PO-Revision-Date: 2018-08-23 20:05+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2019\n"
+"POT-Creation-Date: 2019-12-26 01:12+0000\n"
+"PO-Revision-Date: 2019-11-19 19:09+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,17 +21,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_analytic_account_id
+#: model:ir.model,name:account_interests.model_res_company_interest
+msgid "Account Interest"
+msgstr "Interés de Cuenta"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__domain
+msgid "Additional Filters"
+msgstr "Filtros Adicionales"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__analytic_account_id
 msgid "Analytic account"
 msgstr "Cuenta analítica"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest_automatic_validation
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__automatic_validation
 msgid "Automatic Invoice Validation?"
 msgstr "Validación Automática de Factura?"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_automatic_validation
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__automatic_validation
 msgid "Automatic Validation?"
 msgstr "Validación Automática?"
 
@@ -40,7 +51,7 @@ msgid "Companies"
 msgstr "Compañías"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_company_id
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__company_id
 msgid "Company"
 msgstr "Compañía"
 
@@ -52,27 +63,27 @@ msgid "Create Interests Invoices"
 msgstr "Crear facturas de intereses"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_create_uid
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__create_uid
 msgid "Created by"
 msgstr "Created by"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_create_date
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__create_date
 msgid "Created on"
 msgstr "Created on"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_receivable_account_ids
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__receivable_account_ids
 msgid "Cuentas a Cobrar"
 msgstr "Cuentas a Cobrar"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest_receivable_account_ids
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__receivable_account_ids
 msgid "Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda"
 msgstr "Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_next_date
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__next_date
 msgid "Date of Next Invoice"
 msgstr "Fecha de Próxima Factura"
 
@@ -82,70 +93,82 @@ msgid "Day(s)"
 msgstr "Día(s)"
 
 #. module: account_interests
-#: code:addons/account_interests/models/res_company_interest.py:186
+#: code:addons/account_interests/models/res_company_interest.py:207
 #, python-format
 msgid ""
 "Deuda Vencida al %s: %s\n"
 "Tasa de interés: %s"
 msgstr ""
+"Deuda Vencida al %s: %s\n"
+"Tasa de interés: %s"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_display_name
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__display_name
 msgid "Display Name"
 msgstr "Nombre a Mostrar"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_id
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__domain
+msgid "Extra filters that will be added to the standard search"
+msgstr "Filtros extra que serán añadidos a la búsqueda estándar"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__has_domain
+msgid "Has Domain"
+msgstr "Tiene Dominio"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__id
 msgid "ID"
 msgstr "ID"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest_invoice_receivable_account_id
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__invoice_receivable_account_id
 msgid "If no account is sellected, then partner receivable account is used"
 msgstr ""
 "Si no se selecciona una cuenta entonces se va a utilizar la cuenta a cobrar "
 "del cliente"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_ids
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_rate
+#: model:ir.model.fields,field_description:account_interests.field_res_company__interest_ids
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rate
 msgid "Interest"
 msgstr "Interés"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_interest_product_id
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interest_product_id
 msgid "Interest Product"
 msgstr "Producto de Interés"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest_rule_type
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__rule_type
 msgid "Interests Invoice automatically repeat at specified interval"
 msgstr ""
 "Las Facturas de Interés se repiten a un intervalo específico automáticamente"
 " "
 
 #. module: account_interests
-#: model:ir.ui.view,arch_db:account_interests.view_kinesis_athletics_company_form
+#: model_terms:ir.ui.view,arch_db:account_interests.view_kinesis_athletics_company_form
 msgid "Interéses Automáticos"
 msgstr "Interéses Automáticos"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_invoice_receivable_account_id
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__invoice_receivable_account_id
 msgid "Invoice Receivable Account"
 msgstr "Cuenta a Cobrar en Factura"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest___last_update
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest____last_update
 msgid "Last Modified on"
 msgstr "Última Modificación en"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_write_uid
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_uid
 msgid "Last Updated by"
 msgstr "Last Updated by"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_write_date
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_date
 msgid "Last Updated on"
 msgstr "Last Updated on"
 
@@ -155,39 +178,39 @@ msgid "Month(s)"
 msgstr "Mes(es)"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest_tolerance_interval
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__tolerance_interval
 msgid "Number of periods of tolerance for dues. 0 = no tolerance"
 msgstr "Número de períodos de tolerancia para deudas. 0 = sin tolerancia"
 
 #. module: account_interests
-#: model:ir.ui.view,arch_db:account_interests.view_kinesis_athletics_company_form
+#: model_terms:ir.ui.view,arch_db:account_interests.view_kinesis_athletics_company_form
 msgid "Overdue Payments"
 msgstr "Pagos Vencidos"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_rule_type
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rule_type
 msgid "Recurrency"
 msgstr "Recurrencia"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_interval
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interval
 msgid "Repeat Every"
 msgstr "Repetir Cada"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest_interval
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__interval
 msgid "Repeat every (Days/Week/Month/Year)"
 msgstr "Repetir cada (Día/Semana/Mes/Año)"
 
 #. module: account_interests
-#: code:addons/account_interests/models/res_company_interest.py:237
+#: code:addons/account_interests/models/res_company_interest.py:258
 #, python-format
 msgid "The interest product is not properly configured, missing account."
 msgstr ""
 "El producto de interés no está configurado correctamente, falta la cuenta."
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest_tolerance_interval
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__tolerance_interval
 msgid "Tolerance"
 msgstr "Tolerancia"
 
@@ -200,8 +223,3 @@ msgstr "Semana(s)"
 #: selection:res.company.interest,rule_type:0
 msgid "Year(s)"
 msgstr "Año(s)"
-
-#. module: account_interests
-#: model:ir.model,name:account_interests.model_res_company_interest
-msgid "res.company.interest"
-msgstr "res.company.interest"

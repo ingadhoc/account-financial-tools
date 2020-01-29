@@ -16,6 +16,7 @@ Account UX
 
 Several Improvements to accounting:
 
+#. If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable, recompute amounts residual because they are used on liquidity accounts
 #. On invoice validation check that user hasn't delete any "automatic" tax from invoice
 #. Add reconciliations menu on accounting (only with debug mode)
 #. When creatin banks from bank menu, use bank name + account number for journal name (by default only account number is used). And also allow user to change this value (by default user can't)
@@ -34,7 +35,6 @@ Several Improvements to accounting:
 #. On journal entries make date_maturity always visible on the journal items
 #. Add a button on statemens (only with on dev mode) to cancell all statement lines
 #. Add on journal items availability to search and group by analytic account and to search by analytic tags
-#. Add button to cancel paid invoices that don't have related payments. This happends, for eg, if invoice amount is zero or if counterpart account is no receivable or payable.
 #. Add by default, when creating invoices manually, actual partner is choose, with this module the partner salesperson will be choosen. It also choose the salesperson when creating invoices from stock.picking
 #. Make origin always visible on invoices. By default odoo only make it visible when it has a value. The issue is that a user can delete the value but can't restore it again. We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order
 #. Agregamos opción para que al cancelar conciliaciones con asiento de ajuste de diferencia de cambio, este último, en vez de revertirse, se borre. Esto además permite desconciliar en casos donde por defecto no se pueda (esto es un bug). Para activar este borrado se debe crear parámetro "delete_exchange_rate_entry" con valor "True"
@@ -52,6 +52,7 @@ Several Improvements to accounting:
 #. Do not allow to recompute taxes on invoices that are not on draft state because tax and invoice amounts could change
 #. DISABLED, REMOVE IF NO NEEDED: Disable currency change when journal is changed
 #. Do not add currency info when reconciling from invoice
+#. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
