@@ -55,7 +55,6 @@ class AccountChangeCurrency(models.TransientModel):
                 date=self.invoice_id.date_invoice or
                 fields.Date.context_today(self))
 
-    @api.multi
     def change_currency(self):
         self.ensure_one()
         if self.change_type == 'currency':

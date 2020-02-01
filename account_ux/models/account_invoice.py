@@ -16,7 +16,6 @@ class AccountInvoice(models.Model):
         if self.partner_id.user_id:
             self.user_id = self.partner_id.user_id.id
 
-    @api.multi
     def action_invoice_open(self):
         """ After validate invoice will sent an email to the partner if the
         related journal has mail_template_id set.
@@ -63,7 +62,6 @@ class AccountInvoice(models.Model):
                 )
         return res
 
-    @api.multi
     def action_invoice_draft(self):
         """ This is for supplier invoices where, if you force an accounting
         date and if you need to cancel the invoice to fix something on the
@@ -89,7 +87,6 @@ class AccountInvoice(models.Model):
                     'accounting date.\n Please check if you need to update '
                     'the accounting date too.')}}
 
-    @api.multi
     def copy(self, default=None):
         res = super(AccountInvoice, self).copy(default=default)
         res._onchange_partner_commercial()
@@ -119,7 +116,6 @@ class AccountInvoice(models.Model):
     #     # else:
     #     #     super(AccountInvoice, self)._onchange_journal_id()
 
-    @api.multi
     def compute_taxes(self):
         _logger.info('Checking compute taxes on draft invoices')
         if not self._context.get('force_compute_taxes') and self.filtered(
@@ -130,7 +126,6 @@ class AccountInvoice(models.Model):
                 'invoices amounts could change'))
         return super().compute_taxes()
 
-    @api.multi
     def assign_outstanding_credit(self, credit_aml_id):
         """ aplicación de este parche
         https://github.com/odoo/odoo/pull/25485/files

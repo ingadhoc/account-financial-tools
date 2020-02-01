@@ -51,7 +51,6 @@ class AccountJournal(models.Model):
                 'moneda de la compañía (%s).' % (
                     rec.company_id.currency_id.name)))
 
-    @api.multi
     def copy(self, default=None):
         rec = super(AccountJournal, self).copy(default=default)
         if rec.type in ('bank', 'cash'):

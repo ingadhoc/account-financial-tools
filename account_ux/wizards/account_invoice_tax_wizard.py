@@ -66,7 +66,6 @@ class AccountInvoiceTaxWizard(models.TransientModel):
         self.amount = res.get('taxes', False) and res['taxes'][0].get(
             'amount', False) or False
 
-    @api.multi
     def confirm(self):
         self.ensure_one()
         if not self.invoice_id or not self.tax_id:

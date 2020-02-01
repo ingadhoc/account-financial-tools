@@ -8,7 +8,6 @@ from odoo import models, api
 class AccountBankStatement(models.Model):
     _inherit = 'account.bank.statement'
 
-    @api.multi
     def cancel_all_lines(self):
         for rec in self:
             rec.line_ids.filtered(

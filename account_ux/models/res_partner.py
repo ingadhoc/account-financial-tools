@@ -8,7 +8,6 @@ from odoo import api, models
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    @api.multi
     def action_open_reconcile(self):
         action_context = {
             'show_mode_selector': False, 'partner_ids': self.ids}

@@ -42,7 +42,6 @@ class AccountAccount(models.Model):
                 'moneda de la compañía (%s).' % (
                     rec.company_id.currency_id.name)))
 
-    @api.multi
     def write(self, vals):
         """ If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable,
         recompute amounts residual because they are used on liquidity accounts

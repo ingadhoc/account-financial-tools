@@ -8,7 +8,6 @@ from odoo import models, api
 class AccountBankStatementLine(models.Model):
     _inherit = 'account.bank.statement.line'
 
-    @api.multi
     def button_cancel_reconciliation(self):
         """ Clean move_name to allow reconciling with new line.
         """

@@ -5,7 +5,6 @@ from odoo.exceptions import ValidationError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    @api.multi
     def post(self, invoice=False):
         move_lines = self.mapped('line_ids').filtered(
             lambda x: (

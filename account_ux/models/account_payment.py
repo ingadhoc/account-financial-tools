@@ -23,7 +23,6 @@ class AccountPayment(models.Model):
                     self.payment_date) + datetime.timedelta(days=10))
         return vals
 
-    @api.multi
     def cancel(self):
         """
         On payment cancel delete move_name as we wont to allow deletion of

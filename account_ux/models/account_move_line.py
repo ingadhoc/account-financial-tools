@@ -9,7 +9,6 @@ from odoo import models, api, _
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    @api.multi
     def get_model_id_and_name(self):
         # Function used to display the right action on journal
         # items on dropdown lists, in reports like general ledger
@@ -25,7 +24,6 @@ class AccountMoveLine(models.Model):
                     self.invoice_id.id, _('View Invoice'), view_id]
         return ['account.move', self.move_id.id, _('View Move'), False]
 
-    @api.multi
     def action_open_related_document(self):
         self.ensure_one()
         # usamos lo que ya se usa en js para devolver la accion
