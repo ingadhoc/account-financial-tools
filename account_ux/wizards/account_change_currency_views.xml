@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Invoice Currency">
                 <group string="This wizard will change the currency of the invoice">
-                    <field name="invoice_id" invisible="1"/>
+                    <field name="move_id" invisible="1"/>
                     <field name="currency_from_id"/>
                     <field name="currency_to_id" domain="[('id', '!=', currency_from_id)]"/>
                     <field name="change_type" widget="radio"/>

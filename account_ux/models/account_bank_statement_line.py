@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, api
+from odoo import models
 
 
 class AccountBankStatementLine(models.Model):
@@ -11,7 +11,6 @@ class AccountBankStatementLine(models.Model):
     def button_cancel_reconciliation(self):
         """ Clean move_name to allow reconciling with new line.
         """
-        res = super(
-            AccountBankStatementLine, self).button_cancel_reconciliation()
+        res = super().button_cancel_reconciliation()
         self.write({'move_name': False})
         return res

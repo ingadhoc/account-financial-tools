@@ -5,7 +5,7 @@
         <field name="model">account.invoice.tax.wizard</field>
         <field name="arch" type="xml">
             <form string="Add Tax">
-                <field name="invoice_id" invisible="1"/>
+                <field name="move_id" invisible="1"/>
                 <field name="invoice_type" invisible="1"/>
                 <field name="invoice_company_id" invisible="1"/>
                 <group>

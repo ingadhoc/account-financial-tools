@@ -3,7 +3,6 @@
 # directory
 ##############################################################################
 from odoo import models, fields, api
-import odoo.addons.decimal_precision as dp
 
 
 class AccountInvoiceTaxWizard(models.TransientModel):
@@ -24,16 +23,16 @@ class AccountInvoiceTaxWizard(models.TransientModel):
         required=True,
     )
     amount = fields.Float(
-        digits=dp.get_precision('Account'),
+        digits='Account',
         required=True,
     )
-    invoice_id = fields.Many2one(
-        'account.invoice',
+    move_id = fields.Many2one(
+        'account.move',
         'Invoice',
         default=_get_invoice,
     )
     base = fields.Float(
-        digits=dp.get_precision('Account'),
+        digits='Account',
         help='Not stored, only used to suggest amount',
     )
     account_analytic_id = fields.Many2one(
@@ -41,18 +40,18 @@ class AccountInvoiceTaxWizard(models.TransientModel):
         'Analytic Account',
     )
     invoice_type = fields.Selection(
-        related='invoice_id.type',
+        related='move_id.type',
         string='Invoice Type',
     )
     invoice_company_id = fields.Many2one(
         'res.company',
         'Company',
-        related='invoice_id.company_id',
+        related='move_id.company_id',
     )
 
-    @api.onchange('invoice_id')
+    @api.onchange('move_id')
     def onchange_invoice(self):
-        self.base = self.invoice_id.amount_untaxed
+        self.base = self.move_id.amount_untaxed
 
     @api.onchange('tax_id')
     def onchange_tax(self):
@@ -68,13 +67,13 @@ class AccountInvoiceTaxWizard(models.TransientModel):
 
     def confirm(self):
         self.ensure_one()
-        if not self.invoice_id or not self.tax_id:
+        if not self.move_id or not self.tax_id:
             return False
-        invoice = self.invoice_id
+        invoice = self.move_id
         res = self.tax_id.compute_all(self.base)
         tax = res['taxes'][0]
         val = {
-            'invoice_id': invoice.id,
+            'move_id': invoice.id,
             'name': self.name,
             'tax_id': self.tax_id.id,
             'amount': self.amount,

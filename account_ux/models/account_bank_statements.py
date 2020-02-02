@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, api
+from odoo import models
 
 
 class AccountBankStatement(models.Model):
@@ -10,6 +10,5 @@ class AccountBankStatement(models.Model):
 
     def cancel_all_lines(self):
         for rec in self:
-            rec.line_ids.filtered(
-                'journal_entry_ids').button_cancel_reconciliation()
+            rec.line_ids.filtered('journal_entry_ids').button_cancel_reconciliation()
         return True

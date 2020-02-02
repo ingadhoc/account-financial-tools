@@ -1,7 +1,7 @@
 # © 2016 ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, fields, api
+from odoo import models, fields
 import datetime
 
 
@@ -9,8 +9,7 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     def _get_liquidity_move_line_vals(self, amount):
-        vals = super(AccountPayment, self)._get_liquidity_move_line_vals(
-            amount)
+        vals = super()._get_liquidity_move_line_vals(amount)
         days_for_collection = False
         journal = self.journal_id
         if (self.payment_method_code == 'inbound_debit_card'):
@@ -23,11 +22,11 @@ class AccountPayment(models.Model):
                     self.payment_date) + datetime.timedelta(days=10))
         return vals
 
-    def cancel(self):
+    def action_draft(self):
         """
-        On payment cancel delete move_name as we wont to allow deletion of
+        On payment back to draft delete move_name as we wont to allow deletion of
         payments. TODO: this could be parametrizable
         """
-        res = super(AccountPayment, self).cancel()
+        res = super().action_draft()
         self.write({'move_name': False})
         return res
