@@ -5,6 +5,9 @@ from odoo.exceptions import ValidationError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    def delete_number(self):
+        self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
+
     def post(self):
         move_lines = self.mapped('line_ids').filtered(
             lambda x: (

@@ -5,9 +5,14 @@
         <field name="name">account.move.form</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
+            <button name="button_draft" position="after">
+                <button name="delete_number" string="Delete Number"  attrs="{'invisible':['|', '|', ('type', 'not in', ('out_invoice', 'out_refund')), ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
+            </button>
+
             <field name="date_maturity" position="attributes">
                 <attribute name="invisible"></attribute>
             </field>
+
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
             <field name="invoice_origin" position="attributes">
                 <attribute name="attrs"></attribute>

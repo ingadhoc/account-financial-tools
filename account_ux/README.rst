@@ -40,6 +40,7 @@ Several Improvements to accounting:
 #. Add the field "last time entries checked" with tecnical features in partner view.
 #. Add invoice reference as optional on tree view
 #. Adds a wizard to add manual taxes on invoices without. Needing such taxes to be added in each of the invoice lines.
+#. add delete number in cancelled customer invoices
 #. Add options on accounts and account types to make analytic tags required on journal entries posting
 #. Adds to group by journal on invoices.
 #. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
