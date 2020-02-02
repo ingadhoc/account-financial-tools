@@ -10,7 +10,7 @@
                 <field name="credit_card_days_for_collection" attrs="{'invisible':[('type', 'not in', ['bank','cash'])]}"/>
             </field>
             <field name="company_id" position="after">
-                <field name="mail_template_id"  context="{'default_model': 'account.invoice'}"/>
+                <field name="mail_template_id"  context="{'default_model': 'account.move'}"/>
             </field>
         </field>
     </record>

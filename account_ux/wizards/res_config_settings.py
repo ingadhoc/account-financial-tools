@@ -9,11 +9,6 @@ class ResConfigSettings(models.TransientModel):
 
     _inherit = 'res.config.settings'
 
-    group_reference_on_tree_and_main_form = fields.Boolean(
-        implied_group='account_ux.group_reference_on_tree_and_main_form',
-        string='Invoice Reference/Description',
-    )
-
     sale_tax_ids = fields.Many2many(
         'account.tax',
         'config_tax_default_rel',
@@ -33,7 +28,7 @@ class ResConfigSettings(models.TransientModel):
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
 
-        company_id = self.company_id.id or self.env.user.company_id.id
+        company_id = self.company_id.id or self.env.company.id
         ir_default = self.env['ir.default'].sudo()
 
         taxes_ids = ir_default.get(
@@ -48,7 +43,6 @@ class ResConfigSettings(models.TransientModel):
         })
         return res
 
-    @api.multi
     def set_values(self):
         super(ResConfigSettings, self).set_values()
 

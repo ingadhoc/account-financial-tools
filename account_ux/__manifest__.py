@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': '12.0.1.3.0',
+    'version': "13.0.1.0.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -38,11 +38,9 @@
         'security/account_ux_security.xml',
         'wizards/account_change_currency_views.xml',
         'wizards/res_config_settings_views.xml',
-        'wizards/account_invoice_tax_wizard_view.xml',
+        # 'wizards/account_invoice_tax_wizard_view.xml',
         'views/account_journal_views.xml',
-        'views/account_payment_term_views.xml',
         'views/payment_acquirer_views.xml',
-        'views/account_invoice_views.xml',
         'views/account_bank_statement_views.xml',
         'views/account_move_line_views.xml',
         'views/account_reconcile_views.xml',
@@ -57,7 +55,7 @@
     ],
     'demo': [
     ],
-    'installable': False,
+    'installable': True,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale

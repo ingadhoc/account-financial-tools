@@ -37,21 +37,18 @@ class AccountJournal(models.Model):
     mail_template_id = fields.Many2one(
         'mail.template',
         'Email Template',
-        domain=[('model', '=', 'account.invoice')],
+        domain=[('model', '=', 'account.move')],
         help="If set an email will be sent to the customer after the invoices"
         " related to this journal has been validated.",
     )
 
     @api.constrains('currency_id')
     def check_currency(self):
-        for rec in self.filtered(lambda x: x.currency_id ==
-                                 x.company_id.currency_id):
+        for rec in self.filtered(lambda x: x.currency_id == x.company_id.currency_id):
             raise ValidationError(_(
                 'Solo puede utilizar una moneda secundaria distinta a la '
-                'moneda de la compañía (%s).' % (
-                    rec.company_id.currency_id.name)))
+                'moneda de la compañía (%s).' % (rec.company_id.currency_id.name)))
 
-    @api.multi
     def copy(self, default=None):
         rec = super(AccountJournal, self).copy(default=default)
         if rec.type in ('bank', 'cash'):
