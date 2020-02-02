@@ -83,7 +83,6 @@ class AccountPaymentReceiptbook(models.Model):
         required=True,
     )
 
-    @api.multi
     def write(self, vals):
         """
         If user change prefix we change prefix of sequence.

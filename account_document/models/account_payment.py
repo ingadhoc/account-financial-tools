@@ -95,7 +95,6 @@ class AccountPayment(models.Model):
             domain = ['&', '!'] + domain[1:]
         return domain
 
-    @api.multi
     @api.depends(
         'journal_id.sequence_id.number_next_actual',
         'receiptbook_id.sequence_id.number_next_actual',
@@ -125,7 +124,6 @@ class AccountPayment(models.Model):
                     seq_date = sequence._create_date_range_seq(dt)
                 payment.next_number = seq_date.number_next_actual
 
-    @api.multi
     @api.depends(
         'name',
         'document_number',
@@ -154,7 +152,6 @@ class AccountPayment(models.Model):
     #     ('document_number_uniq', 'unique(document_number, receiptbook_id)',
     #         'Document number must be unique per receiptbook!')]
 
-    @api.multi
     @api.constrains('journal_id', 'partner_type')
     def _force_receiptbook(self):
         # we add cosntrins to fix odoo tests and also help in inmpo of data
@@ -166,7 +163,6 @@ class AccountPayment(models.Model):
     def get_receiptbook(self):
         self.receiptbook_id = self._get_receiptbook()
 
-    @api.multi
     def _get_receiptbook(self):
         self.ensure_one()
         partner_type = self.partner_type or self._context.get(
@@ -178,7 +174,6 @@ class AccountPayment(models.Model):
             ], limit=1)
         return receiptbook
 
-    @api.multi
     def post(self):
         # si no ha receiptbook no exigimos el numero, esto por ej. en sipreco.
         for rec in self.filtered(
@@ -205,7 +200,6 @@ class AccountPayment(models.Model):
         vals['document_number'] = document_number
         return vals
 
-    @api.multi
     @api.constrains('receiptbook_id', 'journal_id')
     def _check_company_id(self):
         """

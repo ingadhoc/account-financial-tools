@@ -77,7 +77,6 @@ class AccountJournal(models.Model):
         else:
             self.use_documents = False
 
-    @api.multi
     @api.constrains(
         'code',
         'company_id',
@@ -91,7 +90,6 @@ class AccountJournal(models.Model):
         """
         return self._update_journal_document_types()
 
-    @api.multi
     def _update_journal_document_types(self):
         """
         Function to be inherited by different localizations

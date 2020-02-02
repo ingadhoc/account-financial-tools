@@ -29,7 +29,6 @@ class AccountInvoiceLine(models.Model):
         comodel_name='account.tax',
     )
 
-    @api.multi
     @api.depends('price_unit', 'price_subtotal', 'invoice_id.document_type_id')
     def _compute_report_prices_and_taxes(self):
         for line in self:

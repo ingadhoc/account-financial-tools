@@ -6,7 +6,6 @@ class AccountReconciliation(models.AbstractModel):
 
     _inherit = 'account.reconciliation.widget'
 
-    @api.multi
     def _prepare_move_lines(
             self, move_lines, target_currency=False, target_date=False,
             recs_count=0):

@@ -129,7 +129,6 @@ class AccountInvoice(models.Model):
             invoice.report_amount_untaxed = report_amount_untaxed
             invoice.report_tax_line_ids = not_included_taxes
 
-    @api.multi
     @api.depends(
         'journal_id.sequence_id.number_next_actual',
         'journal_document_type_id.sequence_id.number_next_actual',
@@ -164,7 +163,6 @@ class AccountInvoice(models.Model):
                     seq_date = sequence._create_date_range_seq(dt)
                 invoice.next_number = seq_date.number_next_actual
 
-    @api.multi
     def name_get(self):
         result = []
         for inv in self:
@@ -186,7 +184,6 @@ class AccountInvoice(models.Model):
             recs = self.search([('name', operator, name)] + args, limit=limit)
         return recs.name_get()
 
-    @api.multi
     @api.constrains(
         'journal_id',
         'partner_id',
@@ -206,7 +203,6 @@ class AccountInvoice(models.Model):
                     rec.journal_id, rec.type, rec.partner_id
                 ).get('journal_document_type'))
 
-    @api.multi
     @api.depends(
         'move_name',
         'document_number',
@@ -237,7 +233,6 @@ class AccountInvoice(models.Model):
                 display_name = rec.move_name or TYPES[rec.type]
             rec.display_name = display_name
 
-    @api.multi
     def check_use_documents(self):
         """
         check invoices has document class but journal require it (we check
@@ -252,7 +247,6 @@ class AccountInvoice(models.Model):
                 'document type has been selected.\n'
                 'Invoices ids: %s' % without_doucument_class.ids))
 
-    @api.multi
     def get_localization_invoice_vals(self):
         """
         Function to be inherited by different localizations and add custom
@@ -261,7 +255,6 @@ class AccountInvoice(models.Model):
         self.ensure_one()
         return {}
 
-    @api.multi
     def action_move_create(self):
         """
         We add currency rate on move creation so it can be used by electronic
@@ -272,7 +265,6 @@ class AccountInvoice(models.Model):
         self.set_document_data()
         return res
 
-    @api.multi
     def set_document_data(self):
         """
         If journal document dont have any sequence, then document number
@@ -312,7 +304,6 @@ class AccountInvoice(models.Model):
             invoice.write(inv_vals)
         return True
 
-    @api.multi
     # creo que por el parche de del def onchange no estaria funcionando
     # y por eseo repetimos onchnage de cada elemento
     # TODO analizar en v11
@@ -329,7 +320,6 @@ class AccountInvoice(models.Model):
         #     available_journal_document_type_ids and self.\
         #     available_journal_document_type_ids[0] or False
 
-    @api.multi
     @api.depends('journal_id', 'partner_id', 'company_id')
     def _compute_available_journal_document_types(self):
         """
@@ -356,7 +346,6 @@ class AccountInvoice(models.Model):
             # invoice.journal_document_type_id = res[
             #     'journal_document_type']
 
-    @api.multi
     def write(self, vals):
         """
         If someone change the type or the journal (for eg from sale order),
@@ -418,7 +407,6 @@ class AccountInvoice(models.Model):
             'journal_document_type': journal_document_type,
         }
 
-    @api.multi
     @api.constrains('document_type_id', 'document_number')
     @api.onchange('document_type_id', 'document_number')
     def validate_document_number(self):
@@ -431,7 +419,6 @@ class AccountInvoice(models.Model):
             if res and res != rec.document_number:
                 rec.document_number = res
 
-    @api.multi
     @api.constrains('journal_document_type_id', 'journal_id')
     def check_journal_document_type_journal(self):
         for rec in self:
@@ -445,7 +432,6 @@ class AccountInvoice(models.Model):
                         rec.journal_document_type_id.display_name,
                         rec.journal_id.name)))
 
-    @api.multi
     @api.constrains('type', 'document_type_id')
     def check_invoice_type_document_type(self):
         for rec in self:
@@ -483,7 +469,6 @@ class AccountInvoice(models.Model):
             values['document_number'] = refund_document_number
         return values
 
-    @api.multi
     def _check_duplicate_supplier_reference(self):
         """We make reference only unique if you are not using documents.
         Documents already guarantee to not encode twice same vendor bill.
@@ -491,7 +476,6 @@ class AccountInvoice(models.Model):
         return super(
             AccountInvoice, self.filtered(lambda x: not x.use_documents))
 
-    @api.multi
     @api.constrains('document_number', 'partner_id', 'company_id')
     def _check_document_number_unique(self):
         """ We dont implement this on _check_duplicate_supplier_reference

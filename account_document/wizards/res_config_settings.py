@@ -29,7 +29,6 @@ class ResConfigSettings(models.TransientModel):
             self.sale_use_documents = True
             self.purchase_use_documents = True
 
-    @api.multi
     def set_values(self):
         """
         We send this value in context because to use them on journals creation

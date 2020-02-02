@@ -85,14 +85,12 @@ class AccountDocmentType(models.Model):
         'behaviour could be overwritten by localizations!',
     )
 
-    @api.multi
     def validate_document_number(self, document_number):
         self.ensure_one()
         if self.validator_id:
             return self.validator_id.validate_value(document_number)
         return False
 
-    @api.multi
     def name_get(self):
         result = []
         for rec in self:
@@ -102,7 +100,6 @@ class AccountDocmentType(models.Model):
             result.append((rec.id, name))
         return result
 
-    @api.multi
     def get_document_sequence_vals(self, journal):
         self.ensure_one()
         # TODO we could improove this and add a field for templating numbering
@@ -112,7 +109,6 @@ class AccountDocmentType(models.Model):
             'prefix': self.code,
         }
 
-    @api.multi
     def get_taxes_included(self):
         """
         This method is to be inherited by differents localizations and should
