@@ -9,14 +9,13 @@
         <field name="arch" type="xml">
             <form>
                 <field name="document_sequence_id" invisible="1"/>
-                <field name="localization" invisible="1"/>
                 <field name="company_id" invisible="1"/>
             </form>
-            <field name="payment_date" position="before">
+            <field name="journal_id" position="before">
 
                 <!-- only required on posted state for compatibility if you install this module with payments already created -->
-                <field name="receiptbook_id" attrs="{'invisible': ['|', ('localization', '=', False), ('payment_type', '=', 'transfer')], 'required':[('payment_type', '!=', 'transfer'), ('localization', '!=', False), ('state', '=', 'draft')]}" domain="[('partner_type', '=', partner_type), ('company_id', '=', company_id)]"/>
-                <field name="document_number" attrs="{'invisible': ['|', ('payment_type', '=', 'transfer'), '|', ('document_sequence_id', '!=', False), ('localization', '=', False)], 'required': [('payment_type', '!=', 'transfer'), ('document_sequence_id', '=', False), ('localization', '!=', False)]}"/>
+                <field name="receiptbook_id" attrs="{'invisible': [('payment_type', '=', 'transfer')], 'required':[('payment_type', '!=', 'transfer'), ('state', '=', 'draft')]}" domain="[('partner_type', '=', partner_type), ('company_id', '=', company_id)]"/>
+                <field name="document_number" attrs="{'invisible': ['|', ('payment_type', '=', 'transfer'), ('document_sequence_id', '!=', False)], 'required': [('payment_type', '!=', 'transfer'), ('document_sequence_id', '=', False)]}"/>
                 <!-- por ahora no agregamos esto, vamos a ver si alguien lo pide -->
                 <!-- <field name="manual_prefix" attrs="{'invisible':['|',('document_sequence_id', '!=', False), ('state','!=','draft')]}"/> -->
                 <!-- <field name="manual_sufix" attrs="{'invisible':['|',('document_sequence_id', '!=', False), ('state', '!=', 'draft')], 'required':[('document_sequence_id', '=', False), ('localization', '!=', False)]}"/> -->

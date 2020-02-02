@@ -78,7 +78,7 @@ class AccountPaymentReceiptbook(models.Model):
         default=True,
     )
     document_type_id = fields.Many2one(
-        'account.document.type',
+        'l10n_latam.document.type',
         'Document Type',
         required=True,
     )

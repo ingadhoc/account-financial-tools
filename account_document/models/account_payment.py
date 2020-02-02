@@ -23,6 +23,7 @@ class AccountPayment(models.Model):
     _rec_name we are changing _name_get
     """
     _inherit = "account.payment"
+    _check_company_auto = True
 
     # document_number = fields.Char(
     #     string=_('Document Number'),
@@ -30,18 +31,42 @@ class AccountPayment(models.Model):
     #     readonly=True,
     #     store=True,
     #     )
+    # document_number = fields.Char(
+    #     string='Document Number',
+    #     copy=False,
+    #     readonly=True,
+    #     states={'draft': [('readonly', False)]},
+    #     index=True,
+    # )
     document_number = fields.Char(
-        string='Document Number',
-        copy=False,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        index=True,
-    )
+        compute='_compute_document_number', inverse='_inverse_document_number',
+        string='Document Number', readonly=True, states={'draft': [('readonly', False)]})
+
+    @api.depends('name')
+    def _compute_document_number(self):
+        recs_with_name = self.filtered('name')
+        for rec in recs_with_name:
+            name = rec.name
+            doc_code_prefix = rec.document_type_id.doc_code_prefix
+            if doc_code_prefix and name:
+                name = name.split(" ", 1)[-1]
+            rec.document_number = name
+        remaining = self - recs_with_name
+        remaining.document_number = False
+
+    @api.onchange('document_type_id', 'document_number')
+    def _inverse_document_number(self):
+        for rec in self.filtered('document_type_id'):
+            if not rec.document_number:
+                rec.name = False
+            else:
+                document_number = rec.document_type_id._format_document_number(rec.document_number)
+                if rec.document_number != document_number:
+                    rec.document_number = document_number
+                rec.name = "%s %s" % (rec.document_type_id.doc_code_prefix, document_number)
+
     document_sequence_id = fields.Many2one(
         related='receiptbook_id.sequence_id',
-    )
-    localization = fields.Selection(
-        related='company_id.localization',
     )
     # por ahora no agregamos esto, vamos a ver si alguien lo pide
     # manual_prefix = fields.Char(
@@ -70,6 +95,10 @@ class AccountPayment(models.Model):
         readonly=True,
         states={'draft': [('readonly', False)]},
         auto_join=True,
+        check_company=True,
+    )
+    journal_id= fields.Many2one(
+        check_company=True,
     )
     document_type_id = fields.Many2one(
         related='receiptbook_id.document_type_id',
@@ -79,11 +108,11 @@ class AccountPayment(models.Model):
         compute='_compute_next_number',
         string='Next Number',
     )
-    display_name = fields.Char(
-        compute='_compute_clean_display_name',
-        search='_search_display_name',
-        string='Document Reference',
-    )
+    # display_name = fields.Char(
+    #     compute='_compute_clean_display_name',
+    #     search='_search_display_name',
+    #     string='Document Reference',
+    # )
 
     @api.model
     def _search_display_name(self, operator, operand):
@@ -103,8 +132,10 @@ class AccountPayment(models.Model):
         """
         show next number only for payments without number and on draft state
         """
-        for payment in self.filtered(
-                lambda x: x.state == 'draft'):
+        for payment in self:
+            if payment.state != 'draft':
+                payment.next_number = False
+                continue
             if payment.receiptbook_id:
                 sequence = payment.receiptbook_id.sequence_id
             else:
@@ -146,12 +177,6 @@ class AccountPayment(models.Model):
                 display_name = rec.name
             rec.display_name = display_name
 
-    # TODO esta constraint si la creamos hay que borrarla en
-    # account_payment_group_document
-    # _sql_constraints = [
-    #     ('document_number_uniq', 'unique(document_number, receiptbook_id)',
-    #         'Document number must be unique per receiptbook!')]
-
     @api.constrains('journal_id', 'partner_type')
     def _force_receiptbook(self):
         # we add cosntrins to fix odoo tests and also help in inmpo of data
@@ -176,38 +201,26 @@ class AccountPayment(models.Model):
 
     def post(self):
         # si no ha receiptbook no exigimos el numero, esto por ej. en sipreco.
-        for rec in self.filtered(
-                lambda x: x.receiptbook_id and not x.document_number):
+        for rec in self.filtered(lambda x: x.receiptbook_id and not x.document_number):
             if not rec.receiptbook_id.sequence_id:
                 raise UserError(_(
                     'Error!. Please define sequence on the receiptbook'
                     ' related documents to this payment or set the '
                     'document number.'))
-            rec.document_number = (
-                rec.receiptbook_id.sequence_id.next_by_id())
-        return super(AccountPayment, self).post()
+        res = super().post()
+        for rec in self:
+            rec.document_number = (rec.receiptbook_id.sequence_id.next_by_id())
+        return res
 
-    def _get_move_vals(self, journal=None):
-        vals = super(AccountPayment, self)._get_move_vals()
-        vals['document_type_id'] = self.document_type_id.id
-        # en las transfer no esta implementado el uso de documentos pero
-        # queremos llevar igual el nro de transfer como doc number para que
-        # sea facil desde los asientos enteder a que hacen referencia
-        if self.payment_type == 'transfer':
-            document_number = self.name
-        else:
-            document_number = self.document_number
-        vals['document_number'] = document_number
-        return vals
-
-    @api.constrains('receiptbook_id', 'journal_id')
-    def _check_company_id(self):
-        """
-        Check receiptbook_id and voucher company
-        """
-        if self.filtered(
-                lambda x: x.receiptbook_id and
-                x.receiptbook_id.company_id != x.journal_id.company_id):
-            raise ValidationError(_(
-                'The company of the receiptbook and of the '
-                'payment must be the same!'))
+    # def _get_move_vals(self, journal=None):
+    #     vals = super(AccountPayment, self)._get_move_vals()
+    #     vals['document_type_id'] = self.document_type_id.id
+    #     # en las transfer no esta implementado el uso de documentos pero
+    #     # queremos llevar igual el nro de transfer como doc number para que
+    #     # sea facil desde los asientos enteder a que hacen referencia
+    #     if self.payment_type == 'transfer':
+    #         document_number = self.name
+    #     else:
+    #         document_number = self.document_number
+    #     vals['document_number'] = document_number
+    #     return vals
