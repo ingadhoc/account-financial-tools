@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- FORMVIEW -->
-    <record id="view_kinesis_athletics_company_form" model="ir.ui.view">
-        <field name="name">kinesis_athletics.company.form</field>
+    <record id="view_automatic_interests_company_form" model="ir.ui.view">
+        <field name="name">automatic_interests.company.form</field>
         <field name="model">res.company</field>
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
             <notebook position="inside">
                 <page string="Overdue Payments">
-                    <!--                     <group string="Interests">
-                        <field name="automatic_interests"/>
-                    </group>
-                    <group attrs="{'invisible': [('automatic_interests','!=',True)]}">
-                        <field name="automatic_validation"/>
-                        <label for="interval"/>
-                        <div>
-                            <field name="interval" class="oe_inline" attrs="{'required': [('automatic_interests', '=', True)]}"/>
-                            <field name="rule_type" class="oe_inline" attrs="{'required': [('automatic_interests', '=', True)]}"/>
-                        </div>
-                        <field name="next_date"/>
-                    </group> -->
-                    <!-- <field name="interest_ids" context="{'default_company_id': id}" attrs="{'invisible': [('automatic_interests','!=',True)]}"> -->
-                    <separator string="Interéses Automáticos"/>
+                    <separator string="Intereses Automáticos"/>
                     <field name="interest_ids" context="{'default_company_id': id}">
                         <tree>
                             <field name="company_id" invisible="1" required="0"/>
@@ -60,10 +46,6 @@
                         </form>
                     </field>
                 </page>
-                <!-- <group name="account_grp" string="Accounting">   -->
-                <!-- <field name="debt_interest_period" help="Number of months for imputation of default interest"/> -->
-                <!-- </group> -->
-
             </notebook>
         </field>
     </record>
