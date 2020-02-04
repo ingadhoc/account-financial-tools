@@ -198,7 +198,12 @@ class ResCompanyInterest(models.Model):
             # update amounts for new invoice
             invoice.compute_taxes()
             if self.automatic_validation:
-                invoice.action_invoice_open()
+                try:
+                    invoice.action_invoice_open()
+                except Exception as e:
+                    _logger.error(
+                        "Something went wrong "
+                        "creating interests invoice: {}".format(e))
 
     @api.multi
     def prepare_info(self, to_date_format, debt):
