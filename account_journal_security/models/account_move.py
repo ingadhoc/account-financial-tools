@@ -5,9 +5,9 @@
 from odoo import fields, models
 
 
-class AccountInvoice(models.Model):
+class AccountMove(models.Model):
 
-    _inherit = 'account.invoice'
+    _inherit = 'account.move'
 
     journal_id = fields.Many2one(
         auto_join=True,
