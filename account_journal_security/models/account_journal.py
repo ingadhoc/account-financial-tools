@@ -52,17 +52,14 @@ class AccountJournal(models.Model):
             else:
                 rec.journal_restriction = 'none'
 
-    @api.multi
     @api.constrains('user_ids')
     def check_restrict_users(self):
         self._check_journal_users_restriction('user_ids')
 
-    @api.multi
     @api.constrains('modification_user_ids')
     def check_modification_users(self):
         self._check_journal_users_restriction('modification_user_ids')
 
-    @api.multi
     def _check_journal_users_restriction(self, field):
         """
         Este check parece ser necesario solo por un bug de odoo que no
