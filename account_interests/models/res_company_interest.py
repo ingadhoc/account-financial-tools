@@ -29,14 +29,6 @@ class ResCompanyInterest(models.Model):
         domain="[('user_type_id.type', '=', 'receivable'),"
         "('company_id', '=', company_id)]",
     )
-    invoice_receivable_account_id = fields.Many2one(
-        'account.account',
-        string='Invoice Receivable Account',
-        help='If no account is selected, then partner receivable account is '
-        'used',
-        domain="[('user_type_id.type', '=', 'receivable'),"
-        "('company_id', '=', company_id)]",
-    )
     interest_product_id = fields.Many2one(
         'product.product',
         'Interest Product',
@@ -241,7 +233,6 @@ class ResCompanyInterest(models.Model):
 
         # This should resolve product's: name, account_id, tax_ids, uom_id, price_unit
         line._onchange_product_id()
-
         # Override the following fields so they match our computed values
         line.price_unit = self.rate * debt
         line.name = self.interest_product_id.name + '.\n' + comment
