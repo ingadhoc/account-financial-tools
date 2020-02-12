@@ -7,31 +7,15 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_account_move_line_filter"/>
         <field name="arch" type="xml">
-            <field name="date" position="after">
-                <filter name="month"
-                        string="This Month"
-                        domain="['&amp;', ('date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
-                <filter string="Last Month"
-                        name="last_month"
-                        domain="['&amp;', ('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%%Y-%%m-01')), ('date', '&lt;', context_today().strftime('%%Y-%%m-01'))]"/>
-                <filter string="This Year"
-                        name="year"
-                        domain="['|', ('date', '=', False), '&amp;',('date','&lt;=', time.strftime('%%Y-12-31')),('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
-                <filter name="last_year"
-                        string="Last Year"
-                        domain="['&amp;', ('date', '&gt;=', (context_today()-relativedelta(years=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
-            </field>
             <field name="account_id" position="after">
-                <field name="user_type_id"/>
                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-                <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"/>
+                <field name="analytic_tag_ids" groups="analytic.group_analytic_tags"/>
             </field>
             <group>
-                <filter name="user_type_id" string="Account Type" context="{'group_by':'user_type_id'}"/>
                 <filter name="analytic_account_id" string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
                 <filter name="group_company" string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
             </group>
-            <filter name="groupby_date" context="{'group_by':'date'}" position="after">
+            <filter name="groupby_date" position="after">
                 <filter name="groupby_due_date" string="Due date" context="{'group_by':'date_maturity'}"/>
             </filter>
         </field>
@@ -65,11 +49,10 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">account.move.line</field>
         <!-- <field name="view_id" ref="view_wizard_multi_chart"/> -->
-        <field name="view_type">form</field>
         <field name="view_mode">tree,graph,pivot</field>
     </record>
 
-    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.menu_action_account_invoice_report_all" action="action_move_line_analisis"/>
+    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.account_reports_management_menu" action="action_move_line_analisis"/>
 
     <record id="view_move_line_form" model="ir.ui.view">
         <field name="name">account.move.line.form</field>

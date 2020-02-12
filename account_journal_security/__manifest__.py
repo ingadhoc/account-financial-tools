@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-    'version': '12.0.1.1.0',
+    'version': "13.0.1.0.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Restrict the use of certain journals to certain users',
@@ -39,7 +39,7 @@
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

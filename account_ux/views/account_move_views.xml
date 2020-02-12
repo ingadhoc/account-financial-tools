@@ -5,8 +5,60 @@
         <field name="name">account.move.form</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
+            <button name="button_draft" position="after">
+                <button name="delete_number" string="Delete Number"  attrs="{'invisible':['|', '|', ('type', 'not in', ('out_invoice', 'out_refund')), ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
+            </button>
+
             <field name="date_maturity" position="attributes">
                 <attribute name="invisible"></attribute>
+            </field>
+
+            <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
+            <field name="invoice_origin" position="attributes">
+                <attribute name="attrs"></attribute>
+            </field>
+
+            <field name="currency_id" position="attributes">
+                <attribute name="readonly">True</attribute>
+            </field>
+
+            <field name="currency_id" position="replace">
+                <label for="currency_id"/>
+                <div class="oe_inline">
+                    <t>$0</t>
+                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}" groups="base.group_multi_currency"/>
+                </div>
+            </field>
+
+            <field name="journal_id" position="attributes">
+                <attribute name="groups">account.group_account_invoice</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_filter" model="ir.ui.view">
+        <field name="name">invoice.view.select</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="company_id" groups="base.group_multi_company"/>
+                </field>
+            <xpath expr="//group/filter[@name='salesperson']" position="before">
+                <filter name="partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
+                <filter name="journal_id" string="Journal" context="{'group_by':'journal_id'}"/>
+                <filter name="company_id" string="Company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_invoice_tree" model="ir.ui.view">
+        <field name="name">account.invoice.tree</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <field name="invoice_origin" position="after">
+                <field name="ref" optional="hide"/>
             </field>
         </field>
     </record>

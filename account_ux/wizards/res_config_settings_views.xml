@@ -5,19 +5,26 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <div id="invoicing_settings" position="inside">
-                <div class="col-xs-12 col-md-6 o_setting_box">
-                    <div class="o_setting_left_pane">
-                        <field name="group_reference_on_tree_and_main_form"/>
-                    </div>
-                    <div class="o_setting_right_pane">
-                        <label for="group_reference_on_tree_and_main_form"/>
-                        <div class="text-muted">
-                            Show Reference/Description in list view and in main section of form view
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- on sale we use xpath because website_sale adds same field -->
+            <xpath expr="//div[@data-key='account']//label[@for='sale_tax_id']" position="attributes">
+                <attribute name="for">sale_tax_ids</attribute>
+            </xpath>
+            <xpath expr="//div[@data-key='account']//field[@name='sale_tax_id']" position="attributes">
+                <attribute name="name">sale_tax_ids</attribute>
+                <attribute name="domain">[('type_tax_use', 'in', ('sale', 'all')), ('company_id', 'child_of', company_id)]</attribute>
+                <attribute name="widget">many2many_tags</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+            </xpath>
+
+            <label for="purchase_tax_id" position="attributes">
+                <attribute name="for">purchase_tax_ids</attribute>
+            </label>
+            <field name="purchase_tax_id" position="attributes">
+                <attribute name="name">purchase_tax_ids</attribute>
+                <attribute name="domain">[('type_tax_use', 'in', ('purchase', 'all')), ('company_id', 'child_of', company_id)]</attribute>
+                <attribute name="widget">many2many_tags</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+            </field>
         </field>
     </record>
 </odoo>
