@@ -57,6 +57,8 @@ class ResPartner(models.Model):
     @api.multi
     def _compute_debit_credit(self):
         move_id = self._context.get('active_id', False)
+        if self._context.get('active_model', False) != 'account.move' or not move_id:
+            return True
         move = self.env['account.move'].browse(move_id)
         company_id = self._context.get('company_id', False)
         AccountMoveLine = self.env['account.move.line']
