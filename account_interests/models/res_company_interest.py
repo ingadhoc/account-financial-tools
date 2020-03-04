@@ -147,12 +147,12 @@ class ResCompanyInterest(models.Model):
 
         total_items = len(grouped_lines)
         _logger.info('%s interest invoices will be generated', total_items)
-
         for idx, line in enumerate(grouped_lines):
 
             debt = line['amount_residual']
 
             if not debt or debt <= 0.0:
+                _logger.info("Debt is negative, skipping...")
                 continue
 
             _logger.info(
@@ -166,17 +166,7 @@ class ResCompanyInterest(models.Model):
 
             # We send document type for compatibility with argentinian invoices
             move = self.env['account.move'].with_context(
-                default_type="out_invoice",
-                internal_type='debit_note',
-                check_move_validity=False).create(move_vals)
-
-            self.env["account.move"].flush()
-
-            move.invoice_line_ids.create(
-                self._prepare_interest_invoice_line(
-                    move, partner, debt, self.prepare_info(to_date, debt)))
-
-            move._recompute_dynamic_lines(recompute_all_taxes=True)
+                internal_type='debit_note').create(move_vals)
 
             if self.automatic_validation:
                 try:
@@ -204,43 +194,31 @@ class ResCompanyInterest(models.Model):
 
     def _prepare_interest_invoice(self, partner, debt, to_date, journal):
         self.ensure_one()
-
+        comment = self.prepare_info(to_date, debt)
+        tax_ids = self.interest_product_id.taxes_id.filtered(
+            lambda r: r.company_id == self.company_id)
         invoice_vals = {
             'type': 'out_invoice',
             'currency_id': self.company_id.currency_id.id,
             'partner_id': partner.id,
             'fiscal_position_id': partner.property_account_position_id.id,
             'user_id': partner.user_id.id or False,
+            'company_id': self.company_id.id,
+            'journal_id': journal.id,
             'invoice_origin': "Interests Invoice",
-            'invoice_line_ids': [],
+            'narration': self.interest_product_id.name + '.\n' + comment,
+            'invoice_line_ids': [(0, 0, {
+                "product_id": self.interest_product_id.id,
+                "quantity": 1.0,
+                "price_unit": self.rate * debt,
+                "partner_id": partner.id,
+                "name": self.interest_product_id.name + '.\n' + comment,
+                "analytic_account_id": self.analytic_account_id.id,
+                "tax_ids": [(6, 0, tax_ids.ids)]
+            })],
         }
 
         return invoice_vals
-
-    def _prepare_interest_invoice_line(self, move, partner, debt, comment):
-        self.ensure_one()
-
-        # Create a new move line
-        line = self.env['account.move.line'].new(dict(
-            move_id=move.id,
-            product_id=self.interest_product_id.id,
-            quantity=1.0,
-            partner_id=partner.id,
-            company_id=self.company_id.id,
-            analytic_account_id=self.analytic_account_id.id,
-        ))
-
-        # This should resolve product's: name, account_id, tax_ids, uom_id, price_unit
-        line._onchange_product_id()
-        # Override the following fields so they match our computed values
-        line.price_unit = self.rate * debt
-        line.name = self.interest_product_id.name + '.\n' + comment
-
-        # Recompute total and subtotal based on all previous data
-        line._get_price_total_and_subtotal()
-
-        values = line._convert_to_write(line._cache)
-        return values
 
     @api.depends('domain')
     def _compute_has_domain(self):
