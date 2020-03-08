@@ -41,3 +41,15 @@ class AccountMoveLine(models.Model):
             'res_id': res_id,
             # 'view_id': res[0],
         }
+
+    @api.multi
+    def _reconcile_lines(self, debit_moves, credit_moves, field):
+        """ Modificamos contexto para que odoo solo concilie el metodo
+        auto_reconcile_lines teniendo en cuenta la moneda de cia si la cuenta
+        no tiene moneda.
+        Va de la mano de la modificación de "create" en
+        account.partial.reconcile
+        """
+        if not self[0].account_id.currency_id:
+            field = 'amount_residual'
+        return super()._reconcile_lines(debit_moves, credit_moves, field)
