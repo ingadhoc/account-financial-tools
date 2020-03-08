@@ -9,6 +9,7 @@ from . import account_journal
 from . import account_payment
 from . import payment_acquirer
 from . import account_bank_statements
+from . import account_partial_reconcile
 from . import account_move_line
 from . import res_partner
 from . import res_currency_rate
