@@ -61,16 +61,6 @@ class AccountMove(models.Model):
         if self.partner_id.user_id:
             self.user_id = self.partner_id.user_id.id
 
-    @api.onchange('invoice_date')
-    def onchange_invoice_date(self):
-        if self.date:
-            return {'warning': {
-                'title': _("Warning!"),
-                'message': _(
-                    'You are changing the Invoice Date but you have force an '
-                    'accounting date.\n Please check if you need to update '
-                    'the accounting date too.')}}
-
     def copy(self, default=None):
         res = super().copy(default=default)
         res._onchange_partner_commercial()
