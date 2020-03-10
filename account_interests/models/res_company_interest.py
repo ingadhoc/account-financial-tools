@@ -143,7 +143,11 @@ class ResCompanyInterest(models.Model):
             fields=['id', 'amount_residual', 'partner_id', 'account_id'],
             groupby=['partner_id'],
         )
-        self = self.with_context(mail_notrack=True, prefetch_fields=False)
+        self = self.with_context(
+            company_id=self.company_id.id,
+            force_company=self.company_id.id,
+            mail_notrack=True,
+            prefetch_fields=False)
 
         total_items = len(grouped_lines)
         _logger.info('%s interest invoices will be generated', total_items)
@@ -195,13 +199,15 @@ class ResCompanyInterest(models.Model):
     def _prepare_interest_invoice(self, partner, debt, to_date, journal):
         self.ensure_one()
         comment = self.prepare_info(to_date, debt)
-        tax_ids = self.interest_product_id.taxes_id.filtered(
+        fpos = partner.property_account_position_id
+        taxes = self.interest_product_id.taxes_id.filtered(
             lambda r: r.company_id == self.company_id)
+        tax_id = fpos.map_tax(taxes, self.interest_product_id)
         invoice_vals = {
             'type': 'out_invoice',
             'currency_id': self.company_id.currency_id.id,
             'partner_id': partner.id,
-            'fiscal_position_id': partner.property_account_position_id.id,
+            'fiscal_position_id': fpos.id,
             'user_id': partner.user_id.id or False,
             'company_id': self.company_id.id,
             'journal_id': journal.id,
@@ -214,7 +220,7 @@ class ResCompanyInterest(models.Model):
                 "partner_id": partner.id,
                 "name": self.interest_product_id.name + '.\n' + comment,
                 "analytic_account_id": self.analytic_account_id.id,
-                "tax_ids": [(6, 0, tax_ids.ids)]
+                "tax_ids": [(6, 0, tax_id.ids)]
             })],
         }
 
