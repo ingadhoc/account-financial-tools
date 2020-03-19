@@ -121,12 +121,19 @@ class AccountMoveLine(models.Model):
         no tiene moneda.
         Va de la mano de la modificación de "create" en
         account.partial.reconcile
+        En realidad este metodo no deberia ser del todo necesario, probamos
+        sacarlo y parece que funciona bien pero si conciliamos USD contra USD
+        en cuentas que queremos que concilien en ARS va a hacerlo con USD
+        aunque luego parece terminar bien porque el partial reconcile se crea
+        sin monedas. Tal vez algun ambio de odoo hizo que deje de ser necesario
+        Igualmente preferimos dejarlo y corregir en el create eliminando
+        la clave skip_full_reconcile_check
         """
         if self._context.get(
             'skip_full_reconcile_check') != 'amount_currency_excluded' and \
                 self and not self[0].account_id.currency_id:
             self = self.with_context(
-                skip_full_reconcile_check='amount_currency_excluded')
+                skip_full_reconcile_check='amount_currency_excluded', account_ux_hack=True)
         return super().reconcile(
             writeoff_acc_id=writeoff_acc_id,
             writeoff_journal_id=writeoff_journal_id)

@@ -16,4 +16,6 @@ class AccountPartialReconcile(models.Model):
                 vals.get('debit_move_id')).account_id
             if not account.currency_id:
                 vals.update({'currency_id': False, 'amount_currency': 0.0})
+        if self._context.get('account_ux_hack'):
+            self = self.with_context(skip_full_reconcile_check=False)
         return super().create(vals)
