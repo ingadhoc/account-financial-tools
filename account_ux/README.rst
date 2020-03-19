@@ -16,7 +16,7 @@ Account UX
 
 Several Improvements to accounting:
 
-#. Reconcile on company currency if account don't have a currency
+#. Reconcile on company currency if account don't have a currency and country is Argentina (if any other country need this it should make a PR and add itself)
 #. If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable, recompute amounts residual because they are used on liquidity accounts
 #. On invoice validation check that user hasn't delete any "automatic" tax from invoice
 #. Add reconciliations menu on accounting (only with debug mode)

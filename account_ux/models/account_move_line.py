@@ -1,9 +1,10 @@
+# flake8: noqa
 # © 2016 ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, _
-# from collections import OrderedDict
-# from odoo.tools import float_compare, float_is_zero
+from odoo import models, api, _
+from odoo.tools import float_is_zero, float_compare
+from datetime import date
 
 
 class AccountMoveLine(models.Model):
@@ -35,7 +36,6 @@ class AccountMoveLine(models.Model):
             'res_id': res_id,
         }
 
-    @api.multi
     def _reconcile_lines(self, debit_moves, credit_moves, field):
         """ Modificamos contexto para que odoo solo concilie el metodo
         auto_reconcile_lines teniendo en cuenta la moneda de cia si la cuenta
@@ -43,6 +43,14 @@ class AccountMoveLine(models.Model):
         Va de la mano de la modificación de "create" en
         account.partial.reconcile
         """
-        if not self[0].account_id.currency_id:
+        if self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
             field = 'amount_residual'
         return super()._reconcile_lines(debit_moves, credit_moves, field)
+
+    def reconcile(self, writeoff_acc_id=False, writeoff_journal_id=False):
+        """ This is needed if you reconcile, for eg, 1 USD to 1 USD but in an ARS account, by default
+        odoo make a full reconcile and exchange
+        """
+        if self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
+            self = self.with_context(no_exchange_difference=True)
+        return super().reconcile(writeoff_acc_id=writeoff_acc_id, writeoff_journal_id=writeoff_journal_id)
