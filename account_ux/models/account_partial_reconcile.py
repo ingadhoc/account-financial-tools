@@ -12,8 +12,7 @@ class AccountPartialReconcile(models.Model):
         Va de la mano de la modificacion de "def reconcile" en aml
         """
         if vals.get('currency_id'):
-            account = self.env['account.move.line'].browse(
-                vals.get('debit_move_id')).account_id
-            if not account.currency_id:
+            account = self.env['account.move.line'].browse(vals.get('debit_move_id')).account_id
+            if account.company_id.country_id == self.env.ref('base.ar') and not account.currency_id:
                 vals.update({'currency_id': False, 'amount_currency': 0.0})
         return super().create(vals)
