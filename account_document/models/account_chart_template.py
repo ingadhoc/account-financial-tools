@@ -60,7 +60,7 @@ class AccountChartTemplate(models.Model):
             ('name', '=', receiptbook_vals['name']),
             ('company_id', '=', company.id)])
         if not receipbook:
-            receipbook.create(receiptbook_vals)
+            receipbook.sudo().create(receiptbook_vals)
         return True
 
     @api.model
