@@ -449,7 +449,7 @@ class AccountInvoice(models.Model):
     @api.constrains('type', 'document_type_id')
     def check_invoice_type_document_type(self):
         for rec in self:
-            internal_type = rec.document_type_internal_type
+            internal_type = rec.document_type_id.internal_type
             invoice_type = rec.type
             if not internal_type:
                 continue
