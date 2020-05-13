@@ -43,7 +43,7 @@ class AccountMoveLine(models.Model):
         Va de la mano de la modificación de "create" en
         account.partial.reconcile
         """
-        if self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
+        if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
             field = 'amount_residual'
         return super()._reconcile_lines(debit_moves, credit_moves, field)
 
@@ -51,6 +51,6 @@ class AccountMoveLine(models.Model):
         """ This is needed if you reconcile, for eg, 1 USD to 1 USD but in an ARS account, by default
         odoo make a full reconcile and exchange
         """
-        if self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
+        if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
             self = self.with_context(no_exchange_difference=True)
         return super().reconcile(writeoff_acc_id=writeoff_acc_id, writeoff_journal_id=writeoff_journal_id)
