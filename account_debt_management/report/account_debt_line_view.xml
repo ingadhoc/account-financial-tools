@@ -33,7 +33,8 @@
          <field name="name">account.debt.line.tree</field>
          <field name="model">account.debt.line</field>
          <field name="arch" type="xml">
-            <tree string="Debt Lines" colors="red:(not date_maturity or date_maturity&lt;=current_date) and amount&gt;0">
+            <!--<tree string="Debt Lines" colors="red:(not date_maturity or date_maturity<=current_date) and amount>0">-->
+            <tree string="Debt Lines">
                 <field name="date"/>
                 <field name="partner_id" invisible="context.get('show_balance', False)"/>
                 <field name="company_id" groups="base.group_multi_company"/>

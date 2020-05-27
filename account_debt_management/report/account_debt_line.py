@@ -282,7 +282,9 @@ class AccountDebtLine(models.Model):
                 max(am.date) as date,
                 %s
                 am.l10n_latam_document_type_id as document_type_id,
-                c.document_number as document_number,
+                --c.document_number as document_number,
+                am.name as document_number,
+                am.type as type,
                 full_reconcile_id,
                 bool_and(l.reconciled) as reconciled,
                 -- l.blocked as blocked,
@@ -332,24 +334,26 @@ class AccountDebtLine(models.Model):
                 -- left join res_partner pa on (l.partner_id=pa.id)
                 left join l10n_latam_document_type dt on (
                     am.l10n_latam_document_type_id=dt.id)
-                left join (
-                    SELECT
-                        COALESCE (NULLIF (CONCAT (
-                            dt.doc_code_prefix, am.document_number), ''),
-                            am.name) as document_number,
-                        am.id
-                    FROM
-                        account_move am
-                        left join l10n_latam_document_type dt on (
-                            am.l10n_latam_document_type_id=dt.id)
-                    ) c on l.move_id = c.id
+                --left join (
+                --    SELECT
+                --        COALESCE (NULLIF (CONCAT (
+                --            dt.doc_code_prefix, am.document_number), ''),
+                --            am.name) as document_number,
+                --        am.id
+                --    FROM
+                --        account_move am
+                --        left join l10n_latam_document_type dt on (
+                --            am.l10n_latam_document_type_id=dt.id)
+                --    ) c on l.move_id = c.id
             WHERE
                 -- l.state != 'draft' and
+                am.state != 'draft' and
                 a.internal_type IN ('payable', 'receivable')
             GROUP BY
                 l.partner_id, am.company_id, l.account_id, l.currency_id,
                 l.full_reconcile_id,
-                a.internal_type, a.user_type_id, c.document_number,
+                --a.internal_type, a.user_type_id, c.document_number,
+                a.internal_type, a.user_type_id, am.name, am.type,
                 am.l10n_latam_document_type_id %s
                 -- dt.doc_code_prefix, am.document_number
         """ % params

@@ -38,7 +38,7 @@
                 <page
                     name="customer_debt"
                     string="Customer Debt"
-                    attrs="{'invisible': ['|', ('customer', '=', False),  '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
+                    attrs="{'invisible': ['|', ('customer_rank', '=', 0),  '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
                     groups="account.group_account_invoice"
                     >
                     <field name="receivable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
@@ -46,11 +46,13 @@
                 <page
                     name="supplier_debt"
                     string="Supplier Debt"
-                    attrs="{'invisible': ['|', ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
+                    attrs="{'invisible': ['|', ('supplier_rank', '=', 0), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
                     groups="account.group_account_invoice"
                     >
                     <field name="payable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
                 </page>
+                <field name="customer_rank" invisible="1"/>
+                <field name="supplier_rank" invisible="1"/>
             </page>
             <div name="button_box" position="inside">
                 <button
@@ -60,7 +62,7 @@
                     icon="fa-list"
                     context="{'show_balance': 1, 'search_default_partner_id': active_id}"
                     name="%(account_debt_management.action_account_debt_line)d"
-                    attrs="{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
+                    attrs="{'invisible': ['|', '&amp;', ('customer_rank', '=', 0), ('supplier_rank', '=', 0), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
                     >
                     <div class="o_form_field o_stat_info">
                         <span class="o_stat_value"><field name="debt_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/></span>
