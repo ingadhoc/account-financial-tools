@@ -50,7 +50,7 @@ class AccountDebtReportWizard(models.TransientModel):
                 'You can only select "Consolidate all Companies if no company '
                 'is selected'))
 
-    @api.multi
+    
     def confirm(self):
         active_ids = self._context.get('active_ids', False)
         if not active_ids:
@@ -82,7 +82,7 @@ class AccountDebtReportWizard(models.TransientModel):
             # show_receipt_detail=self.show_receipt_detail,
         ).report_action(partners, data=data)
 
-    @api.multi
+    
     def send_by_email(self):
         active_ids = self._context.get('active_ids', [])
         active_id = self._context.get('active_id', False)

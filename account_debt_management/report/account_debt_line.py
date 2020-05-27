@@ -171,7 +171,7 @@ class AccountDebtLine(models.Model):
     # TODO por ahora, y si nadie lo extraña, vamos a usar document_number
     # en vez de este, alternativas por si se extraña:
     # si se extraña entonces tal vez mejor restaurarlo con otro nombre
-    # @api.one
+    # 
     # def get_display_name(self):
     #     # usamos display_name para que contenga doc number o name
     #     # luego si el ref es igual al name del move no lo mostramos
@@ -192,7 +192,7 @@ class AccountDebtLine(models.Model):
     #         display_name = '%s (%s)' % (display_name, ref)
     #     self.display_name = display_name
 
-    @api.multi
+    
     @api.depends('move_lines_str')
     # @api.depends('amount', 'amount_currency')
     def _compute_move_lines_data(self):
@@ -257,7 +257,6 @@ class AccountDebtLine(models.Model):
             rec.financial_amount_residual = sum(
                 rec.move_line_ids.mapped('financial_amount_residual'))
 
-    @api.model_cr
     def init(self):
         # pylint: disable=E8103
         tools.drop_view_if_exists(self._cr, self._table)
@@ -359,7 +358,7 @@ class AccountDebtLine(models.Model):
 
     # TODO tal vez podamos usar métodos agregados por account_usability
     # que hacen exactamente esto
-    @api.multi
+    
     def action_open_related_document(self):
         self.ensure_one()
         # usamos lo que ya se usa en js para devolver la accion
@@ -376,7 +375,7 @@ class AccountDebtLine(models.Model):
             # 'view_id': res[0],
         }
 
-    @api.multi
+    
     def get_model_id_and_name(self):
         """
         Function used to display the right action on journal items on dropdown
@@ -405,7 +404,7 @@ class AccountDebtLine(models.Model):
             _('View Move'),
             False]
 
-    @api.multi
+    
     def cancel_amount_residual_currency(self):
         """Agregamos este metodo (y el botón) para cancelar la deuda en moneda
         en los casos donde no se canceló automaticamente el importe en esa
