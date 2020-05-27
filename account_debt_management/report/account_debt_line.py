@@ -154,7 +154,7 @@ class AccountDebtLine(models.Model):
         compute='_compute_move_lines_data',
     )
     invoice_id = fields.Many2one(
-        'account.invoice',
+        'account.move',
         'Invoice',
         compute='_compute_move_lines_data',
     )
@@ -230,7 +230,7 @@ class AccountDebtLine(models.Model):
                     len(move_lines) == 1 and move_lines[0] or
                     rec.env['account.move.line'])
 
-            invoice_id = rec.move_line_ids.mapped('invoice_id')
+            invoice_id = rec.move_line_ids.mapped('move_id')
             rec.invoice_id = len(invoice_id) == 1 and invoice_id
 
             payment_group = rec.move_line_ids.mapped(
@@ -397,7 +397,7 @@ class AccountDebtLine(models.Model):
         if self.invoice_id:
             view_id = self.invoice_id.get_formview_id()
             return [
-                'account.invoice',
+                'account.move',
                 self.invoice_id.id,
                 _('View Invoice'),
                 view_id]
