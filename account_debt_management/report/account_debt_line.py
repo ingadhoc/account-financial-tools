@@ -15,7 +15,7 @@ class AccountDebtLine(models.Model):
             'user_id',
         ],
         'account.move': [
-            'document_type_id', 'document_number',
+            'l10n_latam_document_type_id', 'document_number',
         ],
         'account.move.line': [
             'account_id', 'debit', 'credit', 'date_maturity', 'partner_id',
@@ -281,7 +281,7 @@ class AccountDebtLine(models.Model):
                 string_agg(cast(l.id as varchar), ',') as move_lines_str,
                 max(am.date) as date,
                 %s
-                am.document_type_id as document_type_id,
+                am.l10n_latam_document_type_id as document_type_id,
                 c.document_number as document_number,
                 full_reconcile_id,
                 bool_and(l.reconciled) as reconciled,
@@ -330,8 +330,8 @@ class AccountDebtLine(models.Model):
                 left join account_move am on (am.id=l.move_id)
                 -- left join account_period p on (am.period_id=p.id)
                 -- left join res_partner pa on (l.partner_id=pa.id)
-                left join account_document_type dt on (
-                    am.document_type_id=dt.id)
+                left join l10n_latam_document_type dt on (
+                    am.l10n_latam_document_type_id=dt.id)
                 left join (
                     SELECT
                         COALESCE (NULLIF (CONCAT (
@@ -340,8 +340,8 @@ class AccountDebtLine(models.Model):
                         am.id
                     FROM
                         account_move am
-                        left join account_document_type dt on (
-                            am.document_type_id=dt.id)
+                        left join l10n_latam_document_type dt on (
+                            am.l10n_latam_document_type_id=dt.id)
                     ) c on l.move_id = c.id
             WHERE
                 -- l.state != 'draft' and
@@ -350,7 +350,7 @@ class AccountDebtLine(models.Model):
                 l.partner_id, am.company_id, l.account_id, l.currency_id,
                 l.full_reconcile_id,
                 a.internal_type, a.user_type_id, c.document_number,
-                am.document_type_id %s
+                am.l10n_latam_document_type_id %s
                 -- dt.doc_code_prefix, am.document_number
         """ % params
         self._cr.execute("""CREATE or REPLACE VIEW %s as (%s
