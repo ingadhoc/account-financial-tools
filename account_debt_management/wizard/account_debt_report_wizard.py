@@ -52,6 +52,7 @@ class AccountDebtReportWizard(models.TransientModel):
 
     
     def confirm(self):
+        """
         active_ids = self._context.get('active_ids', False)
         if not active_ids:
             return True
@@ -68,7 +69,7 @@ class AccountDebtReportWizard(models.TransientModel):
             'show_invoice_detail': self.show_invoice_detail,
         }
         return self.env['ir.actions.report'].search(
-            [('report_name', '=', 'account_debt_report')],
+            [('report_name', '=', 'account_debt_management.report_account_debt')],
             limit=1).with_context(
             secondary_currency=self.secondary_currency,
             financial_amounts=self.financial_amounts,
@@ -81,6 +82,15 @@ class AccountDebtReportWizard(models.TransientModel):
             show_invoice_detail=self.show_invoice_detail,
             # show_receipt_detail=self.show_receipt_detail,
         ).report_action(partners, data=data)
+        """
+        # AJUSTAR REPORTE PARA SOPORTAR CAMPOS ANTERIORES
+        active_ids = self._context.get('active_ids', False)
+        if not active_ids:
+            return True
+        partners = self.env['res.partner'].browse(active_ids)
+        return self.env['ir.actions.report'].search(
+            [('report_name', '=', 'account_debt_management.report_account_debt')],
+            limit=1).report_action(partners)
 
     
     def send_by_email(self):
