@@ -4,4 +4,5 @@
 ##############################################################################
 from . import account_invoice_tax_wizard
 from . import account_change_currency
+from . import account_invoice_refund
 from . import res_config_settings
