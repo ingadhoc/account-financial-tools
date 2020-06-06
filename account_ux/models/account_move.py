@@ -7,6 +7,10 @@ from odoo.exceptions import ValidationError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    internal_notes = fields.Text(
+        'Internal Notes'
+    )
+
     def delete_number(self):
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
 
