@@ -9,6 +9,13 @@
                 <button name="delete_number" string="Delete Number"  attrs="{'invisible':['|', '|', ('type', 'not in', ('out_invoice', 'out_refund')), ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
             </button>
 
+            <field name="narration" position="attributes">
+                <attribute name="placeholder">Términos y condiciones...</attribute>
+            </field>
+            <field name="narration" position="after">
+                <field name="internal_notes" placeholder="Internal notes.."/>
+            </field>
+
             <field name="date_maturity" position="attributes">
                 <attribute name="invisible"></attribute>
             </field>
