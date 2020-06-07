@@ -50,7 +50,6 @@ class AccountDebtReportWizard(models.TransientModel):
                 'You can only select "Consolidate all Companies if no company '
                 'is selected'))
 
-    
     def confirm(self):
         """
         active_ids = self._context.get('active_ids', False)
@@ -92,7 +91,6 @@ class AccountDebtReportWizard(models.TransientModel):
             [('report_name', '=', 'account_debt_management.report_account_debt')],
             limit=1).report_action(partners)
 
-    
     def send_by_email(self):
         active_ids = self._context.get('active_ids', [])
         active_id = self._context.get('active_id', False)

@@ -171,7 +171,6 @@ class AccountDebtLine(models.Model):
     # TODO por ahora, y si nadie lo extraña, vamos a usar document_number
     # en vez de este, alternativas por si se extraña:
     # si se extraña entonces tal vez mejor restaurarlo con otro nombre
-    # 
     # def get_display_name(self):
     #     # usamos display_name para que contenga doc number o name
     #     # luego si el ref es igual al name del move no lo mostramos
@@ -192,7 +191,6 @@ class AccountDebtLine(models.Model):
     #         display_name = '%s (%s)' % (display_name, ref)
     #     self.display_name = display_name
 
-    
     @api.depends('move_lines_str')
     # @api.depends('amount', 'amount_currency')
     def _compute_move_lines_data(self):
@@ -362,7 +360,6 @@ class AccountDebtLine(models.Model):
 
     # TODO tal vez podamos usar métodos agregados por account_usability
     # que hacen exactamente esto
-    
     def action_open_related_document(self):
         self.ensure_one()
         # usamos lo que ya se usa en js para devolver la accion
@@ -379,12 +376,9 @@ class AccountDebtLine(models.Model):
             # 'view_id': res[0],
         }
 
-    
     def get_model_id_and_name(self):
-        """
-        Function used to display the right action on journal items on dropdown
-        lists, in reports like general ledger
-        """
+        # Function used to display the right action on journal items on dropdown
+        # lists, in reports like general ledger
         if self.statement_id:
             return [
                 'account.bank.statement', self.statement_id.id,
@@ -408,12 +402,10 @@ class AccountDebtLine(models.Model):
             _('View Move'),
             False]
 
-    
     def cancel_amount_residual_currency(self):
-        """Agregamos este metodo (y el botón) para cancelar la deuda en moneda
-        en los casos donde no se canceló automaticamente el importe en esa
-        divisa
-        """
+        # Agregamos este metodo (y el botón) para cancelar la deuda en moneda
+        # en los casos donde no se canceló automaticamente el importe en esa
+        # divisa
         # al final esto lo hacemos por vista, ademas tampoco es tan critico
         # porque podrian hacer este ajuste manualmente
         # if not self.user_has_groups('account.group_account_manager'):

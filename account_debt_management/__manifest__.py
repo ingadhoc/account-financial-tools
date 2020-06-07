@@ -25,7 +25,6 @@
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
-        #'account_document',
         'l10n_ar',
         # lo agregamos aca por simplicidad y para poder poner link al
         # payment
@@ -34,7 +33,6 @@
         # mas adelante se puede separar en otro modulo que integre
         # funcionalidad con este otro modulo
         # 'account_payment_group_document',
-        #'report_aeroo',
     ],
     'data': [
         'security/ir.model.access.csv',
