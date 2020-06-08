@@ -30,7 +30,7 @@ class AccountDebtLine(models.Model):
         "litigation with the associated partner"
     )
     document_type_id = fields.Many2one(
-        'account.document.type',
+        'l10n_latam.document.type',
         'Document Type',
         readonly=True
     )
