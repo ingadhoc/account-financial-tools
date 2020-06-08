@@ -19,13 +19,13 @@
 ##############################################################################
 {
     'name': 'Account Debt Management',
-    'version': '12.0.1.2.0',
+    'version': '13.0.1.0.0',
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'depends': [
-        'account_document',
+        'l10n_ar',
         # lo agregamos aca por simplicidad y para poder poner link al
         # payment
         'account_payment_group',
@@ -33,7 +33,6 @@
         # mas adelante se puede separar en otro modulo que integre
         # funcionalidad con este otro modulo
         # 'account_payment_group_document',
-        'report_aeroo',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -49,5 +48,5 @@
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
 }

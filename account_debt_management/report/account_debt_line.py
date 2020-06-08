@@ -15,7 +15,7 @@ class AccountDebtLine(models.Model):
             'user_id',
         ],
         'account.move': [
-            'document_type_id', 'document_number',
+            'l10n_latam_document_type_id', 'document_number',
         ],
         'account.move.line': [
             'account_id', 'debit', 'credit', 'date_maturity', 'partner_id',
@@ -30,7 +30,7 @@ class AccountDebtLine(models.Model):
         "litigation with the associated partner"
     )
     document_type_id = fields.Many2one(
-        'account.document.type',
+        'l10n_latam.document.type',
         'Document Type',
         readonly=True
     )
@@ -154,7 +154,7 @@ class AccountDebtLine(models.Model):
         compute='_compute_move_lines_data',
     )
     invoice_id = fields.Many2one(
-        'account.invoice',
+        'account.move',
         'Invoice',
         compute='_compute_move_lines_data',
     )
@@ -171,7 +171,6 @@ class AccountDebtLine(models.Model):
     # TODO por ahora, y si nadie lo extraña, vamos a usar document_number
     # en vez de este, alternativas por si se extraña:
     # si se extraña entonces tal vez mejor restaurarlo con otro nombre
-    # @api.one
     # def get_display_name(self):
     #     # usamos display_name para que contenga doc number o name
     #     # luego si el ref es igual al name del move no lo mostramos
@@ -192,7 +191,6 @@ class AccountDebtLine(models.Model):
     #         display_name = '%s (%s)' % (display_name, ref)
     #     self.display_name = display_name
 
-    @api.multi
     @api.depends('move_lines_str')
     # @api.depends('amount', 'amount_currency')
     def _compute_move_lines_data(self):
@@ -230,7 +228,7 @@ class AccountDebtLine(models.Model):
                     len(move_lines) == 1 and move_lines[0] or
                     rec.env['account.move.line'])
 
-            invoice_id = rec.move_line_ids.mapped('invoice_id')
+            invoice_id = rec.move_line_ids.mapped('move_id')
             rec.invoice_id = len(invoice_id) == 1 and invoice_id
 
             payment_group = rec.move_line_ids.mapped(
@@ -257,7 +255,6 @@ class AccountDebtLine(models.Model):
             rec.financial_amount_residual = sum(
                 rec.move_line_ids.mapped('financial_amount_residual'))
 
-    @api.model_cr
     def init(self):
         # pylint: disable=E8103
         tools.drop_view_if_exists(self._cr, self._table)
@@ -282,8 +279,10 @@ class AccountDebtLine(models.Model):
                 string_agg(cast(l.id as varchar), ',') as move_lines_str,
                 max(am.date) as date,
                 %s
-                am.document_type_id as document_type_id,
-                c.document_number as document_number,
+                am.l10n_latam_document_type_id as document_type_id,
+                --c.document_number as document_number,
+                am.name as document_number,
+                am.type as type,
                 full_reconcile_id,
                 bool_and(l.reconciled) as reconciled,
                 -- l.blocked as blocked,
@@ -331,27 +330,29 @@ class AccountDebtLine(models.Model):
                 left join account_move am on (am.id=l.move_id)
                 -- left join account_period p on (am.period_id=p.id)
                 -- left join res_partner pa on (l.partner_id=pa.id)
-                left join account_document_type dt on (
-                    am.document_type_id=dt.id)
-                left join (
-                    SELECT
-                        COALESCE (NULLIF (CONCAT (
-                            dt.doc_code_prefix, am.document_number), ''),
-                            am.name) as document_number,
-                        am.id
-                    FROM
-                        account_move am
-                        left join account_document_type dt on (
-                            am.document_type_id=dt.id)
-                    ) c on l.move_id = c.id
+                left join l10n_latam_document_type dt on (
+                    am.l10n_latam_document_type_id=dt.id)
+                --left join (
+                --    SELECT
+                --        COALESCE (NULLIF (CONCAT (
+                --            dt.doc_code_prefix, am.document_number), ''),
+                --            am.name) as document_number,
+                --        am.id
+                --    FROM
+                --        account_move am
+                --        left join l10n_latam_document_type dt on (
+                --            am.l10n_latam_document_type_id=dt.id)
+                --    ) c on l.move_id = c.id
             WHERE
                 -- l.state != 'draft' and
+                am.state != 'draft' and
                 a.internal_type IN ('payable', 'receivable')
             GROUP BY
                 l.partner_id, am.company_id, l.account_id, l.currency_id,
                 l.full_reconcile_id,
-                a.internal_type, a.user_type_id, c.document_number,
-                am.document_type_id %s
+                --a.internal_type, a.user_type_id, c.document_number,
+                a.internal_type, a.user_type_id, am.name, am.type,
+                am.l10n_latam_document_type_id %s
                 -- dt.doc_code_prefix, am.document_number
         """ % params
         self._cr.execute("""CREATE or REPLACE VIEW %s as (%s
@@ -359,7 +360,6 @@ class AccountDebtLine(models.Model):
 
     # TODO tal vez podamos usar métodos agregados por account_usability
     # que hacen exactamente esto
-    @api.multi
     def action_open_related_document(self):
         self.ensure_one()
         # usamos lo que ya se usa en js para devolver la accion
@@ -376,12 +376,9 @@ class AccountDebtLine(models.Model):
             # 'view_id': res[0],
         }
 
-    @api.multi
     def get_model_id_and_name(self):
-        """
-        Function used to display the right action on journal items on dropdown
-        lists, in reports like general ledger
-        """
+        # Function used to display the right action on journal items on dropdown
+        # lists, in reports like general ledger
         if self.statement_id:
             return [
                 'account.bank.statement', self.statement_id.id,
@@ -394,7 +391,7 @@ class AccountDebtLine(models.Model):
         if self.invoice_id:
             view_id = self.invoice_id.get_formview_id()
             return [
-                'account.invoice',
+                'account.move',
                 self.invoice_id.id,
                 _('View Invoice'),
                 view_id]
@@ -405,12 +402,10 @@ class AccountDebtLine(models.Model):
             _('View Move'),
             False]
 
-    @api.multi
     def cancel_amount_residual_currency(self):
-        """Agregamos este metodo (y el botón) para cancelar la deuda en moneda
-        en los casos donde no se canceló automaticamente el importe en esa
-        divisa
-        """
+        # Agregamos este metodo (y el botón) para cancelar la deuda en moneda
+        # en los casos donde no se canceló automaticamente el importe en esa
+        # divisa
         # al final esto lo hacemos por vista, ademas tampoco es tan critico
         # porque podrian hacer este ajuste manualmente
         # if not self.user_has_groups('account.group_account_manager'):
