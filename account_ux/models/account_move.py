@@ -24,7 +24,24 @@ class AccountMove(models.Model):
         if move_lines:
             raise ValidationError(_(
                 "Some move lines don't have analytic tags and "
-                "analytic tags are required by the account type.\n"
+                "analytic tags are required by theese accounts.\n"
+                "* Accounts: %s\n"
+                "* Move lines ids: %s" % (
+                    ", ".join(move_lines.mapped('account_id.name')),
+                    move_lines.ids
+                )
+            ))
+
+        move_lines = self.mapped('line_ids').filtered(
+            lambda x: (
+                x.account_id.user_type_id.analytic_account_required and
+                x.account_id.analytic_account_required != 'optional' or
+                x.account_id.analytic_account_required == 'required')
+            and not x.analytic_account_id)
+        if move_lines:
+            raise ValidationError(_(
+                "Some move lines don't have analytic account and "
+                "analytic account is required by theese accounts.\n"
                 "* Accounts: %s\n"
                 "* Move lines ids: %s" % (
                     ", ".join(move_lines.mapped('account_id.name')),
