@@ -24,6 +24,10 @@
             <field name="invoice_origin" position="attributes">
                 <attribute name="attrs"></attribute>
             </field>
+            <!-- idem para campo "Reversion de" (vinculo a documento original generalmente factura) -->
+            <field name="reversed_entry_id" position="attributes">
+                <attribute name="attrs"></attribute>
+            </field>
 
             <field name="currency_id" position="attributes">
                 <attribute name="readonly">True</attribute>

@@ -52,6 +52,7 @@ Several Improvements to accounting:
 #. DISABLED, REMOVE IF NO NEEDED: Disable currency change when journal is changed
 #. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings
+#. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
   * Preview and allow to change the rate thats is going to be used.
