@@ -2,7 +2,8 @@
 import json
 from odoo.tools import float_is_zero
 from odoo import models, api, fields, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
+
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -22,7 +23,7 @@ class AccountMove(models.Model):
                 x.account_id.analytic_tag_required == 'required')
             and not x.analytic_tag_ids)
         if move_lines:
-            raise ValidationError(_(
+            raise UserError(_(
                 "Some move lines don't have analytic tags and "
                 "analytic tags are required by theese accounts.\n"
                 "* Accounts: %s\n"
@@ -39,7 +40,7 @@ class AccountMove(models.Model):
                 x.account_id.analytic_account_required == 'required')
             and not x.analytic_account_id)
         if move_lines:
-            raise ValidationError(_(
+            raise UserError(_(
                 "Some move lines don't have analytic account and "
                 "analytic account is required by theese accounts.\n"
                 "* Accounts: %s\n"
