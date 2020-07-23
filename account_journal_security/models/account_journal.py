@@ -94,7 +94,7 @@ class AccountJournal(models.Model):
         self.env.user.context_get.clear_cache(self)
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         """
         Para que usuarios los usuarios no puedan elegir diarios donde no puedan
         escribir, modificamos la funcion search. No lo hacemos por regla de
@@ -103,12 +103,12 @@ class AccountJournal(models.Model):
         """
         user = self.env.user
         # if superadmin, do not apply
-        if user.id != 1:
+        if not self.env.is_superuser():
             args += [
                 '|', ('modification_user_ids', '=', False),
                 ('id', 'in', user.modification_journal_ids.ids)]
 
-        return super().search(args, offset, limit, order, count=count)
+        return super()._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
 
     @api.onchange('journal_restriction')
     def unset_modification_user_ids(self):
