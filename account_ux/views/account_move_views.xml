@@ -43,6 +43,7 @@
 
             <field name="journal_id" position="attributes">
                 <attribute name="groups">account.group_account_invoice</attribute>
+                <attribute name="force_save">1</attribute>
             </field>
         </field>
     </record>
