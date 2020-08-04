@@ -55,12 +55,12 @@ Several Improvements to accounting:
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
-  * Preview and allow to change the rate thats is going to be used.
-  * Log the currency change on the chatter.
-  * Add this functionality to supplier invoices.
-  * Change currency wizard only works when multi currency is activated
-  * In order to see the change button in the invoice we should be added to the "Technical Settings / Show Full Accounting Features" group
-  * We can restrict the change of the currency for a group of users by adding them to "Restrict Change Invoice Currency Exchange" group
+   * Preview and allow to change the rate thats is going to be used.
+   * Log the currency change on the chatter.
+   * Add this functionality to supplier invoices.
+   * Change currency wizard only works when multi currency is activated
+   * In order to see the change button in the invoice we should be added to the "Technical Settings / Show Full Accounting Features" group
+   * We can restrict the change of the currency for a group of users by adding them to "Restrict Change Invoice Currency Exchange" group
 
 #. Add constraint invoice-journal-type to let the user create sales/purchase invoices exclusively in the respectives sales/purchase journals:
 
