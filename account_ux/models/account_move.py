@@ -49,9 +49,13 @@ class AccountMove(models.Model):
                     move_lines.ids
                 )
             ))
-
-        # After validate invoice will sent an email to the partner if the related journal has mail_template_id set.
         res = super(AccountMove, self).post()
+        return res
+
+    def action_post(self):
+        """ After validate invoice will sent an email to the partner if the related journal has mail_template_id set """
+        res = super().action_post()
+
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             try:
                 rec.message_post_with_template(
