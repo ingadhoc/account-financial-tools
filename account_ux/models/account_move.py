@@ -70,11 +70,11 @@ class AccountMove(models.Model):
                     " via email. Please review invoice chatter for more"
                     " information" % rec.display_name
                 )
-                self.env.user.notify_warning(
-                    title=title,
-                    message=message,
-                    sticky=True,
-                )
+                # self.env.user.notify_warning(
+                #     title=title,
+                #     message=message,
+                #     sticky=True,
+                # )
                 rec.message_post(body="<br/><br/>".join([
                     "<b>" + title + "</b>",
                     _("Please check the email template associated with"
