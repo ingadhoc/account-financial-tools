@@ -2,7 +2,8 @@
 import json
 from odoo.tools import float_is_zero
 from odoo import models, api, fields, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
+
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -22,7 +23,7 @@ class AccountMove(models.Model):
                 x.account_id.analytic_tag_required == 'required')
             and not x.analytic_tag_ids)
         if move_lines:
-            raise ValidationError(_(
+            raise UserError(_(
                 "Some move lines don't have analytic tags and "
                 "analytic tags are required by theese accounts.\n"
                 "* Accounts: %s\n"
@@ -39,7 +40,7 @@ class AccountMove(models.Model):
                 x.account_id.analytic_account_required == 'required')
             and not x.analytic_account_id)
         if move_lines:
-            raise ValidationError(_(
+            raise UserError(_(
                 "Some move lines don't have analytic account and "
                 "analytic account is required by theese accounts.\n"
                 "* Accounts: %s\n"
@@ -48,9 +49,13 @@ class AccountMove(models.Model):
                     move_lines.ids
                 )
             ))
-
-        # After validate invoice will sent an email to the partner if the related journal has mail_template_id set.
         res = super(AccountMove, self).post()
+        return res
+
+    def action_post(self):
+        """ After validate invoice will sent an email to the partner if the related journal has mail_template_id set """
+        res = super().action_post()
+
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             try:
                 rec.message_post_with_template(
@@ -143,3 +148,15 @@ class AccountMove(models.Model):
                 info['title'] = type_payment
                 move.invoice_outstanding_credits_debits_widget = json.dumps(info)
                 move.invoice_has_outstanding = True
+
+    @api.constrains('state', 'type', 'journal_id')
+    def check_invoice_and_journal_type(self, default=None):
+        """ Only let to create customer invoices/vendor bills in respective sale/purchase journals """
+        error = self.filtered(
+            lambda x: x.is_sale_document() and x.journal_id.type != 'sale' or
+            not x.is_sale_document() and x.journal_id.type == 'sale' or
+            x.is_purchase_document() and x.journal_id.type != 'purchase' or
+            not x.is_purchase_document() and x.journal_id.type == 'purchase')
+        if error:
+            raise ValidationError(_(
+                'You can create sales/purchase invoices exclusively in the respective sales/purchase journals'))
