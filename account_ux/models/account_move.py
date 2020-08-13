@@ -153,10 +153,11 @@ class AccountMove(models.Model):
     def check_invoice_and_journal_type(self, default=None):
         """ Only let to create customer invoices/vendor bills in respective sale/purchase journals """
         error = self.filtered(
-            lambda x: x.is_sale_document() and x.journal_id.type != 'sale' or
-            not x.is_sale_document() and x.journal_id.type == 'sale' or
-            x.is_purchase_document() and x.journal_id.type != 'purchase' or
-            not x.is_purchase_document() and x.journal_id.type == 'purchase')
+            lambda x: x.journal_id.l10n_latam_use_documents and (
+                x.is_sale_document() and x.journal_id.type != 'sale' or
+                not x.is_sale_document() and x.journal_id.type == 'sale' or
+                x.is_purchase_document() and x.journal_id.type != 'purchase' or
+                not x.is_purchase_document() and x.journal_id.type == 'purchase'))
         if error:
             raise ValidationError(_(
                 'You can create sales/purchase invoices exclusively in the respective sales/purchase journals'))
