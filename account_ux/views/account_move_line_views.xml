@@ -19,7 +19,7 @@
                         domain="['|', ('date', '=', False), '&amp;',('date','&lt;=', time.strftime('%%Y-12-31')),('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
                 <filter name="last_year"
                         string="Last Year"
-                        domain="['&amp;', ('date', '&gt;=', (context_today()-relativedelta(years=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                        domain="['&amp;', ('date', '&gt;=', (context_today()-relativedelta(years=1)).strftime('%Y-01-01')), ('date', '&lt;', context_today().strftime('%Y-01-01'))]"/>
             </field>
             <field name="account_id" position="after">
                 <field name="user_type_id"/>
