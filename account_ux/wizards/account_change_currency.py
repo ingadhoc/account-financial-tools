@@ -62,19 +62,13 @@ class AccountChangeCurrency(models.TransientModel):
         message = _("Currency changed from %s to %s with rate %s") % (
             self.move_id.currency_id.name, self.currency_to_id.name,
             self.currency_rate)
-        for line in self.move_id.invoice_line_ids:
+
+        move = self.move_id.with_context(check_move_validity=False)
+        for line in move.line_ids:
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
             line.price_unit = line.price_unit * self.currency_rate
-        self.move_id.currency_id = self.currency_to_id.id
-
-        # # update manual taxes
-        # for line in self.move_id.tax_line_ids.filtered(lambda x: x.manual):
-        #     line.amount = self.currency_to_id.round(
-        #         line.amount * self.currency_rate)
-
-        # self.move_id.compute_taxes()
-        # self.move_id._onchange_recompute_dynamic_lines()
-
+        move.currency_id = self.currency_to_id.id
+        move._onchange_currency()
         self.move_id.message_post(body=message)
         return {'type': 'ir.actions.act_window_close'}
