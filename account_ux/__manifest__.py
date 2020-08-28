@@ -32,7 +32,6 @@
         'account',
         "payment",
         "account_payment_group",
-        "web_notify",
     ],
     'data': [
         'security/account_ux_security.xml',
