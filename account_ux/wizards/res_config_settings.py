@@ -43,8 +43,8 @@ class ResConfigSettings(models.TransientModel):
             company_id=company_id)
 
         res.update({
-            'sale_tax_ids': [(6, 0, taxes_ids)],
-            'purchase_tax_ids': [(6, 0, supplier_taxes_ids)],
+            'sale_tax_ids': [(6, 0, taxes_ids or [])],
+            'purchase_tax_ids': [(6, 0, supplier_taxes_ids or [])],
         })
         return res
 
