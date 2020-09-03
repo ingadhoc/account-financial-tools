@@ -16,9 +16,10 @@
                 <field name="internal_notes" placeholder="Internal notes.."/>
             </field>
 
-            <field name="date_maturity" position="attributes">
+            <xpath expr="//field[@name='line_ids']//field[@name='date_maturity']" position="attributes">
                 <attribute name="invisible"></attribute>
-            </field>
+                <attribute name="optional">hide</attribute>
+            </xpath>
 
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
             <field name="invoice_origin" position="attributes">
