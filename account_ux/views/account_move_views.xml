@@ -66,15 +66,4 @@
         </field>
     </record>
 
-    <record id="view_invoice_tree" model="ir.ui.view">
-        <field name="name">account.invoice.tree</field>
-        <field name="model">account.move</field>
-        <field name="inherit_id" ref="account.view_invoice_tree"/>
-        <field name="arch" type="xml">
-            <field name="invoice_origin" position="after">
-                <field name="ref" optional="hide"/>
-            </field>
-        </field>
-    </record>
-
 </odoo>
