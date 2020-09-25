@@ -44,11 +44,11 @@ class AccountInvoice(models.Model):
                 title = _(
                     "ERROR: Invoice was not sent via email"
                 )
-                message = _(
-                    "Invoice %s was correctly validate but was not send"
-                    " via email. Please review invoice chatter for more"
-                    " information" % rec.display_name
-                )
+                # message = _(
+                #     "Invoice %s was correctly validate but was not send"
+                #     " via email. Please review invoice chatter for more"
+                #     " information" % rec.display_name
+                # )
                 # self.env.user.notify_warning(
                 #     title=title,
                 #     message=message,
