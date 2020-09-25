@@ -48,15 +48,14 @@ class ResConfigSettings(models.TransientModel):
 
         ir_default = self.env['ir.default'].sudo()
 
-        if self.sale_tax_ids:
-            ir_default.set(
-                'product.template',
-                "taxes_id",
-                self.sale_tax_ids.ids,
-                company_id=self.company_id.id)
-        if self.purchase_tax_ids:
-            ir_default.set(
-                'product.template',
-                "supplier_taxes_id",
-                self.purchase_tax_ids.ids,
-                company_id=self.company_id.id)
+        ir_default.set(
+            'product.template',
+            "taxes_id",
+            self.sale_tax_ids.ids,
+            company_id=self.company_id.id)
+
+        ir_default.set(
+            'product.template',
+            "supplier_taxes_id",
+            self.purchase_tax_ids.ids,
+            company_id=self.company_id.id)
