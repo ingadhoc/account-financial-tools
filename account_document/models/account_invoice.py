@@ -97,13 +97,13 @@ class AccountInvoice(models.Model):
             res = {}
             for line in invoice.report_tax_line_ids:
                 tax = line.tax_id
-                group_key = (tax.tax_group_id, tax.amount_type, tax.amount)
+                group_key = (tax, tax.amount_type, tax.amount)
                 res.setdefault(group_key, {'base': 0.0, 'amount': 0.0})
                 res[group_key]['amount'] += line.amount_total
                 res[group_key]['base'] += line.base
             res = sorted(res.items(), key=lambda l: l[0][0].sequence)
             invoice.amount_by_group = [(
-                r[0][0].name, r[1]['amount'], r[1]['base'],
+                r[0][0].description, r[1]['amount'], r[1]['base'],
                 fmt(r[1]['amount']), fmt(r[1]['base']),
                 len(res),
             ) for r in res]
