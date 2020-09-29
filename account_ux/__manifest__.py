@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': "13.0.1.5.0",
+    'version': "13.0.1.6.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -32,6 +32,7 @@
         'account',
         "payment",
         "account_payment_group",
+        "base_vat",
     ],
     'data': [
         'security/account_ux_security.xml',
