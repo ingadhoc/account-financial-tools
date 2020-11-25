@@ -274,4 +274,5 @@ class ResCompanyInterest(models.Model):
 
     @api.depends('domain')
     def _compute_has_domain(self):
-        self.has_domain = len(safe_eval(self.domain)) > 0
+        for rec in self:
+            rec.has_domain = len(safe_eval(rec.domain)) > 0
