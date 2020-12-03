@@ -9,7 +9,7 @@ class ResCurrencyRate(models.Model):
     _inherit = "res.currency.rate"
 
     inverse_rate = fields.Float(
-        'Inverse Rate', digits=(12, 4),
+        'Inverse Rate', digits=(12, 6),
         compute='_compute_inverse_rate',
         inverse='_inverse_inverse_rate',
         help='The rate of the currency from the currency of rate 1',
