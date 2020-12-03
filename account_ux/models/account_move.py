@@ -55,7 +55,10 @@ class AccountMove(models.Model):
     def action_post(self):
         """ After validate invoice will sent an email to the partner if the related journal has mail_template_id set """
         res = super().action_post()
+        self.action_send_invoice_mail()
+        return res
 
+    def action_send_invoice_mail(self):
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             try:
                 rec.message_post_with_template(
@@ -65,11 +68,11 @@ class AccountMove(models.Model):
                 title = _(
                     "ERROR: Invoice was not sent via email"
                 )
-                message = _(
-                    "Invoice %s was correctly validate but was not send"
-                    " via email. Please review invoice chatter for more"
-                    " information" % rec.display_name
-                )
+                # message = _(
+                #     "Invoice %s was correctly validate but was not send"
+                #     " via email. Please review invoice chatter for more"
+                #     " information" % rec.display_name
+                # )
                 # self.env.user.notify_warning(
                 #     title=title,
                 #     message=message,
@@ -82,7 +85,6 @@ class AccountMove(models.Model):
                     "<code>" + str(error) + "</code>"
                 ]),
                 )
-        return res
 
     @api.onchange('partner_id')
     def _onchange_partner_commercial(self):
