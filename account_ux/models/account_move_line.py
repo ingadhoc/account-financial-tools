@@ -42,6 +42,8 @@ class AccountMoveLine(models.Model):
         no tiene moneda.
         Va de la mano de la modificación de "create" en
         account.partial.reconcile
+        Para que este cambio funcione bien es ademas importante este parche en odoo
+        https://github.com/odoo/odoo/pull/63390
         """
         if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
             field = 'amount_residual'
