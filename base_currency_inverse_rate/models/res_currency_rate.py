@@ -20,7 +20,7 @@ class ResCurrencyRate(models.Model):
     # TODO this is not a good solution and we should improve it, perhups not
     # to use arg as base currency but we should change method where we get
     # rate from afip
-    rate = fields.Float(digits=(7, 9))
+    rate = fields.Float(digits=0)
 
     @api.multi
     @api.depends('rate')
