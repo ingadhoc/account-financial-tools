@@ -6,6 +6,9 @@
         <field name="model">res.currency.rate</field>
         <field name="inherit_id" ref="base.view_currency_rate_tree"/>
         <field name='arch' type='xml'>
+            <field name="rate" position="attributes">
+                <attribute name="digits">[12,12]</attribute>
+            </field>
             <field name="rate" position="after">
                 <field name="inverse_rate"/>
             </field>
@@ -17,6 +20,9 @@
         <field name="model">res.currency.rate</field>
         <field name="inherit_id" ref="base.view_currency_rate_form"/>
         <field name='arch' type='xml'>
+            <field name="rate" position="attributes">
+                <attribute name="digits">[12,12]</attribute>
+            </field>
             <field name="rate" position="after">
                 <field name="inverse_rate"/>
             </field>
