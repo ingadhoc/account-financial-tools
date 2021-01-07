@@ -5,6 +5,16 @@
         <field name="name">account.move.form</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
+            <!-- Make subtotal included / excluded optional and not related to tax b2b/b2c -->
+            <field name="price_subtotal" position="attributes">
+                <attribute name="groups"></attribute>
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="price_total" position="attributes">
+                <attribute name="groups"></attribute>
+                <attribute name="optional">hide</attribute>
+            </field>
+
             <button name="button_draft" position="after">
                 <button name="delete_number" string="Delete Number"  attrs="{'invisible':['|', ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
             </button>
