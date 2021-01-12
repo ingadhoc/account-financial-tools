@@ -3,7 +3,8 @@
 # 	* account_ux
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020
+# Irina Fedulova <istartlin@gmail.com>, 2020
+# Ekaterina <nawsikaya@bk.ru>, 2021
 # 
 msgid ""
 msgstr ""
@@ -11,13 +12,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-07 21:41+0000\n"
 "PO-Revision-Date: 2020-02-02 17:17+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020\n"
-"Language-Team: Catalan (https://www.transifex.com/adhoc/teams/46451/ca/)\n"
+"Last-Translator: Ekaterina <nawsikaya@bk.ru>, 2021\n"
+"Language-Team: Russian (https://www.transifex.com/adhoc/teams/46451/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: ca\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: account_ux
 #: model:mail.template,body_html:account_ux.email_template_bank_statement
@@ -75,7 +76,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
 msgid "Account"
-msgstr "Compte"
+msgstr "Аккаунт"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_group
@@ -85,7 +86,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account_type
 msgid "Account Type"
-msgstr ""
+msgstr "Тип аккаунта"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_bank_statement_import_journal_creation__acquirer_ids
@@ -98,7 +99,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__acquirer_ids
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__acquirer_ids
 msgid "Acquirers"
-msgstr ""
+msgstr "Эквайеры"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
@@ -129,12 +130,12 @@ msgstr ""
 #: model:ir.actions.act_window,name:account_ux.action_move_line_analisis
 #: model:ir.ui.menu,name:account_ux.menu_move_line_analisis
 msgid "Análisis de Apuntes Contables"
-msgstr ""
+msgstr "Análisis de Apuntes Contables"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_bank_statement
 msgid "Bank Statement"
-msgstr ""
+msgstr "Банковская выписка"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_bank_statement_line
@@ -149,19 +150,19 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "Cancel"
-msgstr ""
+msgstr "Отмена"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
 msgid "Cancel All"
-msgstr ""
+msgstr "Отменить все"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_change_currency
 #: model:ir.model,name:account_ux.model_account_change_currency
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "Change Currency"
-msgstr ""
+msgstr "Поменять валюту"
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_change_currency__change_type__currency
@@ -171,7 +172,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__change_type
 msgid "Change Type"
-msgstr ""
+msgstr "Изменить тип"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_group__child_ids
@@ -205,7 +206,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
 msgid "Company"
-msgstr ""
+msgstr "Компания"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_config_settings
@@ -215,23 +216,23 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Контакт"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Создано"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Создано"
 
 #. module: account_ux
 #: model:account.payment.method,name:account_ux.account_payment_method_inbound_credit_card
 #: model:account.payment.method,name:account_ux.account_payment_method_outbound_credit_card
 msgid "Credit Card"
-msgstr ""
+msgstr "Кредитная карта"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__credit_card_days_for_collection
@@ -264,7 +265,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
 msgid "Currency from Invoice"
-msgstr ""
+msgstr "Валюта инвойса"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
@@ -275,7 +276,7 @@ msgstr ""
 #: model:account.payment.method,name:account_ux.account_payment_method_inbound_debit_card
 #: model:account.payment.method,name:account_ux.account_payment_method_outbound_debit_card
 msgid "Debit Card"
-msgstr ""
+msgstr "Дебетовая карта"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__debit_card_days_for_collection
@@ -307,7 +308,7 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Delete Number"
-msgstr ""
+msgstr "Удалить номер"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -320,12 +321,12 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Показать имя"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
@@ -336,7 +337,7 @@ msgstr ""
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
 msgid "ERROR: Invoice was not sent via email"
-msgstr ""
+msgstr "Ошибка: инвойс не отправлен по электронной почте"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__mail_template_id
@@ -357,12 +358,12 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
 msgid "Group By..."
-msgstr ""
+msgstr "Сгруппировать по..."
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_account_type__analytic_account_required
@@ -399,38 +400,38 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "Invoice Currency"
-msgstr ""
+msgstr "Валюта инвойса"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 msgid "Journal"
-msgstr "Diari"
+msgstr "Журнал"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move
 msgid "Journal Entries"
-msgstr ""
+msgstr "Записи в журнале"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move_line
 msgid "Journal Item"
-msgstr ""
+msgstr "Пункт в журнале"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Изменено"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Обновлено"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Обновлено"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.res_partner_view_buttons
@@ -452,25 +453,25 @@ msgstr ""
 #: model:account.payment.method,name:account_ux.account_payment_method_inbound_online
 #: model:account.payment.method,name:account_ux.account_payment_method_outbound_online
 msgid "Online"
-msgstr ""
+msgstr "Онлайн"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
 msgid "Open Document"
-msgstr ""
+msgstr "Открыть документ"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
 msgid "Open Related Document"
-msgstr ""
+msgstr "Открыть связанный документ"
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__optional
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__optional
 msgid "Optional"
-msgstr ""
+msgstr "Необязательно"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move.py:0
@@ -487,28 +488,28 @@ msgstr ""
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_partial_reconciliations
 msgid "Partial"
-msgstr ""
+msgstr "Частичный"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_partial_reconcile
 msgid "Partial Reconcile"
-msgstr ""
+msgstr "Частичное согласование"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_move_partial_reconcile
 msgid "Partial reconciliations"
-msgstr ""
+msgstr "Частичные согласования"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 msgid "Partner"
-msgstr ""
+msgstr "Партнер"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment
 msgid "Payments"
-msgstr ""
+msgstr "Оплаты"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move.py:0
@@ -519,13 +520,13 @@ msgstr ""
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
 msgid "Reconciliations"
-msgstr ""
+msgstr "Сверки"
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__required
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__required
 msgid "Required"
-msgstr ""
+msgstr "Обязательно"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_form
@@ -535,17 +536,17 @@ msgstr ""
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
 msgid "Restrict Change Invoice Currency Exchange"
-msgstr ""
+msgstr "Ограничить обмен валюты счета-фактуры"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_to_id
 msgid "Select a currency to apply on the invoice"
-msgstr ""
+msgstr "Выбрать валюту инвойса"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_rate
 msgid "Select a rate to apply on the invoice"
-msgstr ""
+msgstr "Выберите ставку для счет-фактуры"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
@@ -612,6 +613,7 @@ msgstr ""
 #: model:ir.model.fields,help:account_ux.field_res_config_settings__purchase_tax_ids
 msgid "This purchase tax will be assigned by default on new products."
 msgstr ""
+"Этот налог на покупку будет назначаться по умолчанию для новых продуктов."
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_res_config_settings__sale_tax_ids
@@ -621,13 +623,13 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "This wizard will change the currency of the invoice"
-msgstr ""
+msgstr "Будет изменена валюта инвойса"
 
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_form
 msgid "Total"
-msgstr ""
+msgstr "Всего"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -648,7 +650,7 @@ msgstr ""
 #: code:addons/account_ux/models/account_move_line.py:0
 #, python-format
 msgid "View Bank Statement"
-msgstr ""
+msgstr "Показать банковскую выписку"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move_line.py:0
@@ -660,7 +662,7 @@ msgstr ""
 #: code:addons/account_ux/models/account_move_line.py:0
 #, python-format
 msgid "View Payment"
-msgstr ""
+msgstr "Показать оплату"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -674,7 +676,7 @@ msgstr ""
 #. module: account_ux
 #: model:mail.template,subject:account_ux.email_template_bank_statement
 msgid "We confirm receipt of your payment"
-msgstr ""
+msgstr "Подтверждаем получение вашего платежа"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move.py:0
@@ -683,6 +685,8 @@ msgid ""
 "You can create sales/purchase invoices exclusively in the respective "
 "sales/purchase journals"
 msgstr ""
+"Вы можете создавать счета-фактуры продаж / покупок только в соответствующих "
+"журналах продаж / покупок."
 
 #. module: account_ux
 #: code:addons/account_ux/models/res_currency_rate.py:0
@@ -696,4 +700,4 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "or"
-msgstr ""
+msgstr "или"

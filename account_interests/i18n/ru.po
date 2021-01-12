@@ -3,8 +3,7 @@
 # 	* account_interests
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020
-# Juan Carreras <jc@adhoc.com.ar>, 2020
+# Irina Fedulova <istartlin@gmail.com>, 2020
 # 
 msgid ""
 msgstr ""
@@ -12,85 +11,85 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-07 21:40+0000\n"
 "PO-Revision-Date: 2020-03-10 16:54+0000\n"
-"Last-Translator: Juan Carreras <jc@adhoc.com.ar>, 2020\n"
-"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
+"Last-Translator: Irina Fedulova <istartlin@gmail.com>, 2020\n"
+"Language-Team: Russian (https://www.transifex.com/adhoc/teams/46451/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: account_interests
 #: model:ir.model,name:account_interests.model_res_company_interest
 msgid "Account Interest"
-msgstr "Interés de Cuenta"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__domain
 msgid "Additional Filters"
-msgstr "Filtros Adicionales"
+msgstr "Дополнительные фильтры"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__analytic_account_id
 msgid "Analytic account"
-msgstr "Cuenta analítica"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__automatic_validation
 msgid "Automatic Invoice Validation?"
-msgstr "Validación Automática de Factura?"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__automatic_validation
 msgid "Automatic Validation?"
-msgstr "Validación Automática?"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model,name:account_interests.model_res_company
 msgid "Companies"
-msgstr "Compañías"
+msgstr "Компании"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__company_id
 msgid "Company"
-msgstr "Compañía"
+msgstr "Компания"
 
 #. module: account_interests
 #: model:ir.actions.server,name:account_interests.cron_recurring_interests_invoices_ir_actions_server
 #: model:ir.cron,cron_name:account_interests.cron_recurring_interests_invoices
 #: model:ir.cron,name:account_interests.cron_recurring_interests_invoices
 msgid "Create Interests Invoices"
-msgstr "Crear facturas de intereses"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__create_uid
 msgid "Created by"
-msgstr "Created by"
+msgstr "Создано"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__create_date
 msgid "Created on"
-msgstr "Created on"
+msgstr "Создано"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__receivable_account_ids
 msgid "Cuentas a Cobrar"
-msgstr "Cuentas a Cobrar"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__receivable_account_ids
 msgid "Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda"
-msgstr "Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__next_date
 msgid "Date of Next Invoice"
-msgstr "Fecha de Próxima Factura"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__daily
 msgid "Day(s)"
-msgstr "Día(s)"
+msgstr "День(дни)"
 
 #. module: account_interests
 #: code:addons/account_interests/models/res_company_interest.py:0
@@ -99,23 +98,21 @@ msgid ""
 "Deuda Vencida al %s: %s\n"
 "Tasa de interés: %s"
 msgstr ""
-"Deuda Vencida al %s: %s\n"
-"Tasa de interés: %s"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__display_name
 msgid "Display Name"
-msgstr "Nombre a Mostrar"
+msgstr "Показать имя"
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__domain
 msgid "Extra filters that will be added to the standard search"
-msgstr "Filtros extra que serán añadidos a la búsqueda estándar"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__has_domain
 msgid "Has Domain"
-msgstr "Tiene Dominio"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__id
@@ -125,82 +122,80 @@ msgstr "ID"
 #. module: account_interests
 #: model_terms:ir.ui.view,arch_db:account_interests.view_automatic_interests_company_form
 msgid "Intereses Automáticos"
-msgstr "Intereses Automáticos"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company__interest_ids
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rate
 msgid "Interest"
-msgstr "Interés"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interest_product_id
 msgid "Interest Product"
-msgstr "Producto de Interés"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__rule_type
 msgid "Interests Invoice automatically repeat at specified interval"
 msgstr ""
-"Las Facturas de Interés se repiten a un intervalo específico automáticamente"
-" "
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest____last_update
 msgid "Last Modified on"
-msgstr "Última Modificación en"
+msgstr "Изменено"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_uid
 msgid "Last Updated by"
-msgstr "Last Updated by"
+msgstr "Обновлено"
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_date
 msgid "Last Updated on"
-msgstr "Last Updated on"
+msgstr "Обновлено"
 
 #. module: account_interests
 #: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__monthly
 msgid "Month(s)"
-msgstr "Mes(es)"
+msgstr "Месяц(ы)"
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__tolerance_interval
 msgid "Number of periods of tolerance for dues. 0 = no tolerance"
-msgstr "Número de períodos de tolerancia para deudas. 0 = sin tolerancia"
+msgstr ""
 
 #. module: account_interests
 #: model_terms:ir.ui.view,arch_db:account_interests.view_automatic_interests_company_form
 msgid "Overdue Payments"
-msgstr "Pagos Vencidos"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rule_type
 msgid "Recurrency"
-msgstr "Recurrencia"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interval
 msgid "Repeat Every"
-msgstr "Repetir Cada"
+msgstr "Повторять каждые"
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__interval
 msgid "Repeat every (Days/Week/Month/Year)"
-msgstr "Repetir cada (Día/Semana/Mes/Año)"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__tolerance_interval
 msgid "Tolerance"
-msgstr "Tolerancia"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__weekly
 msgid "Week(s)"
-msgstr "Semana(s)"
+msgstr "Неделя(и)"
 
 #. module: account_interests
 #: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__yearly
 msgid "Year(s)"
-msgstr "Año(s)"
+msgstr "Год(ы)"

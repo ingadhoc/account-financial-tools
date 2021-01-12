@@ -3,7 +3,8 @@
 # 	* account_journal_security
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020
+# Irina Fedulova <istartlin@gmail.com>, 2020
+# Ekaterina <nawsikaya@bk.ru>, 2021
 # 
 msgid ""
 msgstr ""
@@ -11,13 +12,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-07 21:41+0000\n"
 "PO-Revision-Date: 2020-02-06 19:45+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020\n"
-"Language-Team: Galician (https://www.transifex.com/adhoc/teams/46451/gl/)\n"
+"Last-Translator: Ekaterina <nawsikaya@bk.ru>, 2021\n"
+"Language-Team: Russian (https://www.transifex.com/adhoc/teams/46451/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: gl\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: account_journal_security
 #: model_terms:ir.ui.view,arch_db:account_journal_security.view_journal_security_account_journal_form
@@ -50,17 +51,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_journal_security.field_account_move__journal_id
 #: model:ir.model.fields,field_description:account_journal_security.field_account_payment__journal_id
 msgid "Journal"
-msgstr "Diario"
+msgstr "Журнал"
 
 #. module: account_journal_security
 #: model:ir.model,name:account_journal_security.model_account_move
 msgid "Journal Entries"
-msgstr ""
+msgstr "Записи в журнале"
 
 #. module: account_journal_security
 #: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__modification
 msgid "Modificacion"
-msgstr ""
+msgstr "Изменение"
 
 #. module: account_journal_security
 #: model:ir.model.fields,field_description:account_journal_security.field_res_users__modification_journal_ids
@@ -97,7 +98,7 @@ msgstr ""
 #. module: account_journal_security
 #: model:ir.model,name:account_journal_security.model_account_payment
 msgid "Payments"
-msgstr ""
+msgstr "Оплаты"
 
 #. module: account_journal_security
 #: model:ir.model.fields,field_description:account_journal_security.field_res_users__journal_ids
@@ -127,7 +128,7 @@ msgstr ""
 #. module: account_journal_security
 #: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__total
 msgid "Total"
-msgstr ""
+msgstr "Всего"
 
 #. module: account_journal_security
 #: model:ir.model.fields,field_description:account_journal_security.field_account_bank_statement_import_journal_creation__user_ids
@@ -138,4 +139,4 @@ msgstr ""
 #. module: account_journal_security
 #: model:ir.model,name:account_journal_security.model_res_users
 msgid "Users"
-msgstr ""
+msgstr "Пользователи"
