@@ -5,14 +5,15 @@
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2020
 # Juan Carreras <jc@adhoc.com.ar>, 2020
+# Juan Rivero <jr@adhoc.com.ar>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-07 21:41+0000\n"
+"POT-Creation-Date: 2021-01-16 10:07+0000\n"
 "PO-Revision-Date: 2020-01-30 15:03+0000\n"
-"Last-Translator: Juan Carreras <jc@adhoc.com.ar>, 2020\n"
+"Last-Translator: Juan Rivero <jr@adhoc.com.ar>, 2021\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,8 +73,8 @@ msgstr "Importar lineas de diario"
 msgid ""
 "Imported line account must be one of the journals defaults, in this case %s"
 msgstr ""
-"Las lineas a a importar deben ser de la misma cuenta de las establecidas por"
-" defecto en el diario, en este caso %s"
+"Las lineas a importar deben ser de la misma cuenta de las establecidas por "
+"defecto en el diario, en este caso %s"
 
 #. module: account_statement_move_import
 #: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:0
@@ -104,12 +105,12 @@ msgstr "Última Modificación en"
 #. module: account_statement_move_import
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard__write_uid
 msgid "Last Updated by"
-msgstr "Last Updated by"
+msgstr "Última Actualización por"
 
 #. module: account_statement_move_import
 #: model:ir.model.fields,field_description:account_statement_move_import.field_account_statement_move_import_wizard__write_date
 msgid "Last Updated on"
-msgstr "Last Updated on"
+msgstr "Última actualización el"
 
 #. module: account_statement_move_import
 #: code:addons/account_statement_move_import/wizard/account_statement_move_import_wizard.py:0
