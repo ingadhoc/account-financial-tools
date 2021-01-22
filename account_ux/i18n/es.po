@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-16 10:07+0000\n"
+"POT-Creation-Date: 2021-01-21 10:34+0000\n"
 "PO-Revision-Date: 2020-02-02 17:17+0000\n"
 "Last-Translator: Juan Rivero <jr@adhoc.com.ar>, 2021\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
@@ -145,7 +145,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__acquirer_ids
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__acquirer_ids
 msgid "Acquirers"
-msgstr "Comprador"
+msgstr "Compradores"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
@@ -201,24 +201,24 @@ msgstr "Cancelar"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
 msgid "Cancel All"
-msgstr "Cancel All"
+msgstr "Cancelar Todo"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_change_currency
 #: model:ir.model,name:account_ux.model_account_change_currency
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "Change Currency"
-msgstr "Change Currency"
+msgstr "Cambiar Moneda"
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_change_currency__change_type__currency
 msgid "Change Only Currency"
-msgstr "Change Only Currency"
+msgstr "Cambiar Solo Moneda"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__change_type
 msgid "Change Type"
-msgstr "Change Type"
+msgstr "Cambiar Tipo"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_group__child_ids
@@ -290,7 +290,7 @@ msgstr "Creado en"
 #: model:account.payment.method,name:account_ux.account_payment_method_inbound_credit_card
 #: model:account.payment.method,name:account_ux.account_payment_method_outbound_credit_card
 msgid "Credit Card"
-msgstr "Credit Card"
+msgstr "Tarjeta de Crédito"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__credit_card_days_for_collection
@@ -318,7 +318,7 @@ msgstr "Tasa Monetaria"
 #: code:addons/account_ux/wizards/account_change_currency.py:0
 #, python-format
 msgid "Currency changed from %s to %s with rate %s"
-msgstr "Currency changed from %s to %s with rate %s"
+msgstr "Moneda cambiada de %s a %s con tasa %s"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
@@ -334,7 +334,7 @@ msgstr "Currency to"
 #: model:account.payment.method,name:account_ux.account_payment_method_inbound_debit_card
 #: model:account.payment.method,name:account_ux.account_payment_method_outbound_debit_card
 msgid "Debit Card"
-msgstr "Debit Card"
+msgstr "Tarjeta de Débito"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__debit_card_days_for_collection
@@ -467,7 +467,7 @@ msgstr "Notas internas.."
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "Invoice Currency"
-msgstr "Invoice Currency"
+msgstr "Moneda de la Factura"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
@@ -488,7 +488,7 @@ msgstr "Apunte contable"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency____last_update
 msgid "Last Modified on"
-msgstr "Última modificación en"
+msgstr "Última modificación el"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
@@ -532,7 +532,7 @@ msgstr "Abrir documento"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
 msgid "Open Related Document"
-msgstr "Open Related Document"
+msgstr "Abrir Documento Relacionado"
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__optional
