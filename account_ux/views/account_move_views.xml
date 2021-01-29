@@ -31,13 +31,22 @@
                 <attribute name="optional">hide</attribute>
             </xpath>
 
+            <!-- similar modification to these are don on l10n_ar_ux for debit_origin_id -->
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
             <field name="invoice_origin" position="attributes">
                 <attribute name="attrs"></attribute>
+                <!-- es readonly por python, lo hacemos editable -->
+                <attribute name="readonly">False</attribute>
             </field>
-            <!-- idem para campo "Reversion de" (vinculo a documento original generalmente factura) -->
+            <!-- permitimos modificar "Reversion de" para poder vincular NC creadas a mano -->
             <field name="reversed_entry_id" position="attributes">
                 <attribute name="attrs"></attribute>
+                <!-- domain only for customer invoices because on supplier bills for now is not visible -->
+                <attribute name="domain">type == 'out_refund' and [('type', '=', 'out_invoice'), ('partner_id.commercial_partner_id', '=', commercial_partner_id), ('state', '=', 'posted')] or []</attribute>
+            </field>
+            <!-- agregamos demas reversed_entry_id en tab other info de facturas porque si no solo esta visible para asientos -->
+            <field name="invoice_origin" position="after">
+                <field name="reversed_entry_id" attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('type', '!=', 'out_refund')]}"/>
             </field>
 
             <field name="currency_id" position="attributes">
