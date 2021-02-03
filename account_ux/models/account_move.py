@@ -151,6 +151,53 @@ class AccountMove(models.Model):
                 move.invoice_outstanding_credits_debits_widget = json.dumps(info)
                 move.invoice_has_outstanding = True
 
+
+    def _get_reconciled_info_JSON_values(self):
+        self.ensure_one()
+        foreign_currency = self.currency_id if self.currency_id != self.company_id.currency_id else False
+
+        reconciled_vals = []
+        pay_term_line_ids = self.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
+        partials = pay_term_line_ids.mapped('matched_debit_ids') + pay_term_line_ids.mapped('matched_credit_ids')
+        for partial in partials:
+            counterpart_lines = partial.debit_move_id + partial.credit_move_id
+            # In case we are in an onchange, line_ids is a NewId, not an integer. By using line_ids.ids we get the correct integer value.
+            counterpart_line = counterpart_lines.filtered(lambda line: line.id not in self.line_ids.ids)
+
+            if foreign_currency and partial.currency_id == foreign_currency:
+                amount = partial.amount_currency
+            else:
+                # For a correct visualization of the amounts, we use the currency rate from the invoice.
+                # INICIO CAMBIO
+                if self.company_id.country_id == self.env.ref('base.ar'):
+                    if self._fields.get('l10n_ar_currency_rate') and self.l10n_ar_currency_rate and self.l10n_ar_currency_rate != 1.0:
+                        amount = self.currency_id.round(abs(partial.amount) / self.l10n_ar_currency_rate)
+                    else:
+                        amount = partial.company_currency_id._convert(partial.amount, self.currency_id, self.company_id, self.date)
+                # FIN CAMBIO
+            if float_is_zero(amount, precision_rounding=self.currency_id.rounding):
+                continue
+
+            ref = counterpart_line.move_id.name
+            if counterpart_line.move_id.ref:
+                ref += ' (' + counterpart_line.move_id.ref + ')'
+
+            reconciled_vals.append({
+                'name': counterpart_line.name,
+                'journal_name': counterpart_line.journal_id.name,
+                'amount': amount,
+                'currency': self.currency_id.symbol,
+                'digits': [69, self.currency_id.decimal_places],
+                'position': self.currency_id.position,
+                'date': counterpart_line.date,
+                'payment_id': counterpart_line.id,
+                'account_payment_id': counterpart_line.payment_id.id,
+                'payment_method_name': counterpart_line.payment_id.payment_method_id.name if counterpart_line.journal_id.type == 'bank' else None,
+                'move_id': counterpart_line.move_id.id,
+                'ref': ref,
+            })
+        return reconciled_vals
+
     @api.constrains('state', 'type', 'journal_id')
     def check_invoice_and_journal_type(self, default=None):
         """ Only let to create customer invoices/vendor bills in respective sale/purchase journals """
