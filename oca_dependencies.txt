@@ -1,3 +1,0 @@
-ingadhoc-aeroo_reports https://github.com/ingadhoc/aeroo_reports.git
-ingadhoc-account-payment https://github.com/ingadhoc/account-payment.git
-oca-web https://github.com/OCA/web.git
