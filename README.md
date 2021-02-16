@@ -3,7 +3,7 @@
 
 # ADHOC Odoo Accountant Financial Tools and Utils
 
-Modules that extend odoo for common needs of ADHOC Customers
+Modules that extend odoo for common needs for ADHOC Customers
 
 [//]: # (addons)
 [//]: # (end addons)
