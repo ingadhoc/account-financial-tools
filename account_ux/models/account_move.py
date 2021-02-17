@@ -168,12 +168,11 @@ class AccountMove(models.Model):
                 amount = partial.amount_currency
             else:
                 # For a correct visualization of the amounts, we use the currency rate from the invoice.
+                amount = partial.company_currency_id._convert(partial.amount, self.currency_id, self.company_id, self.date)
                 # INICIO CAMBIO
                 if self.company_id.country_id == self.env.ref('base.ar'):
                     if self._fields.get('l10n_ar_currency_rate') and self.l10n_ar_currency_rate and self.l10n_ar_currency_rate != 1.0:
                         amount = self.currency_id.round(abs(partial.amount) / self.l10n_ar_currency_rate)
-                    else:
-                        amount = partial.company_currency_id._convert(partial.amount, self.currency_id, self.company_id, self.date)
                 # FIN CAMBIO
             if float_is_zero(amount, precision_rounding=self.currency_id.rounding):
                 continue
