@@ -92,7 +92,7 @@ class AccountMove(models.Model):
             self.invoice_user_id = self.partner_id.user_id.id
 
     def copy(self, default=None):
-        res = super().copy(default=default)
+        res = super().copy()
         res._onchange_partner_commercial()
         return res
 
