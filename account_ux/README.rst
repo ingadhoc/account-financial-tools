@@ -16,6 +16,7 @@ Account UX
 
 Several Improvements to accounting:
 
+#. Improove partner ledger usability
 #. Make subtotal included / excluded optional and not related to tax b2b/b2c
 #. Reconcile on company currency if account don't have a currency and country is Argentina (if any other country need this it should make a PR and add itself)
 #. If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable, recompute amounts residual because they are used on liquidity accounts
