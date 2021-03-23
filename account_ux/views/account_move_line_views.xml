@@ -10,10 +10,12 @@
             <field name="account_id" position="after">
                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                 <field name="analytic_tag_ids" groups="analytic.group_analytic_tags"/>
+                <field name="user_id"/>
             </field>
             <group>
                 <filter name="analytic_account_id" string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
                 <filter name="group_company" string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                <filter name="group_user_id" string="Contact Salesperson" domain="[]" context="{'group_by': 'user_id'}"/>
             </group>
             <filter name="groupby_date" position="after">
                 <filter name="groupby_due_date" string="Due date" context="{'group_by':'date_maturity'}"/>
@@ -103,4 +105,33 @@
         </field>
     </record>
 
+    <!-- view for partner ledger -->
+    <record id="view_move_line_tree_grouped_partner" model="ir.ui.view">
+        <field name="name">account.move.line.inherit.view.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree_grouped_partner"/>
+        <field name="arch" type="xml">
+            <field name="debit" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="credit" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="name" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="full_reconcile_id" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="date_maturity" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="amount_currency" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="credit" position="after">
+                <field name="amount_residual" sum="Total Residual" readonly="1" optional="show"/>
+            </field>
+        </field>
+    </record>
 </odoo>
