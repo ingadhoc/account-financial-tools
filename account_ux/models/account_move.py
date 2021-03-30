@@ -13,6 +13,19 @@ class AccountMove(models.Model):
     )
 
     def delete_number(self):
+        """ Button that let us to clean up the number of the move when this one ins cancelled
+
+        NOTE: Also add compatibility for Argentinean vendor bills that use documents, We will set 00000-00000000 as
+        document number to avoid leaving the record useless after deleting the document number, this way we can change
+        the move to draft state and modify what we need fix """
+        if self._fields.get('l10n_latam_document_number'):
+            ar_vendor_bills = self.filtered(
+                lambda x: x.company_id.country_id.code == 'AR' and x.state == 'cancel' and x.is_purchase_document() and
+                x.l10n_latam_use_documents)
+            ar_vendor_bills.write({'l10n_latam_document_number': '00000-00000000'})
+            (self - ar_vendor_bills).write({'name': '/'})
+            return
+
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
 
     def post(self):
