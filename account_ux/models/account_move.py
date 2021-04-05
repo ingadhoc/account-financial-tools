@@ -11,6 +11,10 @@ class AccountMove(models.Model):
     internal_notes = fields.Text(
         'Internal Notes'
     )
+    reversed_entry_id = fields.Many2one(
+        'account.move',
+        states={'draft': [('readonly', False)]},
+    )
 
     def delete_number(self):
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})

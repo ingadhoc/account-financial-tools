@@ -46,7 +46,7 @@
             </field>
             <!-- agregamos demas reversed_entry_id en tab other info de facturas porque si no solo esta visible para asientos -->
             <field name="invoice_origin" position="after">
-                <field name="reversed_entry_id" attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('type', '!=', 'out_refund')]}"/>
+                <field name="reversed_entry_id" attrs="{'invisible': [('type', '!=', 'out_refund')]}"/>
             </field>
 
             <field name="currency_id" position="attributes">
