@@ -80,17 +80,6 @@
         </field>
     </record>
 
-    <record id="view_move_line_payment_group_tree" model="ir.ui.view">
-        <field name="name">account.move.line.tree</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account_payment_group.view_move_line_tree"/>
-        <field name="arch" type="xml">
-            <tree>
-                <button type="object" string="Open Document" icon="fa-external-link" help="Open Related Document" name="action_open_related_document"/>
-            </tree>
-        </field>
-    </record>
-
     <record id="action_move_line_analisis" model="ir.actions.act_window">
         <field name="name">Análisis de Apuntes Contables</field>
         <field name="type">ir.actions.act_window</field>
