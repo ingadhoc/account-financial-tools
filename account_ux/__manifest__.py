@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': "13.0.1.12.0",
+    'version': "13.0.1.13.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -31,7 +31,6 @@
     'depends': [
         'account',
         "payment",
-        "account_payment_group",
         "base_vat",
     ],
     'data': [

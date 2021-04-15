@@ -523,18 +523,6 @@ msgid "Online"
 msgstr "Online"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
-msgid "Open Document"
-msgstr "Abrir documento"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_group_tree
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
-msgid "Open Related Document"
-msgstr "Abrir Documento Relacionado"
-
-#. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__optional
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__optional
 msgid "Optional"
