@@ -85,4 +85,15 @@
         </field>
     </record>
 
+        <record id="view_account_invoice_tree" model="ir.ui.view">
+        <field name="name">invoice.tree.view</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <field name="type" position="after">
+                <field name="amount_total" string="Amount total" sum="Total" optional="hide"/>
+                <field name="amount_untaxed" string="Amount untaxed" sum="Total" optional="hide"/>
+            </field>
+        </field>
+    </record>
 </odoo>

@@ -66,6 +66,7 @@ Several Improvements to accounting:
    * We can restrict the change of the currency for a group of users by adding them to "Restrict Change Invoice Currency Exchange" group
 
 #. Add constraint invoice-journal-type to let the user create sales/purchase invoices exclusively in the respectives sales/purchase journals:
+#. Add amount_total and amount_untaxed in the invoice tree view as optional and hide fields
 
 Installation
 ============
