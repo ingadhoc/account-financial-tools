@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': "13.0.1.15.0",
+    'version': "13.0.1.16.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -45,7 +45,6 @@
         'views/account_reconcile_views.xml',
         'views/res_partner_views.xml',
         'views/account_partial_reconcile_views.xml',
-        'views/account_account_type_views.xml',
         'views/account_account_views.xml',
         'views/account_type_views.xml',
         'views/account_move_views.xml',
