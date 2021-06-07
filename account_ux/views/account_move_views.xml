@@ -16,7 +16,7 @@
             </field>
 
             <button name="button_draft" position="after">
-                <button name="delete_number" string="Delete Number"  attrs="{'invisible':['|', ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
+                <button name="delete_number" string="Delete Number" attrs="{'invisible':['|', ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
             </button>
 
             <field name="narration" position="attributes">
@@ -37,6 +37,10 @@
                 <attribute name="attrs"></attribute>
                 <!-- es readonly por python, lo hacemos editable -->
                 <attribute name="readonly">False</attribute>
+            </field>
+            <!-- we only show for supplier invoices -->
+            <field name="invoice_source_email" position="after">
+                <field name="invoice_origin" force_save="1" string="Source Document" readonly="False" attrs="{'invisible': [('type', 'not in', ('in_invoice', 'in_refund'))]}"/>
             </field>
             <!-- permitimos modificar "Reversion de" para poder vincular NC creadas a mano -->
             <field name="reversed_entry_id" position="attributes">
@@ -76,7 +80,7 @@
         <field name="arch" type="xml">
             <field name="partner_id" position="before">
                 <field name="company_id" groups="base.group_multi_company"/>
-                </field>
+            </field>
             <xpath expr="//group/filter[@name='salesperson']" position="before">
                 <filter name="partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
                 <filter name="journal_id" string="Journal" context="{'group_by':'journal_id'}"/>
@@ -85,7 +89,7 @@
         </field>
     </record>
 
-        <record id="view_account_invoice_tree" model="ir.ui.view">
+    <record id="view_account_invoice_tree" model="ir.ui.view">
         <field name="name">invoice.tree.view</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_invoice_tree"/>
