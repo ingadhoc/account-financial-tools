@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_debt_report_wizard_form" model="ir.ui.view">
+        <field name="name">account_debt_report_wizard_form</field>
+        <field name="model">account.debt.report.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Account Summary">
+                <group>
+                    <group>
+                        <field name="result_selection"/>
+                        <field name="company_id" string="Company" ref="base.main_company"/>
+                        <field name="company_type" attrs="{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}" ref="base.main_company"/>
+                    </group>
+                    <group>
+                        <field name="historical_full"/>
+                        <field name="from_date" string="Detallar desde" attrs="{'invisible': [('historical_full', '=', False)]}"/>
+                        <field name="to_date" string="Detallar hasta" attrs="{'invisible': [('historical_full', '=', False)]}"/>
+                        <field name="secondary_currency"/>
+                        <field name="financial_amounts" groups="account_financial_amount.account_use_financial_amounts"/>
+                        <field name="show_invoice_detail"/>
+                        <!-- <field name="show_receipt_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/> -->
+                    </group>
+                </group>
+                <footer>
+                    <button string="Confirm" name="confirm" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Send by Email" name="send_by_email" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window name="Account Debt Report"
+        id="action_account_debt_report_wizard"
+        key2="client_print_multi"
+        src_model="res.partner"
+        res_model="account.debt.report.wizard"
+        view_mode="form"
+        target="new"
+        view_type="form"/>
+        <!-- ahora lo agregamos al print -->
+        <!-- key2="client_action_multi" -->
+
+</odoo>
