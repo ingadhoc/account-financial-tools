@@ -29,7 +29,6 @@ class ResPartner(models.Model):
         currency_field='currency_id',
     )
 
-    @api.multi
     def _get_debt_report_companies(self):
         """
         Si se especifica una compañia devolvemos esa, si no, si:
@@ -59,7 +58,6 @@ class ResPartner(models.Model):
                     company_ids.append(record['company_id'][0])
                 return self.env['res.company'].browse(company_ids)
 
-    @api.multi
     def _get_debt_report_lines(self, company):
         def get_line_vals(
                 date=None, name=None, detail_lines=None, date_maturity=None,
@@ -199,7 +197,6 @@ class ResPartner(models.Model):
         res += final_line
         return res
 
-    @api.multi
     # This computes makes fields to be computed upon partner creation where no
     # id exists yet and raise an erro because of partner where being empty on
     # _credit_debit_get method, ase debit and credit don't have depends, this
