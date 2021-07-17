@@ -1,0 +1,74 @@
+<odoo>
+
+    <!--Inherited filter view -->
+    <record id="view_res_partner_filter" model="ir.ui.view">
+        <field name="name">res.partner.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <field name="category_id" position="before">
+                <!-- on v9 search credit or debit with != can not be used-->
+                <filter string="With Balance" name="with_balance" domain="['|', '|', '|', ('credit','&gt;', 0.0), ('debit','&gt;', 0.0), ('credit','&lt;', 0.0), ('debit','&lt;', 0.0)]" help="Partners with receivable or payable balance different from 0"/>
+                <!-- <filter string="With Balance" name="with_balance" domain="['|', ('credit','!=', 0.0), ('debit','!=', 0.0)]" help="Partners with receivable or payable balance different from 0"/> -->
+            </field>
+        </field>
+    </record>
+
+    <!--Inherited tree view -->
+    <record id="view_partner_tree" model="ir.ui.view">
+        <field name="name">res.partner.tree</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="arch" type="xml">
+            <field name="email" position="after">
+                <field name="debt_balance" sum="Total"/>
+            </field>
+        </field>
+    </record>
+
+    <!--Inherited form view -->
+    <record id="view_partner_inherit_debt_form" model="ir.ui.view">
+        <field name="name">res.partner.debt.form.inherit</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="model">res.partner</field>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="arch" type="xml" >
+            <page name="sales_purchases" position="after">
+                <page
+                    name="customer_debt"
+                    string="Customer Debt"
+                    attrs="{'invisible': ['|', ('customer', '=', False),  '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
+                    groups="account.group_account_invoice"
+                    >
+                    <field name="receivable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
+                </page>
+                <page
+                    name="supplier_debt"
+                    string="Supplier Debt"
+                    attrs="{'invisible': ['|', ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
+                    groups="account.group_account_invoice"
+                    >
+                    <field name="payable_debt_ids" context="{'show_balance': 1, 'hide_reconciled': 1}"/>
+                </page>
+            </page>
+            <div name="button_box" position="inside">
+                <button
+                    type="action"
+                    class="oe_stat_button"
+                    id="debt_detail"
+                    icon="fa-list"
+                    context="{'show_balance': 1, 'search_default_partner_id': active_id}"
+                    name="%(account_debt_management.action_account_debt_line)d"
+                    attrs="{'invisible': ['|', '&amp;', ('customer', '=', False), ('supplier', '=', False), '&amp;', ('is_company','=',False), ('parent_id','!=',False)]}"
+                    >
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value"><field name="debt_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/></span>
+                        <span class="o_stat_text">Debt Detail</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+
+</odoo>
