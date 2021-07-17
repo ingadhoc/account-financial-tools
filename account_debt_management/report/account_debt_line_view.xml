@@ -129,7 +129,6 @@
     <record id="action_account_debt_line" model="ir.actions.act_window">
         <field name="name">Account Debt Lines</field>
         <field name="res_model">account.debt.line</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="context">{}</field>
     </record>
