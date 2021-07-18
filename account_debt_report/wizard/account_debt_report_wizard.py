@@ -16,12 +16,14 @@ class AccountDebtReportWizard(models.TransientModel):
         help="If you don't select a company, debt for all companies will be "
         "exported."
     )
-    company_type = fields.Selection([
-        ('group_by_company', 'Group by Company'),
-        ('consolidate', 'Consolidate all Companies'),
-    ],
-        default='group_by_company',
-    )
+    # TODO si nadie reclama esta opcion la depreciamos y simplidicamos reporte
+    # si simplificamos podemos tomar logica de reporte de bid ar
+    # company_type = fields.Selection([
+    #     ('group_by_company', 'Group by Company'),
+    #     ('consolidate', 'Consolidate all Companies'),
+    # ],
+    #     default='group_by_company',
+    # )
     result_selection = fields.Selection(
         [('receivable', 'Receivable Accounts'),
          ('payable', 'Payable Accounts'),
@@ -38,8 +40,6 @@ class AccountDebtReportWizard(models.TransientModel):
     historical_full = fields.Boolean(
         help='If true, then it will show all partner history. If not, only '
         'unreconciled items will be shown.')
-    financial_amounts = fields.Boolean(
-        help='Add columns for financial amounts?')
     secondary_currency = fields.Boolean(
         help='Add columns for secondary currency?')
 
@@ -57,9 +57,9 @@ class AccountDebtReportWizard(models.TransientModel):
         partners = self.env['res.partner'].browse(active_ids)
         data = {
             'secondary_currency': self.secondary_currency,
-            'financial_amounts': self.financial_amounts,
             'result_selection': self.result_selection,
-            'company_type': self.company_type,
+            'company_type': 'consolidate',
+            # 'company_type': self.company_type,
             'company_id': self.company_id.id,
             'from_date': self.from_date,
             'to_date': self.to_date,
@@ -70,9 +70,9 @@ class AccountDebtReportWizard(models.TransientModel):
             [('report_name', '=', 'account_debt_report')],
             limit=1).with_context(
             secondary_currency=self.secondary_currency,
-            financial_amounts=self.financial_amounts,
             result_selection=self.result_selection,
-            company_type=self.company_type,
+            company_type='consolidate',
+            # company_type=self.company_type,
             company_id=self.company_id.id,
             from_date=self.from_date,
             to_date=self.to_date,
@@ -87,9 +87,9 @@ class AccountDebtReportWizard(models.TransientModel):
         context = {
             # report keys
             'secondary_currency': self.secondary_currency,
-            'financial_amounts': self.financial_amounts,
             'result_selection': self.result_selection,
-            'company_type': self.company_type,
+            'company_type': 'consolidate',
+            # 'company_type': self.company_type,
             'company_id': self.company_id.id,
             'from_date': self.from_date,
             'to_date': self.to_date,
@@ -102,7 +102,7 @@ class AccountDebtReportWizard(models.TransientModel):
             'default_composition_mode': 'mass_mail',
             'default_use_template': True,
             'default_template_id': self.env.ref(
-                'account_debt_management.email_template_debt_detail').id,
+                'account_debt_report.email_template_debt_detail').id,
             'default_partner_to': '${object.id or \'\'}',
         }
         self = self.with_context(context)
