@@ -15,6 +15,20 @@ class AccountMove(models.Model):
         'account.move',
         states={'draft': [('readonly', False)]},
     )
+    partner_id = fields.Many2one(
+        compute='_compute_partner_id',
+        readonly=False,
+        store=True,
+    )
+
+    @api.depends('line_ids.partner_id')
+    def _compute_partner_id(self):
+        for move in self:
+            if move.type == 'entry':
+                partner = move.line_ids.mapped('partner_id')
+                move.partner_id = partner.id if len(partner) == 1 else False
+            else:
+                move.partner_id = move.partner_id
 
     def delete_number(self):
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
