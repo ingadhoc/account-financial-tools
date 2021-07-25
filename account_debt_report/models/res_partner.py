@@ -127,6 +127,9 @@ class ResPartner(models.Model):
             # similar to _format_aml_name
             if record.ref and record.ref != '/':
                 name += ' - ' + record.ref
+            # if it's a payment we add journal name
+            if record.payment_id:
+                name += ' - ' + record.journal_id.name
             date_maturity = record.date_maturity
             date = record.date
             currency = record.currency_id
