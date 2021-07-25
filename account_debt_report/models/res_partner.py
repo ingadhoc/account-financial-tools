@@ -39,6 +39,7 @@ class ResPartner(models.Model):
                 return self.env['res.company'].browse(company_ids)
 
     def _get_debt_report_lines(self, company):
+        # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
                 date=None, name=None, detail_lines=None, date_maturity=None,
                 amount=None, amount_residual=None, balance=None,
@@ -122,7 +123,7 @@ class ResPartner(models.Model):
                                 '\n', ' ').replace('\r', ''),
                             inv_line.quantity,
                             inv_line.product_uom_id.name)))
-            name = record.name
+            name = record.move_id.name
             # similar to _format_aml_name
             if record.ref and record.ref != '/':
                 name += ' - ' + record.ref
