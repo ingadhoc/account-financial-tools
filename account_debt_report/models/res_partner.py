@@ -109,7 +109,7 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
-        records = self.env['account.move.line'].search(domain)
+        records = self.env['account.move.line'].search(domain, order='date asc')
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
@@ -136,7 +136,6 @@ class ResPartner(models.Model):
             amount = record.balance
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
-
             balance += record[balance_field]
             res.append(get_line_vals(
                 date=date,
@@ -151,4 +150,4 @@ class ResPartner(models.Model):
                 # move_line=record.move_line_id,
             ))
         res += final_line
-        return res
+        return res[::-1]
