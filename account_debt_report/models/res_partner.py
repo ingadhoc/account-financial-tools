@@ -94,9 +94,8 @@ class ResPartner(models.Model):
 
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
-            intitial_moves = self.env['account.move.line'].search(
-                initial_domain)
-            balance = sum(intitial_moves.mapped(balance_field))
+            balance = self.env['account.move.line'].read_group(
+                initial_domain, fields=['balance'], groupby=['partner_id'])[0]['balance']
             res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance)]
             domain.append(('date', '>=', from_date))
         else:
@@ -109,7 +108,7 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
-        records = self.env['account.move.line'].search(domain)
+        records = self.env['account.move.line'].search(domain, order='date asc, date_maturity asc, name, id')
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
@@ -137,6 +136,7 @@ class ResPartner(models.Model):
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
 
+            # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
             balance += record[balance_field]
             res.append(get_line_vals(
                 date=date,
