@@ -10,27 +10,22 @@ class AccountDebtReportWizard(models.TransientModel):
     _name = 'account.debt.report.wizard'
     _description = 'Account Debt Report Wizard'
 
+    def _default_result_selection(self):
+        return 'all' if self.env.user.has_group('account.group_account_invoice') else 'receivable'
+
     company_id = fields.Many2one(
         'res.company',
         'Company',
         help="If you don't select a company, debt for all companies will be "
         "exported."
     )
-    # TODO si nadie reclama esta opcion la depreciamos y simplidicamos reporte
-    # si simplificamos podemos tomar logica de reporte de bid ar
-    # company_type = fields.Selection([
-    #     ('group_by_company', 'Group by Company'),
-    #     ('consolidate', 'Consolidate all Companies'),
-    # ],
-    #     default='group_by_company',
-    # )
     result_selection = fields.Selection(
         [('receivable', 'Receivable Accounts'),
          ('payable', 'Payable Accounts'),
          ('all', 'Receivable and Payable Accounts')],
         "Account Type's",
         required=True,
-        default='all'
+        default=_default_result_selection,
     )
     from_date = fields.Date('From')
     to_date = fields.Date('To')

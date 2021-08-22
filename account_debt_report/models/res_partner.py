@@ -94,7 +94,7 @@ class ResPartner(models.Model):
 
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
-            balance = self.env['account.move.line'].read_group(
+            balance = self.env['account.move.line'].sudo().read_group(
                 initial_domain, fields=['balance'], groupby=['partner_id'])[0]['balance']
             res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance)]
             domain.append(('date', '>=', from_date))
@@ -108,7 +108,7 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
-        records = self.env['account.move.line'].search(domain, order='date asc, date_maturity asc, name, id')
+        records = self.env['account.move.line'].sudo().search(domain, order='date asc, date_maturity asc, name, id')
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
