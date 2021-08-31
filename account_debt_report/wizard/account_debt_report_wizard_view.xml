@@ -9,8 +9,6 @@
                     <group>
                         <field name="result_selection" groups="account.group_account_invoice"/>
                         <field name="company_id" string="Company" ref="base.main_company"/>
-                        <!-- TODO si nadie reclama esta opcion la depreciamos y simplificamos reporte -->
-                        <!-- <field name="company_type" attrs="{'required': [('company_id', '=', False)], 'invisible': [('company_id', '!=', False)]}" ref="base.main_company"/> -->
                     </group>
                     <group>
                         <field name="historical_full"/>
