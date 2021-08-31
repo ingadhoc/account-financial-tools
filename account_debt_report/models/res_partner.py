@@ -9,36 +9,7 @@ from odoo import api, models, fields, _
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    def _get_debt_report_companies(self):
-        """
-        Si se especifica una compañia devolvemos esa, si no, si:
-        * se agrupa por compania, entonces devolvemos cia del usuario para
-        simlemente devolver algo
-        * si no se agrupa, devolvemos todas las cias que podemos ver
-        """
-        self.ensure_one()
-        company_type = self._context.get('company_type', False)
-        company_id = self._context.get('company_id', False)
-        company = self.env['res.company'].browse(company_id)
-        if company:
-            return company
-        else:
-            if company_type == 'consolidate':
-                return self.env.user.company_id
-            # group_by_company
-            else:
-                # we only want companies that have moves for this partner
-                records = self.env['account.move.line'].read_group(
-                    domain=[('partner_id', '=', self.id)],
-                    fields=['company_id'],
-                    groupby=['company_id'],
-                )
-                company_ids = []
-                for record in records:
-                    company_ids.append(record['company_id'][0])
-                return self.env['res.company'].browse(company_ids)
-
-    def _get_debt_report_lines(self, company):
+    def _get_debt_report_lines(self):
         # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
                 date=None, name=None, detail_lines=None, date_maturity=None,
@@ -66,14 +37,13 @@ class ResPartner(models.Model):
         from_date = self._context.get('from_date', False)
         to_date = self._context.get('to_date', False)
         historical_full = self._context.get('historical_full', False)
-        company_type = self._context.get('company_type', False)
+        company_id = self._context.get('company_id', False)
         show_invoice_detail = self._context.get('show_invoice_detail', False)
 
         domain = []
 
-        # si no se consolida, entonces buscamos los de la cia que se pasa
-        if not company_type == 'consolidate':
-            domain += [('company_id', '=', company.id)]
+        if company_id:
+            domain += [('company_id', '=', company_id)]
 
         if not historical_full:
             domain += [('reconciled', '=', False), ('full_reconcile_id', '=', False)]

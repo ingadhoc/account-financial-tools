@@ -38,13 +38,6 @@ class AccountDebtReportWizard(models.TransientModel):
     secondary_currency = fields.Boolean(
         help='Add columns for secondary currency?')
 
-    @api.constrains
-    def check_company_type(self):
-        if self.company_type == 'consolidate' and self.company_id:
-            raise ValidationError(_(
-                'You can only select "Consolidate all Companies if no company '
-                'is selected'))
-
     def confirm(self):
         active_ids = self._context.get('active_ids', False)
         if not active_ids:
@@ -53,8 +46,6 @@ class AccountDebtReportWizard(models.TransientModel):
         data = {
             'secondary_currency': self.secondary_currency,
             'result_selection': self.result_selection,
-            'company_type': 'consolidate',
-            # 'company_type': self.company_type,
             'company_id': self.company_id.id,
             'from_date': self.from_date,
             'to_date': self.to_date,
@@ -66,8 +57,6 @@ class AccountDebtReportWizard(models.TransientModel):
             limit=1).with_context(
             secondary_currency=self.secondary_currency,
             result_selection=self.result_selection,
-            company_type='consolidate',
-            # company_type=self.company_type,
             company_id=self.company_id.id,
             from_date=self.from_date,
             to_date=self.to_date,
@@ -83,8 +72,6 @@ class AccountDebtReportWizard(models.TransientModel):
             # report keys
             'secondary_currency': self.secondary_currency,
             'result_selection': self.result_selection,
-            'company_type': 'consolidate',
-            # 'company_type': self.company_type,
             'company_id': self.company_id.id,
             'from_date': self.from_date,
             'to_date': self.to_date,
