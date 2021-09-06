@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import api, models, fields, _
+from odoo.tools.safe_eval import safe_eval
 # from odoo.exceptions import ValidationError
 
 
@@ -81,6 +82,12 @@ class ResPartner(models.Model):
 
         records = self.env['account.move.line'].sudo().search(domain, order='date asc, date_maturity asc, name, id')
 
+        grouped = self.env['account.payment']._fields.get('payment_group_id') and safe_eval(
+            self.env['ir.config_parameter'].sudo().get_param(
+                'account_debt_report.group_payment_group_payments', 'False'))
+
+        last_payment_group_id = False
+
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
         for record in records:
@@ -97,18 +104,32 @@ class ResPartner(models.Model):
             # similar to _format_aml_name
             if record.ref and record.ref != '/':
                 name += ' - ' + record.ref
-            # if it's a payment we add journal name
-            if record.payment_id:
-                name += ' - ' + record.journal_id.name
+
             date_maturity = record.date_maturity
             date = record.date
             currency = record.currency_id
+            balance += record[balance_field]
             amount = record.balance
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
 
+            if grouped and record.payment_id and record.payment_id.payment_group_id == last_payment_group_id:
+                # si agrupamos pagos y el grupo de pagos coincide con el último, entonces acumulamos en linea anterior
+                res[-1].update({
+                    'amount': res[-1]['amount'] + record.balance,
+                    'amount_residual': res[-1]['amount_residual'] + record.amount_residual,
+                    'amount_currency': res[-1]['amount_currency'] + record.amount_currency,
+                    'balance': balance,
+                })
+                continue
+            elif grouped and record.payment_id and record.payment_id.payment_group_id != last_payment_group_id:
+                # si es un payment pero no es del payment group anterior, seteamos este como ultimo payment group
+                last_payment_group_id = record.payment_id.payment_group_id
+            elif not grouped and record.payment_id:
+                # si no agrupamos y es pago, agregamos nombre de diario para que sea mas claro
+                name += ' - ' + record.journal_id.name
+
             # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
-            balance += record[balance_field]
             res.append(get_line_vals(
                 date=date,
                 name=name,
