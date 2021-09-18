@@ -67,6 +67,7 @@ Several Improvements to accounting:
 
 #. Add constraint invoice-journal-type to let the user create sales/purchase invoices exclusively in the respectives sales/purchase journals:
 #. Add amount_total and amount_untaxed in the invoice tree view as optional and hide fields
+#. Add new filter 'Without resiual' on partner ledger
 
 Installation
 ============
