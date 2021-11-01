@@ -82,8 +82,7 @@ class ResCompanyInterest(models.Model):
     def _cron_recurring_interests_invoices(self):
         _logger.info('Running Interest Invoices Cron Job')
         current_date = fields.Date.today()
-        self.search([('next_date', '<=', current_date)]
-                    ).create_interest_invoices()
+        self.search([('next_date', '<=', current_date)]).create_interest_invoices()
 
     def create_interest_invoices(self):
         for rec in self:
@@ -145,9 +144,8 @@ class ResCompanyInterest(models.Model):
         )
         self = self.with_context(
             company_id=self.company_id.id,
-            force_company=self.company_id.id,
             mail_notrack=True,
-            prefetch_fields=False)
+            prefetch_fields=False).with_company(self.company_id)
 
         total_items = len(grouped_lines)
         _logger.info('%s interest invoices will be generated', total_items)
@@ -202,9 +200,9 @@ class ResCompanyInterest(models.Model):
         fpos = partner.property_account_position_id
         taxes = self.interest_product_id.taxes_id.filtered(
             lambda r: r.company_id == self.company_id)
-        tax_id = fpos.map_tax(taxes, self.interest_product_id)
+        tax_id = fpos.map_tax(taxes)
         invoice_vals = {
-            'type': 'out_invoice',
+            'move_type': 'out_invoice',
             'currency_id': self.company_id.currency_id.id,
             'partner_id': partner.id,
             'fiscal_position_id': fpos.id,
