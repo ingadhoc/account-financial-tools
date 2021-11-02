@@ -25,11 +25,15 @@
         <field name="model">account.bank.statement.line</field>
         <field name="arch" type="xml">
             <search position="inside">
+                <filter name="no_reconcile" string="Not Reconciled" domain="[('is_reconciled', '=', False)]"/>
+                <filter name="reconciled" string="Reconciled" domain="[('is_reconciled', '=', True)]"/>
                 <group expand="0">
                     <filter name="group_by_partner_id" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_by_name" string="Description" domain="[]" context="{'group_by':'name'}"/>
+                    <filter name="group_by_duplicated_group" string="Possible Duplicated Group" domain="[]" context="{'group_by':'duplicated_group'}"/>
                 </group>
             </search>
         </field>
     </record>
+
 </odoo>

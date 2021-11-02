@@ -407,6 +407,11 @@ msgid "Email Template"
 msgstr "Plantilla de correo electrónico"
 
 #. module: account_ux
+#: model:ir.actions.server,name:account_ux.ir_action_server_action_find_duplicates
+msgid "Find possible duplicates"
+msgstr "Encontrar posibles duplicados"
+
+#. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
 msgid "Full Reconciliations"
 msgstr "Conciliaciones totales"
@@ -517,6 +522,11 @@ msgid "Move"
 msgstr "Movimiento"
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
+msgid "Not Reconciled"
+msgstr "No Conciliados"
+
+#. module: account_ux
 #: model:account.payment.method,name:account_ux.account_payment_method_inbound_online
 #: model:account.payment.method,name:account_ux.account_payment_method_outbound_online
 msgid "Online"
@@ -573,6 +583,16 @@ msgid "Please check the email template associated with the invoice journal."
 msgstr ""
 "Compruebe la plantilla de correo electrónico asociada con el diario de "
 "facturas."
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
+msgid "Possible Duplicated Group"
+msgstr "Grupo de posibles duplicados"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
+msgid "Reconciled"
+msgstr "Conciliados"
 
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
@@ -662,6 +682,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
 msgid "Statement Lines"
 msgstr "Lineas de Declaración"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_bank_statement_line__duplicated_group
+msgid ""
+"Technical field used to store information group a possible duplicates bank "
+"statement line"
+msgstr ""
+"Campo técnico utilizada para guardar la información de un posible lineas de extracto"
+" duplicadas"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_bank_statement_import_journal_creation__credit_card_days_for_collection
