@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': "13.0.1.20.0",
+    'version': "13.0.1.21.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -50,6 +50,7 @@
         'data/account_payment_method_data.xml',
         'data/mail_data.xml',
         'data/ir_parameters_data.xml',
+        'data/ir_actions_server_data.xml',
     ],
     'demo': [
     ],
