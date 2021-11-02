@@ -1,0 +1,41 @@
+<data>
+
+    <record id="ir_action_server_action_found_duplicates" model="ir.actions.server">
+        <field name="name">Found duplicates</field>
+        <field name="model_id" ref="account.model_account_bank_statement"/>
+        <field name="binding_model_id" ref="account.model_account_bank_statement"/>
+        <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
+        <field name="state">code</field>
+        <field name="code">
+st_line_obj = to_delete = env["account.bank.statement.line"]
+fields_duplicated = ['ref', 'date', 'name', 'amount']
+
+# found duplicates
+for st in records:
+  domain = [('statement_id', '=', st.id), ('journal_entry_ids', '=', False)]
+  res = st_line_obj.read_group(domain, fields_duplicated, groupby=fields_duplicated, lazy=False)
+
+  test = str()
+  count_duplicate = 0
+  for group in res:
+    if group.get('__count') > 1:
+      temp = st.line_ids.search(group.get('__domain'))
+      count_duplicate +=1
+      remain = temp[0]
+      to_delete = temp - temp[0]
+
+if to_delete:
+    action = {
+        'name': 'Duplicate records',
+        'view_mode': 'tree',
+        'res_model': 'account.bank.statement.line',
+        'type': 'ir.actions.act_window',
+        'target': 'current',
+        'domain': [('id', 'in', to_delete.ids)],
+    }
+else:
+    raise Warning('We do not found any duplicate')
+        </field>
+    </record>
+
+</data>
