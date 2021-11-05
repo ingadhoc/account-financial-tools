@@ -45,6 +45,8 @@ class ResPartner(models.Model):
 
         if company_id:
             domain += [('company_id', '=', company_id)]
+        else:
+            domain += [('company_id', 'in', self.env.companies.ids)]
 
         if not historical_full:
             domain += [('reconciled', '=', False), ('full_reconcile_id', '=', False)]
