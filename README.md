@@ -1,4 +1,3 @@
-[![Coverage Status](https://coveralls.io/repos/ingadhoc/account-financial-tools/badge.png?branch=15.0)](https://coveralls.io/r/ingadhoc/account-financial-tools?branch=15.0)
 [![Code Climate](https://codeclimate.com/github/ingadhoc/account-financial-tools/badges/gpa.svg)](https://codeclimate.com/github/ingadhoc/account-financial-tools)
 
 # ADHOC Odoo Accountant Financial Tools and Utils
