@@ -155,7 +155,6 @@ class AccountMove(models.Model):
                 move.invoice_outstanding_credits_debits_widget = json.dumps(info)
                 move.invoice_has_outstanding = True
 
-
     def _get_reconciled_info_JSON_values(self):
         self.ensure_one()
         foreign_currency = self.currency_id if self.currency_id != self.company_id.currency_id else False
@@ -216,3 +215,36 @@ class AccountMove(models.Model):
         in order to be able to reconcile in the future (clean up the move_name field)."""
         self.mapped('line_ids.statement_line_id').write({'move_name': False})
         return super().unlink()
+
+    def _recompute_tax_lines(self, recompute_tax_base_amount=False):
+        """ Odoo recomputa todos los impuestos cada vez que hay un cambio en la factura, esto trae dos problemas:
+        1. Es molesto para los usuarios que, luego de haber cargado las percepciones, quieren hacer una modificacion
+        y se les recomputa todo
+        2. No podemos agregar de manera facil los impuestos en el modulo account_invoice_tax porque:
+        a) si llamamos a _recompute_tax_lines (a traves de _recompute_dynamic_lines) sin recompute_tax_base_amount
+        entonces odoo NO crea la nueva linea de impuesto porque escapea antes
+        b) si llamamos pasando recompute_tax_base_amount= True entonces se nos recomputa cualquier impuesto previamente
+        cargado
+
+        Con esto lo que hacemos es anular el re-calculo de impuestos "fixed". Si dejamos que se recompute el base
+        amount
+        """
+        # if calling with recompute_tax_base_amount then tax amounts are not changed and we can return super directly
+        if recompute_tax_base_amount:
+            return super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount)
+        in_draft_mode = self != self._origin
+        fixed_taxes_bu = {
+            line: {
+                'amount_currency': line.amount_currency,
+                'debit': line.debit,
+                'credit': line.credit,
+            } for line in self.line_ids.filtered(lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed')}
+
+        res = super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount)
+        for tax_line in self.line_ids.filtered(
+                lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed' and x in fixed_taxes_bu):
+            tax_line.update(fixed_taxes_bu.get(tax_line))
+            if in_draft_mode:
+                tax_line._onchange_amount_currency()
+                tax_line._onchange_balance()
+        return res

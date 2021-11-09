@@ -16,6 +16,7 @@ Account UX
 
 Several Improvements to accounting:
 
+#. Fixed taxes not being recomputed when changing invoice.
 #. Improove partner ledger usability
 #. Make subtotal included / excluded optional and not related to tax b2b/b2c
 #. Reconcile on company currency if account don't have a currency and country is Argentina (if any other country need this it should make a PR and add itself)
