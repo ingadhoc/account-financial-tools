@@ -25,8 +25,8 @@ class ResCompanyInterest(models.Model):
         string='Cuentas a Cobrar',
         help='Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda',
         required=True,
-        domain="[('user_type_id.type', '=', 'receivable'),"
-        "('company_id', '=', company_id)]",
+        domain=lambda self: [('user_type_id.type', '=', 'receivable'),
+                             ('company_id', '=', self._context.get('default_company_id') or self.env.company.id)],
     )
     interest_product_id = fields.Many2one(
         'product.product',
