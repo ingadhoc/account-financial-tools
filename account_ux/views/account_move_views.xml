@@ -40,17 +40,17 @@
             </field>
             <!-- we only show for supplier invoices -->
             <field name="invoice_source_email" position="after">
-                <field name="invoice_origin" force_save="1" string="Source Document" readonly="False" attrs="{'invisible': [('type', 'not in', ('in_invoice', 'in_refund'))]}"/>
+                <field name="invoice_origin" force_save="1" string="Source Document" readonly="False" attrs="{'invisible': [('move_type', 'not in', ('in_invoice', 'in_refund'))]}"/>
             </field>
             <!-- permitimos modificar "Reversion de" para poder vincular NC creadas a mano -->
             <field name="reversed_entry_id" position="attributes">
                 <attribute name="attrs"></attribute>
                 <!-- domain only for customer invoices because on supplier bills for now is not visible -->
-                <attribute name="domain">type == 'out_refund' and [('type', '=', 'out_invoice'), ('partner_id.commercial_partner_id', '=', commercial_partner_id), ('state', '=', 'posted')] or []</attribute>
+                <attribute name="domain">move_type == 'out_refund' and [('move_type', '=', 'out_invoice'), ('partner_id.commercial_partner_id', '=', commercial_partner_id), ('state', '=', 'posted')] or []</attribute>
             </field>
             <!-- agregamos demas reversed_entry_id en tab other info de facturas porque si no solo esta visible para asientos -->
             <field name="invoice_origin" position="after">
-                <field name="reversed_entry_id" attrs="{'invisible': [('type', '!=', 'out_refund')]}"/>
+                <field name="reversed_entry_id" attrs="{'invisible': [('move_type', '!=', 'out_refund')]}"/>
             </field>
 
             <field name="currency_id" position="attributes">
@@ -94,7 +94,7 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_invoice_tree"/>
         <field name="arch" type="xml">
-            <field name="type" position="after">
+            <field name="move_type" position="after">
                 <field name="amount_total" string="Amount total" sum="Total" optional="hide"/>
                 <field name="amount_untaxed" string="Amount untaxed" sum="Total" optional="hide"/>
             </field>
