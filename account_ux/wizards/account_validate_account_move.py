@@ -15,6 +15,7 @@ class ValidateAccountMove(models.TransientModel):
 
         moves = self.env['account.move'].search(domain).filtered('line_ids')
         res = super().validate_move()
-        # we try to send by email the invoices recently validated
+        # we try to send by email the invoices recently validated because super method
+        # calls "_post" instead of action_post
         moves.action_send_invoice_mail()
         return res

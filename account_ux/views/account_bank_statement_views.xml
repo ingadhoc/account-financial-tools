@@ -17,14 +17,6 @@
             <div name="button_box">
                 <button class="oe_stat_button oe_read_only" name="%(action_bank_statement_line_tree)d" string="Statement Lines" type='action' groups="account.group_account_manager" attrs="{}" icon="fa-bars" />
             </div>
-            <button name="check_confirm_bank" position="after">
-                <button name="cancel_all_lines" string="Cancel All" type="object" states="open" groups="base.group_no_one" confirm="Si confirma se van a cancelar las conciliaciones de todas las líneas (y borrar los asientos que se hayan generado con las mismas), esto no puede deshacerce. Seguro que desea continuar?"/>
-            </button>
-            <!-- TODO remove this un v15 will not be needed -->
-            <button name="button_cancel_reconciliation" position="before">
-                <field name="move_name" invisible="1"/>
-                <button name="button_fix_clean_move_name" string="FIX: Clean move name to be able to reconcile" icon="fa-plus" type="object" groups="base.group_no_one" attrs="{'invisible': ['|', ('move_name', '=', False), ('journal_entry_ids', '!=', [])]}"/>
-            </button>
         </field>
     </record>
     <record id="account_bank_statement_line_search" model="ir.ui.view">
