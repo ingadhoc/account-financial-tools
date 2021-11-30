@@ -10,7 +10,6 @@ from datetime import date
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    # TODO remove or don't store on v15, use new functionality to be able to group without storing
     user_id = fields.Many2one(
         string='Contact Salesperson', related='partner_id.user_id', store=True,
         help='Salesperson of contact related to this journal item')
