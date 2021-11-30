@@ -53,7 +53,16 @@ class AccountMoveLine(models.Model):
     #         field = 'amount_residual'
     #     return super()._reconcile_lines(debit_moves, credit_moves, field)
 
-    # TODO verificar si lo queremos mantener
+    # def _prepare_reconciliation_partials(self):
+    #     print ('aaaaaaaaa')
+    #     backup = {line: line.currency_id for line in self}
+    #     self.currency_id = False
+    #     res = super()._prepare_reconciliation_partials()
+    #     for line in self:
+    #         line.currency_id = backup[line]
+    #     return res
+
+    # # TODO verificar si lo queremos mantener
     # def reconcile(self):
     #     """ This is needed if you reconcile, for eg, 1 USD to 1 USD but in an ARS account, by default
     #     odoo make a full reconcile and exchange

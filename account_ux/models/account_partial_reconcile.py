@@ -15,5 +15,5 @@ class AccountPartialReconcile(models.Model):
     #     if vals.get('currency_id'):
     #         account = self.env['account.move.line'].browse(vals.get('debit_move_id')).account_id
     #         if account.company_id.country_id == self.env.ref('base.ar') and not account.currency_id:
-    #             vals.update({'currency_id': False, 'amount_currency': 0.0})
+    #             vals.update({'debit_currency_id': False, 'credit_currency_id': 0.0, 'credit_currency_id': False, 'credit_amount_currency': 0.0})
     #     return super().create(vals)
