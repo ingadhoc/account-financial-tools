@@ -1,6 +1,6 @@
 {
     "name": "Accounting Financial Amounts",
-    "version": "13.0.1.0.0",
+    "version": "15.0.1.0.0",
     "author": "ADHOC SA",
     "license": "AGPL-3",
     "category": "Accounting",
@@ -15,5 +15,5 @@
     ],
     'images': [
     ],
-    'installable': False,
+    'installable': True,
 }
