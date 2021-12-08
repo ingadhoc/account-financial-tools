@@ -12,4 +12,3 @@ from . import res_partner
 from . import res_currency_rate
 from . import account_account_type
 from . import account_move
-from . import account_payment
