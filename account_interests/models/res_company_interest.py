@@ -114,8 +114,9 @@ class ResCompanyInterest(models.Model):
             # TODO ver si queremos que tambien se calcule interes proporcional
             # para lo que vencio en este ultimo periodo
             to_date = interests_date - tolerance_delta
-
-            rec.create_invoices(to_date)
+            from_date = to_date - tolerance_delta
+            rec.with_context(default_l10n_ar_afip_asoc_period_start=from_date,
+                             default_l10n_ar_afip_asoc_period_end=to_date).create_invoices(to_date)
 
             # seteamos proxima corrida en hoy mas un periodo
             rec.next_date = interests_date + next_delta
