@@ -93,6 +93,14 @@ class AccountJournal(models.Model):
         # necesitamos limpiar este cache para que no deje de verlo
         self.env.user.context_get.clear_cache(self)
 
+    def _get_security_domain(self, args):
+        user = self.env.user
+        if not self.env.is_superuser():
+            args += [
+                '|', ('modification_user_ids', '=', False),
+                ('id', 'in', user.modification_journal_ids.ids)]
+        return args
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         """
@@ -101,13 +109,8 @@ class AccountJournal(models.Model):
         permiso ya que si no pueden ver los diarios termina dando errores en
         cualquier lugar que se use un campo related a algo del diario
         """
-        user = self.env.user
         # if superadmin, do not apply
-        if not self.env.is_superuser():
-            args += [
-                '|', ('modification_user_ids', '=', False),
-                ('id', 'in', user.modification_journal_ids.ids)]
-
+        args = self._get_security_domain(args)
         return super()._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
 
     @api.onchange('journal_restriction')
