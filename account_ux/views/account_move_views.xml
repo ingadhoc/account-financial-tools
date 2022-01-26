@@ -4,6 +4,8 @@
         <field name="model">account.move</field>
         <field name="name">account.move.form</field>
         <field name="inherit_id" ref="account.view_move_form"/>
+        <!-- higher priority so that secondary currency (added by other module but inheriting this one) is shown right after this module -->
+        <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <!-- Make subtotal included / excluded optional and not related to tax b2b/b2c -->
             <field name="price_subtotal" position="attributes">
@@ -58,14 +60,14 @@
                 <attribute name="force_save">1</attribute>
             </field>
 
-            <field name="currency_id" position="replace">
-                <label for="currency_id" groups="base.group_multi_currency"/>
-                <div class="oe_inline" groups="base.group_multi_currency" name="currency">
-                    <t>$0</t>
-                    <button name="%(action_account_change_currency)d" type="action" class="oe_inline oe_link" string="(change)" attrs="{'invisible':[('state','!=','draft')]}"/>
-                </div>
+            <field name="currency_id" position="after">
+                <button name="%(action_account_change_currency)d" type="action" attrs="{'invisible':[('state','!=','draft')]}" icon="fa-pencil" class="btn-link"/>
+                <field name="other_currency" invisible="1"/>
             </field>
 
+            <label for="journal_id" position="attributes">
+                <attribute name="groups">account.group_account_invoice</attribute>
+            </label>
             <field name="journal_id" position="attributes">
                 <attribute name="groups">account.group_account_invoice</attribute>
                 <attribute name="force_save">1</attribute>

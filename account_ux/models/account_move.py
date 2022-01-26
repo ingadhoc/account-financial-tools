@@ -15,6 +15,13 @@ class AccountMove(models.Model):
         'account.move',
         states={'draft': [('readonly', False)]},
     )
+    other_currency = fields.Boolean(compute='_compute_other_currency')
+
+    @api.depends('company_currency_id', 'currency_id')
+    def _compute_other_currency(self):
+        other_currency = self.filtered(lambda x: x.company_currency_id != x.currency_id)
+        other_currency.other_currency = True
+        (self - other_currency).other_currency = False
 
     def delete_number(self):
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
