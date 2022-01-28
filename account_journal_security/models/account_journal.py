@@ -19,6 +19,7 @@ class AccountJournal(models.Model):
         help='If choose some users, then this journal and the information'
         ' related to it will be only visible for those users.',
         copy=False,
+        context={'active_test': False},
     )
 
     modification_user_ids = fields.Many2many(
@@ -31,6 +32,7 @@ class AccountJournal(models.Model):
         ' create, write or delete accounting data related of this journal. '
         'Information will still be visible for other users.',
         copy=False,
+        context={'active_test': False},
     )
 
     journal_restriction = fields.Selection(
@@ -39,10 +41,10 @@ class AccountJournal(models.Model):
          ('total', 'Total')],
         string="Tipo de Restriccion",
         compute='_compute_journal_restriction',
-        readonly=False,
+        inverse='_inverse_unset_modification_user_ids',
     )
 
-    @api.depends()
+    @api.depends('user_ids', 'modification_user_ids')
     def _compute_journal_restriction(self):
         for rec in self:
             if rec.user_ids:
@@ -111,18 +113,18 @@ class AccountJournal(models.Model):
         return super()._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
 
     @api.onchange('journal_restriction')
-    def unset_modification_user_ids(self):
+    def _inverse_unset_modification_user_ids(self):
         """
         Al cambiar una opción por otra, limpiar el campo M2M
         que se oculta para evitar conflictos al guardar.
         """
-        if self.journal_restriction == 'modification':
+        if self.journal_restriction == 'modification' and self.user_ids:
             self.modification_user_ids = self.user_ids
             self.user_ids = None
-        elif self.journal_restriction == 'total':
+        elif self.journal_restriction == 'total' and self.modification_user_ids:
             self.user_ids = self.modification_user_ids
             self.modification_user_ids = None
-        else:
+        elif self.journal_restriction == 'none':
             # Es necesario que se limpien ambos campos cuando se seleccione
             # "Ninguna", sino no se guardan los cambios.
             self.user_ids = None

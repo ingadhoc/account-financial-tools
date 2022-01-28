@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Journal Security',
-    'version': "13.0.1.0.0",
+    'version': "13.0.1.1.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Restrict the use of certain journals to certain users',
