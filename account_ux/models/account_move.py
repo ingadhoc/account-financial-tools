@@ -8,7 +8,7 @@ from odoo.exceptions import UserError, ValidationError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    internal_notes = fields.Text(
+    internal_notes = fields.Html(
         'Internal Notes'
     )
     reversed_entry_id = fields.Many2one(
