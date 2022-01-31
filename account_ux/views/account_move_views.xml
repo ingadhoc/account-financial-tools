@@ -25,7 +25,7 @@
                 <attribute name="placeholder">Términos y condiciones...</attribute>
             </field>
             <field name="narration" position="after">
-                <field name="internal_notes" placeholder="Internal notes.."/>
+                <field name="internal_notes"  nolabel="1" height="50" placeholder="Add an internal note..."/>
             </field>
 
             <xpath expr="//field[@name='line_ids']//field[@name='date_maturity']" position="attributes">
