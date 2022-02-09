@@ -17,7 +17,7 @@ for st in records:
   dup_groups = 0
   while tofix:
     st_line = tofix[0]
-    temp = st_line_obj.search([('ref', '=', st_line.ref), ('date', '=', st_line.date), ('name', '=', st_line.name), ('amount', '=', st_line.amount)])
+    temp = st_line_obj.search([('ref', '=', st_line.ref), ('date', '=', st_line.date), ('payment_ref', '=', st_line.payment_ref), ('amount', '=', st_line.amount), ('journal_id', '=', st_line.journal_id.id)])
     if len(temp) > 1:
       dup_groups += 1
       temp.write({'duplicated_group': 'Group %03d' % dup_groups})
@@ -37,7 +37,7 @@ if res:
         'context': {'search_default_group_by_duplicated_group': True},
      }
 else:
-    raise Warning('We do not found any duplicate')
+    raise UserError('We do not found any duplicate')
         </field>
     </record>
 
