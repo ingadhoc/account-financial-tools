@@ -52,7 +52,7 @@ class AccountChangeCurrency(models.TransientModel):
                 )
             self.currency_rate = currency._convert(
                 1.0, self.currency_to_id, self.move_id.company_id,
-                date=self.move_id.date or
+                date=self.move_id["date" if self.move_id.is_purchase_document() else "invoice_date"] or
                 fields.Date.context_today(self))
 
     def change_currency(self):
