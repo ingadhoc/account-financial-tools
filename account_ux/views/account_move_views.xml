@@ -73,13 +73,20 @@
                 <attribute name="force_save">1</attribute>
             </field>
 
+        </field>
+    </record>
+
+    <record id="view_move_form_debit" model="ir.ui.view">
+        <field name="model">account.move</field>
+        <field name="name">account.move.form</field>
+        <field name="inherit_id" ref="account_debit_note.view_move_form_debit"/>
+        <field name="arch" type="xml">
+
             <!-- permitimos modificar "Factura origne de la ND" para poder vincular ND creadas a mano -->
             <xpath expr="//group[@name='sale_info_group']/field[@name='debit_origin_id']" position="attributes">
-                <!-- <attribute name="attrs"></attribute> -->
                 <attribute name="attrs">{'invisible': [('move_type', '!=', 'out_invoice')], 'readonly': [('state', '!=', 'draft')]}</attribute>
                 <attribute name="domain">[('move_type', 'in', ('out_invoice', 'out_refund')), ('partner_id.commercial_partner_id', '=', commercial_partner_id), ('state', '=', 'posted')]</attribute>
             </xpath>
-
         </field>
     </record>
 
