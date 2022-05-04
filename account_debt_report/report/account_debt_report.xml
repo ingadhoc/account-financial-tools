@@ -7,7 +7,6 @@
         <field name="in_format">oo-ods</field>
         <field name="out_format" ref="report_aeroo.report_mimetypes_xls_odt"/>
         <field name="report_file">account_debt_report/report/account_debt_report.ods</field>
-        <field name="parser_state">default</field>
         <field name="tml_source">file</field>
     </record>
 </odoo>
