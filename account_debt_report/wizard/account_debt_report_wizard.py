@@ -85,7 +85,7 @@ class AccountDebtReportWizard(models.TransientModel):
             'default_use_template': True,
             'default_template_id': self.env.ref(
                 'account_debt_report.email_template_debt_detail').id,
-            'default_partner_to': '${object.id or \'\'}',
+            'default_partner_to': '{{ object.id or \'\' }}',
         }
         self = self.with_context(context)
         return {

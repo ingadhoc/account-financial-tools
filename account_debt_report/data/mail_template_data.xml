@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="email_template_debt_detail" model="mail.template">
+        <field name="name">Debt Detail Mail</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="auto_delete" eval="True"/>
+        <field name="partner_to">{{ object.id }}</field>
+        <field name="report_template" ref="account_debt_report"/>
+        <field name="report_name">Debt_Detail_{{ (object.name or '').replace('/','_') }}</field>
+        <field name="subject">Debt Detail {{ object.company_id.name }}</field>
+        <field name="lang">{{ object.lang }}</field>
+        <field name="email_from">{{ object.user_id.email or '' }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear
+        <t t-if="object.parent_id">
+            <t t-out="object.name or ''"></t>
+            (<t t-out="object.parent_id.name or ''"></t>),
+        </t>
+        <t t-else="">
+            <t t-out="object.name or ''"></t>,
+        </t>
+        <br /><br />
+        Please find attached your debt detail from <t t-out="object.company_id.name or ''"></t>.
+        <br /><br />
+        Do not hesitate to contact us if you have any questions.
+    </p>
+</div>
+        </field>
+    </record>
+</odoo>
