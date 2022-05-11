@@ -5,9 +5,9 @@
         <field name="model">account.bank.statement</field>
         <field name="inherit_id" ref="account.view_bank_statement_form"/>
         <field name="arch" type="xml">
-            <field name="all_lines_reconciled" position="before">
+            <button name="button_validate_or_action" position="before">
                 <button name="%(action_aeroo_statement_report)d" class="oe_highlight" string="Print" type="action"/>
-            </field>
+            </button>
         </field>
     </record>
 </odoo>
