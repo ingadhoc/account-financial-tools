@@ -43,6 +43,17 @@ class AccountChangeCurrency(models.TransientModel):
         default='currency'
     )
 
+    @api.onchange('currency_to_id')
+    def onchange_currency(self):
+        if not self.currency_to_id:
+            self.currency_rate = False
+        else:
+            currency = self.currency_to_id
+            self.currency_rate = currency._convert(
+                1.0, self.currency_from_id, self.move_id.company_id,
+                date=self.move_id.date or
+                fields.Date.context_today(self))
+
     def change_currency(self):
         self.ensure_one()
         if self.change_type == 'currency':
@@ -54,23 +65,27 @@ class AccountChangeCurrency(models.TransientModel):
                     fields.Date.context_today(self))
             else:
                 self.currency_rate = 1
-                self.move_id.l10n_ar_currency_rate = '0.0'
+                self.move_id.l10n_ar_currency_rate = 0.0
+        message = _("Currency changed from %s to %s with rate %s") % (
+            self.currency_from_id.name, self.currency_to_id.name,
+            self.currency_rate)
         if self.change_type == 'value':
-            self.move_id.l10n_ar_currency_rate = self.currency_rate
+            if self.env['ir.module.module'].search([('name', '=', 'l10n_ar')], limit=1).state in ('installed', 'to install', 'to upgrade'):
+                self.move_id.l10n_ar_currency_rate = self.currency_rate
+                message = _("Currency changed from %s to %s with rate %s. Currency rate forced") % (
+                    self.currency_from_id.name, self.currency_to_id.name,
+                    self.currency_rate)
 
         move = self.move_id.with_context(check_move_validity=False)
         for line in move.line_ids:
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
             line.price_unit = line.price_unit * self.currency_rate
-        message = _("Currency changed from %s to %s with rate %s") % (
-            self.currency_from_id.name, self.currency_to_id.name,
-            self.currency_rate)
-        self.move_id.message_post(body=message)
         move.currency_id = self.currency_to_id.id
         move._onchange_currency()
 
         # This is required to compute to recompute the tax lines again
         if self.currency_rate != 1:
             move._recompute_dynamic_lines(recompute_all_taxes=True)
+        self.move_id.message_post(body=message)
         return {'type': 'ir.actions.act_window_close'}
