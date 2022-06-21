@@ -14,8 +14,16 @@ class ValidateAccountMove(models.TransientModel):
             raise UserError(_("Missing 'active_model' in context."))
 
         moves = self.env['account.move'].search(domain).filtered('line_ids')
-        res = super().validate_move()
-        # we try to send by email the invoices recently validated because super method
-        # calls "_post" instead of action_post
-        moves.action_send_invoice_mail()
+        try:
+            res = super().validate_move()
+            moves.with_context(mail_notify_force_send=False).action_send_invoice_mail()
+        except Exception as exp:
+            # we try to send by email the invoices recently validated
+            posted_moves = self.filter_posted_moves(moves)
+            posted_moves.with_context(mail_notify_force_send=False).action_send_invoice_mail()
+            raise exp
+
         return res
+
+    def filter_posted_moves(self, moves):
+        return moves.filtered(lambda x: x.state == 'posted')
