@@ -677,8 +677,8 @@ msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
-msgid "Without Residual"
-msgstr ""
+msgid "With Residual Amount"
+msgstr "Con Importe Residual"
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_move.py:0
