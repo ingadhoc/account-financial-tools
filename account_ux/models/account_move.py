@@ -192,7 +192,13 @@ class AccountMove(models.Model):
             raise ValidationError(_(
                 'You can create sales/purchase invoices exclusively in the respective sales/purchase journals'))
 
-    def _recompute_tax_lines(self, recompute_tax_base_amount=False):
+    def unlink(self):
+        """ If we delete a journal entry that is related to a reconcile line then we need to clean the statement line
+        in order to be able to reconcile in the future (clean up the move_name field)."""
+        self.mapped('line_ids.statement_line_id').write({'move_name': False})
+        return super().unlink()
+
+    def _recompute_tax_lines(self, recompute_tax_base_amount=False, tax_rep_lines_to_recompute=None):
         """ Odoo recomputa todos los impuestos cada vez que hay un cambio en la factura, esto trae dos problemas:
         1. Es molesto para los usuarios que, luego de haber cargado las percepciones, quieren hacer una modificacion
         y se les recomputa todo
@@ -207,7 +213,7 @@ class AccountMove(models.Model):
         """
         # if calling with recompute_tax_base_amount then tax amounts are not changed and we can return super directly
         if recompute_tax_base_amount:
-            return super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount)
+            return super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount, tax_rep_lines_to_recompute=tax_rep_lines_to_recompute)
         in_draft_mode = self != self._origin
         fixed_taxes_bu = {
             line: {
@@ -216,7 +222,7 @@ class AccountMove(models.Model):
                 'credit': line.credit,
             } for line in self.line_ids.filtered(lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed')}
 
-        res = super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount)
+        res = super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount, tax_rep_lines_to_recompute=tax_rep_lines_to_recompute)
         for tax_line in self.line_ids.filtered(
                 lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed' and x in fixed_taxes_bu):
             tax_line.update(fixed_taxes_bu.get(tax_line))
