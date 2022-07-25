@@ -41,23 +41,23 @@ class AccountMoveLine(models.Model):
             'res_id': res_id,
         }
 
-    def _reconcile_lines(self, debit_moves, credit_moves, field):
-        """ Modificamos contexto para que odoo solo concilie el metodo
-        auto_reconcile_lines teniendo en cuenta la moneda de cia si la cuenta
-        no tiene moneda.
-        Va de la mano de la modificación de "create" en
-        account.partial.reconcile
-        Para que este cambio funcione bien es ademas importante este parche en odoo
-        https://github.com/odoo/odoo/pull/63390
-        """
-        if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
-            field = 'amount_residual'
-        return super()._reconcile_lines(debit_moves, credit_moves, field)
+    # def _reconcile_lines(self, debit_moves, credit_moves, field):
+    #     """ Modificamos contexto para que odoo solo concilie el metodo
+    #     auto_reconcile_lines teniendo en cuenta la moneda de cia si la cuenta
+    #     no tiene moneda.
+    #     Va de la mano de la modificación de "create" en
+    #     account.partial.reconcile
+    #     Para que este cambio funcione bien es ademas importante este parche en odoo
+    #     https://github.com/odoo/odoo/pull/63390
+    #     """
+    #     if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
+    #         field = 'amount_residual'
+    #     return super()._reconcile_lines(debit_moves, credit_moves, field)
 
-    def reconcile(self, writeoff_acc_id=False, writeoff_journal_id=False):
-        """ This is needed if you reconcile, for eg, 1 USD to 1 USD but in an ARS account, by default
-        odoo make a full reconcile and exchange
-        """
-        if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
-            self = self.with_context(no_exchange_difference=True)
-        return super().reconcile(writeoff_acc_id=writeoff_acc_id, writeoff_journal_id=writeoff_journal_id)
+    # def reconcile(self, writeoff_acc_id=False, writeoff_journal_id=False):
+    #     """ This is needed if you reconcile, for eg, 1 USD to 1 USD but in an ARS account, by default
+    #     odoo make a full reconcile and exchange
+    #     """
+    #     if self and self[0].company_id.country_id == self.env.ref('base.ar') and not self[0].account_id.currency_id:
+    #         self = self.with_context(no_exchange_difference=True)
+    #     return super().reconcile(writeoff_acc_id=writeoff_acc_id, writeoff_journal_id=writeoff_journal_id)
