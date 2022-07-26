@@ -17,6 +17,55 @@
             <div name="button_box">
                 <button class="oe_stat_button oe_read_only" name="%(action_bank_statement_line_tree)d" string="Statement Lines" type='action' groups="account.group_account_manager" attrs="{}" icon="fa-bars" />
             </div>
+
+            <!-- Boton para regresar al estado Nuevo en modo edición -->
+            <button name="button_reopen" position="before">
+                <button name="button_edit" string="Editar" type='object' groups="account.group_account_manager" states="posted" confirm="Si utiliza sincronizacion bancaria, no deberia necesitar editar el extracto, por lo tanto use esta acción a conciencia y solo para los casos en que conozca que realmente necesita editar alguna linea teniendo en cuenta que esto puede afectar a la próxima sincronización bancaria"/>
+            </button>
+
+            <!-- Agregar advertencia para cuando intente regresar a estado Nuevo -->
+            <button name="button_reopen" position="attributes">
+                <attribute name="confirm">Si continua con esta acción todas las lineas de extracto quedarán desconciliadas y tendra que volver a conciliarlas de manera manual, esta seguro que quiere continuar?</attribute>
+            </button>
+
+            <!-- No permitir modificar el campo Saldo final si estoy en etapa distito a Nuevo -->
+            <field name="balance_end_real" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '!=', 'open')]}</attribute>
+            </field>
+
+            <!-- Ahora que podemos tener asientos conciliados en etapa Nuevo necesitamos poder ver y usar el boton revertir conciliacion -->
+            <button name="button_undo_reconciliation" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_reconciled', '=', False)], 'column_invisible': [('parent.state', 'not in', ['posted', 'open'])]}</attribute>
+            </button>
+
+            <!-- Ahora que podemos tener asientos conciliados en etapa Nuevo necesitamos poder ver pero no permitir editar el contenido de sus columunas -->
+            <xpath expr="//field[@name='line_ids']//field[@name='date']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </xpath>
+            <field name="payment_ref" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="ref" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="amount" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="narration" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="amount_currency" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="foreign_currency_id" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
+            <field name="transaction_type" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('parent.state', '!=', 'open'), ('is_reconciled', '=', True)]}</attribute>
+            </field>
         </field>
     </record>
     <record id="account_bank_statement_line_search" model="ir.ui.view">
