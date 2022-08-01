@@ -58,6 +58,7 @@ Several Improvements to accounting:
 #. Add amount_total and amount_untaxed in the invoice tree view as optional and hide fields
 #. Add new filter 'With resiual amount' on partner ledger
 #. Make Debit Note Origin field visible and editable by the user in the account.move form view. This will help to link new debit notes with the original invoice when this ones were not created from invoices "Add Debit Note" action button directly.
+#. Let the user to return the bank statement to open state without needing to unreconcile all the lines.
 
 Installation
 ============
