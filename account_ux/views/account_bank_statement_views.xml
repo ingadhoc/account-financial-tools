@@ -20,7 +20,7 @@
 
             <!-- Boton para regresar al estado Nuevo en modo edición -->
             <button name="button_reopen" position="before">
-                <button name="button_edit" string="Editar" type='object' groups="account.group_account_manager" states="posted" confirm="Si utiliza sincronizacion bancaria, no deberia necesitar editar el extracto, por lo tanto use esta acción a conciencia y solo para los casos en que conozca que realmente necesita editar alguna linea teniendo en cuenta que esto puede afectar a la próxima sincronización bancaria"/>
+                <button name="button_edit" string="Modificar" type='object' groups="account.group_account_user" states="posted" confirm="Si utiliza sincronizacion bancaria, no deberia necesitar editar el extracto, por lo tanto use esta acción a conciencia y solo para los casos en que conozca que realmente necesita editar alguna linea teniendo en cuenta que esto puede afectar a la próxima sincronización bancaria"/>
             </button>
 
             <!-- Agregar advertencia para cuando intente regresar a estado Nuevo -->
