@@ -7,7 +7,6 @@ from . import account_group
 from . import account_account
 from . import account_journal
 from . import account_payment
-from . import account_payment_group
 from . import account_bank_statements
 from . import account_partial_reconcile
 from . import account_move_line
