@@ -89,7 +89,7 @@ class ResPartner(models.Model):
                 'account_debt_report.group_payment_group_payments', 'False'))
 
         payment_groups = {}
-        group_count = 0
+        group_count = len(res)
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
