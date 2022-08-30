@@ -88,7 +88,8 @@ class ResPartner(models.Model):
             self.env['ir.config_parameter'].sudo().get_param(
                 'account_debt_report.group_payment_group_payments', 'False'))
 
-        last_payment_group_id = False
+        payment_groups = {}
+        group_count = 0
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
@@ -115,18 +116,16 @@ class ResPartner(models.Model):
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
 
-            if grouped and record.payment_id and record.payment_id.payment_group_id == last_payment_group_id:
+            group_index = payment_groups.get(name)
+            if grouped and record.payment_id and group_index:
                 # si agrupamos pagos y el grupo de pagos coincide con el último, entonces acumulamos en linea anterior
-                res[-1].update({
-                    'amount': res[-1]['amount'] + record.balance,
-                    'amount_residual': res[-1]['amount_residual'] + record.amount_residual,
-                    'amount_currency': res[-1]['amount_currency'] + record.amount_currency,
+                res[group_index].update({
+                    'amount': res[group_index]['amount'] + record.balance,
+                    'amount_residual': res[group_index]['amount_residual'] + record.amount_residual,
+                    'amount_currency': res[group_index]['amount_currency'] + record.amount_currency,
                     'balance': balance,
                 })
                 continue
-            elif grouped and record.payment_id and record.payment_id.payment_group_id != last_payment_group_id:
-                # si es un payment pero no es del payment group anterior, seteamos este como ultimo payment group
-                last_payment_group_id = record.payment_id.payment_group_id
             elif not grouped and record.payment_id:
                 # si no agrupamos y es pago, agregamos nombre de diario para que sea mas claro
                 name += ' - ' + record.journal_id.name
@@ -144,5 +143,8 @@ class ResPartner(models.Model):
                 currency_name=currency.name,
                 # move_line=record.move_line_id,
             ))
+            payment_groups.update({name: group_count})
+            group_count += 1
+
         res += final_line
         return res
