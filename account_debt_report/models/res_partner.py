@@ -82,7 +82,7 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
-        records = self.env['account.move.line'].sudo().search(domain, order='date asc, date_maturity asc, name, id')
+        records = self.env['account.move.line'].sudo().search(domain, order='date asc, name, move_id desc, date_maturity asc, id')
 
         grouped = self.env['account.payment']._fields.get('payment_group_id') and safe_eval(
             self.env['ir.config_parameter'].sudo().get_param(
