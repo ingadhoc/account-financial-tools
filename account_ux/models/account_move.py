@@ -196,6 +196,7 @@ class AccountMove(models.Model):
         """ If we delete a journal entry that is related to a reconcile line then we need to clean the statement line
         in order to be able to reconcile in the future (clean up the move_name field)."""
         self.mapped('line_ids.statement_line_id').write({'move_name': False})
+        self = self.with_context(force_delete=True)
         return super().unlink()
 
     def _recompute_tax_lines(self, recompute_tax_base_amount=False, tax_rep_lines_to_recompute=None):
