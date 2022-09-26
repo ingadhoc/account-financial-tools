@@ -96,12 +96,14 @@ class ResPartner(models.Model):
             detail_lines = []
             if show_invoice_detail:
                 for inv_line in record.move_id.invoice_line_ids:
+                    inv_line_name = inv_line.name or "Sin descripción"
+                    inv_line_product_uom_id_name = inv_line.product_uom_id.name or "Sin unidad de medida"
                     detail_lines.append(
                         ("* %s x %s %s" % (
-                            inv_line.name.replace(
+                            inv_line_name.replace(
                                 '\n', ' ').replace('\r', ''),
                             inv_line.quantity,
-                            inv_line.product_uom_id.name)))
+                            inv_line_product_uom_id_name)))
             name = record.move_id.name
             # similar to _format_aml_name
             if record.ref and record.ref != '/':
