@@ -65,16 +65,16 @@ class ResPartner(models.Model):
 
         domain += [('partner_id', '=', self.id), ('parent_state', '=', 'posted')]
 
+        res_initial = False
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
             inicial_lines = self.env['account.move.line'].sudo().read_group(
                 initial_domain, fields=['balance'], groupby=['partner_id'])
             balance = inicial_lines[0]['balance'] if inicial_lines else 0.0
-            res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance)]
+            res_initial = get_line_vals(name=_('INITIAL BALANCE'), balance=balance)
             domain.append(('date', '>=', from_date))
         else:
             balance = 0.0
-            res = []
 
         if to_date:
             final_line = []
@@ -82,14 +82,15 @@ class ResPartner(models.Model):
         else:
             final_line = []
 
+        res = []
         records = self.env['account.move.line'].sudo().search(domain, order='date asc, name, move_id desc, date_maturity asc, id')
 
         grouped = self.env['account.payment']._fields.get('payment_group_id') and safe_eval(
             self.env['ir.config_parameter'].sudo().get_param(
                 'account_debt_report.group_payment_group_payments', 'False'))
 
-        last_payment_group_id = False
-
+        payment_groups = {}
+        group_count = len(res)
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
         for record in records:
@@ -117,22 +118,20 @@ class ResPartner(models.Model):
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
 
-            if grouped and record.payment_id and record.payment_id.payment_group_id == last_payment_group_id:
+            group_index = payment_groups.get(name)
+            if grouped and record.payment_id and (group_index or group_index==0):
                 # si agrupamos pagos y el grupo de pagos coincide con el último, entonces acumulamos en linea anterior
-                res[-1].update({
-                    'amount': res[-1]['amount'] + record.balance,
-                    'amount_residual': res[-1]['amount_residual'] + record.amount_residual,
-                    'amount_currency': res[-1]['amount_currency'] + record.amount_currency,
-                    'balance': balance,
+                res[group_index].update({
+                    'date': record.date,
+                    'date_maturity': record.date,
+                    'amount': res[group_index]['amount'] + record.balance,
+                    'amount_residual': res[group_index]['amount_residual'] + record.amount_residual,
+                    'amount_currency': res[group_index]['amount_currency'] + record.amount_currency,
                 })
                 continue
-            elif grouped and record.payment_id and record.payment_id.payment_group_id != last_payment_group_id:
-                # si es un payment pero no es del payment group anterior, seteamos este como ultimo payment group
-                last_payment_group_id = record.payment_id.payment_group_id
             elif not grouped and record.payment_id:
                 # si no agrupamos y es pago, agregamos nombre de diario para que sea mas claro
                 name += ' - ' + record.journal_id.name
-
             # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
             res.append(get_line_vals(
                 date=date,
@@ -141,10 +140,30 @@ class ResPartner(models.Model):
                 date_maturity=date_maturity,
                 amount=amount,
                 amount_residual=amount_residual,
-                balance=balance,
                 amount_currency=amount_currency,
                 currency_name=currency.name,
                 # move_line=record.move_line_id,
             ))
+            payment_groups.update({name: group_count})
+            group_count += 1
+        res = sorted(res, key = lambda i:i['date'])
+
+        if historical_full:
+            if res_initial:
+                res.insert(0, res_initial)
+            for index, move in enumerate(res):
+                if index==0:
+                    if not res_initial:
+                        move['balance'] = move['amount']
+                    else:
+                        continue
+                else:
+                    move['balance'] = res[index-1]['balance'] + move['amount']
+        else:
+            for index, move in enumerate(res):
+                if index==0:
+                     move['balance'] = move['amount_residual']
+                else:
+                    move['balance'] = res[index-1]['balance'] + move['amount_residual']
         res += final_line
         return res
