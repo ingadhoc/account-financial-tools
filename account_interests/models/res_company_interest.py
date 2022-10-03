@@ -120,6 +120,15 @@ class ResCompanyInterest(models.Model):
             # seteamos proxima corrida en hoy mas un periodo
             rec.next_date = interests_date + next_delta
 
+    def _get_move_line_domains(self, to_date):
+        self.ensure_one()
+        move_line_domain = [
+            ('account_id', 'in', self.receivable_account_ids.ids),
+            ('full_reconcile_id', '=', False),
+            ('date_maturity', '<', to_date)
+        ]
+        return move_line_domain
+
     def create_invoices(self, to_date, groupby='partner_id'):
         self.ensure_one()
 
@@ -127,11 +136,7 @@ class ResCompanyInterest(models.Model):
             ('type', '=', 'sale'),
             ('company_id', '=', self.company_id.id)], limit=1)
 
-        move_line_domain = [
-            ('account_id', 'in', self.receivable_account_ids.ids),
-            ('full_reconcile_id', '=', False),
-            ('date_maturity', '<', to_date)
-        ]
+        move_line_domain = self._get_move_line_domains(to_date)
 
         # Check if a filter is set
         if self.domain:
