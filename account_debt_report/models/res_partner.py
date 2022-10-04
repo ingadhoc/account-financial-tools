@@ -130,6 +130,8 @@ class ResPartner(models.Model):
             elif not grouped and record.payment_id:
                 # si no agrupamos y es pago, agregamos nombre de diario para que sea mas claro
                 name += ' - ' + record.journal_id.name
+            elif not record.payment_id:
+                last_payment_group_id = False
 
             # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
             res.append(get_line_vals(
