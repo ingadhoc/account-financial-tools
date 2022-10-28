@@ -21,17 +21,9 @@
                 <button name="delete_number" string="Delete Number" attrs="{'invisible':['|', ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
             </button>
 
-            <field name="narration" position="attributes">
-                <attribute name="placeholder">Términos y condiciones...</attribute>
-            </field>
             <field name="narration" position="after">
                 <field name="internal_notes"  nolabel="1" height="50" placeholder="Add an internal note..."/>
             </field>
-
-            <xpath expr="//field[@name='line_ids']//field[@name='date_maturity']" position="attributes">
-                <attribute name="invisible"></attribute>
-                <attribute name="optional">hide</attribute>
-            </xpath>
 
             <!-- similar modification to these are don on l10n_ar_ux for debit_origin_id -->
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
@@ -55,23 +47,15 @@
                 <field name="reversed_entry_id" attrs="{'invisible': [('move_type', '!=', 'out_refund')]}"/>
             </field>
 
-            <field name="currency_id" position="attributes">
+            <xpath expr="//div[@name='journal_div']/field[@name='currency_id']" position="attributes">
                 <attribute name="readonly">True</attribute>
                 <attribute name="force_save">1</attribute>
-            </field>
+            </xpath>
 
-            <field name="currency_id" position="after">
-                <button name="%(action_account_change_currency)d" type="action" attrs="{'invisible':[('state','!=','draft')]}" icon="fa-pencil" class="btn-link"/>
+            <xpath expr="//div[@name='journal_div']/field[@name='currency_id']" position="after">
+                <button name="%(action_account_change_currency)d" type="action" attrs="{'invisible':[('state','!=','draft')]}" icon="fa-pencil" class="btn-link" title="Change Currency" groups="base.group_multi_currency" />
                 <field name="other_currency" invisible="1"/>
-            </field>
-
-            <label for="journal_id" position="attributes">
-                <attribute name="groups">account.group_account_invoice</attribute>
-            </label>
-            <field name="journal_id" position="attributes">
-                <attribute name="groups">account.group_account_invoice</attribute>
-                <attribute name="force_save">1</attribute>
-            </field>
+            </xpath>
 
         </field>
     </record>

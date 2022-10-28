@@ -1,81 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- agregado de account type en búsqueda de apuntes -->
     <record id="view_account_move_line_filter" model="ir.ui.view">
         <field name="name">account.move.line.search</field>
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_account_move_line_filter"/>
         <field name="arch" type="xml">
-            <filter name="unreconciled" position="after">
-                <separator/>
-                <filter string="With Residual Amount" domain="[('reconciled', '=', False), ('balance', '!=', 0), ('account_id.reconcile', '=', True)]" help="Journal items with residual 0" name="without_residual"/>
-            </filter>
-
             <field name="account_id" position="after">
-                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-                <field name="analytic_tag_ids" groups="analytic.group_analytic_tags"/>
+                <field name="analytic_distribution" groups="analytic.group_analytic_accounting"/>
                 <field name="user_id"/>
             </field>
             <group>
-                <filter name="analytic_account_id" string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+                <!-- <filter name="analytic_account_id" string="Analytic Account" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/> -->
                 <filter name="group_company" string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
                 <filter name="group_user_id" string="Contact Salesperson" domain="[]" context="{'group_by': 'user_id'}"/>
             </group>
             <filter name="groupby_date" position="after">
                 <filter name="groupby_due_date" string="Due date" context="{'group_by':'date_maturity'}"/>
             </filter>
-        </field>
-    </record>
-
-    <record id="account.action_account_moves_ledger_partner" model="ir.actions.act_window">
-        <field name="context">{'journal_type':'general', 'search_default_group_by_partner': 1, 'search_default_posted':1, 'search_default_payable':1, 'search_default_receivable':1, 'search_default_unreconciled':1, 'search_default_without_residual': 1}</field>
-    </record>
-
-    <!-- view for for journal items -->
-    <record id="view_move_line_tree" model="ir.ui.view">
-        <field name="name">account.move.line.tree</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_move_line_tree"/>
-        <field name="arch" type="xml">
-            <tree>
-                <button type="object" icon="fa-file-o" help="Open Related Document" name="action_open_related_document"/>
-            </tree>
-            <field name="credit" position="after">
-                <field name="balance" sum="Balance" readonly="1" optional="hide"/>
-            </field>
-        </field>
-    </record>
-
-    <!-- view for for account ledger -->
-    <record id="view_move_line_tree_grouped" model="ir.ui.view">
-        <field name="name">account.move.line.tree</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_move_line_tree_grouped"/>
-        <field name="arch" type="xml">
-            <tree>
-                <button type="object" icon="fa-file-o" help="Open Related Document" name="action_open_related_document"/>
-            </tree>
-            <field name="debit" position="attributes">
-                <attribute name="optional">show</attribute>
-            </field>
-            <field name="credit" position="attributes">
-                <attribute name="optional">show</attribute>
-            </field>
-            <field name="name" position="attributes">
-                <attribute name="optional">show</attribute>
-            </field>
-            <field name="date_maturity" position="attributes">
-                <attribute name="optional">show</attribute>
-            </field>
-            <field name="amount_currency" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </field>
-            <field name="credit" position="after">
-                <field name="balance" sum="Balance" readonly="1" optional="hide"/>
-            </field>
-            <!-- <field name="full_reconcile_id" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </field> -->
         </field>
     </record>
 
@@ -91,63 +32,15 @@
             <field name="credit" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
-            <field name="balance" position="attributes">
-                <attribute name="optional">show</attribute>
-            </field>
             <field name="account_id" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
-            <field name="credit" position="after">
-                <field name="amount_residual" sum="Total Residual" readonly="1" optional="show"/>
+            <field name="amount_residual" position="attributes">
+                <attribute name="optional">show</attribute>
             </field>
-        </field>
-    </record>
-
-    <record id="action_move_line_analisis" model="ir.actions.act_window">
-        <field name="name">Análisis de Apuntes Contables</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">account.move.line</field>
-        <!-- <field name="view_id" ref="view_wizard_multi_chart"/> -->
-        <field name="view_mode">tree,graph,pivot</field>
-    </record>
-
-    <menuitem id="menu_move_line_analisis" sequence="5" parent="account.account_reports_management_menu" action="action_move_line_analisis"/>
-
-    <record id="view_move_line_form" model="ir.ui.view">
-        <field name="name">account.move.line.form</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_move_line_form"/>
-        <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
-        <field name="arch" type="xml">
-            <group groups="base.group_multi_currency" position="before">
-                <group string="Residuals">
-                    <field name="amount_residual"/>
-                    <field name="amount_residual_currency"/>
-                    <field name="reconciled"/>
-                </group>
-            </group>
-            <field name="matched_credit_ids" position="replace"/>
-            <field name="matched_debit_ids" position="replace"/>
-            <label for="full_reconcile_id" position="before">
-                <field name="matched_credit_ids" readonly="1" >
-                    <tree create="0">
-                        <field name="credit_move_id"/>
-                        <field name="amount" sum="Total"/>
-                        <field name="debit_amount_currency" sum="Total"/>
-                        <field name="company_currency_id" invisible="1"/>
-                        <field name="debit_currency_id" invisible="1"/>
-                    </tree>
-                </field>
-                <field name="matched_debit_ids" readonly="1" >
-                    <tree create="0">
-                        <field name="debit_move_id"/>
-                        <field name="amount" sum="Total"/>
-                        <field name="credit_amount_currency" sum="Total"/>
-                        <field name="company_currency_id" invisible="1"/>
-                        <field name="credit_currency_id" invisible="1"/>
-                    </tree>
-                </field>
-            </label>
+            <field name="analytic_distribution" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
         </field>
     </record>
 

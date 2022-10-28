@@ -106,7 +106,7 @@ msgid "Analytic Account"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_account_type__analytic_account_required
+#: model:ir.model.fields,field_description:account_ux.field_account_account_type__analytic_distribution_required
 msgid "Analytic Account Required?"
 msgstr ""
 
@@ -116,7 +116,7 @@ msgid "Analytic Tag Required?"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_account_required
+#: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_distribution_required
 msgid "Analytic account required?"
 msgstr ""
 
@@ -179,7 +179,7 @@ msgid "Child"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account__analytic_account_required
+#: model:ir.model.fields,help:account_ux.field_account_account__analytic_distribution_required
 msgid ""
 "Choose if you want analytic accounts to be required when posting journal "
 "entries with this account. If you select:* Defined by account type: it will "
@@ -299,7 +299,7 @@ msgid "Default Sale Taxes"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__by_account_type
+#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__by_account_type
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__by_account_type
 msgid "Defined by account type"
 msgstr ""
@@ -365,7 +365,7 @@ msgid "ID"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account_type__analytic_account_required
+#: model:ir.model.fields,help:account_ux.field_account_account_type__analytic_distribution_required
 msgid ""
 "If True, then an analytic account will be required when posting journal "
 "entries with this type of account."
@@ -455,7 +455,7 @@ msgid "Online"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__optional
+#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__optional
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__optional
 msgid "Optional"
 msgstr ""
@@ -510,7 +510,7 @@ msgid "Reconciliations"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_account_required__required
+#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__required
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__required
 msgid "Required"
 msgstr ""
