@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': "15.0.1.7.0",
+    'version': "16.0.1.0.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -45,13 +45,12 @@
         'views/res_partner_views.xml',
         'views/account_partial_reconcile_views.xml',
         'views/account_account_views.xml',
-        'views/account_type_views.xml',
         'views/account_move_views.xml',
         'data/ir_actions_server_data.xml',
     ],
     'demo': [
     ],
-    'installable': False,
+    'installable': True,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale

@@ -10,7 +10,8 @@
                     <field name="currency_from_id"/>
                     <field name="currency_to_id" domain="[('id', '!=', currency_from_id)]"/>
                     <field name="change_type" widget="radio"/>
-                    <field name="currency_rate" attrs="{'invisible':[('change_type', '=', 'currency')]}"/>
+                    <field name="currency_rate" groups="!account_ux.group_restrict_change_currency_exchange" attrs="{'invisible':[('change_type', '=', 'currency')]}"/>
+                    <field name="currency_rate" groups="account_ux.group_restrict_change_currency_exchange" readonly="1"/>
                 </group>
                 <footer>
                     <button name="change_currency" string="Change Currency" type="object" class="oe_highlight"/>
@@ -18,21 +19,6 @@
                     <button string="Cancel" class="oe_link" special="cancel"/>
                 </footer>
             </form>
-        </field>
-    </record>
-
-    <record id="view_account_change_no_exchange_currency" model="ir.ui.view">
-        <field name="name">Change Currency No exchange</field>
-        <field name="model">account.change.currency</field>
-        <field name="groups_id" eval="[(4, ref('group_restrict_change_currency_exchange'))]"/>
-        <field name="inherit_id" ref="view_account_change_currency"/>
-        <field name="arch" type="xml">
-            <field name="currency_rate" position="after">
-                <field name="currency_rate" readonly="1"/>
-            </field>
-            <field name="currency_rate" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
         </field>
     </record>
 

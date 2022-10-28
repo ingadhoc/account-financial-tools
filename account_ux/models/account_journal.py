@@ -9,13 +9,6 @@ from odoo.exceptions import ValidationError
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
-    acquirer_ids = fields.One2many(
-        'payment.acquirer',
-        'journal_id',
-        'Acquirers',
-        help='Acquirer that use this journal to register online payments '
-        'journal entries',
-    )
     mail_template_id = fields.Many2one(
         'mail.template',
         'Email Template',
