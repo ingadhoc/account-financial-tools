@@ -39,7 +39,6 @@
         'wizards/account_change_currency_views.xml',
         'wizards/res_config_settings_views.xml',
         'views/account_journal_views.xml',
-        'views/account_bank_statement_views.xml',
         'views/account_move_line_views.xml',
         'views/account_reconcile_views.xml',
         'views/res_partner_views.xml',
