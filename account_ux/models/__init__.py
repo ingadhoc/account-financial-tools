@@ -10,5 +10,4 @@ from . import account_partial_reconcile
 from . import account_move_line
 from . import res_partner
 from . import res_currency_rate
-from . import account_bank_statement_line
 from . import account_move
