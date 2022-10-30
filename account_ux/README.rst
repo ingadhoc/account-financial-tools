@@ -16,30 +16,18 @@ Account UX
 
 Several Improvements to accounting:
 
-#. Improove partner ledger usability
+#. Improove partner ledger usability (tree view, not report)
 #. Make subtotal included / excluded optional and not related to tax b2b/b2c
-#. Reconcile on company currency if account don't have a currency and country is Argentina (if any other country need this it should make a PR and add itself)
-#. If user sets and account of a liquidity type and previous type was not liquidity and not reconcilable, recompute amounts residual because they are used on liquidity accounts
-#. On invoice validation check that user hasn't delete any "automatic" tax from invoice
 #. Add reconciliations menu on accounting (only with debug mode)
-#. Add journal items menu item menu on reports with tree, grahp and pivot views (no debug mode required)
-#. Add on move lines a button to open related documents
-#. On journal entries make date_maturity always visible on the journal items
-#. Add on journal items availability to search and group by analytic account and to search by analytic tags
-#. Add by default, when creating invoices manually, actual partner is choose, with this module the partner salesperson will be choosen. It also choose the salesperson when creating invoices from stock.picking
+#. Add on journal items availability to search and group by analytic distribution
+#. By default, when creating invoices manually, actual partner is choose, with this module the partner salesperson will be choosen. It also choose the salesperson when creating invoices from stock.picking
 #. Make origin always visible on invoices.  We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order
 #. Adds possibility of filtering and grouping by company on invoices.
-#. Add the field "last time entries checked" with tecnical features in partner view.
-#. Add invoice reference as optional on tree view
 #. Add delete number in cancelled customer invoices
-#. Add options on accounts and account types to make analytic tags required on journal entries posting
-#. Adds to group by journal on invoices.
+#. Add options on accounts to require analytic distribution on journal entries posting
 #. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
 #. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
-#. Add quick search by this/last year/month on journal entries
-#. Add visible to group account invoice the field "Journal" in account invoice form.
 #. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
-#. DISABLED, REMOVE IF NO NEEDED: Disable currency change when journal is changed
 #. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
@@ -54,11 +42,8 @@ Several Improvements to accounting:
    * In order to see the change button in the invoice we should be added to the "Technical Settings / Show Full Accounting Features" group
    * We can restrict the change of the currency for a group of users by adding them to "Restrict Change Invoice Currency Exchange" group
 
-#. Add constraint invoice-journal-type to let the user create sales/purchase invoices exclusively in the respectives sales/purchase journals:
 #. Add amount_total and amount_untaxed in the invoice tree view as optional and hide fields
-#. Add new filter 'With resiual amount' on partner ledger
 #. Make Debit Note Origin field visible and editable by the user in the account.move form view. This will help to link new debit notes with the original invoice when this ones were not created from invoices "Add Debit Note" action button directly.
-#. Let the user to return the bank statement to open state without needing to unreconcile all the lines.
 
 Installation
 ============
