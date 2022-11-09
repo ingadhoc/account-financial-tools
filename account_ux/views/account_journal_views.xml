@@ -5,7 +5,7 @@
         <field name="model">account.journal</field>
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
-            <field name="company_id" position="after">
+            <field name="country_code" position="before">
                 <field name="mail_template_id"  context="{'default_model': 'account.move'}"/>
             </field>
         </field>
