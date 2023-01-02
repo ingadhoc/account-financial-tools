@@ -15,7 +15,7 @@ class AccountJournal(models.Model):
         'journal_id',
         'user_id',
         # string='Restricted to Users',
-        string='Totally restricted to',
+        string='Totally allowed to',
         help='If choose some users, then this journal and the information'
         ' related to it will be only visible for those users.',
         copy=False,
