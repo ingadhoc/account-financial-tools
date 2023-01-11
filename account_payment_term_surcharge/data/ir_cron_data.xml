@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<odoo noupdate="1">
+
+    <record id="cron_recurring_surcharges_invoices" model="ir.cron">
+        <field name="name">Create Surcharges Invoices</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="model_id" ref="model_account_move"/>
+        <field name="code">model._cron_recurring_surcharges_invoices()</field>
+        <field name="state">code</field>
+    </record>
+
+</odoo>
