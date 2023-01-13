@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-25 13:55+0000\n"
+"POT-Creation-Date: 2023-01-06 13:50+0000\n"
 "PO-Revision-Date: 2022-04-12 16:47+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/adhoc/teams/133229/es/)\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
@@ -111,6 +111,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree_grouped
 msgid "Balance"
 msgstr "Balance"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_bank_statement
+msgid "Bank Statement"
+msgstr "Extracto bancario"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_bank_statement_line
@@ -430,6 +435,11 @@ msgid "Missing 'active_model' in context."
 msgstr ""
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
+msgid "Modificar"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__move_id
 msgid "Move"
 msgstr "Movimiento"
@@ -438,6 +448,12 @@ msgstr "Movimiento"
 #: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
 msgid "Not Reconciled"
 msgstr "No Conciliados"
+
+#. module: account_ux
+#: code:addons/account_ux/models/account_bank_statement.py:0
+#, python-format
+msgid "Only posted statements can be edited."
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
@@ -546,6 +562,23 @@ msgid "Show invoice reference field on tree and main form views"
 msgstr ""
 "Mostrar campo referencia de la factura en la vista lista y en la vista "
 "formulario principal"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
+msgid ""
+"Si continua con esta acción todas las lineas de extracto quedarán "
+"desconciliadas y tendra que volver a conciliarlas de manera manual, esta "
+"seguro que quiere continuar?"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
+msgid ""
+"Si utiliza sincronizacion bancaria, no deberia necesitar editar el extracto,"
+" por lo tanto use esta acción a conciencia y solo para los casos en que "
+"conozca que realmente necesita editar alguna linea teniendo en cuenta que "
+"esto puede afectar a la próxima sincronización bancaria"
+msgstr ""
 
 #. module: account_ux
 #: code:addons/account_ux/models/account_account.py:0
