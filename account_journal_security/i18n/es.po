@@ -3,21 +3,21 @@
 # 	* account_journal_security
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2022
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-25 13:54+0000\n"
-"PO-Revision-Date: 2022-04-12 16:46+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2022\n"
-"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/133229/es/)\n"
+"POT-Creation-Date: 2023-01-04 13:38+0000\n"
+"PO-Revision-Date: 2023-01-04 13:37+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2023\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: account_journal_security
 #: model_terms:ir.ui.view,arch_db:account_journal_security.view_journal_security_account_journal_form
@@ -26,6 +26,13 @@ msgid ""
 "facturas, pagos, asiento o apuntes contables en este diario, pero si podrán "
 "ver información relativa a este diario en, por ejemplo, resumen de cuenta, "
 "detalle de deuda e informes contables."
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__algolia_search
+#: model:ir.model.fields,field_description:account_journal_security.field_account_move__algolia_search
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__algolia_search
+msgid "Algolia Search"
 msgstr ""
 
 #. module: account_journal_security
@@ -82,6 +89,7 @@ msgid "Ninguna"
 msgstr ""
 
 #. module: account_journal_security
+#. odoo-python
 #: code:addons/account_journal_security/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -90,6 +98,7 @@ msgid ""
 msgstr ""
 
 #. module: account_journal_security
+#. odoo-python
 #: code:addons/account_journal_security/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -111,15 +120,6 @@ msgid "Restringir a Usuarios"
 msgstr ""
 
 #. module: account_journal_security
-#: model_terms:ir.ui.view,arch_db:account_journal_security.view_journal_security_account_journal_form
-msgid ""
-"Tenga mucho cuidado al elegir esta opción ya que puede bloquear acciones de "
-"odoo. No lo recomendamos para diarios de ventas, compras, liquidez o "
-"cualquier diario en el cual se generen registros desde otra acción. Un caso "
-"tipico para este tipo de restricción es el diario de sueldos."
-msgstr ""
-
-#. module: account_journal_security
 #: model:ir.model.fields,field_description:account_journal_security.field_account_journal__journal_restriction
 msgid "Tipo de Restriccion"
 msgstr "Tipo de Restricción"
@@ -127,14 +127,14 @@ msgstr "Tipo de Restricción"
 #. module: account_journal_security
 #: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__total
 msgid "Total"
-msgstr "Total"
+msgstr ""
 
 #. module: account_journal_security
 #: model:ir.model.fields,field_description:account_journal_security.field_account_journal__user_ids
-msgid "Totally restricted to"
+msgid "Totally allowed to"
 msgstr "Totalmente restringido a:"
 
 #. module: account_journal_security
 #: model:ir.model,name:account_journal_security.model_res_users
-msgid "Users"
-msgstr "Usuarios"
+msgid "User"
+msgstr "Usuario"

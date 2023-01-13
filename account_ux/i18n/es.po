@@ -3,21 +3,22 @@
 # 	* account_ux
 # 
 # Translators:
+# Mariana Torres <mt@adhoc.com.ar>, 2022
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-25 13:55+0000\n"
-"PO-Revision-Date: 2022-04-12 16:47+0000\n"
+"POT-Creation-Date: 2023-01-04 13:38+0000\n"
+"PO-Revision-Date: 2022-11-02 16:50+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2022\n"
-"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/133229/es/)\n"
+"Language-Team: Spanish (https://www.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
@@ -30,45 +31,34 @@ msgid "Account Group"
 msgstr "Grupo de cuenta"
 
 #. module: account_ux
-#: model:ir.model,name:account_ux.model_account_account_type
-msgid "Account Type"
-msgstr "Tipo de cuenta"
-
-#. module: account_ux
-#: model:ir.actions.act_window,name:account_ux.action_account_type_form
-#: model:ir.ui.menu,name:account_ux.account_type_menu
-msgid "Account Types"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_account__group_id
 msgid "Account prefixes can determine account groups."
 msgstr "Los prefijos de cuenta pueden determinar los grupos de cuenta."
 
 #. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_bank_statement_import_journal_creation__acquirer_ids
-#: model:ir.model.fields,help:account_ux.field_account_journal__acquirer_ids
-msgid ""
-"Acquirer that use this journal to register online payments journal entries"
-msgstr ""
-"Comprador que utiliza esta revista para registrar entradas de diario de "
-"pagos en línea"
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__acquirer_ids
-#: model:ir.model.fields,field_description:account_ux.field_account_journal__acquirer_ids
-msgid "Acquirers"
-msgstr "Compradores"
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Add an internal note..."
+msgstr "Agregar una nota interna"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_group__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_move__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_partial_reconcile__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_res_partner__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_validate_account_move__algolia_search
+msgid "Algolia Search"
 msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Amount total"
-msgstr ""
+msgstr "Monto Total"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
@@ -76,51 +66,9 @@ msgid "Amount untaxed"
 msgstr ""
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
-msgid "Analytic Account"
-msgstr "Cuenta Analítica"
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_account_type__analytic_distribution_required
-msgid "Analytic Account Required?"
-msgstr "¿Cuenta analítica requerida?"
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_account_type__analytic_tag_required
-msgid "Analytic Tag Required?"
-msgstr "¿Etiqueta analítica requerida?"
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_distribution_required
-msgid "Analytic account required?"
+msgid "Analytic Distribution Required?"
 msgstr "¿Cuenta analítica requerida?"
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_tag_required
-msgid "Analytic tag required?"
-msgstr "¿Etiqueta analítica requerida?"
-
-#. module: account_ux
-#: model:ir.actions.act_window,name:account_ux.action_move_line_analisis
-#: model:ir.ui.menu,name:account_ux.menu_move_line_analisis
-msgid "Análisis de Apuntes Contables"
-msgstr ""
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree_grouped
-msgid "Balance"
-msgstr "Balance"
-
-#. module: account_ux
-#: model:ir.model,name:account_ux.model_account_bank_statement_line
-msgid "Bank Statement Line"
-msgstr "Línea de extracto bancario"
-
-#. module: account_ux
-#: model:ir.actions.act_window,name:account_ux.action_bank_statement_line_tree
-msgid "Bank Statement Lines"
-msgstr "Lineas de Extracto Bancario"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
@@ -131,6 +79,7 @@ msgstr "Cancelar"
 #: model:ir.actions.act_window,name:account_ux.action_account_change_currency
 #: model:ir.model,name:account_ux.model_account_change_currency
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Change Currency"
 msgstr "Cambiar Moneda"
 
@@ -148,40 +97,6 @@ msgstr "Cambiar Tipo"
 #: model:ir.model.fields,field_description:account_ux.field_account_group__child_ids
 msgid "Child"
 msgstr "Hijo"
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account__analytic_distribution_required
-msgid ""
-"Choose if you want analytic accounts to be required when posting journal "
-"entries with this account. If you select:* Defined by account type: it will "
-"be required or not regarding the value of 'Analytic account required?' on "
-"the account type* Required: it will be required, no matter the value on the "
-"account type* Optional: it won't be required, no matter the value on the "
-"account type"
-msgstr ""
-"Elija si desea que se requieran cuentas analíticas al publicar entradas de "
-"diario con esta cuenta. Si selecciona: * Definido por tipo de cuenta: se "
-"requerirá o no con respecto al valor de '¿Cuenta analítica requerida?' en el"
-" tipo de cuenta * Obligatorio: será obligatorio, sin importar el valor en el"
-" tipo de cuenta * Opcional: no será obligatorio, sin importar el valor en el"
-" tipo de cuenta"
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account__analytic_tag_required
-msgid ""
-"Choose if you want analytic tags to be required when posting journal entries"
-" with this account. If you select:* Defined by account type: it will be "
-"required or not regarding the value of 'Analytic tag required?' on the "
-"account type* Required: it will be required, no matter the value on the "
-"account type* Optional: it won't be required, no matter the value on the "
-"account type"
-msgstr ""
-"Elija si desea que se requieran etiquetas analíticas al publicar asientos de"
-" diario con esta cuenta. Si selecciona: * Definido por tipo de cuenta: será "
-"necesario o no en relación con el valor de '¿Etiqueta analítica requerida?' "
-"en el tipo de cuenta * Requerido: será necesario, sin importar el valor en "
-"el tipo de cuenta * Opcional: no será necesario, sin importar el valor en el"
-" tipo de cuenta"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
@@ -233,6 +148,7 @@ msgid "Currency Rate"
 msgstr "Tasa monetaria"
 
 #. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/wizards/account_change_currency.py:0
 #, python-format
 msgid "Currency changed from %s to %s with rate %s"
@@ -264,12 +180,6 @@ msgid "Default Sale Taxes"
 msgstr "Impuestos de venta predeterminados"
 
 #. module: account_ux
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__by_account_type
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__by_account_type
-msgid "Defined by account type"
-msgstr "Definido por tipo de cuenta"
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Delete Number"
 msgstr "Eliminar número"
@@ -286,11 +196,6 @@ msgstr ""
 "entonces no debe limpiarla."
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
-msgid "Description"
-msgstr "Descripción"
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
 msgid "Display Name"
 msgstr "Mostrar Nombre"
@@ -301,26 +206,16 @@ msgid "Due date"
 msgstr "Fecha de Vencimiento"
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__duplicated_group
-msgid "Duplicated Group"
-msgstr ""
-
-#. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
 msgid "ERROR: Invoice was not sent via email"
 msgstr "ERROR: La factura no fue enviada por correo electrónico"
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_import_journal_creation__mail_template_id
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__mail_template_id
 msgid "Email Template"
 msgstr "Plantilla de correo electrónico"
-
-#. module: account_ux
-#: model:ir.actions.server,name:account_ux.ir_action_server_action_find_duplicates
-msgid "Find possible duplicates"
-msgstr "Encontrar posibles duplicados"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
@@ -340,28 +235,22 @@ msgstr "Agrupar por..."
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
 msgid "ID"
-msgstr "ID"
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account_type__analytic_distribution_required
-msgid ""
-"If True, then an analytic account will be required when posting journal "
-"entries with this type of account."
 msgstr ""
-"Si es verdadero, se requerirá una cuenta analítica al publicar entradas de "
-"diario con este tipo de cuenta."
 
 #. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account_type__analytic_tag_required
+#: model:ir.model.fields,help:account_ux.field_account_account__analytic_distribution_required
 msgid ""
-"If True, then analytic tags will be required when posting journal entries "
-"with this type of account."
+"If True, then an analytic distribution will be required when posting journal"
+" entries with this account."
 msgstr ""
-"Si es Verdadero, se requerirán etiquetas analíticas al publicar entradas de "
-"diario con este tipo de cuenta."
+"Elija si desea que se requieran cuentas analíticas al publicar entradas de "
+"diario con esta cuenta. Si selecciona: * Definido por tipo de cuenta: se "
+"requerirá o no con respecto al valor de '¿Cuenta analítica requerida?' en el"
+" tipo de cuenta * Obligatorio: será obligatorio, sin importar el valor en el"
+" tipo de cuenta * Opcional: no será obligatorio, sin importar el valor en el"
+" tipo de cuenta"
 
 #. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_bank_statement_import_journal_creation__mail_template_id
 #: model:ir.model.fields,help:account_ux.field_account_journal__mail_template_id
 msgid ""
 "If set an email will be sent to the customer after the invoices related to "
@@ -399,11 +288,6 @@ msgid "Journal Item"
 msgstr "Apunte contable"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
-msgid "Journal items with residual 0"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency____last_update
 msgid "Last Modified on"
 msgstr "Última modificación el"
@@ -419,11 +303,12 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.res_partner_view_buttons
+#: model_terms:ir.ui.view,arch_db:account_ux.view_partner_form
 msgid "Match Payments"
-msgstr "Conciliacion Pagos"
+msgstr ""
 
 #. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/wizards/account_validate_account_move.py:0
 #, python-format
 msgid "Missing 'active_model' in context."
@@ -433,23 +318,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__move_id
 msgid "Move"
 msgstr "Movimiento"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
-msgid "Not Reconciled"
-msgstr "No Conciliados"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree_grouped
-msgid "Open Related Document"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__optional
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__optional
-msgid "Optional"
-msgstr "Opcional"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__other_currency
@@ -474,12 +342,12 @@ msgid "Partial reconciliations"
 msgstr "Conciliaciones Parciales"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 msgid "Partner"
 msgstr "Empresa"
 
 #. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
 msgid "Please check the email template associated with the invoice journal."
@@ -488,30 +356,9 @@ msgstr ""
 "facturas."
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
-msgid "Possible Duplicated Group"
-msgstr "Grupo de posibles duplicados"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.account_bank_statement_line_search
-msgid "Reconciled"
-msgstr "Conciliados"
-
-#. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
 msgid "Reconciliations"
 msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__required
-#: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__required
-msgid "Required"
-msgstr "Requerido"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_form
-msgid "Residuals"
-msgstr "Residuales"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
@@ -548,6 +395,7 @@ msgstr ""
 "formulario principal"
 
 #. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_account.py:0
 #: code:addons/account_ux/models/account_journal.py:0
 #, python-format
@@ -557,6 +405,7 @@ msgid ""
 msgstr ""
 
 #. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
 msgid ""
@@ -569,35 +418,9 @@ msgstr ""
 "* Mover líneas ids:%s"
 
 #. module: account_ux
-#: code:addons/account_ux/models/account_move.py:0
-#, python-format
-msgid ""
-"Some move lines don't have analytic tags and analytic tags are required by theese accounts.\n"
-"* Accounts: %s\n"
-"* Move lines ids: %s"
-msgstr ""
-"Algunas líneas de movimiento no tienen etiquetas analíticas y estas cuentas requieren etiquetas analíticas.\n"
-"* Cuentas:%s\n"
-"* Mover líneas ids:%s"
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Source Document"
 msgstr ""
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_bank_statement_form
-msgid "Statement Lines"
-msgstr "Lineas de Declaración"
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_bank_statement_line__duplicated_group
-msgid ""
-"Technical field used to store information group a possible duplicates bank "
-"statement line"
-msgstr ""
-"Campo técnico utilizada para guardar la información de un posible lineas de "
-"extracto duplicadas"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_res_config_settings__purchase_tax_ids
@@ -620,47 +443,18 @@ msgstr ""
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_form
 msgid "Total"
-msgstr "Total"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_tree_grouped_partner
-msgid "Total Residual"
-msgstr ""
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
-msgid "Términos y condiciones..."
 msgstr ""
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_change_currency__change_type__value
 msgid "Update both currency and values"
-msgstr ""
+msgstr "Actualizar la moneda y la cotizacion"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_validate_account_move
 msgid "Validate Account Move"
 msgstr "Validar movimiento contable"
-
-#. module: account_ux
-#: code:addons/account_ux/models/account_move_line.py:0
-#, python-format
-msgid "View Bank Statement"
-msgstr ""
-
-#. module: account_ux
-#: code:addons/account_ux/models/account_move_line.py:0
-#, python-format
-msgid "View Move"
-msgstr ""
-
-#. module: account_ux
-#: code:addons/account_ux/models/account_move_line.py:0
-#, python-format
-msgid "View Payment"
-msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -676,21 +470,7 @@ msgstr ""
 " continuar?"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
-msgid "With Residual Amount"
-msgstr "Con Importe Residual"
-
-#. module: account_ux
-#: code:addons/account_ux/models/account_move.py:0
-#, python-format
-msgid ""
-"You can create sales/purchase invoices exclusively in the respective "
-"sales/purchase journals"
-msgstr ""
-"Puede crear facturas de compra / venta exclusivamente en los respectivos "
-"diarios de compra / venta"
-
-#. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/res_currency_rate.py:0
 #, python-format
 msgid ""
