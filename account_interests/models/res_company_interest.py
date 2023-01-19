@@ -133,10 +133,6 @@ class ResCompanyInterest(models.Model):
     def create_invoices(self, to_date, groupby='partner_id'):
         self.ensure_one()
 
-        journal = self.env['account.journal'].search([
-            ('type', '=', 'sale'),
-            ('company_id', '=', self.company_id.id)], limit=1)
-
         move_line_domain = self._get_move_line_domains(to_date)
 
         # Check if a filter is set
@@ -173,8 +169,15 @@ class ResCompanyInterest(models.Model):
                 'Creating Interest Invoice (%s of %s) with values:\n%s',
                 idx + 1, total_items, line)
             partner_id = line[groupby][0]
-
             partner = self.env['res.partner'].browse(partner_id)
+
+            # Necesitamos que la factura a generar se cree en un diaro compatible, simulamos crear una nota de debito
+            # para que el odoo auto calcule el diario mas recomendable y usamos ese para crear las factura de interes
+            # relacionada a cada partner
+            journal = self.env['account.move'].with_context(
+                internal_type='debit_note', default_move_type='out_invoice').new(
+                    {'partner_id': partner_id, 'move_type': 'out_invoice'}).journal_id
+
             move_vals = self._prepare_interest_invoice(
                 partner, debt, to_date, journal)
 
