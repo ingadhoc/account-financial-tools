@@ -125,8 +125,9 @@ class ResCompanyInterest(models.Model):
         self.ensure_one()
         move_line_domain = [
             ('account_id', 'in', self.receivable_account_ids.ids),
-            ('full_reconcile_id', '=', False),
-            ('date_maturity', '<', to_date)
+            ('date_maturity', '<', to_date),
+            ('move_id.state', '=', 'posted'),
+            '|', ('full_reconcile_id', '=', False), ('reconciled', '=', False),
         ]
         return move_line_domain
 
