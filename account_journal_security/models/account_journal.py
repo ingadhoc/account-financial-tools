@@ -9,7 +9,7 @@ from odoo.exceptions import ValidationError
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
-    user_ids = fields.Many2many(
+    user_id = fields.Many2many(
         'res.users',
         'journal_security_journal_users',
         'journal_id',
