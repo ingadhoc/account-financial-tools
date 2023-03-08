@@ -22,7 +22,7 @@
             </button>
 
             <field name="narration" position="after">
-                <field name="internal_notes"  nolabel="1" height="50" placeholder="Add an internal note..."/>
+                <field name="internal_notes" colspan="2" nolabel="1" height="50" placeholder="Add an internal note..."/>
             </field>
 
             <!-- similar modification to these are don on l10n_ar_ux for debit_origin_id -->
