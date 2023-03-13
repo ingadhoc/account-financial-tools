@@ -52,7 +52,7 @@ class AccountMove(models.Model):
         })
         debit_note = self.env['account.move'].browse(move_debit_note_wiz.create_debit().get('res_id'))
         debit_note.narration = product.name + '.\n' + self.prepare_info(to_date, debt, surcharge.get('surcharge'))
-        debit_note.write({'invoice_line_ids': self._prepare_surcharge_line(product, debt, to_date, surcharge_percent)})
+        self._add_surcharge_line(debit_note, product, debt, to_date, surcharge_percent)
         if self.company_id.payment_term_surcharge_invoice_auto_post:
             try:
                 debit_note.action_post()
@@ -75,23 +75,15 @@ class AccountMove(models.Model):
                 to_date_format, debt, surcharge)
         return res
 
-    def _prepare_surcharge_line(self, product, debt, to_date, surcharge):
+    def _add_surcharge_line(self, debit_note, product, debt, to_date, surcharge):
         self.ensure_one()
-        partner = self.partner_id
+        # partner = self.partner_id
         comment = self.prepare_info(to_date, debt, surcharge)
-        # fpos = partner.property_account_position_id
-        # taxes = product.taxes_id.filtered(
-        #     lambda r: r.company_id == self.company_id)
-        # tax_id = fpos.map_tax(taxes, product)
-        #TODO ver si se agrega el tax manualmente o no
-        invoice_line_vals = [(0, 0, {
-                "product_id": product.id,
-                "quantity": 1.0,
-                "price_unit": (surcharge / 100) * debt,
-                "partner_id": partner.id,
-                "name": product.name + '.\n' + comment,
-                # "analytic_account_id": self.env.context.get('analytic_id', False),
-                # "tax_ids": [(6, 0, tax_id.ids)]
-            })]
-
-        return invoice_line_vals
+        debit_note.write({'invoice_line_ids': [(0, 0, {
+            "product_id": product.id,
+        })]})
+        debit_note = debit_note.with_context(check_move_validity=False)
+        debit_note.invoice_line_ids._onchange_product_id()
+        debit_note.invoice_line_ids[0].price_unit = (surcharge / 100) * debt
+        debit_note.invoice_line_ids[0].name = product.name + '.\n' + comment
+        debit_note._recompute_dynamic_lines()
