@@ -127,7 +127,7 @@ class ResCompanyInterest(models.Model):
             ('account_id', 'in', self.receivable_account_ids.ids),
             ('full_reconcile_id', '=', False),
             ('date_maturity', '<', to_date),
-            ('partner.active', '=', True),
+            ('partner_id.active', '=', True),
         ]
         return move_line_domain
 
