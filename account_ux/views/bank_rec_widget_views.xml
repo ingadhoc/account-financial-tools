@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bank_rec_widget_form" model="ir.ui.view">
+        <field name="name">bank.rec.widget.inherit</field>
+        <field name="model">bank.rec.widget</field>
+        <field name="inherit_id" ref="account_accountant.view_bank_rec_widget_form"/>
+        <field name="priority">90</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <button name="button_reset" position="attributes">
+                <attribute name="confirm">Asi no funciona, ni siquiera poniendo confirm en vista padre</attribute>
+            </button>
+        </field>
+    </record>
+</odoo>
