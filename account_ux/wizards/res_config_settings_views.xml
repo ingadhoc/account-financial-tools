@@ -5,6 +5,21 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
+            <div name="main_currency_setting_container" position="inside">
+                <div class="col-xs-12 col-md-6 o_setting_box" id="reconcile_on_company_currency">
+                    <div class="o_setting_left_pane">
+                        <field name="reconcile_on_company_currency"/>
+                    </div>
+                    <div class="o_setting_right_pane" name="reconcile_on_company_currency_right_pane">
+                        <label for="reconcile_on_company_currency"/>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                        <div class="text-muted">
+                            When reconciling debt with secondary currency, if the account doesn't have a currency configured, then reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing same rate of the original document being reconcile.
+                            IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, it will be reconciled with the new mechanism
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- on sale we use xpath because website_sale adds same field -->
             <xpath expr="//div[@data-key='account']//label[@for='sale_tax_id']" position="attributes">
                 <attribute name="for">sale_tax_ids</attribute>
