@@ -9,20 +9,20 @@ class ResConfigSettings(models.TransientModel):
 
     _inherit = 'res.config.settings'
 
+    reconcile_on_company_currency = fields.Boolean(
+        related='company_id.reconcile_on_company_currency', readonly=False)
     sale_tax_ids = fields.Many2many(
         'account.tax',
         compute='_compute_tax_ids',
         inverse='_inverse_sale_tax_ids',
         string="Default Sale Taxes",
-        help="This sale tax will be assigned by default on new products.",
-    )
+        help="This sale tax will be assigned by default on new products.",)
     purchase_tax_ids = fields.Many2many(
         'account.tax',
         compute='_compute_tax_ids',
         inverse='_inverse_purchase_tax_ids',
         string="Default Purchase Taxes",
-        help="This purchase tax will be assigned by default on new products.",
-    )
+        help="This purchase tax will be assigned by default on new products.",)
 
     @api.depends('company_id')
     def _compute_tax_ids(self):
