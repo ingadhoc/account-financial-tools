@@ -57,11 +57,11 @@ class ResPartner(models.Model):
             balance_field = 'balance'
 
         if result_selection == 'receivable':
-            domain += [('account_internal_type', '=', 'receivable')]
+            domain += [('account_type', '=', 'asset_receivable')]
         elif result_selection == 'payable':
-            domain += [('account_internal_type', '=', 'payable')]
+            domain += [('account_type', '=', 'liability_payable')]
         else:
-            domain += [('account_internal_type', 'in', ['receivable', 'payable'])]
+            domain += [('account_type', 'in', ['asset_receivable', 'liability_payable'])]
 
         domain += [('partner_id', '=', self.id), ('parent_state', '=', 'posted')]
 
