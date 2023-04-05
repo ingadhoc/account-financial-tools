@@ -195,7 +195,6 @@ class AccountMove(models.Model):
     def unlink(self):
         """ If we delete a journal entry that is related to a reconcile line then we need to clean the statement line
         in order to be able to reconcile in the future (clean up the move_name field)."""
-        self.mapped('line_ids.statement_line_id').write({'move_name': False})
         return super().unlink()
 
     def _recompute_tax_lines(self, recompute_tax_base_amount=False, tax_rep_lines_to_recompute=None):
@@ -230,3 +229,55 @@ class AccountMove(models.Model):
                 tax_line._onchange_amount_currency()
                 tax_line._onchange_balance()
         return res
+
+    def button_draft(self):
+        """Se hereda este método y se sobreescribe, el objetivo es desconciliar la línea del extracto cuando un recibo se pasa a borrador"""
+        AccountMoveLine = self.env['account.move.line']
+        excluded_move_ids = []
+
+        if self._context.get('suspense_moves_mode'):
+            excluded_move_ids = AccountMoveLine.search(AccountMoveLine._get_suspense_moves_domain() + [('move_id', 'in', self.ids)]).mapped('move_id').ids
+
+        for move in self:
+            if move in move.line_ids.mapped('full_reconcile_id.exchange_move_id'):
+                raise UserError(_('You cannot reset to draft an exchange difference journal entry.'))
+            if move.tax_cash_basis_rec_id or move.tax_cash_basis_origin_move_id:
+                # If the reconciliation was undone, move.tax_cash_basis_rec_id will be empty;
+                # but we still don't want to allow setting the caba entry to draft
+                # (it'll have been reversed automatically, so no manual intervention is required),
+                # so we also check tax_cash_basis_origin_move_id, which stays unchanged
+                # (we need both, as tax_cash_basis_origin_move_id did not exist in older versions).
+                raise UserError(_('You cannot reset to draft a tax cash basis journal entry.'))
+            if move.restrict_mode_hash_table and move.state == 'posted' and move.id not in excluded_move_ids:
+                raise UserError(_('You cannot modify a posted entry of this journal because it is in strict mode.'))
+            # We remove all the analytics entries for this journal
+            move.mapped('line_ids.analytic_line_ids').unlink()
+
+        # Se agrega la línea de abajo para desconciliar la línea vinculada al recibo en el extracto bancario correspondiente si es que el recibo se encontraba conciliado
+        self.unreconcile_invoice_draft()
+        self.write({'state': 'draft', 'is_move_sent': False})
+
+    def unreconcile_invoice_draft(self):
+        """Este método desconcilia la línea en el extracto bancario vinculada al recibo pasado a borrador"""
+        lines = self.mapped('line_ids')
+        for line in lines:
+            matched_credit = line.matched_credit_ids.full_reconcile_id.reconciled_line_ids.statement_line_id
+            matched_debit = line.matched_debit_ids.full_reconcile_id.reconciled_line_ids.statement_line_id
+            if matched_credit:
+                if matched_credit.statement_id.state == 'confirm':
+                    matched_credit.statement_id.button_reprocess()
+                matched_credit.button_undo_reconciliation()
+                self.message_unreconcile_invoice_draft(matched_credit)
+            if matched_debit:
+                if matched_debit.statement_id.state == 'confirm':
+                    matched_debit.statement_id.button_reprocess()
+                matched_debit.button_undo_reconciliation()
+                self.message_unreconcile_invoice_draft(matched_debit)
+
+    def message_unreconcile_invoice_draft(self, matched_statement_info):
+        """Este método deja un mensaje en el recibo pasado a borrador si es que estaba conciliado con una línea de extracto bancario """
+        self.payment_group_id.message_post(body=f'''
+            El {"recibo de cliente" if self.payment_group_id.receiptbook_id.partner_type == "customer" else "pago de proveedor"} que se pasó a borrador estaba conciliado en extracto id:{matched_statement_info.statement_id.id} - {matched_statement_info.statement_id.name} de banco {matched_statement_info.statement_id.journal_id.name} en la línea id:{matched_statement_info.id} - {matched_statement_info.payment_ref} con fecha {matched_statement_info.date}. Dicha línea ha sido desconciliada en dicho extracto
+            <br/>
+            <br/>'''
+        )
