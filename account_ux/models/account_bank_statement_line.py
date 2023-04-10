@@ -60,7 +60,7 @@ class AccountBankStatementLine(models.Model):
             payment.statement_line_id = False
             payment.statement_id = False
             # Al pago le cambiamos la cuenta de otstanding en lugar de la cuenta de liquidez
-            payment.move_id.line_ids.filtered(lambda x: x.account_internal_type == 'other').account_id = outstanding_account.id
+            payment.move_id.line_ids.filtered(lambda x: x.account_internal_type == 'liquidity').account_id = outstanding_account.id
 
         super().button_undo_reconciliation()
         # publicamos los asientos de las líneas del extracto contable
