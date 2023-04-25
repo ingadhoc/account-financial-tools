@@ -32,6 +32,7 @@
         'account',
         "base_vat",
         "account_debit_note",
+        "account_accountant",
     ],
     'data': [
         'security/account_ux_security.xml',
@@ -45,6 +46,7 @@
         'views/account_partial_reconcile_views.xml',
         'views/account_account_views.xml',
         'views/account_move_views.xml',
+        'views/bank_rec_widget_views.xml'
     ],
     'demo': [
     ],
