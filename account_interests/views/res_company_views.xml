@@ -14,7 +14,7 @@
                             <field name="company_id" invisible="1" required="0"/>
                             <field name="receivable_account_ids" widget="many2many_tags"/>
                             <field name="interest_product_id"/>
-                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_line_ids" groups="analytic.group_analytic_accounting"/>
                             <field name="rate"/>
                             <field name="automatic_validation"/>
                             <field name="interval"/>
@@ -29,7 +29,7 @@
                                     <field name="company_id" invisible="1" required="0"/>
                                     <field name="receivable_account_ids" widget="many2many_tags"/>
                                     <field name="interest_product_id"/>
-                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                                    <field name="analytic_line_ids" groups="analytic.group_analytic_accounting"/>
                                 </group>
                                 <group>
                                     <field name="rate"/>

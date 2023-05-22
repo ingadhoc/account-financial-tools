@@ -25,7 +25,7 @@ class ResCompanyInterest(models.Model):
         string='Cuentas a Cobrar',
         help='Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda',
         required=True,
-        domain=lambda self: [('user_type_id.type', '=', 'receivable'),
+        domain=lambda self: [('account_type', '=', 'asset_receivable'),
                              ('company_id', '=', self._context.get('default_company_id') or self.env.company.id)],
     )
     interest_product_id = fields.Many2one(
@@ -33,7 +33,7 @@ class ResCompanyInterest(models.Model):
         'Interest Product',
         required=True,
     )
-    analytic_account_id = fields.Many2one(
+    analytic_line_ids = fields.Many2one(
         'account.analytic.account',
         'Analytic account',
     )
@@ -228,7 +228,7 @@ class ResCompanyInterest(models.Model):
                 "price_unit": self.rate * debt,
                 "partner_id": partner.id,
                 "name": self.interest_product_id.name + '.\n' + comment,
-                "analytic_account_id": self.analytic_account_id.id,
+                "analytic_line_ids": self.analytic_line_ids.id,
                 "tax_ids": [(6, 0, tax_id.ids)]
             })],
         }
