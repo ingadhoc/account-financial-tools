@@ -118,3 +118,10 @@ class AccountMove(models.Model):
             for item in move.invoice_outstanding_credits_debits_widget['content']:
                 amount_residual = self.env['account.move.line'].browse(item['id']).amount_residual
                 item['amount'] = move.currency_id.round(amount_residual * rate)
+
+
+class IrActionsReport(models.Model):
+    _inherit = 'ir.actions.report'
+
+    def render_qweb_pdf(self, report_ref, res_ids=None, data=None):
+        return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
