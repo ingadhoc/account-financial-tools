@@ -1,5 +1,6 @@
 # flake8: noqa
 import json
+import base64
 from odoo import models, api, fields, _
 from odoo.exceptions import UserError
 
@@ -15,6 +16,18 @@ class AccountMove(models.Model):
         states={'draft': [('readonly', False)]},
     )
     other_currency = fields.Boolean(compute='_compute_other_currency')
+
+    invoice_binary = fields.Binary(compute='_compute_invoice_binary')
+
+    def _compute_invoice_binary(self):
+        for rec in self:
+            bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', rec.id)
+            rec.invoice_binary = base64.b64encode(bin_data)
+
+    def get_invoice_report(self):
+        self.ensure_one()
+        bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
+        return bin_data, __
 
     @api.depends('company_currency_id', 'currency_id')
     def _compute_other_currency(self):
