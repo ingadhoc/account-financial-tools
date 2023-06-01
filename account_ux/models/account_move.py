@@ -16,6 +16,11 @@ class AccountMove(models.Model):
     )
     other_currency = fields.Boolean(compute='_compute_other_currency')
 
+    def get_invoice_report(self):
+        self.ensure_one()
+        bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
+        return bin_data, __
+
     @api.depends('company_currency_id', 'currency_id')
     def _compute_other_currency(self):
         other_currency = self.filtered(lambda x: x.company_currency_id != x.currency_id)
@@ -119,9 +124,3 @@ class AccountMove(models.Model):
                 amount_residual = self.env['account.move.line'].browse(item['id']).amount_residual
                 item['amount'] = move.currency_id.round(amount_residual * rate)
 
-
-class IrActionsReport(models.Model):
-    _inherit = 'ir.actions.report'
-
-    def render_qweb_pdf(self, report_ref, res_ids=None, data=None):
-        return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
