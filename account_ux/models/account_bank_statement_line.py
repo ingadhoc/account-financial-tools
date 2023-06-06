@@ -19,10 +19,14 @@ class AccountBankStatementLine(models.Model):
         2. creamos un nuevo asiento similar al que se genera automatico al crear el st.line.
         3, desvinculamos el am del pago del st.line '''
         st_lines_to_fix = self.filtered(lambda x: x.move_id.payment_id)
+
         for st_line in st_lines_to_fix:
-
             payment = st_line.move_id.payment_id
-
+            liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
+            # si la cuenta de mi diario es la misma que la cuenta de la linea de liqudiez, es un pago
+            # migrado y tenemos que cambiar por la cuenta outstanding
+            if payment.journal_id.account_id != liquidity_lines.account_id:
+                continue
             # Creamos la nueva linea manual como si se hubiese creado en 15 desde 0. y la vinculamos al statement line
             # de esta maera desviculamos el asiento del pago
             st_line_new = self.new({
@@ -44,7 +48,7 @@ class AccountBankStatementLine(models.Model):
             # Hicimos esto para desvincular el pago del extracto y de la línea del extracto que se está desconciliando
             payment.statement_line_id = False
             # Al pago le cambiamos la cuenta de outstanding en lugar de la cuenta de liquidez
-            payment.move_id.line_ids.filtered(lambda x: x.account_id.account_type == 'asset_cash').account_id = outstanding_account.id
+            liquidity_lines.account_id = outstanding_account.id
 
         super().action_undo_reconciliation()
         # publicamos los asientos de las líneas del extracto contable
