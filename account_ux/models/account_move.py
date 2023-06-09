@@ -48,6 +48,9 @@ class AccountMove(models.Model):
 
     def action_post(self):
         """ After validate invoice will sent an email to the partner if the related journal has mail_template_id set """
+        if any(line.account_id.company_id != self.company_id for line in self.line_ids):
+            raise UserError(_("There is almost one account in the journal entry of this move that belongs to a company that "
+                                  "is different to the company of the move.\n"))
         res = super().action_post()
         self.action_send_invoice_mail()
         return res
