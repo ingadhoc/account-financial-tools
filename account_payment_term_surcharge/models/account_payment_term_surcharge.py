@@ -45,7 +45,7 @@ class AccountPaymentTermSurcharge(models.Model):
     def _calculate_date(self, date_ref=None):
         ''' Se retorna la fecha de un recargo segun una fecha dada, esto se hace
         teniendo en cuenta la configuracion propia del recargo. '''
-        date_ref = date_ref or fields.Date.today()
+        date_ref = date_ref or fields.Date.context_today(self)
         next_date = fields.Date.from_string(date_ref)
         if self.option == 'day_after_invoice_date':
             next_date += relativedelta(days=self.days)
