@@ -124,3 +124,11 @@ class AccountMove(models.Model):
                 amount_residual = self.env['account.move.line'].browse(item['id']).amount_residual
                 item['amount'] = move.currency_id.round(amount_residual * rate)
 
+    @api.depends('journal_id', 'statement_line_id')
+    def _compute_currency_id(self):
+        """ Si la factura tenía currency_id no queremos cambiarla si cambia el diario """
+        for invoice in self:
+            if invoice.currency_id:
+                continue
+            else:
+                super(AccountMove, invoice)._compute_currency_id()
