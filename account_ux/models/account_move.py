@@ -124,3 +124,13 @@ class AccountMove(models.Model):
                 amount_residual = self.env['account.move.line'].browse(item['id']).amount_residual
                 item['amount'] = move.currency_id.round(amount_residual * rate)
 
+    @api.depends('invoice_date')
+    def _compute_invoice_date_due(self):
+        """ Si la factura no tiene término de pago y la misma tiene fecha de vencimiento anterior al día de hoy y la factura no tiene fecha entonces cuando se publica la factura, la fecha de vencimiento tiene que coincidir con la fecha de hoy. """
+        invoices_with_old_data_due = self.filtered(lambda x: x.invoice_date and not x.invoice_payment_term_id and (not x.invoice_date_due or x.invoice_date_due < x.invoice_date))
+        invoices = self - invoices_with_old_data_due
+        for inv in invoices_with_old_data_due:
+            if inv.invoice_date:
+                inv.invoice_date_due = inv.invoice_date
+        else:
+            return super(AccountMove, invoices)._compute_invoice_date_due()
