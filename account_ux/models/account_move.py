@@ -133,3 +133,10 @@ class AccountMove(models.Model):
             if inv.invoice_date:
                 inv.invoice_date_due = inv.invoice_date
         return super(AccountMove, invoices)._compute_invoice_date_due()
+
+    @api.constrains('state')
+    def _check_company_on_lines(self):
+        for move in self.filtered(lambda x: x.state == 'posted'):
+            if any(line.account_id.company_id != self.company_id for line in self.line_ids):
+                raise UserError(_("There is almost one account in the journal entry of this move that belongs to a company that "
+                                      "is different to the company of the move (id: %s)" % (move.id)))
