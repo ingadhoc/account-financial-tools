@@ -140,3 +140,8 @@ class AccountMove(models.Model):
             if any(line.account_id.company_id != self.company_id for line in self.line_ids):
                 raise UserError(_("There is almost one account in the journal entry of this move that belongs to a company that "
                                       "is different to the company of the move (id: %s)" % (move.id)))
+
+    def _compute_currency_id(self):
+        """ Si la factura tenía currency_id no queremos cambiarla si cambia el diario """
+        invoices_with_currency_id = self.filtered(lambda x: x.currency_id)
+        return super(AccountMove, self - invoices_with_currency_id)._compute_currency_id()
