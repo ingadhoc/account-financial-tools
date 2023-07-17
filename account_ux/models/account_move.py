@@ -92,6 +92,7 @@ class AccountMove(models.Model):
 
     def _compute_payments_widget_to_reconcile_info(self):
         """
+<<<<<<< HEAD
         Modificamos el widget para que si la compañía tiene el setting de forzar concilacion en moneda y estamos
         en esa situacion (cuenta deudora no tiene moneda). Entonces el importe que previsualizamos para conciliar
         respeta la modificacion que hacemos al conciliar (basicamente que importa el rate en pesos por lo cual tomamos
@@ -148,3 +149,58 @@ class AccountMove(models.Model):
         """ Si la factura tenía currency_id no queremos cambiarla si cambia el diario """
         invoices_with_currency_id = self.filtered(lambda x: x.currency_id)
         return super(AccountMove, self - invoices_with_currency_id)._compute_currency_id()
+||||||| parent of b1d18412 (temp)
+        # if calling with recompute_tax_base_amount then tax amounts are not changed and we can return super directly
+        if recompute_tax_base_amount:
+            return super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount, tax_rep_lines_to_recompute=tax_rep_lines_to_recompute)
+        in_draft_mode = self != self._origin
+        fixed_taxes_bu = {
+            line: {
+                'amount_currency': line.amount_currency,
+                'debit': line.debit,
+                'credit': line.credit,
+            } for line in self.line_ids.filtered(lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed')}
+
+        res = super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount, tax_rep_lines_to_recompute=tax_rep_lines_to_recompute)
+        for tax_line in self.line_ids.filtered(
+                lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed' and x in fixed_taxes_bu):
+            tax_line.update(fixed_taxes_bu.get(tax_line))
+            if in_draft_mode:
+                tax_line._onchange_amount_currency()
+                tax_line._onchange_balance()
+        return res
+=======
+        # if calling with recompute_tax_base_amount then tax amounts are not changed and we can return super directly
+        if recompute_tax_base_amount:
+            return super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount, tax_rep_lines_to_recompute=tax_rep_lines_to_recompute)
+        in_draft_mode = self != self._origin
+        fixed_taxes_bu = {
+            line: {
+                'amount_currency': line.amount_currency,
+                'debit': line.debit,
+                'credit': line.credit,
+            } for line in self.line_ids.filtered(lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed')}
+
+        res = super()._recompute_tax_lines(recompute_tax_base_amount=recompute_tax_base_amount, tax_rep_lines_to_recompute=tax_rep_lines_to_recompute)
+        for tax_line in self.line_ids.filtered(
+                lambda x: x.tax_repartition_line_id.tax_id.amount_type == 'fixed' and x in fixed_taxes_bu):
+            tax_line.update(fixed_taxes_bu.get(tax_line))
+            if in_draft_mode:
+                tax_line._onchange_amount_currency()
+                tax_line._onchange_balance()
+        return res
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_forbid_parts_of_chain(self):
+        """Delete vendor bills without verifying if they are the last ones of the sequence chain."""
+        # Field l10n_latam_use_documents is defined in module l10n_latam_invoice_document but account_ux doesn´t has it as depends.
+        l10n_latam_invoice_document_installed = self.env['ir.module.module'].search([
+            ('name', '=', 'l10n_latam_invoice_document'),
+            ('state', '=', 'installed'),
+        ])
+        if l10n_latam_invoice_document_installed:
+            vendor = self.filtered(lambda x: x._is_manual_document_number() and x.l10n_latam_use_documents)
+            return super(AccountMove, self - vendor)._unlink_forbid_parts_of_chain()
+        else:
+            return super()._unlink_forbid_parts_of_chain()
+>>>>>>> b1d18412 (temp)
