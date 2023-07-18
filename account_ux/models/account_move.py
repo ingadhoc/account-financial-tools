@@ -137,9 +137,12 @@ class AccountMove(models.Model):
     @api.constrains('state')
     def _check_company_on_lines(self):
         for move in self.filtered(lambda x: x.state == 'posted'):
-            if any(line.account_id.company_id != self.company_id for line in self.line_ids):
-                raise UserError(_("There is almost one account in the journal entry of this move that belongs to a company that "
-                                      "is different to the company of the move (id: %s)" % (move.id)))
+            lines_with_problem = s = move.line_ids.filtered(lambda x: x.account_id and x.account_id.company_id != move.company_id)
+            if lines_with_problem:
+                raise UserError(_(
+                    "There is at least one account in the journal entry of this move that belongs to a company that "
+                    "is different to the company of the move (id: %s)\n- %s" % (
+                        move.id, '\n- '.join(lines_with_problem.mapped('display_name')))))
 
     def _compute_currency_id(self):
         """ Si la factura tenía currency_id no queremos cambiarla si cambia el diario """
