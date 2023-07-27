@@ -67,7 +67,7 @@ class AccountMoveLine(models.Model):
                 credit_vals['amount_residual_currency'] = credit_vals['amount_residual']
         res = super()._prepare_reconciliation_single_partial(debit_vals, credit_vals)
 
-        if reconcile_on_company_currency:
+        if reconcile_on_company_currency and 'partial_vals' in res:
             if 'original_currency' in credit_vals:
                 credit_vals['currency'] = credit_vals['original_currency']
                 rate = get_accounting_rate(credit_vals)
@@ -79,3 +79,10 @@ class AccountMoveLine(models.Model):
                 res['partial_vals']['debit_amount_currency'] = credit_vals['currency'].round(
                     res['partial_vals']['debit_amount_currency'] * rate)
         return res
+
+    def _compute_amount_residual(self):
+        """ Cuando se realiza un cobro de un recibo y el comprobante que se paga tiene moneda secundaria y queda totalmente conciliado en moneda de compañía pero no en moneda secundaria (ejemplo: diferencia de un centavo) lo que hacemos con este método es forzar que quede conciliado también en moneda secundaria. """
+        super()._compute_amount_residual()
+        need_amount_residual_currency_adjustment = self.filtered(lambda x: not x.reconciled and x.company_id.reconcile_on_company_currency and (x.account_id.reconcile or x.account_id.account_type in ('asset_cash', 'liability_credit_card')) and (x.company_currency_id or self.env.company.currency_id).is_zero(x.amount_residual) and not (x.currency_id or (x.company_currency_id or self.env.company.currency_id)).is_zero(x.amount_residual_currency))
+        need_amount_residual_currency_adjustment.amount_residual_currency = 0.0
+        need_amount_residual_currency_adjustment.reconciled = True
