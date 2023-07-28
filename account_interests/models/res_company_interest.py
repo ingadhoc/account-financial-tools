@@ -125,7 +125,16 @@ class ResCompanyInterest(models.Model):
         move_line_domain = [
             ('account_id', 'in', self.receivable_account_ids.ids),
             ('full_reconcile_id', '=', False),
+<<<<<<< HEAD
             ('date_maturity', '<', to_date)
+||||||| parent of 0d74138e (temp)
+            ('date_maturity', '<', to_date),
+            ('partner_id.active', '=', True),
+=======
+            ('date_maturity', '<', to_date),
+            ('partner_id.active', '=', True),
+            ('parent_state' '=', 'posted'),
+>>>>>>> 0d74138e (temp)
         ]
         return move_line_domain
 
