@@ -128,7 +128,7 @@ class ResCompanyInterest(models.Model):
             ('full_reconcile_id', '=', False),
             ('date_maturity', '<', to_date),
             ('partner_id.active', '=', True),
-            ('parent_state' '=', 'posted'),
+            ('parent_state', '=', 'posted'),
         ]
         return move_line_domain
 
