@@ -86,3 +86,9 @@ class AccountMoveLine(models.Model):
         need_amount_residual_currency_adjustment = self.filtered(lambda x: not x.reconciled and x.company_id.reconcile_on_company_currency and (x.account_id.reconcile or x.account_id.account_type in ('asset_cash', 'liability_credit_card')) and (x.company_currency_id or self.env.company.currency_id).is_zero(x.amount_residual) and not (x.currency_id or (x.company_currency_id or self.env.company.currency_id)).is_zero(x.amount_residual_currency))
         need_amount_residual_currency_adjustment.amount_residual_currency = 0.0
         need_amount_residual_currency_adjustment.reconciled = True
+
+
+    @api.depends('debit', 'credit', 'amount_currency', 'account_id', 'currency_id', 'company_id',
+                 'matched_debit_ids', 'matched_credit_ids', 'account_id.internal_group')
+    def _compute_amount_residual(self):
+        super()._compute_amount_residual()
