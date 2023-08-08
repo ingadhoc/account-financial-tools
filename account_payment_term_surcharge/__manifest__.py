@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Surcharges on payment terms',
-    'version': "15.0.1.0.0",
+    'version': "16.0.1.0.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Allow to add surcharges for invoices on payment terms',
@@ -37,6 +37,6 @@
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml'
     ],
-    'installable': False,
+    'installable': True,
     'application': False,
 }
