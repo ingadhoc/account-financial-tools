@@ -19,28 +19,31 @@ class AccountBankStatementLine(models.Model):
         2. creamos un nuevo asiento similar al que se genera automatico al crear el st.line.
         3, desvinculamos el am del pago del st.line '''
         st_lines_to_fix = self.filtered(lambda x: x.move_id.payment_id)
+        to_post = self.browse()
 
         for st_line in st_lines_to_fix:
             payment = st_line.move_id.payment_id
             liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
             # si la cuenta de mi diario es la misma que la cuenta de la linea de liqudiez, es un pago
             # migrado y tenemos que cambiar por la cuenta outstanding
-            if payment.payment_method_line_id.payment_account_id != liquidity_lines.account_id:
+            if payment.journal_id.default_account_id != liquidity_lines.account_id:
                 continue
             # Creamos la nueva linea manual como si se hubiese creado en 15 desde 0. y la vinculamos al statement line
             # de esta maera desviculamos el asiento del pago
             st_line_new = self.new({
                 'statement_id': st_line.statement_id,
                 'date': st_line.date,
+                'amount': st_line.amount,
                 'extract_state': st_line.extract_state,
                 'journal_id': st_line.journal_id,
-                'move_id': st_line.move_id,
                 'move_type': st_line.move_type,
-                'payment_ref': st_line.move_type})
+                'partner_id': st_line.partner_id,
+                'payment_ref': st_line.payment_ref})
             move_vals = st_line_new.move_id._convert_to_write(st_line_new._cache)
 
             st_line.with_context(skip_account_move_synchronization=True).write({
                 'move_id': self.env['account.move'].create(move_vals)})
+            to_post += st_line
 
             # Corregimos el asiento del pago para que en lugar de ser AR/AP vs liquidez, sea AR/AP vs outstanding
             payment._compute_outstanding_account_id()
@@ -52,6 +55,7 @@ class AccountBankStatementLine(models.Model):
             #liquidity_lines.account_id = outstanding_account.id
 
         super().action_undo_reconciliation()
+        to_post.mapped('move_id').action_post()
         # publicamos los asientos de las líneas del extracto contable
         #for st_line in st_lines_to_fix:
         #    st_line.move_id._post(soft=False)
