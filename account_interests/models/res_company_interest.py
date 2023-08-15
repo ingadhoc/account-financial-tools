@@ -233,6 +233,17 @@ class ResCompanyInterest(models.Model):
             })],
         }
 
+        # hack para evitar modulo glue con l10n_latam_document
+        if journal._fields.get('l10n_latam_use_documents') and journal.l10n_latam_use_documents:
+            debit_note = self.env['account.move'].new({
+                'move_type': 'out_invoice',
+                'journal_id': journal.id,
+                'partner_id': partner.id,
+                'company_id': self.company_id.id,
+            })
+            document_types = debit_note.l10n_latam_available_document_type_ids.filtered(lambda x: x.internal_type == 'debit_note')
+            invoice_vals['l10n_latam_document_type_id'] = document_types and document_types[0]._origin.id or debit_note.l10n_latam_document_type_id.id
+
         return invoice_vals
 
     @api.depends('domain')
