@@ -18,7 +18,11 @@ class AccountBankStatementLine(models.Model):
         1. Identificamos los st.lines que tengan am que sean pago y los corregimos
         2. creamos un nuevo asiento similar al que se genera automatico al crear el st.line.
         3, desvinculamos el am del pago del st.line '''
-        st_lines_to_fix = self.filtered(lambda x: x.move_id.payment_id)
+        # arreglamos solo los que son una transferencia interna o si hay una linea a cobrar / a pagar porque en 13, cuando conciliabamos contra gasto se generaba un pago
+        # pero en este caso odoo ya lo resuelve bien. Si este filtro no llega a ir bien por algo podriamos ver si tiene payment_group_id (pero no es lo mas elegante porque podria
+        # haber clientes sin payment_group) o si el payment tiene partner_id
+        st_lines_to_fix = self.filtered(
+            lambda x: x.move_id.payment_id.is_internal_transfer or x.move_id.line_ids.filtered(lambda x: x.account_id.account_type in ('asset_receivable', 'liability_payable')))
         to_post = self.browse()
 
         for st_line in st_lines_to_fix:
