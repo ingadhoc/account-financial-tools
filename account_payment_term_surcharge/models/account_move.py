@@ -1,5 +1,6 @@
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -73,7 +74,7 @@ class AccountMove(models.Model):
         })]})
         debit_note = debit_note.with_context(check_move_validity=False)
         debit_note.invoice_line_ids._onchange_product_id()
-        debit_note.invoice_line_ids[0].price_unit = (surcharge / 100) * debt
+        debit_note.invoice_line_ids[0].price_unit = float_round((surcharge / 100) * debt, precision_digits=2)
         debit_note.invoice_line_ids[0].name = product.name + '.\n' + comment
         debit_note._recompute_dynamic_lines()
 
