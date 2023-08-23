@@ -16,11 +16,20 @@ class AccountMove(models.Model):
     )
     other_currency = fields.Boolean(compute='_compute_other_currency')
 
+<<<<<<< HEAD
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
         return bin_data, __
 
+||||||| parent of a8a4b30b (temp)
+=======
+    def get_invoice_report(self):
+        self.ensure_one()
+        bin_data, __ = self.env.ref('account.account_invoices')._render_qweb_pdf([self.id])
+        return bin_data, __
+
+>>>>>>> a8a4b30b (temp)
     @api.depends('company_currency_id', 'currency_id')
     def _compute_other_currency(self):
         other_currency = self.filtered(lambda x: x.company_currency_id != x.currency_id)

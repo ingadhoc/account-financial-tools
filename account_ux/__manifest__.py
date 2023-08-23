@@ -19,7 +19,13 @@
 ##############################################################################
 {
     'name': 'Account UX',
+<<<<<<< HEAD
     'version': "16.0.1.2.0",
+||||||| parent of a8a4b30b (temp)
+    'version': "15.0.1.9.0",
+=======
+    'version': "15.0.2.9.0",
+>>>>>>> a8a4b30b (temp)
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
