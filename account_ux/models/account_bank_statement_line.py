@@ -22,7 +22,9 @@ class AccountBankStatementLine(models.Model):
         # pero en este caso odoo ya lo resuelve bien. Si este filtro no llega a ir bien por algo podriamos ver si tiene payment_group_id (pero no es lo mas elegante porque podria
         # haber clientes sin payment_group) o si el payment tiene partner_id
         st_lines_to_fix = self.filtered(
-            lambda x: x.move_id.payment_id.is_internal_transfer or x.move_id.line_ids.filtered(lambda x: x.account_id.account_type in ('asset_receivable', 'liability_payable')))
+            lambda x: x.move_id.payment_id.is_internal_transfer or (
+                x.move_id.payment_id
+                and x.move_id.line_ids.filtered(lambda x: x.account_id.account_type in ('asset_receivable', 'liability_payable'))))
         to_post = self.browse()
 
         for st_line in st_lines_to_fix:
