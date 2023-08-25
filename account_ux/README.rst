@@ -30,6 +30,7 @@ Several Improvements to accounting:
 #. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
 #. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
 #. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
+#. Add maturity date on manual journal entries
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
 #. Add filter by vat in the partners list views.
