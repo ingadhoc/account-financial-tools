@@ -4,4 +4,3 @@
 ##############################################################################
 from . import account_change_currency
 from . import res_config_settings
-from . import account_validate_account_move
