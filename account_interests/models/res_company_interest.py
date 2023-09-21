@@ -177,9 +177,7 @@ class ResCompanyInterest(models.Model):
             move_vals = self._prepare_interest_invoice(
                 partner, debt, to_date, journal)
 
-            # We send document type for compatibility with argentinian invoices
-            move = self.env['account.move'].with_context(
-                internal_type='debit_note').create(move_vals)
+            move = self.env['account.move'].create(move_vals)
 
             if self.automatic_validation:
                 try:
