@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="account.view_account_move_line_filter"/>
         <field name="arch" type="xml">
             <field name="account_id" position="after">
-                <field name="analytic_distribution" groups="analytic.group_analytic_accounting"/>
+                <field name="analytic_distribution" filter_domain="[('analytic_distribution_search', 'ilike', self)]" groups="analytic.group_analytic_accounting"/>
                 <field name="user_id"/>
             </field>
             <group>
