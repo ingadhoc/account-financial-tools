@@ -64,12 +64,12 @@ class AccountChangeCurrency(models.TransientModel):
             self.currency_rate)
 
         move = self.move_id.with_context(check_move_validity=False)
+        move.currency_id = self.currency_to_id.id
+        move._onchange_currency()
         for line in move.line_ids:
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
             line.price_unit = line.price_unit * self.currency_rate
-        move.currency_id = self.currency_to_id.id
-        move._onchange_currency()
 
         # This is required to compute to recompute the tax lines again
         if self.currency_rate != 1:
