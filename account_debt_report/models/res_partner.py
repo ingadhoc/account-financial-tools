@@ -10,6 +10,13 @@ from odoo.tools.safe_eval import safe_eval
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    def _get_debt_report_line_name(self, record):
+        name = record.move_id.name
+        # similar to _format_aml_name
+        if record.ref and record.ref != '/':
+            name += ' - ' + record.ref
+        return name
+
     def _get_debt_report_lines(self):
         # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
@@ -104,10 +111,8 @@ class ResPartner(models.Model):
                                 '\n', ' ').replace('\r', ''),
                             inv_line.quantity,
                             inv_line_product_uom_id_name)))
-            name = record.move_id.name
-            # similar to _format_aml_name
-            if record.ref and record.ref != '/':
-                name += ' - ' + record.ref
+
+            name = self._get_debt_report_line_name(record)
 
             date_maturity = record.date_maturity
             date = record.date
