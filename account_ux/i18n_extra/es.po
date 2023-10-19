@@ -1,0 +1,8 @@
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_untaxed
+#: model:ir.model.fields,field_description:account.field_account_move__amount_untaxed
+#: model:ir.model.fields,field_description:account.field_account_payment__amount_untaxed
+#, python-format
+msgid "Untaxed Amount"
+msgstr "Subtotal"
