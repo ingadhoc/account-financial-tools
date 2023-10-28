@@ -1,5 +1,6 @@
 from odoo import fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -79,6 +80,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         partner = self.partner_id
         comment = self.prepare_info(to_date, debt, surcharge)
+<<<<<<< HEAD
         # fpos = partner.property_account_position_id
         # taxes = product.taxes_id.filtered(
         #     lambda r: r.company_id == self.company_id)
@@ -93,5 +95,24 @@ class AccountMove(models.Model):
                 # "analytic_account_id": self.env.context.get('analytic_id', False),
                 # "tax_ids": [(6, 0, tax_id.ids)]
             })]
+||||||| parent of d61e1c33 (temp)
+        debit_note.write({'invoice_line_ids': [(0, 0, {
+            "product_id": product.id,
+        })]})
+        debit_note = debit_note.with_context(check_move_validity=False)
+        debit_note.invoice_line_ids._onchange_product_id()
+        debit_note.invoice_line_ids[0].price_unit = (surcharge / 100) * debt
+        debit_note.invoice_line_ids[0].name = product.name + '.\n' + comment
+        debit_note._recompute_dynamic_lines()
+=======
+        debit_note.write({'invoice_line_ids': [(0, 0, {
+            "product_id": product.id,
+        })]})
+        debit_note = debit_note.with_context(check_move_validity=False)
+        debit_note.invoice_line_ids._onchange_product_id()
+        debit_note.invoice_line_ids[0].price_unit = float_round((surcharge / 100) * debt, precision_digits=2)
+        debit_note.invoice_line_ids[0].name = product.name + '.\n' + comment
+        debit_note._recompute_dynamic_lines()
+>>>>>>> d61e1c33 (temp)
 
         return invoice_line_vals
