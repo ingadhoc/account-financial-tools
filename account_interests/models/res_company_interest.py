@@ -89,6 +89,8 @@ class ResCompanyInterest(models.Model):
             _logger.info(
                 'Creating Interest Invoices (id: %s, company: %s)', rec.id,
                 rec.company_id.name)
+            # hacemos un commit para refrescar cache
+            self.env.cr.commit()
             interests_date = rec.next_date
 
             rule_type = rec.rule_type
@@ -114,7 +116,9 @@ class ResCompanyInterest(models.Model):
             # para lo que vencio en este ultimo periodo
             to_date = interests_date - tolerance_delta
             from_date = to_date - tolerance_delta
-            rec.with_context(default_l10n_ar_afip_asoc_period_start=from_date,
+            # llamamos a crear las facturas con la compañia del interes para
+            # que tome correctamente las cuentas
+            rec.with_company(rec.company_id).with_context(default_l10n_ar_afip_asoc_period_start=from_date,
                              default_l10n_ar_afip_asoc_period_end=to_date).create_invoices(to_date)
 
             # seteamos proxima corrida en hoy mas un periodo
