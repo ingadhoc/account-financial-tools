@@ -144,3 +144,13 @@ class AccountMove(models.Model):
         """ Si la factura tenía currency_id no queremos cambiarla si cambia el diario """
         invoices_with_currency_id = self.filtered(lambda x: x.currency_id)
         return super(AccountMove, self - invoices_with_currency_id)._compute_currency_id()
+
+    @api.constrains('date', 'invoice_date')
+    def _check_dates_on_invoices(self):
+        """ Prevenir que en facturas de cliente queden distintos los campos de factura/recibo y fecha (date e invoice date). Pueden quedar distintos si se modifica alguna de esas fechas a través de edición masiva por ejemplo, entonces con esta constrains queremos prevenir que eso suceda.  """
+        invoices_to_check = self.filtered(lambda x: x.date!=x.invoice_date if x.is_sale_document() and x.date and x.invoice_date else False)
+        if invoices_to_check:
+            error_msg = _('\nDate\t\t\tInvoice Date\t\tInvoice\n')
+            for rec in invoices_to_check:
+                error_msg +=  str(rec.date) + '\t'*2 + str(rec.invoice_date) + '\t'*3 + rec.display_name + '\n'
+            raise UserError(_('The date and invoice date of a sale invoice must be the same: %s') % (error_msg))
