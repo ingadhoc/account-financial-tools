@@ -22,6 +22,8 @@ class AccountMoveLine(models.Model):
     @api.depends('debit', 'credit')
     def _compute_financial_amounts(self):
         date = fields.Date.today()
+        if self._context.get('date_account', False):
+            date = self._context.get('date_account')
         for line in self:
             financial_amount = (
                 line.currency_id and line.currency_id._convert(
