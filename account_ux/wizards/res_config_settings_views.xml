@@ -5,41 +5,32 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <div name="main_currency_setting_container" position="inside">
-                <div class="col-xs-12 col-md-6 o_setting_box" id="reconcile_on_company_currency">
-                    <div class="o_setting_left_pane">
-                        <field name="reconcile_on_company_currency"/>
-                    </div>
-                    <div class="o_setting_right_pane" name="reconcile_on_company_currency_right_pane">
-                        <label for="reconcile_on_company_currency"/>
-                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
-                        <div class="text-muted">
-                            When reconciling debt with secondary currency, if the account doesn't have a currency configured, then reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing same rate of the original document being reconcile.
-                            IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, it will be reconciled with the new mechanism
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <block name="main_currency_setting_container">
+                <setting string="This option enables open documents in the payment report" help="When reconciling debt with secondary currency, if the account doesn't have a currency configured, then reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing same rate of the original document being reconcile. IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, it will be reconciled with the new mechanism">
+                    <field name="reconcile_on_company_currency"/>
+                </setting>
+            </block>
+
             <!-- on sale we use xpath because website_sale adds same field -->
-            <xpath expr="//div[@data-key='account']//label[@for='sale_tax_id']" position="attributes">
+            <xpath expr="//block[@name='default_taxes_setting_container']//label[@for='sale_tax_id']" position="attributes">
                 <attribute name="for">sale_tax_ids</attribute>
             </xpath>
-            <xpath expr="//div[@data-key='account']//field[@name='sale_tax_id']" position="attributes">
+            <xpath expr="//block[@name='default_taxes_setting_container']//field[@name='sale_tax_id']" position="attributes">
                 <attribute name="name">sale_tax_ids</attribute>
                 <attribute name="domain">[('type_tax_use', 'in', ('sale', 'all')), ('company_id', 'child_of', company_id)]</attribute>
                 <attribute name="widget">many2many_tags</attribute>
                 <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
             </xpath>
 
-            <label for="purchase_tax_id" position="attributes">
+            <xpath expr="//block[@name='default_taxes_setting_container']//label[@for='purchase_tax_id']" position="attributes">
                 <attribute name="for">purchase_tax_ids</attribute>
-            </label>
-            <field name="purchase_tax_id" position="attributes">
+            </xpath>
+            <xpath expr="//block[@name='default_taxes_setting_container']//field[@name='purchase_tax_id']" position="attributes">
                 <attribute name="name">purchase_tax_ids</attribute>
                 <attribute name="domain">[('type_tax_use', 'in', ('purchase', 'all')), ('company_id', 'child_of', company_id)]</attribute>
                 <attribute name="widget">many2many_tags</attribute>
                 <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
-            </field>
+            </xpath>
         </field>
     </record>
 </odoo>
