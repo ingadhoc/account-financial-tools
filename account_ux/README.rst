@@ -27,6 +27,7 @@ Several Improvements to accounting:
 #. Add delete number in cancelled customer invoices
 #. Add options on accounts to require analytic distribution on journal entries posting
 #. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
+#. Create a "Bank and Cash menu" to grop submenus of future modules as checks and others. Also creates an specific submenu for internal transfers.
 #. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
 #. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
 #. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.

@@ -1,0 +1,31 @@
+<odoo>
+
+    <record id="view_account_payment_form" model="ir.ui.view">
+        <field name="name">account.payment.form</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="is_internal_transfer" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_account_payments_transfer" model="ir.actions.act_window">
+        <field name="name">Transfers</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="context">{'default_payment_type': 'outbound', 'is_internal_transfer_menu': True, 'default_move_journal_types': ('bank', 'cash'), 'display_account_trust': True, }</field>
+        <field name="domain">[('is_internal_transfer', '=', 'transfer')]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+              Click to register a transfer between liquidity journals
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_finance_bank_and_cash" parent="account.menu_finance" sequence="4" groups="account.group_account_user" name="Bank and Cash"/>
+
+    <menuitem action="action_account_payments_transfer" id="menu_action_account_payments_transfer" parent="menu_finance_bank_and_cash" sequence="30" groups="account.group_account_user"/>
+
+</odoo>

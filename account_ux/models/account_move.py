@@ -10,10 +10,6 @@ class AccountMove(models.Model):
     internal_notes = fields.Html(
         'Internal Notes'
     )
-    reversed_entry_id = fields.Many2one(
-        'account.move',
-        states={'draft': [('readonly', False)]},
-    )
     other_currency = fields.Boolean(compute='_compute_other_currency')
 
     def get_invoice_report(self):
