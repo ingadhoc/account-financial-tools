@@ -25,6 +25,7 @@ Several Improvements to accounting:
 #. Make origin always visible on invoices.  We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order
 #. Adds possibility of filtering and grouping by company on invoices.
 #. Add delete number in cancelled customer invoices
+#. Add a payment method description on payment tree view to be extende (For eg. by checks and withholdings) to show more info on tree view
 #. Add options on accounts to require analytic distribution on journal entries posting
 #. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
 #. Create a "Bank and Cash menu" to grop submenus of future modules as checks and others. Also creates an specific submenu for internal transfers.
