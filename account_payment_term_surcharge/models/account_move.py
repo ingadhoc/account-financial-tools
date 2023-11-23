@@ -17,7 +17,7 @@ class AccountMove(models.Model):
         domain = [
             ('next_surcharge_date', '<=', current_date),
             ('state', '=', 'posted'),
-            ('payment_state', '=', 'not_paid')]
+            ('payment_state', 'in', ['not_paid', 'partial'])]
         _logger.info('Running Surcharges Invoices Cron Job, pendientes por procesar %s facturas' % self.search_count(domain))
         to_create = self.search(domain)
         to_create[:batch_size].create_surcharges_invoices()
