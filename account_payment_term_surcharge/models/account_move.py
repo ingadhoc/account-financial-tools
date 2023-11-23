@@ -17,10 +17,7 @@ class AccountMove(models.Model):
 
     def _cron_recurring_surcharges_invoices(self):
         _logger.info('Running Surcharges Invoices Cron Job')
-        self.search([
-            ('invoice_payment_term_id.surcharge_ids', '!=', False),
-            ('state', '=', 'posted'),
-            ('payment_state', '=', 'not_paid')],
+        self.search([('invoice_payment_term_id.surcharge_ids', '!=', False),('state', '=', 'posted'),('payment_state', 'in', ['not_paid', 'partial'])],
             # buscamos facturas que tengan surcharges, esten posteadas y aun no pagadas
             ).create_surcharges_invoices()
 
