@@ -32,9 +32,9 @@ class ResConfigSettings(models.TransientModel):
         for rec in self:
             company_id = rec.company_id.id
 
-            taxes_ids = ir_default.get('product.template', 'taxes_id', company_id=company_id) or \
+            taxes_ids = ir_default._get('product.template', 'taxes_id', company_id=company_id) or \
                 rec.company_id.account_sale_tax_id.ids
-            supplier_taxes_ids = ir_default.get('product.template', 'supplier_taxes_id', company_id=company_id) or \
+            supplier_taxes_ids = ir_default._get('product.template', 'supplier_taxes_id', company_id=company_id) or \
                 rec.company_id.account_purchase_tax_id.ids
 
             rec.sale_tax_ids = taxes_ids
