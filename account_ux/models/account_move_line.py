@@ -50,33 +50,34 @@ class AccountMoveLine(models.Model):
             else:
                 return abs(vals['amount_currency']) / abs(vals['balance'])
 
-        company_currency = debit_values['company'].currency_id
-        reconcile_on_company_currency = debit_values['company'].reconcile_on_company_currency and \
-            (debit_values['currency'] != company_currency or credit_values['currency'] != company_currency) and \
-            not debit_values['record'].account_id.currency_id
+        company_debit_currency = debit_values['aml'].company_currency_id
+        company_credit_currency = credit_values['aml'].company_currency_id
+        reconcile_on_company_currency = debit_values['aml'].company_id.reconcile_on_company_currency and \
+            (debit_values['aml'].currency_id != company_debit_currency or credit_values['aml'].currency_id != company_credit_currency) and \
+            not debit_values['aml'].account_id.currency_id
         if reconcile_on_company_currency:
-            if debit_values['currency'] != debit_values['company'].currency_id:
-                debit_values['original_currency'] = debit_values['currency']
+            if debit_values['aml'].currency_id != company_debit_currency:
+                debit_values['original_currency'] = debit_values['aml'].currency_id
                 debit_values['original_amount_residual_currency'] = debit_values['amount_residual_currency']
-                debit_values['currency'] = debit_values['company'].currency_id
+                debit_values['aml'].currency_id = company_debit_currency
                 debit_values['amount_residual_currency'] = debit_values['amount_residual']
-            if credit_values['currency'] != credit_values['company'].currency_id:
-                credit_values['original_currency'] = credit_values['currency']
+            if credit_values['aml'].currency_id != company_credit_currency:
+                credit_values['original_currency'] = credit_values['aml'].currency_id
                 credit_values['original_amount_residual_currency'] = credit_values['amount_residual_currency']
-                credit_values['currency'] = credit_values['company'].currency_id
+                credit_values['aml'].currency_id = company_credit_currency
                 credit_values['amount_residual_currency'] = credit_values['amount_residual']
         res = super()._prepare_reconciliation_single_partial(debit_values, credit_values, shadowed_aml_values)
 
         if reconcile_on_company_currency and 'partial_vals' in res:
             if 'original_currency' in credit_values:
-                credit_values['currency'] = credit_values['original_currency']
+                credit_values['aml'].currency_id = credit_values['original_currency']
                 rate = get_accounting_rate(credit_values)
-                res['partial_vals']['credit_amount_currency'] = credit_values['currency'].round(
+                res['partial_vals']['credit_amount_currency'] = credit_values['aml'].currency_id.round(
                     res['partial_vals']['credit_amount_currency'] * rate)
             if 'original_currency' in debit_values:
-                debit_values['currency'] = debit_values['original_currency']
+                debit_values['aml'].currency_id = debit_values['original_currency']
                 rate = get_accounting_rate(debit_values)
-                res['partial_vals']['debit_amount_currency'] = credit_values['currency'].round(
+                res['partial_vals']['debit_amount_currency'] = credit_values['aml'].currency_id.round(
                     res['partial_vals']['debit_amount_currency'] * rate)
         return res
 
