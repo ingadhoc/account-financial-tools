@@ -8,6 +8,8 @@ import datetime
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
+    company_id = fields.Many2one('res.company', store=True)
+
     def _get_liquidity_move_line_vals(self, amount):
         vals = super()._get_liquidity_move_line_vals(amount)
         days_for_collection = False
