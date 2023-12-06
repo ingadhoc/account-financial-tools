@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+    <record id="account_followup_trafficlight.calcular_semaforo" model="ir.cron">
+    <field name="name">Calcular Semaforo</field>
+    <field ref="base.model_res_partner" name="model_id"/>
+    <field name="state">code</field>
+    <field name="binding_type">action</field>
+    <field name="code">
+domain = [('account_id.internal_type', '=', 'receivable'), ('full_reconcile_id', '=', False), ('amount_residual','>', 0), ('parent_state','=','posted')]
+all_partner_ids = []
+to_date = datetime.date.today()
+# first_date_of_year = to_date.replace(day=1, month=1)
+
+# vamos buscando en peridos de tiempo hacia atras, desde hace un mes hasta hoy, luego desde hace dos meses hasta hace un mes, etc...
+# y vamos a ir escribiendo el valor de semaforo correspondiente.
+# al hacerlo de esta manera solo hay 4 search y 4 write
+for months, semaphore in [(1, '1'), (2, '2'), (3, '3'), (999, '999')]:
+    from_date = to_date - dateutil.relativedelta.relativedelta(months=months)
+    # si se queiere que solo se tengan en cuenta deudas de año actual
+    # res = env['account.move.line'].read_group(domain + [('first_date_of_year', '&gt;=', first_date_of_year), ('date_maturity', '&gt;=', from_date)
+    #, ('date_maturity', '&lt;', to_date)], ['partner_id'], 'partner_id')
+    res = env['account.move.line'].read_group(domain + [('date_maturity', '&gt;=', from_date), ('date_maturity', '&lt;', to_date)], ['partner_id'], 'partner_id')
+    to_date = from_date
+    partner_ids = [x['partner_id'][0] for x in res]
+    env['res.partner'].browse(partner_ids).write({'semaphore': semaphore})
+    all_partner_ids += partner_ids
+
+env['res.partner'].search([('id', 'not in', all_partner_ids), ('semaphore', '!=', False)]).write({'semaphore': False})
+
+</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">days</field>
+    <field name="numbercall">-1</field>
+</record>
+</odoo>
