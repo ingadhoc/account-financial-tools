@@ -9,9 +9,9 @@
                 <group string="Restringir a Usuarios">
                     <field name="journal_restriction" invisible="1"/>
                     <field name="journal_restriction" widget="radio" groups="base.group_erp_manager"/>
-                    <field name="user_ids" widget="many2many_tags" groups="base.group_erp_manager" attrs="{'invisible': [('journal_restriction', '!=', 'total')]}"/>
-                    <field name="modification_user_ids" widget="many2many_tags" groups="base.group_erp_manager" attrs="{'invisible': [('journal_restriction', '!=', 'modification')]}"/>
-                    <div class="alert alert-warning" attrs="{'invisible': [('journal_restriction', '!=', 'total')]}" colspan="2" role="alert">
+                    <field name="user_ids" widget="many2many_tags" groups="base.group_erp_manager" invisible="journal_restriction != 'total'"/>
+                    <field name="modification_user_ids" widget="many2many_tags" groups="base.group_erp_manager" invisible="journal_restriction != 'modification'"/>
+                    <div class="alert alert-warning" invisible="journal_restriction != 'total'" colspan="2" role="alert">
                         <p>
                         <b>IMPORTANTE:</b> Los usuarios que no estén en la lista no podrán ver facturas, pagos, asiento o apuntes contables en este diario, pero si podrán ver información relativa a este diario en, por ejemplo, resumen de cuenta, detalle de deuda e informes contables.
                         </p>
