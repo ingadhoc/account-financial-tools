@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_account_payment_tree_personalization">
+        <field name="name">account.payment.tree.personalization</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_tree"/>
+        <field name="arch" type="xml">
+            <field name="amount_company_currency_signed" position="after">
+                <field name="ref" string="Memo" optional="hide"/>
+            </field>
+        </field>
+    </record>
+</odoo>
