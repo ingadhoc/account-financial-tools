@@ -45,6 +45,7 @@
         'views/account_partial_reconcile_views.xml',
         'views/account_account_views.xml',
         'views/account_move_views.xml',
+        'views/account_payment_views.xml',
     ],
     'demo': [
     ],
