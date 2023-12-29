@@ -40,7 +40,6 @@ class AccountBankStatementLine(models.Model):
                 'statement_id': st_line.statement_id,
                 'date': st_line.date,
                 'amount': st_line.amount,
-                'extract_state': st_line.extract_state,
                 'journal_id': st_line.journal_id,
                 'move_type': st_line.move_type,
                 'partner_id': st_line.partner_id,
