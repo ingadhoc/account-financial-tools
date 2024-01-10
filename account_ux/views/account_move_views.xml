@@ -33,7 +33,7 @@
             <!-- similar modification to these are don on l10n_ar_ux for debit_origin_id -->
             <!-- odoo deja modificar el origen pero si el usuario lo borra ya no lo ve mas y no se puede revertir. ademas nos parece practico que pueda completarlo para, por ej, vincular factura creada manualmente a una OV -->
             <field name="invoice_origin" position="attributes">
-                <attribute name="attrs"></attribute>
+                <attribute name="invisible"></attribute>
                 <!-- es readonly por python, lo hacemos editable -->
                 <attribute name="readonly">False</attribute>
             </field>
