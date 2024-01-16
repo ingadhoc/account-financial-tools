@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-17 18:02+0000\n"
+"POT-Creation-Date: 2024-01-15 18:04+0000\n"
 "PO-Revision-Date: 2022-11-02 16:50+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2023\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -19,6 +19,15 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+#, python-format
+msgid ""
+"\n"
+"Date\t\t\tInvoice Date\t\tInvoice\n"
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
@@ -32,6 +41,11 @@ msgstr ""
 #: model:ir.model,name:account_ux.model_account_account
 msgid "Account"
 msgstr "Cuenta"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_chart_template
+msgid "Account Chart Template"
+msgstr "Plantilla de Plan de Cuentas"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_group
@@ -62,6 +76,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_distribution_required
 msgid "Analytic Distribution Required?"
 msgstr "¿Cuenta analítica requerida?"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr "Línea de extracto bancario"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
@@ -306,10 +325,8 @@ msgid "Match Payments"
 msgstr ""
 
 #. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/wizards/account_validate_account_move.py:0
-#, python-format
-msgid "Missing 'active_model' in context."
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_tree_personalization
+msgid "Memo"
 msgstr ""
 
 #. module: account_ux
@@ -389,7 +406,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_rate
 msgid "Select a rate to apply on the invoice"
-msgstr ""
+msgstr "Seleccione una tasa para aplicar en la factura"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
@@ -427,6 +444,22 @@ msgid "Source Document"
 msgstr ""
 
 #. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+#, python-format
+msgid "The date and invoice date of a sale invoice must be the same: %s"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+#, python-format
+msgid ""
+"There is at least one account in the journal entry of this move that belongs to a company that is different to the company of the move (id: %s)\n"
+"- %s"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_res_config_settings__purchase_tax_ids
 msgid "This purchase tax will be assigned by default on new products."
 msgstr ""
@@ -454,11 +487,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_ux.selection__account_change_currency__change_type__value
 msgid "Update both currency and values"
 msgstr "Actualizar la moneda y la cotizacion"
-
-#. module: account_ux
-#: model:ir.model,name:account_ux.model_validate_account_move
-msgid "Validate Account Move"
-msgstr "Validar movimiento contable"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
