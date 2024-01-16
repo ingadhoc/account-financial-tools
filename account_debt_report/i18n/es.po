@@ -1,39 +1,43 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* account_debt_report
-#
+# 
+# Translators:
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 13.0+e\n"
+"Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-18 11:03+0000\n"
-"PO-Revision-Date: 2021-07-18 11:03+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2024-01-15 12:48+0000\n"
+"PO-Revision-Date: 2024-01-15 12:48+0000\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024\n"
+"Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Language: es\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: account_debt_report
 #: model:mail.template,body_html:account_debt_report.email_template_debt_detail
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"       Dear\n"
-"       <t t-if=\"object.parent_id\">\n"
-"           <t t-out=\"object.name or ''\"></t>\n"
-"           (<t t-out=\"object.parent_id.name or \'\'\"></t>),\n"
-"       </t>\n"
-"       <t t-else=\"\">\n"
-"           <t t-out=\"object.name or ''\"></t>,\n"
-"       </t>\n"
-"       <br /><br />\n"
-"       Please find attached your debt detail from <t t-out=\"object.company_id.name or ''\"></t>.\n"
-"       <br /><br />\n"
-"       Do not hesitate to contact us if you have any questions.\n"
-"    </p>\n"
-"</div>\n"
+"                <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Dear\n"
+"                    <t t-if=\"object.parent_id\">\n"
+"                        <t t-out=\"object.name or ''\"></t>\n"
+"                        (<t t-out=\"object.parent_id.name or ''\"></t>),\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        <t t-out=\"object.name or ''\"></t>,\n"
+"                    </t>\n"
+"                    <br><br>\n"
+"                    Please find attached your debt detail from <t t-out=\"object.company_id.name or ''\"></t>.\n"
+"                    <br><br>\n"
+"                    Do not hesitate to contact us if you have any questions.\n"
+"                </p>\n"
+"            </div>\n"
 "        "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
@@ -106,6 +110,11 @@ msgid "Created on"
 msgstr ""
 
 #. module: account_debt_report
+#: model:mail.template,name:account_debt_report.email_template_debt_detail
+msgid "Debt Detail Mail"
+msgstr ""
+
+#. module: account_debt_report
 #: model:mail.template,subject:account_debt_report.email_template_debt_detail
 msgid "Debt Detail {{ object.company_id.name }}"
 msgstr "Detalle de Deuda {{ object.company_id.name }}"
@@ -114,11 +123,6 @@ msgstr "Detalle de Deuda {{ object.company_id.name }}"
 #: model:ir.actions.act_window,name:account_debt_report.action_account_debt_report_wizard
 msgid "Debt Report"
 msgstr "Detalle de Deuda"
-
-#. module: account_debt_report
-#: model:mail.template,report_name:account_debt_report.email_template_debt_detail
-msgid "Debt_Detail_{{ (object.name or '').replace('/','_') }}"
-msgstr "Detalle_Deuda_{{ (object.name or '').replace('/','_') }}"
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
@@ -151,6 +155,7 @@ msgid "ID"
 msgstr ""
 
 #. module: account_debt_report
+#. odoo-python
 #: code:addons/account_debt_report/models/res_partner.py:0
 #, python-format
 msgid "INITIAL BALANCE"
@@ -162,18 +167,16 @@ msgid ""
 "If true, then it will show all partner history. If not, only unreconciled "
 "items will be shown."
 msgstr ""
-"Si marca esta opción entonces se mostrará todo el historial. Caso contrario solo items no conciliados se mostrarán"
+"Si marca esta opción entonces se mostrará todo el historial. Caso contrario "
+"solo items no conciliados se mostrarán"
 
 #. module: account_debt_report
 #: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_id
 msgid ""
 "If you don't select a company, debt for all companies will be exported."
-msgstr "Si no selecciona una compañía se mostará la deuda de todas las compañías disponibles."
-
-#. module: account_debt_report
-#: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard____last_update
-msgid "Last Modified on"
 msgstr ""
+"Si no selecciona una compañía se mostará la deuda de todas las compañías "
+"disponibles."
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__write_uid
@@ -206,6 +209,7 @@ msgid "Secondary Currency"
 msgstr "Moneda Secundaria"
 
 #. module: account_debt_report
+#. odoo-python
 #: code:addons/account_debt_report/wizard/account_debt_report_wizard.py:0
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
 #, python-format
@@ -221,13 +225,6 @@ msgstr "Mostrar detalle de Facturas"
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__to_date
 msgid "To"
 msgstr "Hasta"
-
-#. module: account_debt_report
-#: code:addons/account_debt_report/wizard/account_debt_report_wizard.py:0
-#, python-format
-msgid ""
-"You can only select \"Consolidate all Companies if no company is selected"
-msgstr ""
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
