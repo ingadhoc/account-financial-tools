@@ -19,6 +19,7 @@ class AccountJournal(models.Model):
         help='If choose some users, then this journal and the information'
         ' related to it will be only visible for those users.',
         copy=False,
+        context={'active_test': False}
     )
 
     modification_user_ids = fields.Many2many(
@@ -31,6 +32,7 @@ class AccountJournal(models.Model):
         ' create, write or delete accounting data related of this journal. '
         'Information will still be visible for other users.',
         copy=False,
+        context={'active_test': False}
     )
 
     journal_restriction = fields.Selection(
