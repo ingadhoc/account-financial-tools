@@ -362,6 +362,11 @@ msgid "Partner"
 msgstr "Empresa"
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
+msgid "Paid"
+msgstr "Pagado"
+
+#. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
