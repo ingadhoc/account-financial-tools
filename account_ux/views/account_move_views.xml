@@ -93,6 +93,9 @@
             <field name="partner_id" position="before">
                 <field name="company_id" groups="base.group_multi_company"/>
             </field>
+            <xpath expr="//filter[@name='closed']" position="replace">
+                <filter name="closed" string="Paid" domain="[('state', '=', 'posted'), ('payment_state', 'in', ('in_payment', 'paid','reversed'))]"/>
+            </xpath>
             <xpath expr="//group/filter[@name='salesperson']" position="before">
                 <filter name="partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
                 <filter name="journal_id" string="Journal" context="{'group_by':'journal_id'}"/>
