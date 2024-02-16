@@ -316,11 +316,6 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_partner_form
-msgid "Match Payments"
-msgstr ""
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_tree_personalization
 msgid "Memo"
 msgstr ""
@@ -465,7 +460,7 @@ msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
-msgid "This option enables open documents in the payment report"
+msgid "Reconcile On Company Currency"
 msgstr ""
 
 #. module: account_ux

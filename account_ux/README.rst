@@ -17,20 +17,18 @@ Account UX
 Several Improvements to accounting:
 
 #. Add an option per company on accounting settings to force reconciliation on company currency (more info on tooltip/help of that setting)
-#. Improove partner ledger usability (tree view, not report)
+#. Hide some optional fields in Partner Ledger tree view to improve usability (tree view, not report).
 #. Make subtotal included / excluded optional and not related to tax b2b/b2c
 #. Add reconciliations menu on accounting (only with debug mode)
-#. Add on journal items availability to search and group by analytic distribution
+#. Add on journal items availability to search by analytic distribution
 #. By default, when creating invoices manually, actual partner is choose, with this module the partner salesperson will be choosen. It also choose the salesperson when creating invoices from stock.picking
-#. Make origin always visible on invoices.  We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order
+#. Make origin always visible on invoices. We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order
 #. Adds possibility of filtering and grouping by company on invoices.
-#. Add delete number in cancelled customer invoices
+#. Add button "Delete Number" in cancelled customer invoices
 #. Add a payment method description on payment tree view to be extende (For eg. by checks and withholdings) to show more info on tree view
 #. Add options on accounts to require analytic distribution on journal entries posting
-#. Adds a button "Match Payments" in the customer & suppliers form view to allow to start the matching of invoices & payments for that partner.
 #. Create a "Bank and Cash menu" to grop submenus of future modules as checks and others. Also creates an specific submenu for internal transfers.
 #. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
-#. On accounts only allow to choose account groups without children groups (last group on the hierarchy).
 #. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
 #. Add maturity date on manual journal entries
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings

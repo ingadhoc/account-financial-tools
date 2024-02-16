@@ -433,11 +433,6 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.res_partner_view_buttons
-msgid "Match Payments"
-msgstr ""
-
-#. module: account_ux
 #: code:addons/account_ux/wizards/account_validate_account_move.py:0
 #, python-format
 msgid "Missing 'active_model' in context."
