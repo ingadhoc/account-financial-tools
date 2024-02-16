@@ -8,13 +8,14 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <!-- Make subtotal included / excluded optional and not related to tax b2b/b2c -->
+            <!-- Permitimos ocultar subtotal sin impuestos -->
             <field name="price_subtotal" position="attributes">
-                <attribute name="groups"></attribute>
                 <attribute name="optional">show</attribute>
             </field>
+            <!-- odoo lo hace invisible si la company tiene tax_calculation_rounding_method = rounding globally, -->
+            <!-- nosotros dejamos que sin importqar ese parametro se puedamos mostrar -->
             <field name="price_total" position="attributes">
-                <attribute name="groups"></attribute>
-                <attribute name="optional">hide</attribute>
+                <attribute name="column_invisible"></attribute>
             </field>
 
             <button name="button_draft" position="after">
