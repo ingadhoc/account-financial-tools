@@ -20,9 +20,25 @@ class AccountMove(models.Model):
         self.search([
             ('invoice_payment_term_id.surcharge_ids', '!=', False),
             ('state', '=', 'posted'),
+<<<<<<< HEAD
             ('payment_state', '=', 'not_paid')],
             # buscamos facturas que tengan surcharges, esten posteadas y aun no pagadas
             ).create_surcharges_invoices()
+||||||| parent of 5dd64553 (temp)
+            ('payment_state', '=', 'not_paid')]
+        _logger.info('Running Surcharges Invoices Cron Job, pendientes por procesar %s facturas' % self.search_count(domain))
+        to_create = self.search(domain)
+        to_create[:batch_size].create_surcharges_invoices()
+        if len(to_create) > batch_size:
+            self.env.ref('account_payment_term_surcharge.cron_recurring_surcharges_invoices')._trigger()
+=======
+            ('payment_state', 'in', ['not_paid', 'partial'])]
+        _logger.info('Running Surcharges Invoices Cron Job, pendientes por procesar %s facturas' % self.search_count(domain))
+        to_create = self.search(domain)
+        to_create[:batch_size].create_surcharges_invoices()
+        if len(to_create) > batch_size:
+            self.env.ref('account_payment_term_surcharge.cron_recurring_surcharges_invoices')._trigger()
+>>>>>>> 5dd64553 (temp)
 
     def create_surcharges_invoices(self):
         for rec in self:
