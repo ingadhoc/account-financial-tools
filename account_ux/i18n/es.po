@@ -540,3 +540,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "or"
 msgstr "o"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+#, python-format
+msgid "Is not allowed to post bank statements with date lower than lock date."
+msgstr "No está permitido publicar extractos bancarios con fechas anteriores a la fecha de bloqueo."
