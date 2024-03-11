@@ -29,7 +29,6 @@ Several Improvements to accounting:
 #. Add options on accounts to require analytic distribution on journal entries posting
 #. Create a "Bank and Cash menu" to grop submenus of future modules as checks and others. Also creates an specific submenu for internal transfers.
 #. Do not allow to set same Company Currency on Journals or Accounts (enforce to keep empty if that is the cases)
-#. Allow to set more than one default tax for sales/purchases, useful for multicompany but also for perceptions or similar tax applied together with vat's.
 #. Add maturity date on manual journal entries
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.

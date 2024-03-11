@@ -289,16 +289,6 @@ msgid "Debit Jouranl Entry"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__purchase_tax_ids
-msgid "Default Purchase Taxes"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__sale_tax_ids
-msgid "Default Sale Taxes"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__by_account_type
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__by_account_type
 msgid "Defined by account type"
@@ -589,16 +579,6 @@ msgstr ""
 msgid ""
 "This number of days will be added to the date of inbound debit card payments"
 " to get the due date, usefull for cashflow analysis"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__purchase_tax_ids
-msgid "This purchase tax will be assigned by default on new products."
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__sale_tax_ids
-msgid "This sale tax will be assigned by default on new products."
 msgstr ""
 
 #. module: account_ux

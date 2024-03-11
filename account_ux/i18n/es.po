@@ -188,16 +188,6 @@ msgid "Debit Jouranl Entry"
 msgstr "Entrada en el Diario de Débito"
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__purchase_tax_ids
-msgid "Default Purchase Taxes"
-msgstr "Impuestos de compra predeterminados"
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__sale_tax_ids
-msgid "Default Sale Taxes"
-msgstr "Impuestos de venta predeterminados"
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Delete Number"
 msgstr "Eliminar número"
@@ -462,19 +452,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
 msgid "Reconcile On Company Currency"
 msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__purchase_tax_ids
-msgid "This purchase tax will be assigned by default on new products."
-msgstr ""
-"Este impuesto de compra se asignará por defecto a los nuevos productos."
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__sale_tax_ids
-msgid "This sale tax will be assigned by default on new products."
-msgstr ""
-"Este impuesto de venta se asignará de manera predeterminada a los nuevos "
-"productos."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
