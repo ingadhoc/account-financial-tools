@@ -43,6 +43,12 @@ class AccountMove(models.Model):
                     move_lines.ids
                 )
             ))
+        
+        for move in self:
+            affects_tax_report = move._affect_tax_report()
+            lock_dates = move._get_violated_lock_dates(move.date, affects_tax_report)
+            if lock_dates:
+                raise UserError(_('Is not allowed to post bank statements with date lower than lock date.'))
         res = super(AccountMove, self)._post(soft=soft)
         return res
 
