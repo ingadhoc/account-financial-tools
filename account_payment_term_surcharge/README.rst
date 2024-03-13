@@ -14,11 +14,8 @@
 Surcharges on payment terms
 ===========================
 
-This module lets us to defined a set of surcharge term to then
-automatically create surcharge invoices via a scheduled action run every day.
-
-One debit note will be created for each surcharge in the invoice which has been dues that match
-with the surcharge terms.
+This module allows us to define a set of surcharge terms and then automatically create surcharge invoices through a scheduled action that runs every day. 
+A debit note will automatically be created upon matching the surcharge terms.
 
 **TODO:**
 
