@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <field name="line_ids" position="after">
                     <separator string="Surcharges"/>
-                    <field name="surcharge_ids"/>
+                    <field name="surcharge_ids" nolabel="1" colspan="2"/>
                 </field>
             </field>
         </record>
