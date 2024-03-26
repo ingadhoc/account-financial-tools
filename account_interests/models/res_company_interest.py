@@ -148,17 +148,16 @@ class ResCompanyInterest(models.Model):
         if self.domain:
             move_line_domain += safe_eval(self.domain)
 
-        fields = ['id', 'amount_residual', 'partner_id', 'account_id']
-        if groupby not in fields:
-            fields += [groupby]
+        fields = ['id:recordset', 'amount_residual:sum', 'partner_id:recordset', 'account_id:recordset']
+        # if groupby not in fields:
+        #     fields += [groupby]
 
         move_line = self.env['account.move.line']
-        grouped_lines = move_line.read_group(
+        grouped_lines = move_line._read_group(
             domain=move_line_domain,
-            fields=fields,
             groupby=[groupby],
+            aggregates=fields,
         )
-
         self = self.with_context(
             company_id=self.company_id.id,
             mail_notrack=True,
