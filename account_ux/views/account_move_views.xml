@@ -7,6 +7,17 @@
         <!-- higher priority so that secondary currency (added by other module but inheriting this one) is shown right after this module -->
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="after">
+                <div class="alert alert-primary" role="alert" attrs="{'invisible': [('warning', '=', False)]}">
+                    <p>Este asiento contable está relacionado a una valoración de inventario, 
+                    tenga en consideración que al re-validar se generará una nueva valoración que no se ajustará automáticamente.</p>
+                    <p><b>Recomendación</b>: Con modo desarrollador, dirigirse al menú de Inventario/Informes/Valoración, 
+                    agrupar por "Producto", desplegar el producto a ajustar y a través del "+" 
+                    se puede generar un asiento de valoración manual para realizar el ajuste correspondiente.</p>
+                </div>
+                <field name="warning" invisible="1"/>
+            </xpath>
+           
             <!-- Make subtotal included / excluded optional and not related to tax b2b/b2c -->
             <field name="price_subtotal" position="attributes">
                 <attribute name="groups"></attribute>

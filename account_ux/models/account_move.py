@@ -15,6 +15,7 @@ class AccountMove(models.Model):
         states={'draft': [('readonly', False)]},
     )
     other_currency = fields.Boolean(compute='_compute_other_currency')
+    warning = fields.Boolean()
 
     def get_invoice_report(self):
         self.ensure_one()
@@ -158,3 +159,15 @@ class AccountMove(models.Model):
             for rec in invoices_to_check:
                 error_msg +=  str(rec.date) + '\t'*2 + str(rec.invoice_date) + '\t'*3 + rec.display_name + '\n'
             raise UserError(_('The date and invoice date of a sale invoice must be the same: %s') % (error_msg))
+
+    @api.depends('restrict_mode_hash_table', 'state')
+    def _compute_show_reset_to_draft_button(self):
+        super()._compute_show_reset_to_draft_button()
+        for move in self:
+            if move.sudo().line_ids.stock_valuation_layer_ids:
+                move.show_reset_to_draft_button = True
+                move.warning = True
+
+            if move.state == 'draft' and not move.sudo().line_ids.stock_valuation_layer_ids:
+                move.show_reset_to_draft_button = False
+                move.warning = False
