@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <block name="main_currency_setting_container">
-                <setting string="Reconcile On Company Currency" help="This option enables open documents in the payment report when reconciling debt with secondary currency, if the account doesn't have a currency configured, then reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing same rate of the original document being reconcile. IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, it will be reconciled with the new mechanism">
+                <setting name="reconcile_on_company_currency" string="Reconcile On Company Currency" help="This option enables open documents in the payment report when reconciling debt with secondary currency, if the account doesn't have a currency configured, then reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing same rate of the original document being reconcile. IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, it will be reconciled with the new mechanism">
                     <field name="reconcile_on_company_currency"/>
                 </setting>
             </block>
