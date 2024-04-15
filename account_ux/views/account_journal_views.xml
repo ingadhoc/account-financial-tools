@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
             <field name="country_code" position="before">
-                <field name="mail_template_id"  context="{'default_model': 'account.move'}"/>
+                <field name="mail_template_id"  context="{'default_model': 'account.move'}"  invisible="type not in ['sale', 'purchase']"/>
             </field>
         </field>
     </record>
