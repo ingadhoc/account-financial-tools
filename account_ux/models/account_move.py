@@ -51,8 +51,8 @@ class AccountMove(models.Model):
     def action_send_invoice_mail(self):
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             try:
-                rec.message_post_with_template(
-                    rec.journal_id.mail_template_id.id,
+                rec.message_post_with_source(
+                    rec.journal_id.mail_template_id,
                 )
             except Exception as error:
                 title = _(
