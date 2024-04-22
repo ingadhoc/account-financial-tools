@@ -232,7 +232,7 @@ class ResCompanyInterest(models.Model):
                 "price_unit": self.rate * debt,
                 "partner_id": partner.id,
                 "name": self.interest_product_id.name + '.\n' + comment,
-                "analytic_line_ids": [(self.analytic_line_ids.id, )],
+                "analytic_line_ids": [(self.analytic_line_ids.id, )] if self.analytic_line_ids.id else False,
                 "tax_ids": [(6, 0, tax_id.ids)]
             })],
         }
