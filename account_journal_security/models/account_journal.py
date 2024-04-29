@@ -19,6 +19,7 @@ class AccountJournal(models.Model):
         help='If choose some users, then this journal and the information'
         ' related to it will be only visible for those users.',
         copy=False,
+        context={'active_test': False}
     )
 
     modification_user_ids = fields.Many2many(
@@ -31,6 +32,7 @@ class AccountJournal(models.Model):
         ' create, write or delete accounting data related of this journal. '
         'Information will still be visible for other users.',
         copy=False,
+        context={'active_test': False}
     )
 
     journal_restriction = fields.Selection(
@@ -67,7 +69,8 @@ class AccountJournal(models.Model):
         """
         # esto es porque las ir rules tienen un cache que no permite
         # que el cambio aplique en el momento
-        self.env['ir.rule'].clear_caches()
+        self.env.flush_all()
+        self.env.registry.clear_cache()
 
         # FIXME: Con el onchange de journal_restriction esto
         # ya no debería ocurrir.
@@ -91,10 +94,11 @@ class AccountJournal(models.Model):
                     'inclurise a usted mismo ya que dejaria de ver este '
                     'diario') % (rec.name))
         # necesitamos limpiar este cache para que no deje de verlo
-        self.env.user.context_get.clear_cache(self)
+        self.env.flush_all()
+        self.env.registry.clear_cache()
 
     @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+    def _search(self, domain, offset=0, limit=None, order=None, access_rights_uid=None):
         """
         Para que usuarios los usuarios no puedan elegir diarios donde no puedan
         escribir, modificamos la funcion search. No lo hacemos por regla de
@@ -102,13 +106,10 @@ class AccountJournal(models.Model):
         cualquier lugar que se use un campo related a algo del diario
         """
         user = self.env.user
-        # if superadmin, do not apply
-        if not self.env.is_superuser():
-            args += [
-                '|', ('modification_user_ids', '=', False),
-                ('id', 'in', user.modification_journal_ids.ids)]
-
-        return super()._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
+        domain += [
+            '|', ('modification_user_ids', '=', False),
+            ('id', 'in', user.modification_journal_ids.ids)]
+        return super()._search(domain, offset, limit, order, access_rights_uid=access_rights_uid)
 
     @api.onchange('journal_restriction')
     def unset_modification_user_ids(self):

@@ -67,9 +67,10 @@ class ResPartner(models.Model):
 
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
-            inicial_lines = self.env['account.move.line'].sudo().read_group(
-                initial_domain, fields=['balance'], groupby=['partner_id'])
-            balance = inicial_lines[0]['balance'] if inicial_lines else 0.0
+            inicial_lines = self.env['account.move.line'].sudo()._read_group(
+                initial_domain, groupby=['partner_id'], aggregates=['balance:sum'])
+            balance = inicial_lines[0][1] if inicial_lines else 0.0
+
             res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance)]
             domain.append(('date', '>=', from_date))
         else:

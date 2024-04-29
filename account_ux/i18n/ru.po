@@ -290,16 +290,6 @@ msgid "Debit Jouranl Entry"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__purchase_tax_ids
-msgid "Default Purchase Taxes"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__sale_tax_ids
-msgid "Default Sale Taxes"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_distribution_required__by_account_type
 #: model:ir.model.fields.selection,name:account_ux.selection__account_account__analytic_tag_required__by_account_type
 msgid "Defined by account type"
@@ -432,11 +422,6 @@ msgstr "Обновлено"
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_date
 msgid "Last Updated on"
 msgstr "Обновлено"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.res_partner_view_buttons
-msgid "Match Payments"
-msgstr ""
 
 #. module: account_ux
 #: code:addons/account_ux/wizards/account_validate_account_move.py:0
@@ -595,17 +580,6 @@ msgstr ""
 msgid ""
 "This number of days will be added to the date of inbound debit card payments"
 " to get the due date, usefull for cashflow analysis"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__purchase_tax_ids
-msgid "This purchase tax will be assigned by default on new products."
-msgstr ""
-"Этот налог на покупку будет назначаться по умолчанию для новых продуктов."
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__sale_tax_ids
-msgid "This sale tax will be assigned by default on new products."
 msgstr ""
 
 #. module: account_ux

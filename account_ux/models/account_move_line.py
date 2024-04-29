@@ -13,7 +13,7 @@ class AccountMoveLine(models.Model):
         help='Salesperson of contact related to this journal item')
 
     @api.model
-    def _prepare_reconciliation_single_partial(self, debit_vals, credit_vals):
+    def _prepare_reconciliation_single_partial(self, debit_values, credit_values, shadowed_aml_values=None):
         """
         Este metodo es el que se encarga de preparar los vals de la partial reconcile y también de los exchange diff.
         Extendemos la funcionalidad para el nuevo parametro "reconcile_on_company_currency" que nos permitiria
@@ -50,33 +50,34 @@ class AccountMoveLine(models.Model):
             else:
                 return abs(vals['amount_currency']) / abs(vals['balance'])
 
-        company_currency = debit_vals['company'].currency_id
-        reconcile_on_company_currency = debit_vals['company'].reconcile_on_company_currency and \
-            (debit_vals['currency'] != company_currency or credit_vals['currency'] != company_currency) and \
-            not debit_vals['record'].account_id.currency_id
+        company_debit_currency = debit_values['aml'].company_currency_id
+        company_credit_currency = credit_values['aml'].company_currency_id
+        reconcile_on_company_currency = debit_values['aml'].company_id.reconcile_on_company_currency and \
+            (debit_values['aml'].currency_id != company_debit_currency or credit_values['aml'].currency_id != company_credit_currency) and \
+            not debit_values['aml'].account_id.currency_id
         if reconcile_on_company_currency:
-            if debit_vals['currency'] != debit_vals['company'].currency_id:
-                debit_vals['original_currency'] = debit_vals['currency']
-                debit_vals['original_amount_residual_currency'] = debit_vals['amount_residual_currency']
-                debit_vals['currency'] = debit_vals['company'].currency_id
-                debit_vals['amount_residual_currency'] = debit_vals['amount_residual']
-            if credit_vals['currency'] != credit_vals['company'].currency_id:
-                credit_vals['original_currency'] = credit_vals['currency']
-                credit_vals['original_amount_residual_currency'] = credit_vals['amount_residual_currency']
-                credit_vals['currency'] = credit_vals['company'].currency_id
-                credit_vals['amount_residual_currency'] = credit_vals['amount_residual']
-        res = super()._prepare_reconciliation_single_partial(debit_vals, credit_vals)
+            if debit_values['aml'].currency_id != company_debit_currency:
+                debit_values['original_currency'] = debit_values['aml'].currency_id
+                debit_values['original_amount_residual_currency'] = debit_values['amount_residual_currency']
+                debit_values['aml'].currency_id = company_debit_currency
+                debit_values['amount_residual_currency'] = debit_values['amount_residual']
+            if credit_values['aml'].currency_id != company_credit_currency:
+                credit_values['original_currency'] = credit_values['aml'].currency_id
+                credit_values['original_amount_residual_currency'] = credit_values['amount_residual_currency']
+                credit_values['aml'].currency_id = company_credit_currency
+                credit_values['amount_residual_currency'] = credit_values['amount_residual']
+        res = super()._prepare_reconciliation_single_partial(debit_values, credit_values, shadowed_aml_values)
 
         if reconcile_on_company_currency and 'partial_vals' in res:
-            if 'original_currency' in credit_vals:
-                credit_vals['currency'] = credit_vals['original_currency']
-                rate = get_accounting_rate(credit_vals)
-                res['partial_vals']['credit_amount_currency'] = credit_vals['currency'].round(
+            if 'original_currency' in credit_values:
+                credit_values['aml'].currency_id = credit_values['original_currency']
+                rate = get_accounting_rate(credit_values)
+                res['partial_vals']['credit_amount_currency'] = credit_values['aml'].currency_id.round(
                     res['partial_vals']['credit_amount_currency'] * rate)
-            if 'original_currency' in debit_vals:
-                debit_vals['currency'] = debit_vals['original_currency']
-                rate = get_accounting_rate(debit_vals)
-                res['partial_vals']['debit_amount_currency'] = credit_vals['currency'].round(
+            if 'original_currency' in debit_values:
+                debit_values['aml'].currency_id = debit_values['original_currency']
+                rate = get_accounting_rate(debit_values)
+                res['partial_vals']['debit_amount_currency'] = credit_values['aml'].currency_id.round(
                     res['partial_vals']['debit_amount_currency'] * rate)
         return res
 

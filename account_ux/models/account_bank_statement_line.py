@@ -40,7 +40,6 @@ class AccountBankStatementLine(models.Model):
                 'statement_id': st_line.statement_id,
                 'date': st_line.date,
                 'amount': st_line.amount,
-                'extract_state': st_line.extract_state,
                 'journal_id': st_line.journal_id,
                 'move_type': st_line.move_type,
                 'partner_id': st_line.partner_id,
@@ -58,10 +57,10 @@ class AccountBankStatementLine(models.Model):
             payment.statement_line_id = False
             # Al pago le cambiamos la cuenta de outstanding en lugar de la cuenta de liquidez
             payment.move_id.line_ids.filtered(lambda x: x.account_id == liquidity_lines.account_id).account_id = outstanding_account.id
-            #liquidity_lines.account_id = outstanding_account.id
+            # liquidity_lines.account_id = outstanding_account.id
 
         super().action_undo_reconciliation()
         to_post.mapped('move_id').action_post()
         # publicamos los asientos de las líneas del extracto contable
-        #for st_line in st_lines_to_fix:
+        # for st_line in st_lines_to_fix:
         #    st_line.move_id._post(soft=False)

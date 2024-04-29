@@ -14,11 +14,6 @@ class AccountAccount(models.Model):
         help="If True, then an analytic distribution will be required when posting "
         "journal entries with this account.",
     )
-    group_id = fields.Many2one(
-        'account.group',
-        # we restrict those who do not have childs categories
-        domain=[('child_ids', '=', False)],
-    )
 
     @api.constrains('currency_id')
     def check_currency(self):

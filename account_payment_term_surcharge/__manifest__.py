@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Surcharges on payment terms',
-    'version': "16.0.1.0.0",
+    'version': "17.0.1.0.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Allow to add surcharges for invoices on payment terms',

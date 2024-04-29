@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_partner_form" model="ir.ui.view">
-        <field name="name">res.partner.form.inherit</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="account.view_partner_property_form"/>
-        <field name="arch" type="xml">
-            <div name="button_box" position="inside">
-                <button class="oe_stat_button" type="object" groups="account.group_account_invoice" name="action_open_reconcile" icon="fa-usd" string="Match Payments">
-                </button>
-            </div>
-            <xpath expr="//page[@name='accounting']//group" position="after">
-                <group>
-                    <field name="last_time_entries_checked" readonly="0" groups="base.group_no_one"/>
-                </group>
-            </xpath>
-        </field>
-    </record>
-
     <record id="view_res_partner_filter" model="ir.ui.view">
         <field name="name">res.partner.view.filter</field>
         <field name="model">res.partner</field>
