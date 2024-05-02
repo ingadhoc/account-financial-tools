@@ -33,7 +33,7 @@ class ResCompanyInterest(models.Model):
         'Interest Product',
         required=True,
     )
-    analytic_line_ids = fields.Many2one(
+    analytic_account_id = fields.Many2one(
         'account.analytic.account',
         'Analytic account',
     )
@@ -232,7 +232,7 @@ class ResCompanyInterest(models.Model):
                 "price_unit": self.rate * debt,
                 "partner_id": partner.id,
                 "name": self.interest_product_id.name + '.\n' + comment,
-                "analytic_line_ids": [(self.analytic_line_ids.id, )] if self.analytic_line_ids.id else False,
+                "analytic_distribution": {self.analytic_account_id.id: 100.0} if self.analytic_account_id.id else False,
                 "tax_ids": [(6, 0, tax_id.ids)]
             })],
         }
