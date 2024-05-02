@@ -30,7 +30,7 @@ msgid "Additional Filters"
 msgstr "Filtros Adicionales"
 
 #. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__analytic_line_ids
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__analytic_account_id
 msgid "Analytic account"
 msgstr ""
 
