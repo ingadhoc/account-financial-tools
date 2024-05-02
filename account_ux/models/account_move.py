@@ -73,7 +73,7 @@ class AccountMove(models.Model):
                     _("Please check the email template associated with"
                       " the invoice journal."),
                     "<code>" + str(error) + "</code>"
-                ]),
+                ]), body_is_html=True
                 )
 
     @api.onchange('partner_id')
