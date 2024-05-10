@@ -21,7 +21,8 @@
     </record>
 
     <!-- view for partner ledger -->
-    <record id="view_move_line_tree_grouped_partner" model="ir.ui.view">
+    <!-- ya no estamos usando esta vista, mandamos a las nuevas de abajo, borrar? -->
+    <!-- <record id="view_move_line_tree_grouped_partner" model="ir.ui.view">
         <field name="name">account.move.line.inherit.view.tree</field>
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_tree_grouped_partner"/>
@@ -42,6 +43,65 @@
                 <attribute name="optional">hide</attribute>
             </field>
         </field>
+    </record> -->
+
+    <record id="view_move_line_payment_tree" model="ir.ui.view">
+        <field name="name">account.move.line.inherit.view.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_payment_tree"/>
+        <field name="arch" type="xml">
+            <header>
+                <button name="action_reconcile" type="object" string="Reconcile" groups="account.group_account_user"/>
+            </header>
+            <field name="amount_residual" position="before">
+                <field name="balance" sum="Total Balance" optional="hide" readonly="1"/>
+            </field>
+            <field name="discount_amount_currency" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <!-- hacemos siempre visible este campo porque a partir de 16 odoo lo calcula siempre (moneda igual o distinta a la cia). Luego, en las agrupaciones confundia porque sumaba todo pero en realidad el usuario solo veia los que eran en moneda distinta -->
+            <field name="amount_residual_currency" position="attributes">
+                <attribute name="invisible">not is_account_reconcile</attribute>
+            </field>
+        </field>
     </record>
+
+    <record id="view_account_partner_ledger_filter" model="ir.ui.view">
+        <field name="name">account.move.line.search</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <!-- sacamos filtro de cuenta la izquierda -->
+            <field name="account_root_id" position="replace"/>
+        </field>
+    </record>
+
+    <!-- pasamos a usar la nueva vista view_move_line_payment_tree que es un poco mas limpia y tiene botones
+    mas asertados. TODO ver si mezclamos con la de view_move_line_tree_grouped_partner o unificamos criterios entre este boton y el del partner -->
+    <record id="action_account_moves_customers_ledger" model="ir.actions.act_window">
+        <field name="name">Customers Ledger</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_move_line_payment_tree"/>
+        <field name="search_view_id" ref="view_account_partner_ledger_filter"/>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="context">{'journal_type':'general', 'search_default_group_by_partner': 1, 'search_default_posted':1,  'search_default_trade_receivable':1, 'search_default_unreconciled':1}</field>
+        <field name="domain">[('account_type', 'in', ['liability_payable', 'asset_receivable'])]</field>
+    </record>
+
+    <record id="action_account_moves_vendors_ledger" model="ir.actions.act_window">
+        <field name="name">Vendors Ledger</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_move_line_payment_tree"/>
+        <field name="search_view_id" ref="view_account_partner_ledger_filter"/>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="context">{'journal_type':'general', 'search_default_group_by_partner': 1, 'search_default_posted':1,  'search_default_trade_payable':1, 'search_default_unreconciled':1}</field>
+        <field name="domain">[('account_type', 'in', ['liability_payable', 'asset_receivable'])]</field>
+    </record>
+
+    <menuitem id="menu_customer_ledger" parent="account.menu_finance_receivables" action="action_account_moves_customers_ledger" sequence="10"/>
+    <menuitem id="menu_vendor_ledger" parent="account.menu_finance_payables" action="action_account_moves_vendors_ledger" sequence="10"/>
 
 </odoo>

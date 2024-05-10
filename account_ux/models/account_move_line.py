@@ -11,6 +11,10 @@ class AccountMoveLine(models.Model):
     user_id = fields.Many2one(
         string='Contact Salesperson', related='partner_id.user_id', store=True,
         help='Salesperson of contact related to this journal item')
+    # lo agregamos para que al agrupar en vista tree se vea y ademas que aparezca com messure en la pivot
+    amount_residual_currency = fields.Monetary(
+        group_operator='sum',
+    )
 
     @api.model
     def _prepare_reconciliation_single_partial(self, debit_values, credit_values, shadowed_aml_values=None):
