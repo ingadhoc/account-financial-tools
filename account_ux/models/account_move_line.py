@@ -50,8 +50,9 @@ class AccountMoveLine(models.Model):
             else:
                 return abs(vals['amount_currency']) / abs(vals['balance'])
 
-        company_debit_currency = debit_values['aml'].company_currency_id
-        company_credit_currency = credit_values['aml'].company_currency_id
+        company_currency = self.company_id.currency_id
+        company_debit_currency = self.move_id.filtered(lambda x: x.move_type in ['out_invoice','in_invoice']).currency_id
+        company_credit_currency = self.move_id.filtered(lambda x: x.move_type in ['out_invoice','in_invoice']).currency_id
         reconcile_on_company_currency = debit_values['aml'].company_id.reconcile_on_company_currency and \
             (debit_values['aml'].currency_id != company_debit_currency or credit_values['aml'].currency_id != company_credit_currency) and \
             not debit_values['aml'].account_id.currency_id
@@ -59,13 +60,14 @@ class AccountMoveLine(models.Model):
             if debit_values['aml'].currency_id != company_debit_currency:
                 debit_values['original_currency'] = debit_values['aml'].currency_id
                 debit_values['original_amount_residual_currency'] = debit_values['amount_residual_currency']
-                debit_values['aml'].currency_id = company_debit_currency
+                # debit_values['aml'].currency_id = company_debit_currency
                 debit_values['amount_residual_currency'] = debit_values['amount_residual']
             if credit_values['aml'].currency_id != company_credit_currency:
                 credit_values['original_currency'] = credit_values['aml'].currency_id
                 credit_values['original_amount_residual_currency'] = credit_values['amount_residual_currency']
-                credit_values['aml'].currency_id = company_credit_currency
+                # credit_values['aml'].currency_id = company_credit_currency
                 credit_values['amount_residual_currency'] = credit_values['amount_residual']
+
         res = super()._prepare_reconciliation_single_partial(debit_values, credit_values, shadowed_aml_values)
 
         if reconcile_on_company_currency and 'partial_vals' in res:
