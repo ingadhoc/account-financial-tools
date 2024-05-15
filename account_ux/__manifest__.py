@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account UX',
-    'version': "16.0.1.6.0",
+    'version': "16.0.1.7.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
@@ -55,4 +55,5 @@
     # instale
     'auto_install': True,
     'application': False,
+    'post_load': 'monkey_patches',
 }

@@ -16,9 +16,19 @@
                 <attribute name="groups"></attribute>
                 <attribute name="optional">hide</attribute>
             </field>
-
+            
             <button name="button_draft" position="after">
                 <button name="delete_number" string="Delete Number" attrs="{'invisible':['|', ('state','!=','cancel'),'|',('name','=',False), ('name','=','/')]}" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
+                <field name="allow_move_with_valuation_cancelation" invisible = "1"/>
+                <button name="button_draft" 
+                    string="Reset to Draft" 
+                    attrs="{'invisible':['|',('allow_move_with_valuation_cancelation','=',False),('state','=','draft')]}" 
+                    type="object" 
+                    groups="account.group_account_invoice" 
+                    data-hotkey="r" 
+                    confirm="Este asiento contable está relacionado a una valoración de inventario, tenga en consideración que al reestablecer a borrador, la misma no se eliminará. Es decir, que si usted vuelve a re-validar la factura se le duplicará la valoración.
+                    &#10;&#10;Recomendación: Con modo desarrollador, dirigirse al menú de Inventario/Informes/Valoración, agrupar por 'Producto', desplegar el producto a ajustar y a través del '+' se puede generar un asiento de valoración manual para realizar el ajuste correspondiente."
+                />
             </button>
 
             <field name="narration" position="after">
