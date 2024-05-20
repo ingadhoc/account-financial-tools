@@ -16,8 +16,6 @@ class AccountMove(models.Model):
     )
     other_currency = fields.Boolean(compute='_compute_other_currency')
 
-    allow_move_with_valuation_cancelation = fields.Boolean(compute='_compute_allow_move_with_valuation_cancelation')
-
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
@@ -160,12 +158,3 @@ class AccountMove(models.Model):
             for rec in invoices_to_check:
                 error_msg +=  str(rec.date) + '\t'*2 + str(rec.invoice_date) + '\t'*3 + rec.display_name + '\n'
             raise UserError(_('The date and invoice date of a sale invoice must be the same: %s') % (error_msg))
-
-    def _compute_allow_move_with_valuation_cancelation(self):
-        with_valuation = self.filtered('line_ids.stock_valuation_layer_ids')
-        (self - with_valuation).allow_move_with_valuation_cancelation = False
-        for rec in with_valuation:
-            rec.allow_move_with_valuation_cancelation = not rec.show_reset_to_draft_button
-            if rec.restrict_mode_hash_table:
-                rec.with_context(bypass_valuation_cancelation= True)._compute_show_reset_to_draft_button()
-                rec.allow_move_with_valuation_cancelation = rec.show_reset_to_draft_button
