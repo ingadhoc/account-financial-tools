@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_move_form" model="ir.ui.view">
+        <field name="model">account.move</field>
+        <field name="name">account.move.form</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority" eval="40"/>
+        <field name="arch" type="xml">
+            <button name="button_draft" position="after">
+                <field name="allow_move_with_valuation_cancelation" invisible="1"/>
+                <button name="button_draft"
+                    string="Reset to Draft"
+                    invisible= "not allow_move_with_valuation_cancelation or state == 'draft'"
+                    type="object"
+                    groups="account.group_account_invoice"
+                    data-hotkey="r"
+                    confirm="Este asiento contable está relacionado a una valoración de inventario, tenga en consideración que al reestablecer a borrador, la misma no se eliminará. Es decir, que si usted vuelve a re-validar la factura se le duplicará la valoración.
+                    &#10;&#10;Recomendación: Con modo desarrollador, dirigirse al menú de Inventario/Informes/Valoración, agrupar por 'Producto', desplegar el producto a ajustar y a través del '+' se puede generar un asiento de valoración manual para realizar el ajuste correspondiente."
+                />
+            </button>
+        </field>
+    </record>
+</odoo>
