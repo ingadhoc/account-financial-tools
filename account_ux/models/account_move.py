@@ -103,7 +103,7 @@ class AccountMove(models.Model):
 
         # TODO tal vez chequear tmb que moneda de factura sea distinta? o eso no influye? habria que ver caso de pagar con usd factura en ars
         for move in self.filtered(
-                lambda x: x.invoice_outstanding_credits_debits_widget and \
+                lambda x: x.invoice_has_outstanding and \
                 x.company_id.currency_id != x.currency_id and x.company_id.reconcile_on_company_currency):
             pay_term_lines = move.line_ids\
                 .filtered(lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
