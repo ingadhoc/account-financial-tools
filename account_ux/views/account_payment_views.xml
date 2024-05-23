@@ -31,7 +31,7 @@
         <field name="res_model">account.payment</field>
         <field name="view_mode">tree,form,graph</field>
         <field name="context">{'default_payment_type': 'outbound', 'is_internal_transfer_menu': True, 'default_move_journal_types': ('bank', 'cash'), 'display_account_trust': True, }</field>
-        <field name="domain">[('is_internal_transfer', '=', 'transfer')]</field>
+        <field name="domain">[('is_internal_transfer', '=', True)]</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
               Click to register a transfer between liquidity journals
