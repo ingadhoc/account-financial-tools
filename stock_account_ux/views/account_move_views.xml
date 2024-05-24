@@ -3,7 +3,7 @@
         <field name="model">account.move</field>
         <field name="name">account.move.form</field>
         <field name="inherit_id" ref="account.view_move_form"/>
-        <field name="priority" eval="40"/>
+        <field name="priority" eval="60"/>
         <field name="arch" type="xml">
             <button name="button_draft" position="after">
                 <field name="allow_move_with_valuation_cancelation" invisible="1"/>
