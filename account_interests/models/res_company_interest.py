@@ -5,6 +5,7 @@
 from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -82,7 +83,22 @@ class ResCompanyInterest(models.Model):
     def _cron_recurring_interests_invoices(self):
         _logger.info('Running Interest Invoices Cron Job')
         current_date = fields.Date.today()
-        self.search([('next_date', '<=', current_date)]).create_interest_invoices()
+        companies_with_errors = []
+
+        for rec in self.search([('next_date', '<=', current_date)]):
+            try:
+                rec.create_interest_invoices()
+                rec.env.cr.commit()
+            except:
+                _logger.error('Error creating interest invoices for company: %s', rec.company_id.name)
+                companies_with_errors.append(rec.company_id.name)
+                rec.env.cr.rollback()
+                
+        if companies_with_errors:
+            company_names = ', '.join(companies_with_errors)
+            error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
+            raise UserError(error_message)
+
 
     def create_interest_invoices(self):
         for rec in self:
@@ -154,7 +170,7 @@ class ResCompanyInterest(models.Model):
             fields=fields,
             groupby=[groupby],
         )
-
+        
         self = self.with_context(
             company_id=self.company_id.id,
             mail_notrack=True,
@@ -163,16 +179,17 @@ class ResCompanyInterest(models.Model):
         total_items = len(grouped_lines)
         _logger.info('%s interest invoices will be generated', total_items)
         for idx, line in enumerate(grouped_lines):
-
+            
+            _logger.info(
+                'Creating Interest Invoice (%s of %s) with values:\n%s',
+                idx + 1, total_items, line)
+            
             debt = line['amount_residual']
 
             if not debt or debt <= 0.0:
                 _logger.info("Debt is negative, skipping...")
                 continue
 
-            _logger.info(
-                'Creating Interest Invoice (%s of %s) with values:\n%s',
-                idx + 1, total_items, line)
             partner_id = line[groupby][0]
 
             partner = self.env['res.partner'].browse(partner_id)
