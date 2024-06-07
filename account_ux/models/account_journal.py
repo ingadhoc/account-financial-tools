@@ -31,6 +31,13 @@ class AccountJournal(models.Model):
         help="If set an email will be sent to the customer after the invoices"
         " related to this journal has been validated.",
     )
+    uso_del_diario = fields.Selection([
+        ('without_statement','No generar extractos ni conciliar'),
+        ('import_conciliation','Conciliación importando archivos/sincronización'),
+        ('assistant_import','Conciliaciones a través del asistente de importación de líneas')
+    ], 
+    string="Uso del diario",
+    )
 
     @api.constrains('currency_id')
     def check_currency(self):
