@@ -12,6 +12,9 @@
             <field name="company_id" position="after">
                 <field name="mail_template_id"  context="{'default_model': 'account.move'}"/>
             </field>
+            <field name="default_credit_account_id" position="after">
+                <field name="uso_del_diario" attrs="{'invisible':[('type', 'not in', ['cash', 'bank'])]}"/>
+            </field>
         </field>
     </record>
 
