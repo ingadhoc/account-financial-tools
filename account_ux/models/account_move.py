@@ -53,6 +53,8 @@ class AccountMove(models.Model):
             try:
                 rec.message_post_with_source(
                     rec.journal_id.mail_template_id,
+                    message_type='comment',
+                    subtype_xmlid='mail.mt_comment'
                 )
             except Exception as error:
                 title = _(
