@@ -106,9 +106,10 @@ class AccountJournal(models.Model):
         cualquier lugar que se use un campo related a algo del diario
         """
         user = self.env.user
-        domain += [
-            '|', ('modification_user_ids', '=', False),
-            ('id', 'in', user.modification_journal_ids.ids)]
+        if not self.env.is_superuser():
+            domain += [
+                '|', ('modification_user_ids', '=', False),
+                ('id', 'in', user.modification_journal_ids.ids)]
         return super()._search(domain, offset, limit, order, access_rights_uid=access_rights_uid)
 
     @api.onchange('journal_restriction')
