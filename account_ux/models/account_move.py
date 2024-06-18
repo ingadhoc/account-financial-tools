@@ -87,40 +87,6 @@ class AccountMove(models.Model):
         res._onchange_partner_commercial()
         return res
 
-    def _compute_payments_widget_to_reconcile_info(self):
-        """
-        Modificamos el widget para que si la compañía tiene el setting de forzar concilacion en moneda y estamos
-        en esa situacion (cuenta deudora no tiene moneda). Entonces el importe que previsualizamos para conciliar
-        respeta la modificacion que hacemos al conciliar (basicamente que importa el rate en pesos por lo cual tomamos
-        el rate de la factura)
-        """
-        super()._compute_payments_widget_to_reconcile_info()
-
-        def get_accounting_rate(company_currency, amount, amount_currency, currency):
-            if company_currency.is_zero(amount) or currency.is_zero(amount_currency):
-                return 0.0
-            else:
-                return abs(amount_currency) / abs(amount)
-
-        # TODO tal vez chequear tmb que moneda de factura sea distinta? o eso no influye? habria que ver caso de pagar con usd factura en ars
-        for move in self.filtered(
-                lambda x: x.invoice_has_outstanding and \
-                x.company_id.currency_id != x.currency_id and x.company_id.reconcile_on_company_currency):
-            pay_term_lines = move.line_ids\
-                .filtered(lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
-            # deberia ser solo una cuenta, pero como super hace un in chequeamos que cualquier cuenta pueda tener moneda
-            if any(x.currency_id for x in pay_term_lines.account_id):
-                continue
-            # para todos los asientos que son en moneda secundaria y que no tengan moneda calculamos el rate
-            # segun lo contable y previsualizamos la imputacion con este rate
-
-            # los rates en realidad existen en los aml de la factura, pero para no tomar arbitrariamente uno sacamos
-            # el rate desde los totales de la factura
-            rate = get_accounting_rate(move.company_id.currency_id, move.amount_total_signed, move.amount_total_in_currency_signed, move.currency_id)
-            for item in move.invoice_outstanding_credits_debits_widget['content']:
-                amount_residual = self.env['account.move.line'].browse(item['id']).amount_residual
-                item['amount'] = move.currency_id.round(amount_residual * rate)
-
     @api.depends('invoice_date')
     def _compute_invoice_date_due(self):
         """ Si la factura no tiene término de pago y la misma tiene fecha de vencimiento anterior al día de hoy y la factura no tiene fecha entonces cuando se publica la factura, la fecha de vencimiento tiene que coincidir con la fecha de hoy. """
