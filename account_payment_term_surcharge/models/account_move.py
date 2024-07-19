@@ -39,7 +39,7 @@ class AccountMove(models.Model):
         move_debit_note_wiz = self.env['account.debit.note'].with_context(active_model="account.move",
                                                                           active_ids=self.ids).create({
             'date': surcharge_date,
-            'reason': 'Surcharge Invoice',
+            'reason': product.name,
         })
         debit_note = self.env['account.move'].browse(move_debit_note_wiz.create_debit().get('res_id'))
         debit_note.narration = product.name + '.\n' + self.prepare_info(surcharge_date, debt, surcharge_percent)
