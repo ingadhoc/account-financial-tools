@@ -151,7 +151,7 @@ class ResCompanyInterest(models.Model):
         ]
         return move_line_domain
 
-    def create_invoices(self, to_date, groupby='partner_id'):
+    def create_invoices(self, to_date, groupby=['partner_id']):
         self.ensure_one()
 
         journal = self.env['account.journal'].search([
@@ -168,7 +168,7 @@ class ResCompanyInterest(models.Model):
         move_line = self.env['account.move.line']
         grouped_lines = move_line._read_group(
             domain=move_line_domain,
-            groupby=[groupby],
+            groupby=groupby,
             aggregates=fields,
         )
         self = self.with_context(
@@ -179,21 +179,14 @@ class ResCompanyInterest(models.Model):
         total_items = len(grouped_lines)
         _logger.info('%s interest invoices will be generated', total_items)
         for idx, line in enumerate(grouped_lines):
-            
-            _logger.info(
-                'Creating Interest Invoice (%s of %s) with values:\n%s',
-                idx + 1, total_items, line)
-            
-            debt = line[2]
-            if not debt or debt <= 0.0:
-                _logger.info("Debt is negative, skipping...")
+            move_vals = self._prepare_interest_invoice(
+                line, to_date, journal)
+
+            if not move_vals:
                 continue
 
-            partner_id = line[0].id
+            _logger.info('Creating Interest Invoice (%s of %s) with values:\n%s', idx + 1, total_items, line)
 
-            partner = self.env['res.partner'].browse(partner_id)
-            move_vals = self._prepare_interest_invoice(
-                partner, debt, to_date, journal)
             move = self.env['account.move'].create(move_vals)
 
             if self.automatic_validation:
@@ -220,8 +213,16 @@ class ResCompanyInterest(models.Model):
 
         return res
 
-    def _prepare_interest_invoice(self, partner, debt, to_date, journal):
+    def _prepare_interest_invoice(self, line, to_date, journal):
         self.ensure_one()
+        debt = line[2]
+
+        if not debt or debt <= 0.0:
+            _logger.info("Debt is negative, skipping...")
+            return
+
+        partner_id = line[0].id
+        partner = self.env['res.partner'].browse(partner_id)
         comment = self.prepare_info(to_date, debt)
         fpos = partner.property_account_position_id
         taxes = self.interest_product_id.taxes_id.filtered(
