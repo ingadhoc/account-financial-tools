@@ -58,6 +58,7 @@ class AccountMove(models.Model):
                 rec.message_post_with_template(
                     rec.journal_id.mail_template_id.id,
                 )
+                rec.is_move_sent= True
             except Exception as error:
                 title = _(
                     "ERROR: Invoice was not sent via email"
