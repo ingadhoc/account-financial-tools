@@ -55,6 +55,7 @@ class AccountMove(models.Model):
                     rec.journal_id.mail_template_id,
                     subtype_xmlid='mail.mt_comment'
                 )
+                rec.is_move_sent= True
             except Exception as error:
                 title = _(
                     "ERROR: Invoice was not sent via email"
