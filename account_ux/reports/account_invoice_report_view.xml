@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_invoice_line_report_tree" model="ir.ui.view">
+        <field name="name">account.invoice.report.tree</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.account_invoice_report_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-info">state == 'draft'</attribute>
+                <attribute name="decoration-muted">state == 'cancel'</attribute>
+            </xpath>
+            <field name="quantity" position="after">
+                <field name="price_unit"/>
+                <field name="discount" groups="product.group_discount_per_so_line"/>
+                <field name="discount_amount" sum="Total" optional="hide" groups="product.group_discount_per_so_line"/>
+                <field name="price_subtotal_ic" sum="Total" optional="hide"/>
+            </field>
+            <field name="price_total" position="after">
+                <field name="price_subtotal" position="move"/>
+                <field name="total_cc" sum="Total"/>
+                <field name="invoice_currency_id" optional="hide"/>
+                <field name="company_currency_id" column_invisible="True"/>
+            </field>
+            </field>
+    </record>
+
+    <record id="view_account_invoice_report_search" model="ir.ui.view">
+        <field name="name">account.invoice.report.search</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_search"/>
+        <field name="arch" type="xml">
+            <filter name='user' position="after">
+                <filter string="Journal Entry" name="groupby_move_id" context="{'group_by':'move_id'}"/>
+                <filter string="Invoice Currency" name="groupby_invoice_currency_id" context="{'group_by':'invoice_currency_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_report_pivot" model="ir.ui.view">
+        <field name="name">account.invoice.report.pivot</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_pivot"/>
+        <field name="arch" type="xml">
+            <pivot position="attributes">
+                <attribute name="disable_linking"></attribute>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="account.action_account_invoice_report_all" model="ir.actions.act_window">
+        <field name="res_model">account.invoice.report</field>
+        <field name="view_mode">tree,graph,pivot</field>
+        <field name="context">{'search_default_current':1}</field>
+        <field name="search_view_id" ref="account.view_account_invoice_report_search"/>
+    </record>
+
+</odoo>
