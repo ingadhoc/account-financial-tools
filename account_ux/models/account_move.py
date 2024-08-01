@@ -150,7 +150,10 @@ class AccountMove(models.Model):
     @api.constrains('state')
     def _check_company_on_lines(self):
         for move in self.filtered(lambda x: x.state == 'posted'):
-            lines_with_problem = s = move.line_ids.filtered(lambda x: x.account_id and x.account_id.company_id != move.company_id)
+            if move.company_id.parent_id:
+                lines_with_problem = move.line_ids.filtered(lambda x: x.account_id and move.company_id not in x.account_id.company_id.child_ids)
+            else:
+                lines_with_problem = move.line_ids.filtered(lambda x: x.account_id and x.account_id.company_id != move.company_id)
             if lines_with_problem:
                 raise UserError(_(
                     "There is at least one account in the journal entry of this move that belongs to a company that "
