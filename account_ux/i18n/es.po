@@ -4,14 +4,16 @@
 # 
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024
+# Gonzalo, 2024
+# feg, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-15 19:47+0000\n"
+"POT-Creation-Date: 2024-08-02 19:43+0000\n"
 "PO-Revision-Date: 2023-11-23 13:23+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024\n"
+"Last-Translator: feg, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,17 +38,12 @@ msgstr "Cuenta"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_chart_template
 msgid "Account Chart Template"
-msgstr "Plantilla de Plan de Cuentas"
+msgstr "Plantilla de plan contable"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_group
 msgid "Account Group"
 msgstr "Grupo de cuenta"
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_account__group_id
-msgid "Account prefixes can determine account groups."
-msgstr "Los prefijos de cuenta pueden determinar los grupos de cuenta."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -76,7 +73,7 @@ msgstr "Línea de extracto bancario"
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_finance_bank_and_cash
 msgid "Bank and Cash"
-msgstr ""
+msgstr "Banco y Caja"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
@@ -102,11 +99,6 @@ msgid "Change Type"
 msgstr "Cambiar Tipo"
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_group__child_ids
-msgid "Child"
-msgstr "Hijo"
-
-#. module: account_ux
 #: model_terms:ir.actions.act_window,help:account_ux.action_account_payments_transfer
 msgid "Click to register a transfer between liquidity journals"
 msgstr ""
@@ -127,11 +119,6 @@ msgstr "Compañía"
 #: model:ir.model,name:account_ux.model_res_config_settings
 msgid "Config Settings"
 msgstr "Ajustes de configuración"
-
-#. module: account_ux
-#: model:ir.model,name:account_ux.model_res_partner
-msgid "Contact"
-msgstr "Contacto"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__user_id
@@ -163,7 +150,7 @@ msgstr ""
 #: model:ir.model,name:account_ux.model_res_currency_rate
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_rate
 msgid "Currency Rate"
-msgstr "Tasa monetaria"
+msgstr "Tipo de cambio"
 
 #. module: account_ux
 #. odoo-python
@@ -180,6 +167,12 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
 msgid "Currency to"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_moves_customers_ledger
+#: model:ir.ui.menu,name:account_ux.menu_customer_ledger
+msgid "Customers Ledger"
 msgstr ""
 
 #. module: account_ux
@@ -229,11 +222,6 @@ msgstr "Plantilla de correo electrónico"
 #: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
 msgid "Full Reconciliations"
 msgstr "Conciliaciones totales"
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_account__group_id
-msgid "Group"
-msgstr "Grupo"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
@@ -308,7 +296,7 @@ msgstr "Última actualización el"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_tree_personalization
 msgid "Memo"
-msgstr ""
+msgstr "Memo"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__move_id
@@ -321,6 +309,11 @@ msgstr "Movimiento"
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__other_currency
 msgid "Other Currency"
 msgstr "Otra Moneda"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
+msgid "Paid"
+msgstr "Pagado"
 
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_partial_reconciliations
@@ -340,7 +333,7 @@ msgstr "Empresa"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_tree
 msgid "Payment Method"
-msgstr ""
+msgstr "Método de Pago"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__payment_method_description
@@ -353,11 +346,6 @@ msgid "Payments"
 msgstr "Pagos"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
-msgid "Paid"
-msgstr "Pagado"
-
-#. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
@@ -367,15 +355,26 @@ msgstr ""
 "facturas."
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_tree
+msgid "Reconcile"
+msgstr "Conciliar"
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_company__reconcile_on_company_currency
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__reconcile_on_company_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
 msgid "Reconcile On Company Currency"
-msgstr ""
+msgstr "Conciliar en moneda de la compañía"
 
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
 msgid "Reconciliations"
-msgstr ""
+msgstr "Conciliaciones"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__amount_residual_currency
+msgid "Residual Amount in Currency"
+msgstr "Importe residual en moneda"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
@@ -390,7 +389,7 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_to_id
 msgid "Select a currency to apply on the invoice"
-msgstr ""
+msgstr "Select a currency to apply on the invoice"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_rate
@@ -430,7 +429,7 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Source Document"
-msgstr ""
+msgstr "Documento de Origen"
 
 #. module: account_ux
 #. odoo-python
@@ -438,6 +437,15 @@ msgstr ""
 #, python-format
 msgid "The date and invoice date of a sale invoice must be the same: %s"
 msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_move_line__amount_residual_currency
+msgid ""
+"The residual amount on a journal item expressed in its currency (possibly "
+"not the company currency)."
+msgstr ""
+"El importe residual en un apunte contable expresado en su moneda "
+"(probablemente diferente de la utilizada por la compañía)."
 
 #. module: account_ux
 #. odoo-python
@@ -450,7 +458,14 @@ msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
-msgid "Reconcile On Company Currency"
+msgid ""
+"This option enables open documents in the payment report when reconciling "
+"debt with secondary currency, if the account doesn't have a currency "
+"configured, then reconcile on company currency. This will avoid all the "
+"automatic exchange rates journal entries by forcing same rate of the "
+"original document being reconcile. IMPORTANT: If you change this setting if "
+"you reconcile any previous item and re-reconcile it, it will be reconciled "
+"with the new mechanism"
 msgstr ""
 
 #. module: account_ux
@@ -465,6 +480,11 @@ msgid "Total"
 msgstr ""
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_tree
+msgid "Total Balance"
+msgstr "Balance Total"
+
+#. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_payments_transfer
 #: model:ir.ui.menu,name:account_ux.menu_action_account_payments_transfer
 msgid "Transfers"
@@ -474,6 +494,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_ux.selection__account_change_currency__change_type__value
 msgid "Update both currency and values"
 msgstr "Actualizar la moneda y la cotizacion"
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
+#: model:ir.ui.menu,name:account_ux.menu_vendor_ledger
+msgid "Vendors Ledger"
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -497,17 +523,10 @@ msgid ""
 "all the automatic exchange rates journal entries by forcing  same rate of "
 "the original document being reconcile"
 msgstr ""
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
-msgid ""
-"When reconciling debt with secondary currency, if the account doesn't have a"
-" currency configured, then reconcile on company currency. This will avoid "
-"all the automatic exchange rates journal entries by forcing same rate of the"
-" original document being reconcile. IMPORTANT: If you change this setting if"
-" you reconcile any previous item and re-reconcile it, it will be reconciled "
-"with the new mechanism"
-msgstr ""
+"Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene una"
+" moneda configurada, conciliará en la moneda de la compañía. Esto evitará el"
+" registro automático de diferencias de cambio al forzar el tipo de cambio a "
+"la del documento original conciliado."
 
 #. module: account_ux
 #. odoo-python
