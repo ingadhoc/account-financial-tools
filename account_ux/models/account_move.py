@@ -147,19 +147,6 @@ class AccountMove(models.Model):
                 inv.invoice_date_due = inv.invoice_date
         return super(AccountMove, invoices)._compute_invoice_date_due()
 
-    @api.constrains('state')
-    def _check_company_on_lines(self):
-        for move in self.filtered(lambda x: x.state == 'posted'):
-            if move.company_id.parent_id:
-                lines_with_problem = move.line_ids.filtered(lambda x: x.account_id and move.company_id not in x.account_id.company_id.child_ids)
-            else:
-                lines_with_problem = move.line_ids.filtered(lambda x: x.account_id and x.account_id.company_id != move.company_id)
-            if lines_with_problem:
-                raise UserError(_(
-                    "There is at least one account in the journal entry of this move that belongs to a company that "
-                    "is different to the company of the move (id: %s)\n- %s" % (
-                        move.id, '\n- '.join(lines_with_problem.mapped('display_name')))))
-
     def _compute_currency_id(self):
         """ Si la factura tenía currency_id no queremos cambiarla si cambia el diario """
         invoices_with_currency_id = self.filtered(lambda x: x.currency_id)
