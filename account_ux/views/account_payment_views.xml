@@ -5,6 +5,12 @@
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_form"/>
         <field name="arch" type="xml">
+            <label for="is_internal_transfer" position="attributes">
+                <attribute name="invisible">not is_internal_transfer</attribute>
+            </label>
+            <xpath expr="//field[@name='is_internal_transfer']/.." position="attributes">
+                <attribute name="invisible">not is_internal_transfer</attribute>
+            </xpath>
             <field name="is_internal_transfer" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
