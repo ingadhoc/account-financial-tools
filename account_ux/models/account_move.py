@@ -53,7 +53,7 @@ class AccountMove(models.Model):
         return res
 
     def action_send_invoice_mail(self):
-        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
+        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id and not x.is_move_sent):
             try:
                 rec.message_post_with_template(
                     rec.journal_id.mail_template_id.id,
@@ -159,3 +159,8 @@ class AccountMove(models.Model):
             for rec in invoices_to_check:
                 error_msg +=  str(rec.date) + '\t'*2 + str(rec.invoice_date) + '\t'*3 + rec.display_name + '\n'
             raise UserError(_('The date and invoice date of a sale invoice must be the same: %s') % (error_msg))
+
+    def button_draft(self):
+        previous_is_move_sent = self.is_move_sent
+        super(AccountMove, self).button_draft()
+        self.is_move_sent = previous_is_move_sent
