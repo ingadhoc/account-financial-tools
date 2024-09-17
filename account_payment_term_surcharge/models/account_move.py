@@ -1,4 +1,4 @@
-from odoo import fields, models, _, api, Command
+from odoo import fields, models, _, api, Command, tools
 from odoo.exceptions import UserError
 
 import logging
@@ -33,7 +33,8 @@ class AccountMove(models.Model):
                 rec.company_id.name)
             try:
                 rec.create_surcharge_invoice(rec.next_surcharge_date, rec.next_surcharge_percent)
-                rec.env.cr.commit()
+                if not tools.config['test_enable']:
+                    rec.env.cr.commit()
             except:
                 invoice_with_errors.append(rec.id)
                 rec.avoid_surcharge_invoice = True
@@ -46,7 +47,8 @@ class AccountMove(models.Model):
                     partner_ids=partner_ids,
                     subtype_xmlid='mail.mt_note'
                 )
-                rec.env.cr.commit()
+                if not tools.config['test_enable']:
+                    rec.env.cr.commit()
                 continue
         if invoice_with_errors:
             error_message = _("We couldn't run surcharges cron job in the following invoice: %s.") % invoice_with_errors
