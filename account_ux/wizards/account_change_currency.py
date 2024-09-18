@@ -64,11 +64,22 @@ class AccountChangeCurrency(models.TransientModel):
             self.currency_rate)
 
         move = self.move_id.with_context(check_move_validity=False)
+        tax_totals = move.tax_totals
         move.currency_id = self.currency_to_id.id
         for line in move.line_ids:
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
             line.price_unit = line.price_unit * self.currency_rate
-
+        # restaurar las líneas de impuestos
+        move.tax_totals = tax_totals
+        self.update_tax_totals()
         self.move_id.message_post(body=message)
         return {'type': 'ir.actions.act_window_close'}
+
+    def update_tax_totals(self):
+        tax_lines = self.move_id.line_ids.filtered(lambda x: x.tax_repartition_line_id.tax_id.amount_type in ['fixed', 'percent'])
+        for tax_line in tax_lines:
+            tax_line.amount_currency = tax_line.amount_currency * self.currency_rate
+        self.env['account.invoice.tax'].browse(tax_line.tax_group_id.id).action_update_tax()
+
+        self.move_id._compute_tax_totals()
