@@ -13,7 +13,7 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
 
         self.first_company_journal = self.env['account.journal'].search([('company_id', '=', self.first_company.id), ('type', '=', 'sale')], limit=1)                
 
-        self.product_surcharge = self.env.ref('product_planned_price.computed_manual_product_template')
+        self.product_surcharge = self.env.ref('product.product_product_16')
         self.env['res.config.settings'].search([('company_id', '=', self.first_company.id)]).payment_term_surcharge_product_id = self.product_surcharge.id
 
         self.payment_term = self.env['account.payment.term'].create({
