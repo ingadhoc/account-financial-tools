@@ -3,17 +3,17 @@
 # 	* account_ux
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024
-# Gonzalo, 2024
 # feg, 2024
+# Gonzalo, 2024
+# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-02 19:43+0000\n"
+"POT-Creation-Date: 2024-09-26 12:33+0000\n"
 "PO-Revision-Date: 2023-11-23 13:23+0000\n"
-"Last-Translator: feg, 2024\n"
+"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,6 +29,8 @@ msgid ""
 "\n"
 "Date\t\t\tInvoice Date\t\tInvoice\n"
 msgstr ""
+"\n"
+"Fecha\t\t\tFecha de Factura\t\tFactura\n"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
@@ -51,6 +53,23 @@ msgid "Add an internal note..."
 msgstr "Agregar una nota interna"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_chart_template__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_group__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_move__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_account_payment__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_res_company__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__algolia_search
+#: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__algolia_search
+msgid "Algolia Search"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Amount total"
 msgstr "Monto Total"
@@ -58,12 +77,22 @@ msgstr "Monto Total"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Amount untaxed"
-msgstr ""
+msgstr "Monto sin impuestos"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__analytic_distribution_required
 msgid "Analytic Distribution Required?"
 msgstr "¿Cuenta analítica requerida?"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_average
+msgid "Average Price (CC)"
+msgstr "Precio Promedio (CC)"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_average
+msgid "Average Price in company currency"
+msgstr "Precio Promedio en moneda de la compañía"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_bank_statement_line
@@ -101,7 +130,7 @@ msgstr "Cambiar Tipo"
 #. module: account_ux
 #: model_terms:ir.actions.act_window,help:account_ux.action_account_payments_transfer
 msgid "Click to register a transfer between liquidity journals"
-msgstr ""
+msgstr "Haga clic para registrar una transferencia entre diarios de liquidez."
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_company
@@ -124,7 +153,7 @@ msgstr "Ajustes de configuración"
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__user_id
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
 msgid "Contact Salesperson"
-msgstr ""
+msgstr "Contactar al Vendedor"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
@@ -144,7 +173,7 @@ msgstr "Entrada en el Diario de Crédito"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_from_id
 msgid "Currency From"
-msgstr ""
+msgstr "Moneda Origen"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_currency_rate
@@ -162,18 +191,18 @@ msgstr "Moneda cambiada de %s a %s con tasa %s"
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
 msgid "Currency from Invoice"
-msgstr ""
+msgstr "Moneda de la Factura"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
 msgid "Currency to"
-msgstr ""
+msgstr "Moneda Destino"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_customers_ledger
 #: model:ir.ui.menu,name:account_ux.menu_customer_ledger
 msgid "Customers Ledger"
-msgstr ""
+msgstr "Mayor de Clientes"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
@@ -195,6 +224,16 @@ msgstr ""
 "Eliminar el número le permitirá eliminar esta factura u obtener un nuevo "
 "número si lo revalida. Si esta factura representa una factura anulada, "
 "entonces no debe limpiarla."
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__discount
+msgid "Discount (%)"
+msgstr "Descuento (%)"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__discount_amount
+msgid "Discount Amount"
+msgstr "Importe de Descuento"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
@@ -263,9 +302,16 @@ msgid "Internal Notes"
 msgstr "Notas Internas"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__invoice_currency_id
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_report_search
 msgid "Invoice Currency"
 msgstr "Moneda de la Factura"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_invoice_report
+msgid "Invoices Statistics"
+msgstr "Estadísticas de facturas"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
@@ -275,11 +321,13 @@ msgstr "Diario"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_report_search
 msgid "Journal Entry"
 msgstr "Asiento contable"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move_line
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__line_id
 msgid "Journal Item"
 msgstr "Apunte contable"
 
@@ -338,7 +386,7 @@ msgstr "Método de Pago"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__payment_method_description
 msgid "Payment Method Desc."
-msgstr ""
+msgstr "Descripción del Método de Pago"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment
@@ -379,12 +427,12 @@ msgstr "Importe residual en moneda"
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
 msgid "Restrict Change Invoice Currency Exchange"
-msgstr ""
+msgstr "Restringir el Cambio de la Moneda de la Factura"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_move_line__user_id
 msgid "Salesperson of contact related to this journal item"
-msgstr ""
+msgstr "Vendedor del contacto relacionado con este apunte contable"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_to_id
@@ -394,7 +442,7 @@ msgstr "Select a currency to apply on the invoice"
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_rate
 msgid "Select a rate to apply on the invoice"
-msgstr ""
+msgstr "Selecciona una cotización para aplicar en la factura"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
@@ -436,7 +484,7 @@ msgstr "Documento de Origen"
 #: code:addons/account_ux/models/account_move.py:0
 #, python-format
 msgid "The date and invoice date of a sale invoice must be the same: %s"
-msgstr ""
+msgstr "La fecha contable y fecha de la factura deben ser la misma: %s"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_move_line__amount_residual_currency
@@ -446,15 +494,6 @@ msgid ""
 msgstr ""
 "El importe residual en un apunte contable expresado en su moneda "
 "(probablemente diferente de la utilizada por la compañía)."
-
-#. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_move.py:0
-#, python-format
-msgid ""
-"There is at least one account in the journal entry of this move that belongs to a company that is different to the company of the move (id: %s)\n"
-"- %s"
-msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
@@ -467,17 +506,31 @@ msgid ""
 "you reconcile any previous item and re-reconcile it, it will be reconciled "
 "with the new mechanism"
 msgstr ""
+"Esta opción permite abrir documentos en el informe de pagos al conciliar "
+"deudas con moneda secundaria. Si la cuenta no tiene una moneda configurada, "
+"entonces se concilia en la moneda de la empresa. Esto evitará todos los "
+"asientos contables automáticos de tipos de cambio al forzar el mismo tipo de"
+" cambio del documento original que se está conciliando. IMPORTANTE: Si "
+"cambias esta configuración, cualquier ítem anterior que se concilie y se "
+"vuelva a conciliar se hará con el nuevo mecanismo."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "This wizard will change the currency of the invoice"
-msgstr ""
+msgstr "Este asistente modifcará la moneda de la factura"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_total
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_line_report_tree
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Total"
-msgstr ""
+msgstr "Total"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__total_cc
+msgid "Total (CC)"
+msgstr "Total (CC)"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_tree
@@ -488,7 +541,28 @@ msgstr "Balance Total"
 #: model:ir.actions.act_window,name:account_ux.action_account_payments_transfer
 #: model:ir.ui.menu,name:account_ux.menu_action_account_payments_transfer
 msgid "Transfers"
-msgstr ""
+msgstr "Transferencias"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_unit
+msgid "Unit Price"
+msgstr "Precio Unitario"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_subtotal_ic
+msgid "Untaxed Total"
+msgstr "Total sin impuestos"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_subtotal
+msgid "Untaxed Total (CC)"
+msgstr "Total sin impuestos (CC)"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_subtotal
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__total_cc
+msgid "Untaxed Total in company currency"
+msgstr "Total sin impuestos en moneda de la compañía"
 
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_change_currency__change_type__value
@@ -499,7 +573,7 @@ msgstr "Actualizar la moneda y la cotizacion"
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
 #: model:ir.ui.menu,name:account_ux.menu_vendor_ledger
 msgid "Vendors Ledger"
-msgstr ""
+msgstr "Mayor de Proveedores"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
