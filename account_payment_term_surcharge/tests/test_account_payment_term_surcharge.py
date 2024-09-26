@@ -1,4 +1,5 @@
 import odoo.tests.common as common
+from odoo.tests import tagged
 from odoo import Command, fields
 from datetime import timedelta
 
@@ -27,6 +28,7 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
             'day_of_the_month': 0
         })
 
+    @tagged("-at_install", "post_install",)
     def test_payment_term_surcharge(self):
         invoice = self.env['account.move'].create({
             'partner_id': self.partner_ri.id,
