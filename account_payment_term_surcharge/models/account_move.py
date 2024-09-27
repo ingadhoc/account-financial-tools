@@ -44,7 +44,7 @@ class AccountMove(models.Model):
                 partner_ids = rec.message_partner_ids.filtered(lambda x: not x.partner_share)
                 rec.message_post(
                     body=message_body,
-                    partner_ids=partner_ids,
+                    partner_ids=partner_ids.ids,
                     subtype_xmlid='mail.mt_note'
                 )
                 if not tools.config['test_enable']:
