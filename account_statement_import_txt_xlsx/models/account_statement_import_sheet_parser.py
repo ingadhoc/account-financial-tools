@@ -352,7 +352,7 @@ class AccountStatementImportSheetParser(models.TransientModel):
             if isinstance(timestamp, str):
                 timestamp = datetime.strptime(timestamp, mapping.timestamp_format)
 
-            if balance:
+            if balance is not None:
                 balance = self._parse_decimal(balance, mapping)
             else:
                 balance = None
