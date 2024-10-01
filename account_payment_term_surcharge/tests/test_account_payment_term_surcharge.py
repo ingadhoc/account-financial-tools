@@ -11,7 +11,7 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
         self.today = fields.Date.today()
         self.first_company = self.env['res.company'].search([('name', '=', 'Muebleria US')], limit=1)
         self.partner_ri = self.env['res.partner'].search([('name', '=', 'ADHOC SA')], limit=1)
-        self.first_company_journal = self.env['account.journal'].search([('company_id', '=', self.first_company.id), ('type', '=', 'sale')], limit=1)
+        self.first_company_journal = self.env.ref('account.1_sale')
 
         self.product_surcharge = self.env.ref('product.product_product_16')
         self.env['res.config.settings'].search([('company_id', '=', self.first_company.id)]).payment_term_surcharge_product_id = self.product_surcharge.id
