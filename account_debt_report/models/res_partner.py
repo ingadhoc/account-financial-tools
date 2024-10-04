@@ -10,6 +10,35 @@ from odoo.tools.safe_eval import safe_eval
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    def _get_domain_report(self, result_selection, from_date, to_date,
+                           historical_full, company_id):
+
+        domain = []
+
+        if company_id:
+            domain += [('company_id', '=', company_id)]
+        else:
+            domain += [('company_id', 'in', self.env.companies.ids)]
+
+        if not historical_full:
+            domain += [('reconciled', '=', False), ('full_reconcile_id', '=', False)]
+
+        if result_selection == 'receivable':
+            domain += [('account_internal_type', '=', 'receivable')]
+        elif result_selection == 'payable':
+            domain += [('account_internal_type', '=', 'payable')]
+        else:
+            domain += [('account_internal_type', 'in', ['receivable', 'payable'])]
+
+        domain += [('partner_id', '=', self.id), ('parent_state', '=', 'posted')]
+
+        if from_date:
+            domain.append(('date', '>=', from_date))
+
+        if to_date:
+            domain.append(('date', '<=', to_date))
+        return domain
+
     def _get_debt_report_lines(self):
         # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
@@ -41,29 +70,14 @@ class ResPartner(models.Model):
         company_id = self._context.get('company_id', False)
         show_invoice_detail = self._context.get('show_invoice_detail', False)
 
-        domain = []
-
-        if company_id:
-            domain += [('company_id', '=', company_id)]
-        else:
-            domain += [('company_id', 'in', self.env.companies.ids)]
+        domain = self._get_domain_report(result_selection, from_date, to_date, historical_full, company_id)
 
         if not historical_full:
-            domain += [('reconciled', '=', False), ('full_reconcile_id', '=', False)]
             # si pide historial completo entonces mostramos los movimientos
             # si no mostramos los saldos
             balance_field = 'amount_residual'
         else:
             balance_field = 'balance'
-
-        if result_selection == 'receivable':
-            domain += [('account_internal_type', '=', 'receivable')]
-        elif result_selection == 'payable':
-            domain += [('account_internal_type', '=', 'payable')]
-        else:
-            domain += [('account_internal_type', 'in', ['receivable', 'payable'])]
-
-        domain += [('partner_id', '=', self.id), ('parent_state', '=', 'posted')]
 
         if from_date:
             initial_domain = domain + [('date', '<', from_date)]
@@ -71,16 +85,11 @@ class ResPartner(models.Model):
                 initial_domain, fields=['balance'], groupby=['partner_id'])
             balance = inicial_lines[0]['balance'] if inicial_lines else 0.0
             res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance)]
-            domain.append(('date', '>=', from_date))
         else:
             balance = 0.0
             res = []
 
-        if to_date:
-            final_line = []
-            domain.append(('date', '<=', to_date))
-        else:
-            final_line = []
+        final_line = []
 
         records = self.env['account.move.line'].sudo().search(domain, order='date asc, name, move_id desc, date_maturity asc, id')
 
