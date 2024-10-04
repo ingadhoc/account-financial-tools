@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+  <record id="customer_statements_tree_view_inherit" model="ir.ui.view">
+    <field name="name">customer.statements.tree.inherit</field>
+    <field name="model">res.partner</field>
+    <field name="priority">99</field>
+    <field ref="account_followup.customer_statements_tree_view" name="inherit_id"/>
+    <field name="arch" type="xml">
+      <field name="followup_status" position="after">
+        <field name="semaphore"/>
+        <button type="object" icon="fa-pencil-square-o" name="open_partner_ledger" context="{'default_partner_id': active_id}"/>
+      </field>
+      <tree position="attributes">
+        <attribute name="decoration-success">not semaphore</attribute>
+        <attribute name="decoration-warning">semaphore == '1'</attribute>
+        <attribute name="decoration-muted">semaphore == '2'</attribute>
+        <attribute name="decoration-danger">semaphore == '3'</attribute>
+        <attribute name="decoration-bf">semaphore == '999'</attribute>
+      </tree>
+      <field name="followup_status" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+      <field name="total_overdue" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+      <field name="followup_level" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+    </field>
+  </record>
+
+  <record id="customer_statements_search_view" model="ir.ui.view">
+    <field name="name">customer.statements.search.inherit</field>
+    <field name="model">res.partner</field>
+    <field name="priority">99</field>
+    <field ref="account_followup.customer_statements_search_view" name="inherit_id"/>
+    <field name="arch" type="xml">
+      <field name="followup_status" position="before">
+        <field name="semaphore"/>
+      </field>
+      <group>
+        <separator />
+        <filter string="Semáforo" name="groupby_semaphore" domain="[]" context="{'group_by': 'semaphore'}"/>
+        <separator />
+      </group>
+      <filter name="inactive" position="before">
+        <separator />
+          <filter string="Semáforo 1 mes"
+                  name="filter_semaphore_1_month"
+                  domain="[('semaphore', '=', '1')]"/>
+          <filter string="Semáforo 2 meses"
+                  name="filter_semaphore_2_month"
+                  domain="[('semaphore', '=', '2')]"/>
+          <filter string="Semáforo 3 meses"
+                  name="filter_semaphore_3_month"
+                  domain="[('semaphore', '=', '3')]"/>
+          <filter string="Semáforo >= 4 Meses"
+                  name="filter_semaphore_4_month"
+                  domain="[('semaphore', '=', '999')]"/>
+          <separator />
+      </filter>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="res_partner_view_form">
+    <field name="name">res.partner.view.form</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+      <field name="website" position="after">
+        <field name="semaphore" string="Atraso de deuda" readonly="1"/>
+      </field>
+    </field>
+  </record>
+
+</odoo>
