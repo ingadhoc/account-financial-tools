@@ -1,5 +1,4 @@
-import odoo.tests.common as common
-from odoo.tests import tagged
+from odoo.tests import tagged, common
 from odoo import Command, fields
 from datetime import timedelta
 
@@ -9,13 +8,12 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.today = fields.Date.today()
-        self.first_company = self.env['res.company'].search([('name', '=', 'Muebleria US')], limit=1)
-        self.partner_ri = self.env['res.partner'].search([('name', '=', 'ADHOC SA')], limit=1)
-        self.first_company_journal = self.env.ref('account.1_sale')
+        self.first_company = self.env['res.company'].search([], limit=1)
+        self.partner_ri = self.env['res.partner'].search([], limit=1)
+        self.first_company_journal = self.env['account.journal'].search([('company_id', '=', self.first_company.id),('type', '=', 'sale')])
 
         self.product_surcharge = self.env.ref('product.product_product_16')
-        self.env['res.config.settings'].search([('company_id', '=', self.first_company.id)]).payment_term_surcharge_product_id = self.product_surcharge.id
-
+        self.first_company.payment_term_surcharge_product_id = self.product_surcharge.id
         self.payment_term = self.env['account.payment.term'].create({
             'name': 'Test payment term'
         })
@@ -46,8 +44,8 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
                 }),
             ]
         })
-        invoice.avoid_surcharge_invoice = False
         invoice.action_post()
+        invoice.avoid_surcharge_invoice = False
 
         invoice._cron_recurring_surcharges_invoices()
         self.assertFalse(invoice.next_surcharge_date, "La proxima fecha de recargo no es la correspondiente ")

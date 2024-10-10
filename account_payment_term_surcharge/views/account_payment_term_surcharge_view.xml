@@ -2,16 +2,16 @@
 <odoo>
     <data>
         <record id="view_payment_term_surcharge_tree" model="ir.ui.view">
-            <field name="name">account.payment.term.surcharge.tree</field>
+            <field name="name">account.payment.term.surcharge.list</field>
             <field name="model">account.payment.term.surcharge</field>
             <field name="arch" type="xml">
-                <tree string="Payment Term Surcharges">
+                <list string="Payment Term Surcharges">
                     <field name="sequence" widget="handle"/>
                     <field name="surcharge"/>
                     <field name="days"/>
                     <field name="option" string=""/>
                     <field name="day_of_the_month" string="Day of the month"/>
-                </tree>
+                </list>
             </field>
         </record>
 
