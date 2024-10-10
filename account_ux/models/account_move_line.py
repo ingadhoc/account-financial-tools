@@ -13,7 +13,7 @@ class AccountMoveLine(models.Model):
         help='Salesperson of contact related to this journal item')
     # lo agregamos para que al agrupar en vista tree se vea y ademas que aparezca com messure en la pivot
     amount_residual_currency = fields.Monetary(
-        group_operator='sum',
+        aggregator='sum',
     )
 
     @api.model

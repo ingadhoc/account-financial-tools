@@ -3,14 +3,14 @@
     <record id="action_account_move_partial_reconcile" model="ir.actions.act_window">
         <field name="name">Partial reconciliations</field>
         <field name="res_model">account.partial.reconcile</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
     </record>
 
     <record id="action_account_move_full_reconcile" model="ir.actions.act_window">
         <field name="name">Full Reconciliations</field>
         <field name="res_model">account.full.reconcile</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
     </record>
 
