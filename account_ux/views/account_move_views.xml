@@ -54,12 +54,12 @@
                 <field name="reversed_entry_id" invisible="move_type != 'out_refund'" readonly="state != 'draft'"/>
             </field>
 
-            <xpath expr="//div[@name='journal_div']/field[@name='currency_id']" position="attributes">
+            <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="attributes">
                 <attribute name="readonly">True</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
 
-            <xpath expr="//div[@name='journal_div']/field[@name='currency_id']" position="after">
+            <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="after">
                 <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-pencil" class="btn-link" title="Change Currency" groups="base.group_multi_currency" />
                 <field name="other_currency" invisible="1"/>
             </xpath>
@@ -67,7 +67,7 @@
             <label for="journal_id" position="attributes">
                 <attribute name="groups" separator="," add="account.group_account_invoice" />
             </label>
-            <xpath expr="//div[@name='journal_div']" position="attributes">
+            <xpath expr="//div[@name='currency_div']" position="attributes">
                 <attribute name="groups" separator="," add="account.group_account_invoice" />
             </xpath>
         </field>
@@ -96,19 +96,17 @@
             <field name="partner_id" position="before">
                 <field name="company_id" groups="base.group_multi_company"/>
             </field>
-            <xpath expr="//filter[@name='closed']" position="replace">
+            <xpath expr="//filter[@name='in_payment']" position="before">
                 <filter name="closed" string="Paid" domain="[('state', '=', 'posted'), ('payment_state', 'in', ('in_payment', 'paid','reversed'))]"/>
             </xpath>
             <xpath expr="//group/filter[@name='salesperson']" position="before">
-                <filter name="partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
-                <filter name="journal_id" string="Journal" context="{'group_by':'journal_id'}"/>
                 <filter name="company_id" string="Company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
             </xpath>
         </field>
     </record>
 
     <record id="view_account_invoice_tree" model="ir.ui.view">
-        <field name="name">invoice.tree.view</field>
+        <field name="name">invoice.list.view</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_invoice_tree"/>
         <field name="arch" type="xml">

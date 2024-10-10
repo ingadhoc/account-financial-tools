@@ -22,7 +22,7 @@ class AccountInvoiceReport(models.Model):
     price_unit = fields.Monetary('Unit Price', readonly=True, currency_field='invoice_currency_id',)
     discount = fields.Float('Discount (%)', readonly=True)
     discount_amount = fields.Monetary(
-        'Discount Amount', readonly=True, group_operator="sum", currency_field='invoice_currency_id',)
+        'Discount Amount', readonly=True, aggregator="sum", currency_field='invoice_currency_id',)
 
     _depends = {'account.move.line': ['price_unit', 'discount']}
 

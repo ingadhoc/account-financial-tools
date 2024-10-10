@@ -17,8 +17,9 @@ class AccountAccount(models.Model):
 
     @api.constrains('currency_id')
     def check_currency(self):
-        for rec in self.filtered(lambda x: x.currency_id == x.company_id.currency_id):
-            raise ValidationError(_(
-                'Solo puede utilizar una moneda secundaria distinta a la '
-                'moneda de la compañía (%s).' % (
-                    rec.company_id.currency_id.name)))
+        if len(self.company_ids) == 1:
+            for rec in self.filtered(lambda x: x.currency_id == x.company_ids.currency_id):
+                raise ValidationError(_(
+                    'Solo puede utilizar una moneda secundaria distinta a la '
+                    'moneda de la compañía (%s).' % (
+                        rec.company_ids.currency_id.name)))
