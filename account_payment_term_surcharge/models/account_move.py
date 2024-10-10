@@ -53,7 +53,6 @@ class AccountMove(models.Model):
         if invoice_with_errors:
             error_message = _("We couldn't run surcharges cron job in the following invoice: %s.") % invoice_with_errors
             raise UserError(error_message)
-        
 
     def create_surcharge_invoice(self, surcharge_date, surcharge_percent):
         self.ensure_one()
@@ -61,11 +60,12 @@ class AccountMove(models.Model):
         if not product:
             raise UserError('Atención, debes configurar un producto por defecto para que aplique a la hora de crear las facturas de recargo')
         debt = self.amount_residual
-        move_debit_note_wiz = self.env['account.debit.note'].with_context(active_model="account.move",
-                                                                          active_ids=self.ids).create({
-            'date': surcharge_date,
-            'reason': product.name,
-        })
+        move_debit_note_wiz = self.env['account.debit.note'].with_context(
+            active_model="account.move",
+            active_ids=self.ids).create({
+                'date': surcharge_date,
+                'reason': product.name,
+            })
         debit_note = self.env['account.move'].browse(move_debit_note_wiz.create_debit().get('res_id'))
         debit_note.narration = product.name + '.\n' + self.prepare_info(surcharge_date, debt, surcharge_percent)
         self._add_surcharge_line(debit_note, product, debt, surcharge_date, surcharge_percent)
@@ -96,7 +96,7 @@ class AccountMove(models.Model):
         comment = self.prepare_info(to_date, debt, surcharge)
         debit_note = debit_note.with_context(check_move_validity=False)
         line_vals = [Command.create({"product_id": product.id, "price_unit": (surcharge / 100) * debt, "name": product.name + '.\n' + comment})]
-        debit_note.write({'invoice_line_ids': line_vals})
+        debit_note.write({'invoice_line_ids': line_vals,'is_move_sent': True})
 
     @api.depends('invoice_payment_term_id', 'invoice_date')
     def _compute_next_surcharge(self):
@@ -118,3 +118,12 @@ class AccountMove(models.Model):
             else:
                 rec.next_surcharge_date = False
                 rec.next_surcharge_percent = False
+
+    def action_post(self):
+        super().action_post()
+        self.avoid_surcharge_invoice = False
+
+    def action_send_invoice_mail(self):
+        """Filtramos solamente las facturas que no cuenta con el is_move_sent seteado en True"""
+        self = self.filtered(lambda x: not x.is_move_sent)
+        super().action_send_invoice_mail()

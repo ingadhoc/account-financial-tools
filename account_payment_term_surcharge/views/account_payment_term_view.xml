@@ -10,6 +10,12 @@
                     <separator string="Surcharges"/>
                     <field name="surcharge_ids" nolabel="1" colspan="2"/>
                 </field>
+                <sheet position="before">
+                    <div class="alert alert-warning" role="alert" invisible="show_surcharge_warning">
+                        The selected company for this payment term does not have a surcharge product configured.
+                        Please configure the product in Settings / Accounting for the selected company or companies. 
+                    </div>
+                </sheet>
             </field>
         </record>
     </data>
