@@ -18,17 +18,17 @@
     </record>
 
     <record id="view_account_partial_reconcile_tree" model="ir.ui.view">
-         <field name="name">account.partial.reconcile.tree</field>
+         <field name="name">account.partial.reconcile.list</field>
          <field name="model">account.partial.reconcile</field>
          <field name="arch" type="xml">
-            <tree create="0" default_order="create_date desc">
+            <list create="0" default_order="create_date desc">
                 <field name="create_date"/>
                 <field name="debit_move_id"/>
                 <field name="credit_move_id"/>
                 <field name="full_reconcile_id"/>
                 <field name="amount"/>
                 <field name="company_currency_id" column_invisible="True"/>
-            </tree>
+            </list>
          </field>
     </record>
 
