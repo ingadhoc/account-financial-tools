@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import models, fields
-
+from odoo.tools import SQL
 
 class AccountInvoiceReport(models.Model):
 
@@ -27,17 +27,17 @@ class AccountInvoiceReport(models.Model):
     _depends = {'account.move.line': ['price_unit', 'discount']}
 
     def _select(self):
-        return super()._select() + """,
-            line.price_unit,
-            line.id as line_id,
-            move.currency_id as invoice_currency_id,
-            line.discount,
-            line.price_unit * line.quantity * line.discount/100 *
-                (CASE WHEN move
-                .move_type IN ('in_refund','out_refund','in_receipt') THEN -1 ELSE 1 END) as discount_amount,
-            -line.balance * (line.price_total / NULLIF(line.price_subtotal, 0.0))    AS total_cc,
-            line.price_subtotal * (CASE WHEN move.move_type IN ('in_refund', 'out_invoice') THEN 1 ELSE -1 END) as price_subtotal_ic
-            """
+        query = SQL("""
+                , line.price_unit
+                , line.id as line_id
+                , move.currency_id as invoice_currency_id
+                , line.discount
+                , line.price_unit * line.quantity * line.discount / 100 *
+                    (CASE WHEN move.move_type IN ('in_refund', 'out_refund', 'in_receipt') THEN -1 ELSE 1 END) as discount_amount
+                , -line.balance * (line.price_total / NULLIF(line.price_subtotal, 0.0)) AS total_cc
+                , line.price_subtotal * (CASE WHEN move.move_type IN ('in_refund', 'out_invoice') THEN 1 ELSE -1 END) as price_subtotal_ic
+            """)
+        return SQL("%s %s", super()._select(), query)
 
     def _group_by(self):
         return super()._group_by() + ", move.invoice_currency_id"
