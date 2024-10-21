@@ -101,7 +101,7 @@ class AccountMove(models.Model):
         return amount
 
     ### Comentamos este método debido a que el campo invoice_outstanding_credits_debits_widget no se estaba seteando correctamente en super
-    ### Como FIX agregamos este PR a Odoo: https://github.com/odoo/odoo/pull/170066/files
+    ### Como FIX agregamos este PR a Odoo: https://github.com/odoo/odoo/pull/184611
 
     # def _compute_payments_widget_to_reconcile_info(self):
     #     """
