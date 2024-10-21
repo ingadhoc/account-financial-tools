@@ -60,7 +60,7 @@ Configuration
 
 To configure this module, you need to:
 
-#. To ensure the 'reconcile on company currency' option functions correctly within this module, you will need to apply this FIX from https://github.com/odoo/odoo/pull/170066/files.
+#. To ensure the 'reconcile on company currency' option functions correctly within this module, you will need to apply this FIX from https://github.com/odoo/odoo/pull/184611.
 
 Usage
 =====
