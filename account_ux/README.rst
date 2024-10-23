@@ -48,6 +48,7 @@ Several Improvements to accounting:
 #. Add field 'ref' in view_account_payment_tree.
 #. On payments, fix the use case where a journal is only suitable for one kind of operation (lets said inbound) and it is selected but then the user selects "outbound" type. Without this fix, the journals remains selected
 #. Upgraded Invoice Analysis report, tree view added and new fields
+#. Add a confirmation message for reload_template button in accounting settings
 
 Installation
 ============
