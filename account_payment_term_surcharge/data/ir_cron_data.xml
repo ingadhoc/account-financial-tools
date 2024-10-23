@@ -6,7 +6,6 @@
         <field name="user_id" ref="base.user_root"/>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
-        <field name="numbercall">-1</field>
         <field name="model_id" ref="model_account_move"/>
         <field name="code">model._cron_recurring_surcharges_invoices()</field>
         <field name="state">code</field>
