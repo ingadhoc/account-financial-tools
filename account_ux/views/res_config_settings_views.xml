@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.account</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='reload_template']" position="attributes">
+                <attribute name="confirm">The accounting plan will be reloaded, creating accounts, taxes, and other records that may be missing. It is recommended to perform this action in a testing environment before implementing it in production to avoid potential inconsistencies
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
