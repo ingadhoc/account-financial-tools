@@ -1,0 +1,84 @@
+<odoo>
+    <record id="view_account_payment_search" model="ir.ui.view">
+        <field name="name">account.payment.search</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search"/>
+        <field name="arch" type="xml">
+            <field name="journal_id" position="after">
+                <field name="is_internal_transfer"/>
+            </field>
+            <xpath expr="//filter[@name='inbound_filter']" position="attributes">
+                <attribute name="domain">[('partner_type', '=', 'customer'), ('is_internal_transfer', '=', False)]</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='outbound_filter']" position="attributes">
+                <attribute name="domain">[('partner_type', '=', 'supplier'), ('is_internal_transfer', '=', False)]</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='outbound_filter']" position="after">
+                <filter string="Internal Transfers"
+                    name="internal_transfer_filter"
+                    domain="[('is_internal_transfer', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_payment_form" model="ir.ui.view">
+        <field name="name">account.payment.form</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main_group']/group[@name='group1']/field[@name='payment_type']" position="before">
+                <label for="is_internal_transfer" invisible="not is_internal_transfer"/>
+                <div>
+                    <field name="is_internal_transfer" readonly="state != 'draft'" invisible="not is_internal_transfer"/>
+                    <span invisible="paired_internal_transfer_payment_id or not is_internal_transfer or state != 'draft'"
+                          class="fst-italic">
+                        A second payment will be created in the destination journal.
+                    </span>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="invisible">partner_type != 'customer' or is_internal_transfer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="invisible">partner_type != 'supplier' or is_internal_transfer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id']" position="attributes">
+                <attribute name="invisible">not show_partner_bank_account or partner_type != 'customer' or is_internal_transfer or payment_type == 'inbound'</attribute>
+                <attribute name="required">require_partner_bank_account and not is_internal_transfer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id']" position="attributes">
+                <attribute name="invisible">not show_partner_bank_account or partner_type != 'supplier' or is_internal_transfer or payment_type == 'inbound'</attribute>
+                <attribute name="required">require_partner_bank_account and not is_internal_transfer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id']" position="attributes">
+                <attribute name="invisible">not show_partner_bank_account or partner_type != 'outbound' or is_internal_transfer</attribute>
+                <attribute name="required">require_partner_bank_account and not is_internal_transfer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id']" position="after">
+                <field name="destination_journal_id"
+                       placeholder="e.g. Cash"
+                       context="{'default_partner_id': partner_id}"
+                       invisible="not is_internal_transfer"
+                       readonly="state != 'draft'"
+                       required="is_internal_transfer and state == 'draft'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_account_payments_transfer" model="ir.actions.act_window">
+        <field name="name">Transfers</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="context">{'default_payment_type': 'outbound', 'is_internal_transfer_menu': True, 'default_move_journal_types': ('bank', 'cash'), 'display_account_trust': True, }</field>
+        <field name="domain">[('is_internal_transfer', '=', True)]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+              Click to register a transfer between liquidity journals
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_finance_bank_and_cash" parent="account.menu_finance" sequence="4" groups="account.group_account_user" name="Bank and Cash"/>
+
+    <menuitem action="action_account_payments_transfer" id="menu_action_account_payments_transfer" parent="menu_finance_bank_and_cash" sequence="30" groups="account.group_account_user"/>
+</odoo>
