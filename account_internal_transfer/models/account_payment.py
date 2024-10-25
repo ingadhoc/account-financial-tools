@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class AccountPayment(models.Model):
@@ -8,7 +9,7 @@ class AccountPayment(models.Model):
         readonly=False, store=True,
         tracking=True,
         compute="_compute_is_internal_transfer")
-    
+
     destination_journal_id = fields.Many2one(
         comodel_name='account.journal',
         string='Destination Journal',
@@ -16,21 +17,19 @@ class AccountPayment(models.Model):
         check_company=True,
     )
 
-
     @api.depends('partner_id', 'journal_id', 'destination_journal_id')
     def _compute_is_internal_transfer(self):
         for payment in self:
-            payment.is_internal_transfer = (payment.partner_id \
-                                           and payment.partner_id == payment.journal_id.company_id.partner_id \
-                                           and payment.destination_journal_id) or not payment.partner_id
+            payment.is_internal_transfer = (not payment.partner_id\
+                                           or payment.partner_id == payment.journal_id.company_id.partner_id)\
+                                           and payment.destination_journal_id
 
-        if self._context.get('is_internal_transfer_menu'):
-            self.is_internal_transfer = True
-    
     def _get_aml_default_display_name_list(self):
         values = super()._get_aml_default_display_name_list()
-        if self.is_internal_transfer:
-            values['label'] = _("Internal Transfer")
+        values = [
+            (key, _("Internal Transfer") if self.is_internal_transfer and key == 'label' else value)
+            for key, value in values
+        ]
         return values
 
     def _get_liquidity_aml_display_name_list(self):
@@ -60,23 +59,25 @@ class AccountPayment(models.Model):
     def _get_trigger_fields_to_synchronize(self):
         res = super()._get_trigger_fields_to_synchronize()
         return res + ('is_internal_transfer',)
-    
+
     def _create_paired_internal_transfer_payment(self):
         ''' When an internal transfer is posted, a paired payment is created
         with opposite payment_type and swapped journal_id & destination_journal_id.
         Both payments liquidity transfer lines are then reconciled.
         '''
         for payment in self:
-
+            code = payment.payment_method_line_id.code
             paired_payment = payment.copy({
                 'journal_id': payment.destination_journal_id.id,
                 'destination_journal_id': payment.journal_id.id,
+                'payment_method_line_id': payment.destination_journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.code == code).id,
                 'payment_type': payment.payment_type == 'outbound' and 'inbound' or 'outbound',
                 'move_id': None,
-                'ref': payment.ref,
+                'memo': payment.memo,
                 'paired_internal_transfer_payment_id': payment.id,
                 'date': payment.date,
             })
+            paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry()
             paired_payment.move_id._post(soft=False)
             payment.paired_internal_transfer_payment_id = paired_payment
             body = _("This payment has been created from:") + payment._get_html_link()
@@ -87,6 +88,7 @@ class AccountPayment(models.Model):
             lines = (payment.move_id.line_ids + paired_payment.move_id.line_ids).filtered(
                 lambda l: l.account_id == payment.destination_account_id and not l.reconciled)
             lines.reconcile()
+
 
     def action_post(self):
         super().action_post()
@@ -110,3 +112,18 @@ class AccountPayment(models.Model):
             'res_id': self.destination_journal_id.id,
         }
         return action
+
+    @api.constrains('payment_method_line_id')
+    def _check_payment_method_line_id(self):
+        ''' Ensure the 'payment_method_line_id' field is not null.
+        Can't be done using the regular 'required=True' because the field is a computed editable stored one.
+        '''
+        for pay in self:
+            if not pay.is_internal_transfer:
+                super()._check_payment_method_line_id()
+            else:
+                code = pay.payment_method_line_id.code
+                destination_payment_method = pay.destination_journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.code == code)
+                original_payment_method = pay.payment_method_line_id
+                if not destination_payment_method.payment_account_id or not original_payment_method.payment_account_id:
+                    raise ValidationError(_("The origin or destination payment methods do not have an outstanding account."))

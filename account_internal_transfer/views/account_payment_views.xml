@@ -29,32 +29,32 @@
             <xpath expr="//group[@name='main_group']/group[@name='group1']/field[@name='payment_type']" position="before">
                 <label for="is_internal_transfer" invisible="not is_internal_transfer"/>
                 <div>
-                    <field name="is_internal_transfer" readonly="state != 'draft'" invisible="not is_internal_transfer"/>
+                    <field name="is_internal_transfer" readonly="state != 'draft'" invisible="1"  on_change="1"/>
                     <span invisible="paired_internal_transfer_payment_id or not is_internal_transfer or state != 'draft'"
                           class="fst-italic">
                         A second payment will be created in the destination journal.
                     </span>
                 </div>
             </xpath>
-            <xpath expr="//field[@name='partner_id']" position="attributes">
-                <attribute name="invisible">partner_type != 'customer' or is_internal_transfer</attribute>
+            <xpath expr="//group[@name='group1']/field[@name='partner_id'][1]" position="attributes">
+                <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
             </xpath>
-            <xpath expr="//field[@name='partner_id']" position="attributes">
-                <attribute name="invisible">partner_type != 'supplier' or is_internal_transfer</attribute>
+            <xpath expr="//group[@name='group1']/field[@name='partner_id'][2]" position="attributes">
+                <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
             </xpath>
-            <xpath expr="//field[@name='partner_bank_id']" position="attributes">
-                <attribute name="invisible">not show_partner_bank_account or partner_type != 'customer' or is_internal_transfer or payment_type == 'inbound'</attribute>
-                <attribute name="required">require_partner_bank_account and not is_internal_transfer</attribute>
+            <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][1]" position="attributes">
+                <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
+                <attribute name="required" add="not is_internal_transfer" separator=" or "/>
             </xpath>
-            <xpath expr="//field[@name='partner_bank_id']" position="attributes">
-                <attribute name="invisible">not show_partner_bank_account or partner_type != 'supplier' or is_internal_transfer or payment_type == 'inbound'</attribute>
-                <attribute name="required">require_partner_bank_account and not is_internal_transfer</attribute>
+            <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][2]" position="attributes">
+                <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
+                <attribute name="required" add="not is_internal_transfer" separator=" or "/>
             </xpath>
-            <xpath expr="//field[@name='partner_bank_id']" position="attributes">
-                <attribute name="invisible">not show_partner_bank_account or partner_type != 'outbound' or is_internal_transfer</attribute>
-                <attribute name="required">require_partner_bank_account and not is_internal_transfer</attribute>
+            <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][3]" position="attributes">
+                <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
+                <attribute name="required" add="not is_internal_transfer" separator=" or "/>
             </xpath>
-            <xpath expr="//field[@name='partner_bank_id']" position="after">
+            <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][3]" position="after">
                 <field name="destination_journal_id"
                        placeholder="e.g. Cash"
                        context="{'default_partner_id': partner_id}"
@@ -69,11 +69,16 @@
         <field name="name">Transfers</field>
         <field name="res_model">account.payment</field>
         <field name="view_mode">list,form,graph</field>
-        <field name="context">{'default_payment_type': 'outbound', 'is_internal_transfer_menu': True, 'default_move_journal_types': ('bank', 'cash'), 'display_account_trust': True, }</field>
+        <field name="context">
+            {'default_payment_type': 'outbound',
+            'default_is_internal_transfer': True,
+            'default_move_journal_types': ('bank', 'cash'),
+            'display_account_trust': True}
+        </field>
         <field name="domain">[('is_internal_transfer', '=', True)]</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-              Click to register a transfer between liquidity journals
+            Click to register a transfer between liquidity journals
             </p>
         </field>
     </record>
