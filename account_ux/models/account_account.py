@@ -14,12 +14,3 @@ class AccountAccount(models.Model):
         help="If True, then an analytic distribution will be required when posting "
         "journal entries with this account.",
     )
-
-    @api.constrains('currency_id')
-    def check_currency(self):
-        if len(self.mapped('company_ids.currency_id')) == 1:
-            for rec in self.filtered(lambda x: x.currency_id == x.company_ids.currency_id):
-                raise ValidationError(_(
-                    'Solo puede utilizar una moneda secundaria distinta a la '
-                    'moneda de la compañía (%s).' % (
-                        rec.company_ids.currency_id.name)))
