@@ -13,7 +13,7 @@
                     <field name="modification_user_ids" widget="many2many_tags" groups="base.group_erp_manager" invisible="journal_restriction != 'modification'"/>
                     <div class="alert alert-warning" invisible="journal_restriction != 'total'" colspan="2" role="alert">
                         <p>
-                        <b>IMPORTANTE:</b> Los usuarios que no estén en la lista no podrán ver facturas, pagos, asiento o apuntes contables en este diario, pero si podrán ver información relativa a este diario en, por ejemplo, resumen de cuenta, detalle de deuda e informes contables.
+                        <b>IMPORTANTE:</b> Los usuarios que no estén en la lista no podrán ver facturas, pagos, asientos, apuntes contables ni ninguna información relacionada a este diario en el sistema.
                         </p>
                     </div>
                 </group>
