@@ -26,8 +26,10 @@ class ResCompanyInterest(models.Model):
         string='Cuentas a Cobrar',
         help='Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda',
         required=True,
-        domain=lambda self: [('account_type', '=', 'asset_receivable'),
-                             ('company_id', '=', self._context.get('default_company_id') or self.env.company.id)],
+        domain=lambda self:[
+            ('account_type', '=', 'asset_receivable'),
+            ('company_ids','=', self._context.get('default_company_id') or self.env.company.id)
+        ]
     )
     interest_product_id = fields.Many2one(
         'product.product',
@@ -93,12 +95,11 @@ class ResCompanyInterest(models.Model):
                 _logger.error('Error creating interest invoices for company: %s', rec.company_id.name)
                 companies_with_errors.append(rec.company_id.name)
                 rec.env.cr.rollback()
-                
+
         if companies_with_errors:
             company_names = ', '.join(companies_with_errors)
             error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
             raise UserError(error_message)
-
 
     def create_interest_invoices(self):
         for rec in self:
@@ -157,7 +158,7 @@ class ResCompanyInterest(models.Model):
         journal = self.env['account.journal'].search([
             ('type', '=', 'sale'),
             ('company_id', '=', self.company_id.id)], limit=1)
-        
+
         if self.receivable_account_ids != journal.default_account_id:
             journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
 
@@ -241,6 +242,7 @@ class ResCompanyInterest(models.Model):
             'journal_id': journal.id,
             'invoice_origin': "Interests Invoice",
             'narration': self.interest_product_id.name + '.\n' + comment,
+            'is_move_sent': True,
             'invoice_line_ids': [(0, 0, {
                 "product_id": self.interest_product_id.id,
                 "quantity": 1.0,
@@ -248,7 +250,7 @@ class ResCompanyInterest(models.Model):
                 "partner_id": partner.id,
                 "name": self.interest_product_id.name + '.\n' + comment,
                 "analytic_distribution": {self.analytic_account_id.id: 100.0} if self.analytic_account_id.id else False,
-                "tax_ids": [(6, 0, tax_id.ids)]
+                "tax_ids": [(6, 0, tax_id.ids)],
             })],
         }
 

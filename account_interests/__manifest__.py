@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Interests Management',
-    'version': "17.0.1.1.0",
+    'version': "18.0.1.0.0",
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Calculate interests for selected partners',
@@ -34,6 +34,6 @@
         'data/ir_cron_data.xml',
         'security/ir.model.access.csv',
     ],
-    'installable': False,
+    'installable': True,
     'application': False,
 }
