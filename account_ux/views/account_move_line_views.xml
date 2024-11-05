@@ -50,9 +50,6 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_payment_tree"/>
         <field name="arch" type="xml">
-            <header>
-                <button name="action_reconcile" type="object" string="Reconcile" groups="account.group_account_user"/>
-            </header>
             <field name="amount_residual" position="before">
                 <field name="balance" sum="Total Balance" optional="hide" readonly="1"/>
             </field>
