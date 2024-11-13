@@ -159,7 +159,7 @@ class ResCompanyInterest(models.Model):
             ('company_id', '=', self.company_id.id)], limit=1)
         
         if self.receivable_account_ids != journal.default_account_id:
-            journal = self.env['account.journal'].search([('default_account_id','=',self.receivable_account_ids.id)], limit=1) or journal
+            journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
 
         move_line_domain = self._get_move_line_domains(to_date)
         # Check if a filter is set
