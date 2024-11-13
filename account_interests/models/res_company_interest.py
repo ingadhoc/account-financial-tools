@@ -201,7 +201,7 @@ class ResCompanyInterest(models.Model):
                 internal_type='debit_note', default_move_type='out_invoice').new(
                     {'partner_id': partner_id, 'move_type': 'out_invoice'}).journal_id
             if self.receivable_account_ids != journal.default_account_id:
-                journal = self.env['account.journal'].search([('default_account_id','=',self.receivable_account_ids.id)], limit=1) or journal
+                journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
             move_vals = self._prepare_interest_invoice(
                 partner, debt, to_date, journal)
 
