@@ -9,13 +9,25 @@
                 <field name="line_ids" position="after">
                     <separator string="Surcharges"/>
                     <field name="surcharge_ids" nolabel="1" colspan="2"/>
+                    <field name="show_surcharge_warning" invisible="1"/>
                 </field>
+<<<<<<< HEAD
                 <sheet position="before">
                     <div class="alert alert-warning" role="alert" invisible="show_surcharge_warning">
                         The selected company for this payment term does not have a surcharge product configured.
                         Please configure the product in Settings / Accounting for the selected company or companies. 
                     </div>
                 </sheet>
+||||||| parent of c579d3ca (temp)
+=======
+                
+                <sheet position="before">
+                    <div class="alert alert-danger" role="alert" invisible="show_surcharge_warning">
+                        The selected company does not have a surcharge product configured for this payment term. Please note that debit notes will not be created. 
+                        To resolve this, configure the surcharge product in Settings > Accounting for the selected company.
+                    </div>
+                </sheet>
+>>>>>>> c579d3ca (temp)
             </field>
         </record>
     </data>

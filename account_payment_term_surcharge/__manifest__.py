@@ -19,7 +19,13 @@
 ##############################################################################
 {
     'name': 'Surcharges on payment terms',
+<<<<<<< HEAD
     'version': "18.0.1.0.0",
+||||||| parent of c579d3ca (temp)
+    'version': "17.0.1.1.0",
+=======
+    'version': "17.0.1.2.0",
+>>>>>>> c579d3ca (temp)
     'category': 'Accounting',
     'sequence': 14,
     'summary': 'Allow to add surcharges for invoices on payment terms',
