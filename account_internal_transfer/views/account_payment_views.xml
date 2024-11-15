@@ -44,15 +44,15 @@
             </xpath>
             <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][1]" position="attributes">
                 <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
-                <attribute name="required" add="not is_internal_transfer" separator=" or "/>
+                <attribute name="required" add="not is_internal_transfer" separator=" and "/>
             </xpath>
             <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][2]" position="attributes">
                 <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
-                <attribute name="required" add="not is_internal_transfer" separator=" or "/>
+                <attribute name="required" add="not is_internal_transfer" separator=" and "/>
             </xpath>
             <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][3]" position="attributes">
                 <attribute name="invisible" add="is_internal_transfer" separator=" or "/>
-                <attribute name="required" add="not is_internal_transfer" separator=" or "/>
+                <attribute name="required" add="not is_internal_transfer" separator=" and "/>
             </xpath>
             <xpath expr="//group[@name='group2']/field[@name='partner_bank_id'][3]" position="after">
                 <field name="destination_journal_id"
