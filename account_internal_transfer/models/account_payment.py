@@ -66,17 +66,23 @@ class AccountPayment(models.Model):
         Both payments liquidity transfer lines are then reconciled.
         '''
         for payment in self:
-            code = payment.payment_method_line_id.code
+            paired_payment_type = 'inbound' if payment.payment_type == 'outbound' else 'outbound'
             paired_payment = payment.copy({
                 'journal_id': payment.destination_journal_id.id,
                 'destination_journal_id': payment.journal_id.id,
-                'payment_method_line_id': payment.destination_journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.code == code).id,
-                'payment_type': payment.payment_type == 'outbound' and 'inbound' or 'outbound',
+                'payment_type': paired_payment_type,
+                'payment_method_line_id': payment.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1].id,
                 'move_id': None,
                 'memo': payment.memo,
                 'paired_internal_transfer_payment_id': payment.id,
                 'date': payment.date,
             })
+            # The payment method line ID in 'paired_payment' needs to be computed manually,
+            # as it does not compute automatically.
+            # This ensures not to use the same payment method line ID of the original transfer payment.
+            paired_payment._compute_payment_method_line_id()
+            if not payment.payment_method_line_id.payment_account_id or not paired_payment.payment_method_line_id.payment_account_id:
+                raise ValidationError(_("The origin or destination payment methods do not have an outstanding account."))
             paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry()
             paired_payment.move_id._post(soft=False)
             payment.paired_internal_transfer_payment_id = paired_payment
@@ -113,17 +119,3 @@ class AccountPayment(models.Model):
         }
         return action
 
-    @api.constrains('payment_method_line_id')
-    def _check_payment_method_line_id(self):
-        ''' Ensure the 'payment_method_line_id' field is not null.
-        Can't be done using the regular 'required=True' because the field is a computed editable stored one.
-        '''
-        for pay in self:
-            if not pay.is_internal_transfer:
-                super()._check_payment_method_line_id()
-            else:
-                code = pay.payment_method_line_id.code
-                destination_payment_method = pay.destination_journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.code == code)
-                original_payment_method = pay.payment_method_line_id
-                if not destination_payment_method.payment_account_id or not original_payment_method.payment_account_id:
-                    raise ValidationError(_("The origin or destination payment methods do not have an outstanding account."))
