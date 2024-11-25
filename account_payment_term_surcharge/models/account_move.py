@@ -39,7 +39,6 @@ class AccountMove(models.Model):
                 invoice_with_errors.append(rec.id)
                 rec.avoid_surcharge_invoice = True
                 _logger.error("Something went wrong creating the surcharge invoice from the invoice id:{}".format(rec.id))
-
                 message_body = _("Something went wrong creating the surcharge invoice from this invoice. Please take a look on it.")
                 partner_ids = rec.message_partner_ids.filtered(lambda x: not x.partner_share)
                 rec.message_post(
@@ -60,6 +59,9 @@ class AccountMove(models.Model):
         product = self.company_id.payment_term_surcharge_product_id
         if not product:
             raise UserError('Atención, debes configurar un producto por defecto para que aplique a la hora de crear las facturas de recargo')
+        validate_percent = self._validate_next_surcharge_percent(surcharge_date, surcharge_percent)
+        if not validate_percent:
+            raise UserError('Atención,el next surcharge date no es compatible con el next surcharge percent.')
         debt = self.amount_residual
         move_debit_note_wiz = self.env['account.debit.note'].with_context(active_model="account.move",
                                                                           active_ids=self.ids).create({
@@ -118,3 +120,20 @@ class AccountMove(models.Model):
             else:
                 rec.next_surcharge_date = False
                 rec.next_surcharge_percent = False
+
+    def _validate_next_surcharge_percent(self,surcharge_date, surcharge_percent):
+        self.ensure_one()
+        if len(self.invoice_payment_term_id.surcharge_ids) >1:
+            surcharges = []
+            for surcharge in self.invoice_payment_term_id.surcharge_ids:
+                tentative_date = surcharge._calculate_date(self.invoice_date)
+                surcharges.append({'surcharge_date': tentative_date, 'surcharge_percent': surcharge.surcharge})
+            
+            closest_surcharge = max(
+                (s for s in surcharges if s['surcharge_date'] <= surcharge_date),
+                key=lambda s: s['surcharge_date'],
+                default=None
+            )
+            if closest_surcharge.get('surcharge_percent') != surcharge_percent:
+                return False
+        return True
