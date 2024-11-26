@@ -73,7 +73,8 @@ class AccountChangeCurrency(models.TransientModel):
         for line in move.line_ids:
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
-            line.price_unit = line.price_unit * self.currency_rate
+            if line.exists():
+                line.price_unit = line.price_unit * self.currency_rate
 
         self.move_id.message_post(body=message)
         return {'type': 'ir.actions.act_window_close'}
