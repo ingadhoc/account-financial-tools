@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_account_transfer_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=lang)"/>
+            <div class="page">
+                <h3><strong><span t-field="o.payment_receipt_title">Internal Transfer</span>: <span t-field="o.name">INV0001</span></strong></h3>
+                <strong>Creado por:</strong>
+                <span t-field="o.create_uid.name"/>
+                <br/>
+                <strong>Total Transacción:</strong>
+                <span t-field="o.amount"/>
+                <br/>
+                <br/>
+                <strong>Cuenta de Origen:</strong>
+                <span t-field="o.journal_id.name"/>
+                <br/>
+                <strong>Cuenta de Destino:</strong>
+                <span t-field="o.destination_journal_id.name"/>
+                <br/>
+                <strong>Concepto:</strong>
+                <span t-field="o.memo"/>
+                <br/>
+                <br/>
+                <!-- <strong t-if="o.l10n_latam_check_id.check_number">Nro de Cheque:</strong>
+                <span t-if="o.l10n_latam_check_id.check_number" t-field="o.l10n_latam_check_id.check_number"/>
+                <br t-if="o.l10n_latam_check_id.check_number"/>
+                <strong  t-if="o.l10n_latam_check_id.l10n_latam_check_payment_date">Fecha de Pago:</strong>
+                <span t-if="o.l10n_latam_check_id.l10n_latam_check_payment_date" t-field="o.l10n_latam_check_id.l10n_latam_check_payment_date"/>
+                <br t-if="o.l10n_latam_check_id.l10n_latam_check_payment_date" />
+                <strong t-if="o.l10n_latam_check_id.l10n_latam_check_bank_id">Banco:</strong>
+                <span t-field="o.l10n_latam_check_id.l10n_latam_check_bank_id"/> -->
+                <br/>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_account_transfer">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-call="account_internal_transfer.report_account_transfer_document" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_account_transfer" model="ir.actions.report">
+        <field name="name">Reporte de Transferencia</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">account_internal_transfer.report_account_transfer</field>
+        <field name="report_file">account_internal_transfer.report_account_transfer</field>
+        <field name="print_report_name">'Reporte de transferencia'</field>
+    </record>
+
+</odoo>

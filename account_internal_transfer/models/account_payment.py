@@ -17,6 +17,17 @@ class AccountPayment(models.Model):
         check_company=True,
     )
 
+    def _get_name_receipt_report(self, report_xml_id):
+        """ Method similar to the '_get_name_invoice_report' of l10n_latam_invoice_document
+        Basically it allows different localizations to define it's own report
+        This method should actually go in a sale_ux module that later can be extended by different localizations
+        Another option would be to use report_substitute module and setup a subsitution with a domain
+        """
+        self.ensure_one()
+        if self.is_internal_transfer:
+            return 'account_internal_transfer.report_account_transfer'
+        return report_xml_id
+
     @api.depends('partner_id', 'journal_id', 'destination_journal_id')
     def _compute_is_internal_transfer(self):
         for payment in self:

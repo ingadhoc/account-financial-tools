@@ -33,6 +33,7 @@
     ],
     'data':[
         'views/account_payment_views.xml',
+        'views/report_account_transfer.xml',
     ],
     'demo': [
     ],
