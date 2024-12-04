@@ -30,6 +30,7 @@ class AccountChangeCurrency(models.TransientModel):
     currency_rate = fields.Float(
         'Currency Rate',
         required=True,
+        digits=0,
         help="Select a rate to apply on the invoice"
     )
     move_id = fields.Many2one(
@@ -50,11 +51,15 @@ class AccountChangeCurrency(models.TransientModel):
         else:
             currency = self.currency_from_id.with_context(
                 )
-            self.currency_rate = currency._convert(
-                1.0, self.currency_to_id, self.move_id.company_id,
-                date=self.move_id.date or
-                fields.Date.context_today(self))
 
+            self.currency_rate = self.env['res.currency']._get_conversion_rate(
+                from_currency=currency,
+                to_currency=self.currency_to_id,
+                company=self.move_id.company_id,
+                date=self.move_id.date or
+                fields.Date.context_today(self),
+            )
+            
     def change_currency(self):
         self.ensure_one()
         if self.change_type == 'currency':
