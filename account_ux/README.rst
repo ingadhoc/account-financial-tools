@@ -17,6 +17,7 @@ Account UX
 Several Improvements to accounting:
 
 #. Add an option per company on accounting settings to force reconciliation on company currency (more info on tooltip/help of that setting)
+#. On taxes menu allow when searching by name search also by description
 #. Hide some optional fields in Partner Ledger tree view to improve usability (tree view, not report).
 #. Make subtotal included / excluded optional and not related to tax b2b/b2c
 #. Add reconciliations menu on accounting (only with debug mode)

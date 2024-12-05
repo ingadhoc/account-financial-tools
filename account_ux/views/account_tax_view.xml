@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_tax_search" model="ir.ui.view">
+        <field name="name">account.tax.search</field>
+        <field name="model">account.tax</field>
+        <field name="inherit_id" ref="account.view_account_tax_search"/>
+        <field name="arch" type="xml">
+            <field name="description" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </field>
+            <field name="name_searchable" position="attributes">
+                <attribute name="filter_domain">['|', ('name_searchable', 'ilike', self), ('description', 'ilike', self)]</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>
+
