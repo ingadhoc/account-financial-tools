@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import api, models, fields, _
+from odoo import models, _
 from odoo.tools.safe_eval import safe_eval
 # from odoo.exceptions import ValidationError
 
@@ -40,13 +40,18 @@ class ResPartner(models.Model):
         historical_full = self._context.get('historical_full', False)
         company_id = self._context.get('company_id', False)
         show_invoice_detail = self._context.get('show_invoice_detail', False)
-
+        only_currency_lines = not self._context.get('company_currency') and self._context.get('secondary_currency')
+        balance_in_currency = 0.0
         domain = []
 
         if company_id:
             domain += [('company_id', '=', company_id)]
+            company_currency_ids = self.env['res.company'].browse(company_id).currency_id
         else:
             domain += [('company_id', 'in', self.env.companies.ids)]
+            company_currency_ids = self.env.companies.mapped('currency_id')
+        if only_currency_lines and len(company_currency_ids) == 1:
+            domain += [('currency_id', 'not in', company_currency_ids.ids)]
 
         if not historical_full:
             domain += [('reconciled', '=', False), ('full_reconcile_id', '=', False)]
@@ -70,26 +75,22 @@ class ResPartner(models.Model):
             inicial_lines = self.env['account.move.line'].sudo()._read_group(
                 initial_domain, groupby=['partner_id'], aggregates=['balance:sum'])
             balance = inicial_lines[0][1] if inicial_lines else 0.0
+            if len(company_currency_ids) == 1:
+                inicial_lines_currency = self.env['account.move.line'].sudo()._read_group(
+                    initial_domain + [('currency_id', 'not in', company_currency_ids.ids)], groupby=['partner_id'], aggregates=['amount_currency:sum'])
+                balance_in_currency = inicial_lines_currency[0][1] if inicial_lines_currency else 0.0
 
-            res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance)]
+            res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance, amount_currency=balance_in_currency)]
             domain.append(('date', '>=', from_date))
         else:
             balance = 0.0
             res = []
 
         if to_date:
-            final_line = []
             domain.append(('date', '<=', to_date))
-        else:
-            final_line = []
+        final_line = []
 
         records = self.env['account.move.line'].sudo().search(domain, order='date asc, name, move_id desc, date_maturity asc, id')
-
-        grouped = self.env['account.payment']._fields.get('payment_group_id') and safe_eval(
-            self.env['ir.config_parameter'].sudo().get_param(
-                'account_debt_report.group_payment_group_payments', 'False'))
-
-        last_payment_group_id = False
 
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
@@ -117,24 +118,8 @@ class ResPartner(models.Model):
             amount = record.balance
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
-
-            if grouped and record.payment_id and record.payment_id.payment_group_id == last_payment_group_id:
-                # si agrupamos pagos y el grupo de pagos coincide con el último, entonces acumulamos en linea anterior
-                res[-1].update({
-                    'amount': res[-1]['amount'] + record.balance,
-                    'amount_residual': res[-1]['amount_residual'] + record.amount_residual,
-                    'amount_currency': res[-1]['amount_currency'] + record.amount_currency,
-                    'balance': balance,
-                })
-                continue
-            elif grouped and record.payment_id and record.payment_id.payment_group_id != last_payment_group_id:
-                # si es un payment pero no es del payment group anterior, seteamos este como ultimo payment group
-                last_payment_group_id = record.payment_id.payment_group_id
-            elif not grouped and record.payment_id:
-                # si no agrupamos y es pago, agregamos nombre de diario para que sea mas claro
-                name += ' - ' + record.journal_id.name
-            elif not record.payment_id:
-                last_payment_group_id = False
+            show_currency = record.currency_id != record.company_id.currency_id
+            name += ' - ' + record.journal_id.name
 
             # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
             res.append(get_line_vals(
@@ -145,9 +130,15 @@ class ResPartner(models.Model):
                 amount=amount,
                 amount_residual=amount_residual,
                 balance=balance,
-                amount_currency=amount_currency,
-                currency_name=currency.name,
+                amount_currency=amount_currency if show_currency else False,
+                currency_name=currency.name if show_currency else False,
                 # move_line=record.move_line_id,
             ))
+
+        record_currencys = records.filtered(lambda x: x.currency_id != x.company_id.currency_id)
+        if len(record_currencys.mapped('currency_id')) == 1:
+            total_currency = sum(record_currencys.mapped('amount_currency')) + balance_in_currency
+            final_line += [get_line_vals(name=_('Total'), amount_currency=total_currency, currency_name=record_currencys.mapped('currency_id').name)]
+
         res += final_line
         return res

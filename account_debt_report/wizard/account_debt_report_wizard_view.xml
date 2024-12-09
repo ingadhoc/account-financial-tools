@@ -14,6 +14,7 @@
                         <field name="historical_full"/>
                         <field name="from_date" string="Detallar desde" invisible="not historical_full"/>
                         <field name="to_date" string="Detallar hasta" invisible="not historical_full"/>
+                        <field name="company_currency"/>
                         <field name="secondary_currency"/>
                         <field name="show_invoice_detail"/>
                         <!-- <field name="show_receipt_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/> -->
