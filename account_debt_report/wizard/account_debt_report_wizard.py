@@ -35,6 +35,10 @@ class AccountDebtReportWizard(models.TransientModel):
     historical_full = fields.Boolean(
         help='If true, then it will show all partner history. If not, only '
         'unreconciled items will be shown.')
+    company_currency = fields.Boolean(
+        default=True,
+        help='Add columns for company currency?'
+    )
     secondary_currency = fields.Boolean(
         help='Add columns for secondary currency?')
 
@@ -55,6 +59,7 @@ class AccountDebtReportWizard(models.TransientModel):
         return self.env['ir.actions.report'].search(
             [('report_name', '=', 'account_debt_report')],
             limit=1).with_context(
+            company_currency=self.company_currency,
             secondary_currency=self.secondary_currency,
             result_selection=self.result_selection,
             company_id=self.company_id.id,
