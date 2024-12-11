@@ -49,6 +49,10 @@ Several Improvements to accounting:
 #. On payments, fix the use case where a journal is only suitable for one kind of operation (lets said inbound) and it is selected but then the user selects "outbound" type. Without this fix, the journals remains selected
 #. Upgraded Invoice Analysis report, tree view added and new fields
 #. Add a confirmation message for reload_template button in accounting settings
+#. Add several imrpovements on payment report:
+   * Display table of debt being cancelled only if there is debt being cancelled
+   * When all invoices being paid are of a second currency and the same currency, hide a column that doesn´t add value
+   * Not yet improved, if you paid invoices of different currencies the report is not so good. This is not improved yet as it is not a common use case
 
 Installation
 ============
