@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data>
     <template id="report_payment_receipt_document_custom" inherit_id="account.report_payment_receipt_document" priority="99">
+        <xpath expr="//table[@name='invoices']" position="attributes">
+            <attribute name="t-if">o.reconciled_invoice_ids or o.reconciled_bill_ids</attribute>
+        </xpath>
+        <xpath expr="//table[@name='invoices']" position="inside">
+            <t t-if="not any(inv.currency_id != o.currency_id and inv.currency_id != o.company_id.currency_id for inv in invoices)" t-set="otherCurrency" t-value="False"/>
+        </xpath>
         <xpath expr="//div[@name='payment_method']//span[@t-field='o.payment_method_id.name']" position="attributes">
             <attribute name="t-field">o.payment_method_line_id.name</attribute>
         </xpath>

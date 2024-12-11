@@ -19,7 +19,13 @@
 ##############################################################################
 {
     'name': 'Account UX',
+<<<<<<< HEAD
     'version': "18.0.1.4.0",
+||||||| parent of 66dc868c (temp)
+    'version': "17.0.2.7.0",
+=======
+    'version': "17.0.2.8.0",
+>>>>>>> 66dc868c (temp)
     'category': 'Accounting',
     'sequence': 14,
     'summary': '',
