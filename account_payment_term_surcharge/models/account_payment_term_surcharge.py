@@ -59,4 +59,6 @@ class AccountPaymentTermSurcharge(models.Model):
             next_date += relativedelta(day=self.days, months=1)
         elif self.option == 'day_current_month':
             next_date += relativedelta(day=self.days, months=0)
+            if date_ref >= next_date:
+                next_date = date_ref + relativedelta(day=self.days, months=1)
         return next_date
