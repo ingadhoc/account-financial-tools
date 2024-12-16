@@ -42,6 +42,7 @@ class ResPartner(models.Model):
         show_invoice_detail = self._context.get('show_invoice_detail', False)
         only_currency_lines = not self._context.get('company_currency') and self._context.get('secondary_currency')
         balance_in_currency = 0.0
+        balance_in_currency_name = ''
         domain = []
 
         if company_id:
@@ -77,10 +78,10 @@ class ResPartner(models.Model):
             balance = inicial_lines[0][1] if inicial_lines else 0.0
             if len(company_currency_ids) == 1:
                 inicial_lines_currency = self.env['account.move.line'].sudo()._read_group(
-                    initial_domain + [('currency_id', 'not in', company_currency_ids.ids)], groupby=['partner_id'], aggregates=['amount_currency:sum'])
+                    initial_domain + [('currency_id', 'not in', company_currency_ids.ids)], groupby=['partner_id'], aggregates=['amount_currency:sum', 'currency_id:array_agg'])
                 balance_in_currency = inicial_lines_currency[0][1] if inicial_lines_currency else 0.0
-
-            res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance, amount_currency=balance_in_currency)]
+                balance_in_currency_name = self.env['res.currency'].browse(inicial_lines_currency[0][2][0]).display_name if inicial_lines_currency and inicial_lines_currency[0][2][0] else  ''
+            res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance, amount_currency=balance_in_currency, currency_name=balance_in_currency_name)]
             domain.append(('date', '>=', from_date))
         else:
             balance = 0.0
