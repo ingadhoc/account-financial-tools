@@ -63,11 +63,6 @@ class ResCompanyInterest(models.Model):
         default=1,
         help="Repeat every (Days/Week/Month/Year)"
     )
-    tolerance_interval = fields.Integer(
-        'Tolerance',
-        default=1,
-        help="Number of periods of tolerance for dues. 0 = no tolerance"
-    )
     next_date = fields.Date(
         'Date of Next Invoice',
         default=fields.Date.today,
@@ -101,7 +96,6 @@ class ResCompanyInterest(models.Model):
             error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
             raise UserError(error_message)
 
-
     def create_interest_invoices(self):
         for rec in self:
             _logger.info(
@@ -109,38 +103,31 @@ class ResCompanyInterest(models.Model):
                 rec.company_id.name)
             # hacemos un commit para refrescar cache
             self.env.cr.commit()
-            interests_date = rec.next_date
+            to_date = rec.next_date
 
             rule_type = rec.rule_type
             interval = rec.interval
-            tolerance_interval = rec.tolerance_interval
 
             if rule_type == 'daily':
                 next_delta = relativedelta(days=+interval)
-                tolerance_delta = relativedelta(days=+tolerance_interval)
+                from_date = relativedelta(days=-interval)
             elif rule_type == 'weekly':
                 next_delta = relativedelta(weeks=+interval)
-                tolerance_delta = relativedelta(weeks=+tolerance_interval)
+                from_date = relativedelta(weeks=-interval)
             elif rule_type == 'monthly':
                 next_delta = relativedelta(months=+interval)
-                tolerance_delta = relativedelta(months=+tolerance_interval)
+                from_date = relativedelta(months=-interval)
             else:
                 next_delta = relativedelta(years=+interval)
-                tolerance_delta = relativedelta(years=+tolerance_interval)
+                from_date = relativedelta(years=-interval)
 
-            # buscamos solo facturas que vencieron
-            # antes de hoy menos un periodo
-            # TODO ver si queremos que tambien se calcule interes proporcional
-            # para lo que vencio en este ultimo periodo
-            to_date = interests_date - tolerance_delta
-            from_date = to_date - tolerance_delta
             # llamamos a crear las facturas con la compañia del interes para
             # que tome correctamente las cuentas
             rec.with_company(rec.company_id).with_context(default_l10n_ar_afip_asoc_period_start=from_date,
-                             default_l10n_ar_afip_asoc_period_end=to_date).create_invoices(to_date)
+                             default_l10n_ar_afip_asoc_period_end=to_date).create_invoices(from_date, to_date)
 
             # seteamos proxima corrida en hoy mas un periodo
-            rec.next_date = interests_date + next_delta
+            rec.next_date = to_date + next_delta
 
     def _get_move_line_domains(self):
         self.ensure_one()
@@ -151,7 +138,16 @@ class ResCompanyInterest(models.Model):
         ]
         return move_line_domain
 
-    def create_invoices(self, to_date, groupby=['partner_id']):
+    def create_invoices(self, from_date, to_date, groupby=['partner_id']):
+        """
+        tengo deudas viejas por 2000 (super viejas)
+        el 1 facturo 1000 que vencen el 20
+        el 25 pagó 400.
+        Detalle de cálculo de intereses:
+            * interés por todo lo viejo (2000) x el rate
+            * interés de todo lo que venció en el último período ($600) x días que estuvo vencido (10 días)
+            * si además marcó "latest payment intereset" se agrega interés por los días que pagó tarde, es decir $400 x 5 días
+        """
         self.ensure_one()
 
         journal = self.env['account.journal'].search([
@@ -161,7 +157,9 @@ class ResCompanyInterest(models.Model):
         if self.receivable_account_ids != journal.default_account_id:
             journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
 
-        move_line_domain_previous_periods = self._get_move_line_domains() + [('full_reconcile_id', '=', False), ('date_maturity', '<', to_date)]
+        # vemos todo lo impago que vencia antes del comienzo de este periodo de intereses ya que el interes ahí se calcula sobre el total
+        # entre from date y to_date tenemos que calcular parciales segun dias cuando vencia comprobante
+        move_line_domain_previous_periods = self._get_move_line_domains() + [('full_reconcile_id', '=', False), ('date_maturity', '<', from_date)]
         # Check if a filter is set
         if self.domain:
             move_line_domain_previous_periods += safe_eval(self.domain)
@@ -174,6 +172,85 @@ class ResCompanyInterest(models.Model):
             groupby=groupby,
             aggregates=fields,
         )
+
+        interest_rate = {
+            'daily': 1,
+            'weekly': 7,
+            'monthly': 30,
+            'yearly': 360,
+        }
+
+        # calculamos intereses de facturas
+        for move_line in move_line.search(self._get_move_line_domains() + [('date_maturity', '>=', from_date), ('date_maturity', '<', to_date)]):
+            # dias de vencimiento
+            # TODO completar y tmb sumar a las grouped lines
+            # hacer que se acumulan
+            # (to_date - move_line.date_maturity) * rate de vencimiento
+            interest += lines.amount_currency * (to_date - move_line.date_maturity)) * (self.rate / interest_rate[self.rule_type])
+            pass
+
+        # Feature de intereses por pago tardio (periodo actual)
+        # ToDo comentar esta funcionalidad
+        if self.late_payment_interest:
+            # #last_period_lines_domain = self._get_move_line_domains() + [('date_maturity', '>=', to_date)]
+
+            for reconcile in env['account.partial.reconcile'].search([
+                debit_move_id.opartner_id.active = True
+                    debit_move_id.date_maturity >= from_date
+                    debit_move_id.date_maturity <= to_date
+                    debit_move_id.parent_state = posted
+                    # lo dejamos para NTH
+                    # debit_move_id. safe eval domain
+                    debit_move_id.account_id = self.receivable_account_ids.ids
+                    credit_move_id.date >= from_date
+                    credit_move_id.date > to_date
+                    ):
+                interest += lines.amount_currency * (to_date - move_line.date_maturity)) * (self.rate / interest_rate[self.rule_type])
+
+            # last_period_lines_domain = ["&", "&", "&", "&",
+            #     ('account_id', 'in', self.receivable_account_ids.ids),
+            #     ('partner_id.active', '=', True),
+            #     ('parent_state', '=', 'posted'),
+            #     ('date_maturity', '>=', to_date),
+            #     "|",
+            #     ("amount_residual", ">", 0), ("matched_credit_ids", "!=", False),
+            # ]
+            # grouped_lines_last_period = move_line._read_group(
+            #     domain=last_period_lines_domain,
+            #     groupby=groupby,
+            #     aggregates=fields,
+            # )
+            # for idx, line in enumerate(grouped_lines_last_period):
+            #     interest = 0
+            #     move_lines = line[1].grouped('move_id')
+            #     for move, lines in move_lines.items():
+            #         if not lines.matched_credit_ids:
+            #             interest += sum(lines.mapped('amount_currency')) * self.rate
+            #         last_partial = False
+            #         # que pasa si en una factura de 1000 del 1/11 vto 10/11 pague 400 el 15/11 y 600 el 5/12, estaría contemplado por la ejecución del cron ya?
+            #         for partial in lines.matched_credit_ids.filtered(lambda x: x.debit_move_id.date_maturity < x.credit_move_id.date):
+            #             if not last_partial or last_partial.credit_move_id.date <= partial.credit_move_id.date:
+            #                 last_partial = partial
+            #         if last_partial:
+            #             days = (last_partial.credit_move_id.date - last_partial.debit_move_id.date_maturity).days
+            #             interest += lines.amount_currency * days * (self.rate / interest_rate[self.rule_type])
+            #     move_vals = self._prepare_interest_invoice(
+            #         line, to_date, journal, interest)
+            #     if not move_vals:
+            #         continue
+
+            #     _logger.info('Creating Late Payment Interest Invoice with values:\n%s', line)
+
+            #     move = self.env['account.move'].create(move_vals)
+
+            #     if self.automatic_validation:
+            #         try:
+            #             move.action_post()
+            #         except Exception as e:
+            #             _logger.error(
+            #                 "Something went wrong creating "
+            #                 "interests invoice: {}".format(e))
+
         self = self.with_context(
             company_id=self.company_id.id,
             mail_notrack=True,
@@ -181,9 +258,9 @@ class ResCompanyInterest(models.Model):
 
         total_items = len(grouped_lines)
         _logger.info('%s interest invoices will be generated', total_items)
-        for idx, line in enumerate(grouped_lines):
+        for idx, lines in enumerate(grouped_lines):
             move_vals = self._prepare_interest_invoice(
-                line, to_date, journal)
+                lines, to_date, journal)
 
             if not move_vals:
                 continue
@@ -200,59 +277,6 @@ class ResCompanyInterest(models.Model):
                         "Something went wrong creating "
                         "interests invoice: {}".format(e))
 
-        # Feature de intereses por pago tardio (periodo actual)
-        # ToDo comentar esta funcionalidad
-        if self.late_payment_interest:
-            #last_period_lines_domain = self._get_move_line_domains() + [('date_maturity', '>=', to_date)]
-            interest_rate = {
-                'daily': 1,
-                'weekly': 7,
-                'monthly': 30,
-                'yearly': 360,
-            }
-            last_period_lines_domain = ["&", "&", "&", "&",
-                ('account_id', 'in', self.receivable_account_ids.ids),
-                ('partner_id.active', '=', True),
-                ('parent_state', '=', 'posted'),
-                ('date_maturity', '>=', to_date),
-                "|",
-                ("amount_residual", ">", 0), ("matched_credit_ids", "!=", False),
-            ]
-            grouped_lines_last_period = move_line._read_group(
-                domain=last_period_lines_domain,
-                groupby=groupby,
-                aggregates=fields,
-            )
-            for idx, line in enumerate(grouped_lines_last_period):
-                interest = 0
-                move_lines = line[1].grouped('move_id')
-                for move, lines in move_lines.items():
-                    if not lines.matched_credit_ids:
-                        interest += sum(lines.mapped('amount_currency')) * self.rate
-                    last_partial = False
-                    # que pasa si en una factura de 1000 del 1/11 vto 10/11 pague 400 el 15/11 y 600 el 5/12, estaría contemplado por la ejecución del cron ya?
-                    for partial in lines.matched_credit_ids.filtered(lambda x: x.debit_move_id.date_maturity < x.credit_move_id.date):
-                        if not last_partial or last_partial.credit_move_id.date <= partial.credit_move_id.date:
-                            last_partial = partial
-                    if last_partial:
-                        days = (last_partial.credit_move_id.date - last_partial.debit_move_id.date_maturity).days
-                        interest += lines.amount_currency * days * (self.rate / interest_rate[self.rule_type])
-                move_vals = self._prepare_interest_invoice(
-                    line, to_date, journal, interest)
-                if not move_vals:
-                    continue
-
-                _logger.info('Creating Late Payment Interest Invoice with values:\n%s', line)
-
-                move = self.env['account.move'].create(move_vals)
-
-                if self.automatic_validation:
-                    try:
-                        move.action_post()
-                    except Exception as e:
-                        _logger.error(
-                            "Something went wrong creating "
-                            "interests invoice: {}".format(e))
 
 
     def prepare_info(self, to_date, debt):
@@ -271,8 +295,10 @@ class ResCompanyInterest(models.Model):
 
         return res
 
-    def _prepare_interest_invoice(self, line, to_date, journal, forced_interest_amount=False):
+    def _prepare_interest_invoice(self, lines, to_date, journal, forced_interest_amount=False):
         self.ensure_one()
+        # ADAPTAR LINES
+        line = lines
         debt = line[2]
 
         if (not debt or debt <= 0.0) and not forced_interest_amount:
