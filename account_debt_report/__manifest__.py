@@ -19,7 +19,13 @@
 ##############################################################################
 {
     'name': 'Account Debt Report',
+<<<<<<< HEAD
     'version': "18.0.1.0.0",
+||||||| parent of 6bd4dc40 (temp)
+    'version': "17.0.1.0.0",
+=======
+    'version': "17.0.2.0.0",
+>>>>>>> 6bd4dc40 (temp)
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',

@@ -104,3 +104,9 @@ class AccountDebtReportWizard(models.TransientModel):
             'target': 'new',
             'auto_refresh': 1
         }
+
+    @api.constrains('company_currency', 'secondary_currency')
+    def _check_has_one_currency(self):
+        for wizard in self:
+            if not wizard.company_currency and not wizard.secondary_currency:
+                raise ValidationError(_('Debe seleccionar por lo menos una moneda para el informe'))
