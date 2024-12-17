@@ -11,14 +11,14 @@
                 <attribute name="decoration-muted">state == 'cancel'</attribute>
             </xpath>
             <field name="quantity" position="after">
-                <field name="price_unit"/>
-                <field name="discount" groups="sale.group_discount_per_so_line"/>
+                <field name="price_unit" optional="hide"/>
+                <field name="discount" groups="sale.group_discount_per_so_line" optional="hide"/>
                 <field name="discount_amount" sum="Total" optional="hide" groups="sale.group_discount_per_so_line"/>
                 <field name="price_subtotal_ic" sum="Total" optional="hide"/>
             </field>
             <field name="price_total" position="after">
-                <field name="price_subtotal" position="move"/>
-                <field name="total_cc" sum="Total"/>
+                <field name="price_subtotal" position="move" optional="hide"/>
+                <field name="total_cc" sum="Total" optional="hide"/>
                 <field name="invoice_currency_id" optional="hide"/>
                 <field name="company_currency_id" column_invisible="True"/>
             </field>
