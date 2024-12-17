@@ -4,18 +4,6 @@ from odoo import models, fields, api
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
-    # campo a ser extendido y mostrar un nombre detemrinado en las lineas de
-    # pago de un payment group o donde se desee (por ej. con cheque, retención,
-    # etc)
-    payment_method_description = fields.Char(
-        compute='_compute_payment_method_description',
-        string='Payment Method Desc.',
-    )
-
-    @api.depends('payment_method_id')
-    def _compute_payment_method_description(self):
-        for rec in self:
-            rec.payment_method_description = rec.payment_method_id.display_name
 
     @api.onchange('available_journal_ids')
     def _onchange_available_journal_ids(self):

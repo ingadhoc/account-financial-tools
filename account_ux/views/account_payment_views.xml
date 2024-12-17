@@ -9,9 +9,6 @@
             <field name="payment_method_line_id" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
-            <field name="journal_id" position="after">
-                <field name="payment_method_description" string="Payment Method" optional="show"/>
-            </field>
         </field>
     </record>
     <record model="ir.ui.view" id="view_account_payment_tree_personalization">
