@@ -34,3 +34,10 @@ class AccountJournal(models.Model):
             self._write({'restrict_mode_hash_table': restrict_mode_hash_table})
             return res
         return super().write(vals)
+
+    @api.depends('type')
+    def _compute_payment_sequence(self):
+        # Por defecto lo ponemos en False para evitar errores en la secuencia
+        super()._compute_payment_sequence()
+        for journal in self:
+            journal.payment_sequence = False
