@@ -110,16 +110,18 @@ class ResCompanyInterest(models.Model):
 
             if rule_type == 'daily':
                 next_delta = relativedelta(days=+interval)
-                from_date = relativedelta(days=-interval)
+                from_date_delta = relativedelta(days=-interval)
             elif rule_type == 'weekly':
                 next_delta = relativedelta(weeks=+interval)
-                from_date = relativedelta(weeks=-interval)
+                from_date_delta = relativedelta(weeks=-interval)
             elif rule_type == 'monthly':
                 next_delta = relativedelta(months=+interval)
-                from_date = relativedelta(months=-interval)
+                from_date_delta = relativedelta(months=-interval)
             else:
                 next_delta = relativedelta(years=+interval)
-                from_date = relativedelta(years=-interval)
+                from_date_delta = relativedelta(years=-interval)
+
+            from_date = to_date + from_date_delta
 
             # llamamos a crear las facturas con la compañia del interes para
             # que tome correctamente las cuentas
@@ -164,14 +166,18 @@ class ResCompanyInterest(models.Model):
         if self.domain:
             move_line_domain_previous_periods += safe_eval(self.domain)
 
-        fields = ['id:recordset', 'amount_residual:sum', 'partner_id:recordset', 'account_id:recordset']
+        # fields = ['id:recordset', 'amount_residual:sum', 'partner_id:recordset', 'account_id:recordset'] descarto esto porque ya no se estan usando la mayoria de valores
+        fields = ['amount_residual:sum']
 
         move_line = self.env['account.move.line']
-        grouped_lines = move_line._read_group(
+        # DE ACA VAN A SALIR LAS LINES DE DEUDAS ANTERIORES
+        previous_grouped_lines = move_line._read_group(
             domain=move_line_domain_previous_periods,
             groupby=groupby,
             aggregates=fields,
         )
+
+        deuda = {x[0]: {'Deuda periodos anteriores': x[1] * self.rate} for x in previous_grouped_lines}
 
         interest_rate = {
             'daily': 1,
@@ -181,84 +187,63 @@ class ResCompanyInterest(models.Model):
         }
 
         # calculamos intereses de facturas
-        for move_line in move_line.search(self._get_move_line_domains() + [('date_maturity', '>=', from_date), ('date_maturity', '<', to_date)]):
+        last_period_lines = move_line.search(self._get_move_line_domains() + [('amount_residual', '>', 0), ('date_maturity', '>=', from_date), ('date_maturity', '<', to_date)])
+        for partner, amls in last_period_lines.grouped('partner_id').items():
+            interest = 0
+            for move, lines in amls.grouped('move_id').items():
+                days = (to_date - move.invoice_date_due).days
+                interest += move.amount_residual * days * (self.rate / interest_rate[self.rule_type])
             # dias de vencimiento
             # TODO completar y tmb sumar a las grouped lines
             # hacer que se acumulan
             # (to_date - move_line.date_maturity) * rate de vencimiento
-            interest += lines.amount_currency * (to_date - move_line.date_maturity)) * (self.rate / interest_rate[self.rule_type])
-            pass
+
+            # agregamos a la deuda antigua
+            if partner in deuda:
+                deuda[partner]['Deuda último periodo'] = interest
+            else:
+                deuda[partner] = {'Deuda último periodo': interest}
+
 
         # Feature de intereses por pago tardio (periodo actual)
         # ToDo comentar esta funcionalidad
         if self.late_payment_interest:
             # #last_period_lines_domain = self._get_move_line_domains() + [('date_maturity', '>=', to_date)]
 
-            for reconcile in env['account.partial.reconcile'].search([
-                debit_move_id.opartner_id.active = True
-                    debit_move_id.date_maturity >= from_date
-                    debit_move_id.date_maturity <= to_date
-                    debit_move_id.parent_state = posted
+            partials = self.env['account.partial.reconcile'].search([
+                ('debit_move_id.partner_id.active', '=', True),
+                ('debit_move_id.date_maturity', '>=', from_date),
+                ('debit_move_id.date_maturity', '<=', to_date),
+                ('debit_move_id.parent_state', '=', 'posted'),
                     # lo dejamos para NTH
                     # debit_move_id. safe eval domain
-                    debit_move_id.account_id = self.receivable_account_ids.ids
-                    credit_move_id.date >= from_date
-                    credit_move_id.date > to_date
-                    ):
-                interest += lines.amount_currency * (to_date - move_line.date_maturity)) * (self.rate / interest_rate[self.rule_type])
+                ('debit_move_id.account_id', 'in', self.receivable_account_ids.ids),
+                ('credit_move_id.date', '>=', from_date),
+                ('credit_move_id.date', '<', to_date)]).grouped('debit_move_id')
 
-            # last_period_lines_domain = ["&", "&", "&", "&",
-            #     ('account_id', 'in', self.receivable_account_ids.ids),
-            #     ('partner_id.active', '=', True),
-            #     ('parent_state', '=', 'posted'),
-            #     ('date_maturity', '>=', to_date),
-            #     "|",
-            #     ("amount_residual", ">", 0), ("matched_credit_ids", "!=", False),
-            # ]
-            # grouped_lines_last_period = move_line._read_group(
-            #     domain=last_period_lines_domain,
-            #     groupby=groupby,
-            #     aggregates=fields,
-            # )
-            # for idx, line in enumerate(grouped_lines_last_period):
-            #     interest = 0
-            #     move_lines = line[1].grouped('move_id')
-            #     for move, lines in move_lines.items():
-            #         if not lines.matched_credit_ids:
-            #             interest += sum(lines.mapped('amount_currency')) * self.rate
-            #         last_partial = False
-            #         # que pasa si en una factura de 1000 del 1/11 vto 10/11 pague 400 el 15/11 y 600 el 5/12, estaría contemplado por la ejecución del cron ya?
-            #         for partial in lines.matched_credit_ids.filtered(lambda x: x.debit_move_id.date_maturity < x.credit_move_id.date):
-            #             if not last_partial or last_partial.credit_move_id.date <= partial.credit_move_id.date:
-            #                 last_partial = partial
-            #         if last_partial:
-            #             days = (last_partial.credit_move_id.date - last_partial.debit_move_id.date_maturity).days
-            #             interest += lines.amount_currency * days * (self.rate / interest_rate[self.rule_type])
-            #     move_vals = self._prepare_interest_invoice(
-            #         line, to_date, journal, interest)
-            #     if not move_vals:
-            #         continue
-
-            #     _logger.info('Creating Late Payment Interest Invoice with values:\n%s', line)
-
-            #     move = self.env['account.move'].create(move_vals)
-
-            #     if self.automatic_validation:
-            #         try:
-            #             move.action_post()
-            #         except Exception as e:
-            #             _logger.error(
-            #                 "Something went wrong creating "
-            #                 "interests invoice: {}".format(e))
+            for move_line, parts in partials.items():
+                due_payments = parts.filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity)
+                if due_payments:
+                    due_payments_amount = sum(due_payments.mapped('amount'))
+                    last_date_payment = parts.filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity).sorted('max_date')[-1].max_date
+                    days = (last_date_payment - move_line.date_maturity).days
+                    interest += due_payments_amount * days * (self.rate / interest_rate[self.rule_type])
+                    partner = move_line.partner_id
+                    if partner in deuda and 'Deuda pagos vencidos' in deuda[partner]:
+                        deuda[partner]['Deuda pagos vencidos'] += interest
+                    elif partner in deuda:
+                        deuda[partner]['Deuda pagos vencidos'] = interest
+                    else:
+                        deuda[partner] = {'Deuda pagos vencidos': interest}
 
         self = self.with_context(
             company_id=self.company_id.id,
             mail_notrack=True,
             prefetch_fields=False).with_company(self.company_id)
 
-        total_items = len(grouped_lines)
+        total_items = len(deuda)
         _logger.info('%s interest invoices will be generated', total_items)
-        for idx, lines in enumerate(grouped_lines):
+        for idx, lines in enumerate(deuda):
             move_vals = self._prepare_interest_invoice(
                 lines, to_date, journal)
 
