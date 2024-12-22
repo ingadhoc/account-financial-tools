@@ -186,19 +186,13 @@ class ResCompanyInterest(models.Model):
             'yearly': 360,
         }
 
-        # calculamos intereses de facturas
+        # calculamos intereses de facturas del ultimo periodo
         last_period_lines = move_line.search(self._get_move_line_domains() + [('amount_residual', '>', 0), ('date_maturity', '>=', from_date), ('date_maturity', '<', to_date)])
         for partner, amls in last_period_lines.grouped('partner_id').items():
             interest = 0
             for move, lines in amls.grouped('move_id').items():
                 days = (to_date - move.invoice_date_due).days
                 interest += move.amount_residual * days * (self.rate / interest_rate[self.rule_type])
-            # dias de vencimiento
-            # TODO completar y tmb sumar a las grouped lines
-            # hacer que se acumulan
-            # (to_date - move_line.date_maturity) * rate de vencimiento
-
-            # agregamos a la deuda antigua
             if partner in deuda:
                 deuda[partner]['Deuda último periodo'] = interest
             else:
@@ -206,9 +200,7 @@ class ResCompanyInterest(models.Model):
 
 
         # Feature de intereses por pago tardio (periodo actual)
-        # ToDo comentar esta funcionalidad
         if self.late_payment_interest:
-            # #last_period_lines_domain = self._get_move_line_domains() + [('date_maturity', '>=', to_date)]
 
             partials = self.env['account.partial.reconcile'].search([
                 ('debit_move_id.partner_id.active', '=', True),
@@ -243,14 +235,14 @@ class ResCompanyInterest(models.Model):
 
         total_items = len(deuda)
         _logger.info('%s interest invoices will be generated', total_items)
-        for idx, lines in enumerate(deuda):
-            move_vals = self._prepare_interest_invoice(
-                lines, to_date, journal)
+        for idx, partner in enumerate(deuda):
+            move_vals = self._prepare_interest_invoice(partner,
+                deuda[partner], to_date, journal)
 
             if not move_vals:
                 continue
 
-            _logger.info('Creating Interest Invoice (%s of %s) with values:\n%s', idx + 1, total_items, line)
+            _logger.info('Creating Interest Invoice (%s of %s) with values:\n%s', idx + 1, total_items, partner)
 
             move = self.env['account.move'].create(move_vals)
 
@@ -264,7 +256,7 @@ class ResCompanyInterest(models.Model):
 
 
 
-    def prepare_info(self, to_date, debt):
+    def prepare_info(self, to_date):
         self.ensure_one()
 
         # Format date to customer language
@@ -274,25 +266,15 @@ class ResCompanyInterest(models.Model):
         to_date_format = to_date.strftime(date_format)
 
         res = _(
-            'Deuda Vencida al %s: %s\n'
-            'Tasa de interés: %s') % (
-                to_date_format, debt, self.rate)
+            'Deuda Vencida al %s con tasa de interés de %s') % (
+                to_date_format, self.rate)
 
         return res
 
-    def _prepare_interest_invoice(self, lines, to_date, journal, forced_interest_amount=False):
+    def _prepare_interest_invoice(self, partner, debt, to_date, journal):
         self.ensure_one()
-        # ADAPTAR LINES
-        line = lines
-        debt = line[2]
 
-        if (not debt or debt <= 0.0) and not forced_interest_amount:
-            _logger.info("Debt is negative, skipping...")
-            return
-
-        partner_id = line[0].id
-        partner = self.env['res.partner'].browse(partner_id)
-        comment = self.prepare_info(to_date, debt) if not forced_interest_amount else 'Deuda Vencida por Pago Atrasado'
+        comment = self.prepare_info(to_date)
         fpos = partner.property_account_position_id
         taxes = self.interest_product_id.taxes_id.filtered(
             lambda r: r.company_id == self.company_id)
@@ -307,15 +289,16 @@ class ResCompanyInterest(models.Model):
             'journal_id': journal.id,
             'invoice_origin': "Interests Invoice",
             'narration': self.interest_product_id.name + '.\n' + comment,
-            'invoice_line_ids': [(0, 0, {
+            'invoice_line_ids': [(0, 0, 
+            {
                 "product_id": self.interest_product_id.id,
                 "quantity": 1.0,
-                "price_unit": self.rate * debt if not forced_interest_amount else forced_interest_amount,
+                "price_unit": value,
                 "partner_id": partner.id,
-                "name": self.interest_product_id.name + '.\n' + comment,
+                "name": self.interest_product_id.name + '.\n' + key,
                 "analytic_distribution": {self.analytic_account_id.id: 100.0} if self.analytic_account_id.id else False,
                 "tax_ids": [(6, 0, tax_id.ids)]
-            })],
+            }) for key, value in debt.items() if value > 0],
         }
 
         # hack para evitar modulo glue con l10n_latam_document
