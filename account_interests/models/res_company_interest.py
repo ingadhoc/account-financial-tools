@@ -86,8 +86,8 @@ class ResCompanyInterest(models.Model):
             try:
                 rec.create_interest_invoices()
                 rec.env.cr.commit()
-            except:
-                _logger.error('Error creating interest invoices for company: %s', rec.company_id.name)
+            except Exception as e:
+                _logger.error('Error creating interest invoices for company: %s, %s', rec.company_id.name, str(e))
                 companies_with_errors.append(rec.company_id.name)
                 rec.env.cr.rollback()
 
@@ -95,6 +95,19 @@ class ResCompanyInterest(models.Model):
             company_names = ', '.join(companies_with_errors)
             error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
             raise UserError(error_message)
+
+    def _calculate_date_deltas(self, rule_type, interval):
+        """
+        Calcula los intervalos de fechas para la generación de intereses.
+        """
+        deltas = {
+            'daily': relativedelta(days=interval),
+            'weekly': relativedelta(weeks=interval),
+            'monthly': relativedelta(months=interval),
+            'yearly': relativedelta(years=interval),
+        }
+        return deltas.get(rule_type, relativedelta(months=interval))
+
 
     def create_interest_invoices(self):
         for rec in self:
@@ -108,18 +121,8 @@ class ResCompanyInterest(models.Model):
             rule_type = rec.rule_type
             interval = rec.interval
 
-            if rule_type == 'daily':
-                next_delta = relativedelta(days=+interval)
-                from_date_delta = relativedelta(days=-interval)
-            elif rule_type == 'weekly':
-                next_delta = relativedelta(weeks=+interval)
-                from_date_delta = relativedelta(weeks=-interval)
-            elif rule_type == 'monthly':
-                next_delta = relativedelta(months=+interval)
-                from_date_delta = relativedelta(months=-interval)
-            else:
-                next_delta = relativedelta(years=+interval)
-                from_date_delta = relativedelta(years=-interval)
+            next_delta = self._calculate_date_deltas(rule_type, interval)
+            from_date_delta = self._calculate_date_deltas(rule_type, -interval)
 
             from_date = to_date + from_date_delta
 
@@ -140,44 +143,22 @@ class ResCompanyInterest(models.Model):
         ]
         return move_line_domain
 
-    def create_invoices(self, from_date, to_date, groupby=['partner_id']):
+    def _update_deuda(self, deuda, partner, key, value):
         """
-        tengo deudas viejas por 2000 (super viejas)
-        el 1 facturo 1000 que vencen el 20
-        el 25 pagó 400.
-        Detalle de cálculo de intereses:
-            * interés por todo lo viejo (2000) x el rate
-            * interés de todo lo que venció en el último período ($600) x días que estuvo vencido (10 días)
-            * si además marcó "latest payment intereset" se agrega interés por los días que pagó tarde, es decir $400 x 5 días
+        Actualiza el diccionario de deuda para un partner específico.
+        Si el partner no existe en la deuda, lo inicializa.
+        Si la clave no existe para el partner, la agrega.
         """
-        self.ensure_one()
+        if partner not in deuda:
+            deuda[partner] = {}
+        deuda[partner][key] = deuda[partner].get(key, 0) + value
 
-        journal = self.env['account.journal'].search([
-            ('type', '=', 'sale'),
-            ('company_id', '=', self.company_id.id)], limit=1)
-
-        if self.receivable_account_ids != journal.default_account_id:
-            journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
-
-        # vemos todo lo impago que vencia antes del comienzo de este periodo de intereses ya que el interes ahí se calcula sobre el total
-        # entre from date y to_date tenemos que calcular parciales segun dias cuando vencia comprobante
-        move_line_domain_previous_periods = self._get_move_line_domains() + [('full_reconcile_id', '=', False), ('date_maturity', '<', from_date)]
-        # Check if a filter is set
-        if self.domain:
-            move_line_domain_previous_periods += safe_eval(self.domain)
-
-        # fields = ['id:recordset', 'amount_residual:sum', 'partner_id:recordset', 'account_id:recordset'] descarto esto porque ya no se estan usando la mayoria de valores
-        fields = ['amount_residual:sum']
-
-        move_line = self.env['account.move.line']
-        # DE ACA VAN A SALIR LAS LINES DE DEUDAS ANTERIORES
-        previous_grouped_lines = move_line._read_group(
-            domain=move_line_domain_previous_periods,
-            groupby=groupby,
-            aggregates=fields,
-        )
-
-        deuda = {x[0]: {'Deuda periodos anteriores': x[1] * self.rate} for x in previous_grouped_lines}
+    def _calculate_debts(self, from_date, to_date, groupby=['partner_id']):
+        """
+        Calcula las deudas e intereses por partner.
+        Retorna un diccionario estructurado con los cálculos.
+        """
+        deuda = {}
 
         interest_rate = {
             'daily': 1,
@@ -186,66 +167,85 @@ class ResCompanyInterest(models.Model):
             'yearly': 360,
         }
 
-        # calculamos intereses de facturas del ultimo periodo
-        last_period_lines = move_line.search(self._get_move_line_domains() + [('amount_residual', '>', 0), ('date_maturity', '>=', from_date), ('date_maturity', '<', to_date)])
+        # Deudas de períodos anteriores
+        previous_grouped_lines = self.env['account.move.line']._read_group(
+            domain=self._get_move_line_domains() + [('full_reconcile_id', '=', False), ('date_maturity', '<', from_date)],
+            groupby=groupby,
+            aggregates=['amount_residual:sum'],
+        )
+        for x in previous_grouped_lines:
+            self._update_deuda(deuda, x[0], 'Deuda periodos anteriores', x[1] * self.rate)
+
+        # Intereses por el último período
+        last_period_lines = self.env['account.move.line'].search(
+            self._get_move_line_domains() + [('amount_residual', '>', 0), ('date_maturity', '>=', from_date), ('date_maturity', '<', to_date)]
+        )
         for partner, amls in last_period_lines.grouped('partner_id').items():
-            interest = 0
-            for move, lines in amls.grouped('move_id').items():
-                days = (to_date - move.invoice_date_due).days
-                interest += move.amount_residual * days * (self.rate / interest_rate[self.rule_type])
-            if partner in deuda:
-                deuda[partner]['Deuda último periodo'] = interest
-            else:
-                deuda[partner] = {'Deuda último periodo': interest}
+            interest = sum(
+                move.amount_residual * ((to_date - move.invoice_date_due).days - 1) * (self.rate / interest_rate[self.rule_type])
+                for move, lines in amls.grouped('move_id').items()
+            )
+            self._update_deuda(deuda, partner, 'Deuda último periodo', interest)
 
-
-        # Feature de intereses por pago tardio (periodo actual)
+        # Intereses por pagos tardíos
         if self.late_payment_interest:
 
             partials = self.env['account.partial.reconcile'].search([
+                # lo dejamos para NTH
+                # debit_move_id. safe eval domain
                 ('debit_move_id.partner_id.active', '=', True),
                 ('debit_move_id.date_maturity', '>=', from_date),
                 ('debit_move_id.date_maturity', '<=', to_date),
                 ('debit_move_id.parent_state', '=', 'posted'),
-                    # lo dejamos para NTH
-                    # debit_move_id. safe eval domain
                 ('debit_move_id.account_id', 'in', self.receivable_account_ids.ids),
                 ('credit_move_id.date', '>=', from_date),
                 ('credit_move_id.date', '<', to_date)]).grouped('debit_move_id')
 
             for move_line, parts in partials.items():
                 due_payments = parts.filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity)
+                interest = 0
                 if due_payments:
                     due_payments_amount = sum(due_payments.mapped('amount'))
                     last_date_payment = parts.filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity).sorted('max_date')[-1].max_date
                     days = (last_date_payment - move_line.date_maturity).days
                     interest += due_payments_amount * days * (self.rate / interest_rate[self.rule_type])
-                    partner = move_line.partner_id
-                    if partner in deuda and 'Deuda pagos vencidos' in deuda[partner]:
-                        deuda[partner]['Deuda pagos vencidos'] += interest
-                    elif partner in deuda:
-                        deuda[partner]['Deuda pagos vencidos'] = interest
-                    else:
-                        deuda[partner] = {'Deuda pagos vencidos': interest}
+                    self._update_deuda(deuda, move_line.partner_id, 'Deuda pagos vencidos', interest)
 
-        self = self.with_context(
-            company_id=self.company_id.id,
-            mail_notrack=True,
-            prefetch_fields=False).with_company(self.company_id)
+        return deuda
+
+    def create_invoices(self, from_date, to_date):
+        """
+        Crea facturas de intereses a cada partner basadas en los cálculos de deuda.
+        Ejemplo:
+            Tengo deudas viejas por 2000 (super viejas)
+            el 1 facturo 1000 que vencen el 20
+            el 25 pagó 400.
+            Detalle de cálculo de intereses:
+                * interés por todo lo viejo (2000) x el rate
+                * interés de todo lo que venció en el último período ($600) x días que estuvo vencido (10 días)
+                * si además marcó "late payment interest" se agrega interés por los días que pagó tarde, es decir $400 x 5 días
+        """
+        self.ensure_one()
+
+        # Calcular deudas e intereses
+        deuda = self._calculate_debts(from_date, to_date)
+
+        journal = self.env['account.journal'].search([
+            ('type', '=', 'sale'),
+            ('company_id', '=', self.company_id.id)], limit=1)
 
         total_items = len(deuda)
         _logger.info('%s interest invoices will be generated', total_items)
-        for idx, partner in enumerate(deuda):
-            move_vals = self._prepare_interest_invoice(partner,
-                deuda[partner], to_date, journal)
 
+        # Crear facturas
+        for idx, partner in enumerate(deuda):
+            move_vals = self._prepare_interest_invoice(partner, deuda[partner], to_date, journal)
             if not move_vals:
                 continue
 
-            _logger.info('Creating Interest Invoice (%s of %s) with values:\n%s', idx + 1, total_items, partner)
+            _logger.info('Creating Interest Invoice (%s of %s) for partner ID: %s', idx + 1, total_items, partner.id)
 
             move = self.env['account.move'].create(move_vals)
-
             if self.automatic_validation:
                 try:
                     move.action_post()
@@ -256,7 +256,8 @@ class ResCompanyInterest(models.Model):
 
 
 
-    def prepare_info(self, to_date):
+
+    def _prepare_info(self, to_date):
         self.ensure_one()
 
         # Format date to customer language
@@ -272,9 +273,12 @@ class ResCompanyInterest(models.Model):
         return res
 
     def _prepare_interest_invoice(self, partner, debt, to_date, journal):
+        """
+        Retorna un diccionario con los datos para crear la factura
+        """
         self.ensure_one()
 
-        comment = self.prepare_info(to_date)
+        comment = self._prepare_info(to_date)
         fpos = partner.property_account_position_id
         taxes = self.interest_product_id.taxes_id.filtered(
             lambda r: r.company_id == self.company_id)
@@ -298,7 +302,7 @@ class ResCompanyInterest(models.Model):
                 "name": self.interest_product_id.name + '.\n' + key,
                 "analytic_distribution": {self.analytic_account_id.id: 100.0} if self.analytic_account_id.id else False,
                 "tax_ids": [(6, 0, tax_id.ids)]
-            }) for key, value in debt.items() if value > 0],
+            }) for key, value in debt.items() if isinstance(value, (int, float)) and value > 0],
         }
 
         # hack para evitar modulo glue con l10n_latam_document
