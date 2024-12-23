@@ -8,6 +8,14 @@
             <field name="country_code" position="before">
                 <field name="mail_template_id"  context="{'default_model': 'account.move'}"  invisible="type not in ['sale', 'purchase']"/>
             </field>
+            <field name="payment_sequence" position="after">
+                    <div colspan="2">
+                        <p invisible="type not in ['bank', 'cash'] or not payment_sequence">
+                            <i>Please note that when this box is selected, you must ensure that the 
+                            payments follow a different sequence format.</i>
+                        </p>
+                    </div>
+            </field>
         </field>
     </record>
 </odoo>
