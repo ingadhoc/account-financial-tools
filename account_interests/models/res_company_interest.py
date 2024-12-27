@@ -241,6 +241,7 @@ class ResCompanyInterest(models.Model):
             'company_id': self.company_id.id,
             'journal_id': journal.id,
             'invoice_origin': "Interests Invoice",
+            'invoice_payment_term_id': False,
             'narration': self.interest_product_id.name + '.\n' + comment,
             'is_move_sent': True,
             'invoice_line_ids': [(0, 0, {
