@@ -19,7 +19,7 @@
 ##############################################################################
 {
     'name': 'Account Debt Report',
-    'version': "17.0.2.0.0",
+    'version': "17.0.2.1.0",
     'category': 'Account Reporting',
     'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
@@ -33,6 +33,7 @@
         'data/mail_template_data.xml',
         'security/ir.model.access.csv',
         'wizard/account_debt_report_wizard_view.xml',
+        'views/account_move_line.xml',
     ],
     'demo': [
     ],

@@ -10,6 +10,19 @@ from odoo.tools.safe_eval import safe_eval
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    def action_open_debt_report_wizard(self):
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.debt.report.wizard',
+            'view_mode': 'form',
+            'view_id': self.env.ref('account_debt_report.account_debt_report_wizard_form').id,
+            'target': 'new',
+            'context': {
+                'partner_id': self.id,
+            },
+        }
+
     def _get_debt_report_lines(self):
         # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
