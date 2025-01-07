@@ -133,7 +133,8 @@ class ResPartner(models.Model):
             amount_residual = record.amount_residual
             amount_currency = record.amount_currency
             show_currency = record.currency_id != record.company_id.currency_id
-            name += ' - ' + record.journal_id.name
+            if record.payment_id:
+                name += ' - ' + record.journal_id.name
 
             # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
             res.append(get_line_vals(
