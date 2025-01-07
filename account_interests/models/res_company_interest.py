@@ -254,7 +254,11 @@ class ResCompanyInterest(models.Model):
         }
 
         # hack para evitar modulo glue con l10n_latam_document
-        if journal._fields.get('l10n_latam_use_documents') and journal.l10n_latam_use_documents:
+        # hasta el momento tenemos feedback de dos clientes uruguayos de que los ajustes por intereses 
+        # se hacen comoo factura normal y no ND. Si eventualmente otros clintes solicitan ND tendremos 
+        # que analizar hacerlo parametrizable y además cambios en validación electrónica con DGI 
+        # porque actualmente exige vincular una factura original (implementar poder pasar indicadores globales)
+        if journal.country_code != 'UY' and journal._fields.get('l10n_latam_use_documents') and journal.l10n_latam_use_documents:
             debit_note = self.env['account.move'].new({
                 'move_type': 'out_invoice',
                 'journal_id': journal.id,
