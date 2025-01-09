@@ -20,7 +20,6 @@
                             <field name="interval"/>
                             <field name="rule_type"/>
                             <field name="next_date"/>
-                            <field name="tolerance_interval"/>
                             <field name="has_domain"/>
                         </list>
                         <form>
@@ -37,7 +36,7 @@
                                     <field name="interval"/>
                                     <field name="rule_type"/>
                                     <field name="next_date"/>
-                                    <field name="tolerance_interval"/>
+                                    <field name="late_payment_interest"/>
                                 </group>
                                 <field name="domain" widget="domain" options="{ 'model': 'account.move.line', 'in_dialog': True }" />
                             </group>
