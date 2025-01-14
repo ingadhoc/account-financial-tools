@@ -79,7 +79,6 @@
     <record id="action_account_moves_customers_ledger" model="ir.actions.act_window">
         <field name="name">Customers Ledger</field>
         <field name="res_model">account.move.line</field>
-        <field name="view_mode">list</field>
         <field name="view_id" ref="view_move_line_payment_tree"/>
         <field name="search_view_id" ref="view_account_partner_ledger_filter"/>
         <field name="view_mode">list,pivot,graph</field>
@@ -90,7 +89,6 @@
     <record id="action_account_moves_vendors_ledger" model="ir.actions.act_window">
         <field name="name">Vendors Ledger</field>
         <field name="res_model">account.move.line</field>
-        <field name="view_mode">list</field>
         <field name="view_id" ref="view_move_line_payment_tree"/>
         <field name="search_view_id" ref="view_account_partner_ledger_filter"/>
         <field name="view_mode">list,pivot,graph</field>
