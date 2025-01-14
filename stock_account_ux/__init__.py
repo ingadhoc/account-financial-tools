@@ -3,4 +3,4 @@
 # directory
 ##############################################################################
 from . import models
-from .monkey_patches import *
+from .monkey_patches import monkey_patches
