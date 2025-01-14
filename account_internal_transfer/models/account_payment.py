@@ -17,6 +17,12 @@ class AccountPayment(models.Model):
         check_company=True,
     )
 
+    # TO DO: Check in v19+ if odoo delete the paired_internal_transfer_payment_id field, restore the field in this module
+    # paired_internal_transfer_payment_id = fields.Many2one('account.payment',
+    #     index='btree_not_null',
+    #     help="When an internal transfer is posted, a paired payment is created. "
+    #     "They are cross referenced through this field", copy=False)
+
     def _get_name_receipt_report(self, report_xml_id):
         """ Method similar to the '_get_name_invoice_report' of l10n_latam_invoice_document
         Basically it allows different localizations to define it's own report
@@ -132,3 +138,8 @@ class AccountPayment(models.Model):
         }
         return action
 
+    @api.depends('is_internal_transfer')
+    def _compute_partner_id(self):
+        super()._compute_partner_id()
+        for pay in self.filtered(lambda x: x.is_internal_transfer):
+            pay.partner_id = pay.journal_id.company_id.partner_id
