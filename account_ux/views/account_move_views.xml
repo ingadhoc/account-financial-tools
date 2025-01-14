@@ -54,6 +54,16 @@
                 <field name="reversed_entry_id" invisible="move_type != 'out_refund'" readonly="state != 'draft'"/>
             </field>
 
+            <!-- agregamos para que el grupo  account.group_account_invoice tambien pueda cambiar el diario de facturacion -->
+            <label for="journal_id" position="attributes">
+                <attribute name="groups" separator="," add="account.group_account_invoice" />
+            </label>
+            <xpath expr="//div[@name='currency_div']" position="attributes">
+                <attribute name="groups" separator="," add="account.group_account_invoice" />
+            </xpath>
+
+        <!-- Temas de multimoneda -->
+
             <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="attributes">
                 <attribute name="class">w-50</attribute>
             </xpath>
@@ -66,22 +76,26 @@
                     <span>1 </span>
                     <field name="currency_id" readonly="True" options="{'no_open': True}"/>
                     <span> = </span>
-                    <field name="inverse_invoice_currency_rate" digits="[12,6]" readonly="True"/>
+                    <field name="inverse_invoice_currency_rate" digits="[12,3]" readonly="True"/>
                     <span> </span>
                     <field name="company_currency_id" readonly="True" options="{'no_open': True}"/>
                 </div>
             </xpath>
 
+            <header position="after">
+                <div class="alert alert-info" role="alert" invisible="invoice_date or currency_id == company_currency_id">
+                    Como el comprobante no tiene fecha, la cotización mostrada podría no ser la que se aplique, ya que se actualizará al validar o asignar una fecha. Para fijar la cotización y/o editar la tasa, debe asignar una fecha al comprobante
+                </div>
+            </header>
+
             <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="after">
                 <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
-            <!-- agregamos para que el grupo  account.group_account_invoice tambien pueda cambiar el diario de facturacion -->
-            <label for="journal_id" position="attributes">
-                <attribute name="groups" separator="," add="account.group_account_invoice" />
-            </label>
-            <xpath expr="//div[@name='currency_div']" position="attributes">
-                <attribute name="groups" separator="," add="account.group_account_invoice" />
-            </xpath>
+
+            <div name="currency_conversion_div">
+                <button name="%(action_account_move_change_rate)d" type="action" icon="fa-pencil" class="btn-link" invisible="not invoice_date or state != 'draft' or currency_id == company_currency_id" title="Edit Rate"/>
+            </div>
+
         </field>
     </record>
 

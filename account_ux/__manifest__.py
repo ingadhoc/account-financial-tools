@@ -38,6 +38,7 @@
         'security/account_ux_security.xml',
         'security/ir.model.access.csv',
         'wizards/account_change_currency_views.xml',
+        'wizards/account_move_change_rate_views.xml',
         'wizards/res_config_settings_views.xml',
         'views/account_journal_views.xml',
         'views/account_move_line_views.xml',

@@ -10,20 +10,12 @@ class AccountMove(models.Model):
     internal_notes = fields.Html(
         'Internal Notes'
     )
-    other_currency = fields.Boolean(compute='_compute_other_currency')
-
     inverse_invoice_currency_rate = fields.Float(compute='_compute_inverse_invoice_currency_rate')
 
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
         return bin_data, __
-
-    @api.depends('company_currency_id', 'currency_id')
-    def _compute_other_currency(self):
-        other_currency = self.filtered(lambda x: x.company_currency_id != x.currency_id)
-        other_currency.other_currency = True
-        (self - other_currency).other_currency = False
 
     def delete_number(self):
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
