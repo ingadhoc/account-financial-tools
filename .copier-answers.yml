@@ -1,0 +1,13 @@
+# Do NOT update manually; changes here will be overwritten by Copier
+_commit: 719579f
+_src_path: https://github.com/ingadhoc/addons-repo-template.git
+description: 'Modules that extend odoo for common needs of ADHOC Customers
+
+
+    '
+is_private: false
+name: ADHOC Odoo Accountant Financial Tools and Utils
+odoo_version: 18.0
+pre_commit_ignore: []
+slug: ''
+
