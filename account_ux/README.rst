@@ -27,7 +27,6 @@ Several Improvements to accounting:
 #. Adds possibility of filtering and grouping by company on invoices.
 #. Add button "Delete Number" in cancelled customer invoices
 #. Add a payment method description on payment tree view to be extende (For eg. by checks and withholdings) to show more info on tree view
-#. Add options on accounts to require analytic distribution on journal entries posting
 #. Add maturity date on manual journal entries
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
