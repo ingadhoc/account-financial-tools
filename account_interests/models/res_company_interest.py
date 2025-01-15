@@ -170,11 +170,16 @@ class ResCompanyInterest(models.Model):
             return self.past_due_rate
         return self.rate
 
-    def _calculate_debts(self, from_date, to_date, groupby=['partner_id']):
+    def _calculate_debts(self, from_date, to_date, groupby=None):
         """
         Calcula las deudas e intereses por partner.
         Retorna un diccionario estructurado con los cálculos.
         """
+        # Usamos el parámetro de esta forma para evitar compartir
+        # entre métodos valores mutables por defecto
+        if groupby is None:
+            groupby = ['partner_id']
+        
         deuda = {}
 
         interest_rate = {
