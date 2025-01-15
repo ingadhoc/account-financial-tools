@@ -12,6 +12,8 @@ class AccountMove(models.Model):
     )
     other_currency = fields.Boolean(compute='_compute_other_currency')
 
+    inverse_invoice_currency_rate = fields.Float(compute='_compute_inverse_invoice_currency_rate')
+
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
@@ -140,3 +142,8 @@ class AccountMove(models.Model):
             for rec in invoices_to_check:
                 error_msg +=  str(rec.date) + '\t'*2 + str(rec.invoice_date) + '\t'*3 + rec.display_name + '\n'
             raise UserError(_('The date and invoice date of a sale invoice must be the same: %s') % (error_msg))
+
+    @api.depends('invoice_currency_rate')
+    def _compute_inverse_invoice_currency_rate(self):
+        for record in self:
+            record.inverse_invoice_currency_rate = 1 / record.invoice_currency_rate

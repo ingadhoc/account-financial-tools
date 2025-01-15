@@ -57,6 +57,21 @@
             <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="attributes">
                 <attribute name="class">w-50</attribute>
             </xpath>
+
+            <!-- TODO que si alguna localizacion lo solicita al reves tenemos que analizar de hacerlo parametrizable o hardcodeado por país o algo así. -->
+            <xpath expr="//div[@name='currency_conversion_div']" position="replace">
+                <div name="currency_conversion_div"
+                    class="d-flex text-muted float-start"
+                    invisible="currency_id == company_currency_id">
+                    <span>1 </span>
+                    <field name="currency_id" readonly="True" options="{'no_open': True}"/>
+                    <span> = </span>
+                    <field name="inverse_invoice_currency_rate" digits="[12,6]" readonly="True"/>
+                    <span> </span>
+                    <field name="company_currency_id" readonly="True" options="{'no_open': True}"/>
+                </div>
+            </xpath>
+
             <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="after">
                 <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
