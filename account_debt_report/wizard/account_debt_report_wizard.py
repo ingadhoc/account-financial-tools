@@ -93,7 +93,7 @@ class AccountDebtReportWizard(models.TransientModel):
                 'account_debt_report.email_template_debt_detail').id,
             'default_partner_to': '{{ object.id or \'\' }}',
         }
-        self = self.with_context(context)
+        self = self.with_context(**context)
         return {
             'name': _('Send by Email'),
             'type': 'ir.actions.act_window',
