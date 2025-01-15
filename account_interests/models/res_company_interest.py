@@ -124,7 +124,8 @@ class ResCompanyInterest(models.Model):
                 'Creating Interest Invoices (id: %s, company: %s)', rec.id,
                 rec.company_id.name)
             # hacemos un commit para refrescar cache
-            self.env.cr.commit()
+            # TODO ver de utilizar savepoints: https://github.com/OCA/odoo-community.org/blob/master/website/Contribution/CONTRIBUTING.rst#never-commit-the-transaction
+            self.env.cr.commit()  # pragma pylint: disable=invalid-commit
             to_date = rec.next_date
 
             rule_type = rec.rule_type
