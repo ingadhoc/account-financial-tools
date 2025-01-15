@@ -27,8 +27,8 @@ class AccountChangeCurrency(models.TransientModel):
         required=True,
         help="Select a currency to apply on the invoice",
     )
-    currency_rate = fields.Float(
-        'Currency Rate',
+    conversion_date = fields.Float(
+        'Conversion Rate',
         required=True,
         digits=0,
         help="Select a rate to apply on the invoice"
@@ -38,35 +38,26 @@ class AccountChangeCurrency(models.TransientModel):
         default=get_move
     )
 
-    change_type = fields.Selection(
-        [('currency', 'Change Only Currency'),
-         ('value', 'Update both currency and values')],
-        default='currency'
-    )
-
     @api.onchange('currency_to_id')
     def onchange_currency(self):
         if not self.currency_to_id:
-            self.currency_rate = False
+            self.conversion_date = False
         else:
             currency = self.currency_from_id.with_context(
                 )
 
-            self.currency_rate = self.env['res.currency']._get_conversion_rate(
+            self.conversion_date = self.env['res.currency']._get_conversion_rate(
                 from_currency=currency,
                 to_currency=self.currency_to_id,
                 company=self.move_id.company_id,
-                date=self.move_id.date or
-                fields.Date.context_today(self),
+                date=self.move_id._get_invoice_currency_rate_date(),
             )
-            
+
     def change_currency(self):
         self.ensure_one()
-        if self.change_type == 'currency':
-            self.currency_rate = 1
         message = _("Currency changed from %s to %s with rate %s") % (
             self.move_id.currency_id.name, self.currency_to_id.name,
-            self.currency_rate)
+            self.conversion_date)
 
         move = self.move_id.with_context(check_move_validity=False)
         move.currency_id = self.currency_to_id.id
@@ -74,7 +65,7 @@ class AccountChangeCurrency(models.TransientModel):
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
             if line.exists():
-                line.price_unit = line.price_unit * self.currency_rate
+                line.price_unit = line.price_unit * self.conversion_date
 
         self.move_id.message_post(body=message)
         return {'type': 'ir.actions.act_window_close'}

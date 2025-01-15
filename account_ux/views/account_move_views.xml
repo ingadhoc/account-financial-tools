@@ -55,13 +55,10 @@
             </field>
 
             <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="attributes">
-                <attribute name="readonly">True</attribute>
-                <attribute name="force_save">1</attribute>
+                <attribute name="class">w-50</attribute>
             </xpath>
-
             <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="after">
-                <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-pencil" class="btn-link" title="Change Currency" groups="base.group_multi_currency" />
-                <field name="other_currency" invisible="1"/>
+                <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
             <!-- agregamos para que el grupo  account.group_account_invoice tambien pueda cambiar el diario de facturacion -->
             <label for="journal_id" position="attributes">

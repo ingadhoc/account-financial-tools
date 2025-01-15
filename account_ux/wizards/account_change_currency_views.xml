@@ -4,17 +4,14 @@
         <field name="name">Change Currency</field>
         <field name="model">account.change.currency</field>
         <field name="arch" type="xml">
-            <form string="Invoice Currency">
-                <group string="This wizard will change the currency of the invoice">
-                    <field name="move_id" invisible="1"/>
-                    <field name="currency_from_id"/>
-                    <field name="currency_to_id" domain="[('id', '!=', currency_from_id)]"/>
-                    <field name="change_type" widget="radio"/>
-                    <field name="currency_rate" digits="[12,12]" groups="!account_ux.group_restrict_change_currency_exchange" invisible="change_type == 'currency'" help="This value will be used to update the values of the amount without forcing the currency rate"/>
-                    <field name="currency_rate" digits="[12,12]" groups="account_ux.group_restrict_change_currency_exchange" readonly="1"/>
+            <form>
+                <group>
+                    <field name="currency_to_id"/>
+                    <field name="conversion_date" digits="[12,12]" groups="!account_ux.group_restrict_change_currency_exchange" help="This value will be used to update the values of the amount without forcing the currency rate"/>
+                    <field name="conversion_date" digits="[12,12]" groups="account_ux.group_restrict_change_currency_exchange" readonly="1"/>
                 </group>
                 <footer>
-                    <button name="change_currency" string="Change Currency" type="object" class="oe_highlight"/>
+                    <button name="change_currency" string="Change Currency and Rate" type="object" class="oe_highlight"/>
                     or
                     <button string="Cancel" class="oe_link" special="cancel"/>
                 </footer>
