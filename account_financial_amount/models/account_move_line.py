@@ -15,7 +15,6 @@ class AccountMoveLine(models.Model):
     )
     financial_amount = fields.Monetary(
         compute='_compute_financial_amounts',
-        string='Financial Amount',
         currency_field='company_currency_id',
     )
 

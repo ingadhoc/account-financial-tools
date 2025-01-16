@@ -27,9 +27,9 @@ class AccountDebtReportWizard(models.TransientModel):
         required=True,
         default=_default_result_selection,
     )
-    from_date = fields.Date('From')
-    to_date = fields.Date('To')
-    show_invoice_detail = fields.Boolean('Show Invoice Detail')
+    from_date = fields.Date()
+    to_date = fields.Date()
+    show_invoice_detail = fields.Boolean()
     # TODO implementar
     # show_receipt_detail = fields.Boolean('Show Receipt Detail')
     historical_full = fields.Boolean(

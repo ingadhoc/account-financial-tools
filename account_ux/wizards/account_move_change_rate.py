@@ -17,7 +17,6 @@ class AccountMoveChangeRate(models.TransientModel):
         return move
 
     currency_rate = fields.Float(
-        'Currency Rate',
         required=True,
         digits=(16, 6),
         help="Select a rate to apply on the invoice"

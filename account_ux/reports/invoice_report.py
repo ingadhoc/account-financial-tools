@@ -21,8 +21,7 @@ class AccountInvoiceReport(models.Model):
     price_subtotal_ic = fields.Monetary('Untaxed Total', readonly=True, currency_field='invoice_currency_id',)
     price_unit = fields.Monetary('Unit Price', readonly=True, currency_field='invoice_currency_id',)
     discount = fields.Float('Discount (%)', readonly=True)
-    discount_amount = fields.Monetary(
-        'Discount Amount', readonly=True, aggregator="sum", currency_field='invoice_currency_id',)
+    discount_amount = fields.Monetary(readonly=True, aggregator="sum", currency_field='invoice_currency_id',)
 
     _depends = {'account.move.line': ['price_unit', 'discount']}
 

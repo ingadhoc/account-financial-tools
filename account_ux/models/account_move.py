@@ -7,9 +7,7 @@ from odoo.exceptions import UserError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    internal_notes = fields.Html(
-        'Internal Notes'
-    )
+    internal_notes = fields.Html()
     inverse_invoice_currency_rate = fields.Float(compute='_compute_inverse_invoice_currency_rate')
 
     def get_invoice_report(self):
