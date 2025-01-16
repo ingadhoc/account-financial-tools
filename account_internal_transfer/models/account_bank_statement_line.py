@@ -22,17 +22,17 @@ class AccountBankStatementLine(models.Model):
         # pero en este caso odoo ya lo resuelve bien. Si este filtro no llega a ir bien por algo podriamos ver si tiene payment_group_id (pero no es lo mas elegante porque podria
         # haber clientes sin payment_group) o si el payment tiene partner_id
         st_lines_to_fix = self.filtered(
-            lambda x: x.move_id.payment_id.is_internal_transfer or (
-                x.move_id.payment_id
+            lambda x: x.move_id.payment_ids.is_internal_transfer or (
+                x.move_id.payment_ids
                 and x.move_id.line_ids.filtered(lambda x: x.account_id.account_type in ('asset_receivable', 'liability_payable'))))
         to_post = self.browse()
 
         for st_line in st_lines_to_fix:
-            payment = st_line.move_id.payment_id
-            liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
+            payments = st_line.move_id.payment_ids
+            liquidity_lines, counterpart_lines, writeoff_lines = payments._seek_for_lines()
             # si la cuenta de mi diario es la misma que la cuenta de la linea de liqudiez, es un pago
             # migrado y tenemos que cambiar por la cuenta outstanding
-            if payment.journal_id.default_account_id != liquidity_lines.account_id:
+            if payments.journal_id.default_account_id != liquidity_lines.account_id:
                 continue
             # Creamos la nueva linea manual como si se hubiese creado en 15 desde 0. y la vinculamos al statement line
             # de esta maera desviculamos el asiento del pago
@@ -51,12 +51,12 @@ class AccountBankStatementLine(models.Model):
             to_post += st_line
 
             # Corregimos el asiento del pago para que en lugar de ser AR/AP vs liquidez, sea AR/AP vs outstanding
-            payment._compute_outstanding_account_id()
-            outstanding_account = payment.outstanding_account_id
+            payments._compute_outstanding_account_id()
+            outstanding_account = payments.outstanding_account_id
             # Hicimos esto para desvincular el pago del extracto y de la línea del extracto que se está desconciliando
-            payment.statement_line_id = False
+            payments.statement_line_id = False
             # Al pago le cambiamos la cuenta de outstanding en lugar de la cuenta de liquidez
-            payment.move_id.line_ids.filtered(lambda x: x.account_id == liquidity_lines.account_id).account_id = outstanding_account.id
+            payments.move_id.line_ids.filtered(lambda x: x.account_id == liquidity_lines.account_id).account_id = outstanding_account.id
             # liquidity_lines.account_id = outstanding_account.id
 
         super().action_undo_reconciliation()
