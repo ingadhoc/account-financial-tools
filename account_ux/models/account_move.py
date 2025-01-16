@@ -138,4 +138,4 @@ class AccountMove(models.Model):
     @api.depends('invoice_currency_rate')
     def _compute_inverse_invoice_currency_rate(self):
         for record in self:
-            record.inverse_invoice_currency_rate = 1 / record.invoice_currency_rate
+            record.inverse_invoice_currency_rate = 1 / record.invoice_currency_rate if record.invoice_currency_rate else 1.0
