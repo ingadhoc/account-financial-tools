@@ -45,6 +45,13 @@ class ResCompanyInterest(models.Model):
         required=True,
         digits=(7, 4)
     )
+    past_due_rate = fields.Float(
+        'Interest for Previous Period',
+        digits=(7, 4),
+        default=False,
+        help="If set, this rate will be used for overdue debts from previous periods. "
+            "If not set, the standard interest rate (rate) for the current period will be applied."
+    )
     automatic_validation = fields.Boolean(
         'Automatic Validation?',
         help='Automatic Invoice Validation?',
@@ -157,6 +164,11 @@ class ResCompanyInterest(models.Model):
             deuda[partner] = {}
         deuda[partner][key] = deuda[partner].get(key, 0) + value
 
+    def _calculate_rate(self):
+        if self.past_due_rate and self.env.context.get('debt_past_period'):
+            return self.past_due_rate
+        return self.rate
+
     def _calculate_debts(self, from_date, to_date, groupby=['partner_id']):
         """
         Calcula las deudas e intereses por partner.
@@ -178,7 +190,7 @@ class ResCompanyInterest(models.Model):
             aggregates=['amount_residual:sum'],
         )
         for x in previous_grouped_lines:
-            self._update_deuda(deuda, x[0], 'Deuda periodos anteriores', x[1] * self.rate * self.interval)
+            self._update_deuda(deuda, x[0], 'Deuda periodos anteriores', x[1] * self.with_context(debt_past_period=True)._calculate_rate() * self.interval)
 
         # Intereses por el último período
         last_period_lines = self.env['account.move.line'].search(
@@ -186,7 +198,7 @@ class ResCompanyInterest(models.Model):
         )
         for partner, amls in last_period_lines.grouped('partner_id').items():
             interest = sum(
-                move.amount_residual * ((to_date - move.invoice_date_due).days) * (self.rate / interest_rate[self.rule_type])
+                move.amount_residual * ((to_date - move.invoice_date_due).days) * (self._calculate_rate()/ interest_rate[self.rule_type])
                 for move, lines in amls.grouped('move_id').items()
             )
             self._update_deuda(deuda, partner, 'Deuda último periodo', interest)
@@ -211,7 +223,7 @@ class ResCompanyInterest(models.Model):
                 due_date = max(from_date, parts.debit_move_id.date_maturity)
 
                 days = (parts.credit_move_id.date - due_date).days
-                interest =  parts.amount * days * (self.rate / interest_rate[self.rule_type])
+                interest =  parts.amount * days * (self._calculate_rate() / interest_rate[self.rule_type])
             self._update_deuda(deuda, move_line.partner_id, 'Deuda pagos vencidos', interest)
 
         return deuda
@@ -276,11 +288,15 @@ class ResCompanyInterest(models.Model):
         lang = self.env['res.lang']._lang_get(lang_code)
         date_format = lang.date_format
         to_date_format = to_date.strftime(date_format)
-
-        res = _(
-            'Deuda Vencida al %s con tasa de interés de %s') % (
-                to_date_format, self.rate)
-
+        if not self.past_due_rate:
+            res = _(
+                'Deuda Vencida al %s con tasa de interés de %s') % (
+                    to_date_format, self.rate)
+        else:
+            res = _(
+                'Deuda Vencida al %s de periodos anteriores con tasa de interés de %s. '
+                'Deuda Vencida al %s del ultimo periodo con tasa de interés de %s'
+            ) , (to_date_format, self.past_due_rate, to_date_format, self.rate)
         return res
 
     def _prepare_interest_invoice(self, partner, debt, to_date, journal):

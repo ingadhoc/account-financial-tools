@@ -16,6 +16,7 @@
                             <field name="interest_product_id"/>
                             <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                             <field name="rate"/>
+                            <field name="past_due_rate"/>
                             <field name="automatic_validation"/>
                             <field name="interval"/>
                             <field name="rule_type"/>
@@ -32,6 +33,7 @@
                                 </group>
                                 <group>
                                     <field name="rate"/>
+                                    <field name="past_due_rate"/>
                                     <field name="automatic_validation"/>
                                     <field name="interval"/>
                                     <field name="rule_type"/>
