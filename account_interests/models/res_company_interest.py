@@ -295,8 +295,9 @@ class ResCompanyInterest(models.Model):
         else:
             res = _(
                 'Deuda Vencida al %s de periodos anteriores con tasa de interés de %s. '
-                'Deuda Vencida al %s del ultimo periodo con tasa de interés de %s'
-            ) , (to_date_format, self.past_due_rate, to_date_format, self.rate)
+                'Deuda Vencida al %s del ultimo periodo con tasa de interés de %s',
+                to_date_format, self.past_due_rate, to_date_format, self.rate
+            )
         return res
 
     def _prepare_interest_invoice(self, partner, debt, to_date, journal):
