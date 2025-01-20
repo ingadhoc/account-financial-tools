@@ -49,7 +49,7 @@ class AccountMove(models.Model):
         return res
 
     def action_send_invoice_mail(self):
-        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
+        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id and x.partner_id.email):
             try:
                 rec.message_post_with_source(
                     rec.journal_id.mail_template_id,
