@@ -75,6 +75,7 @@ class AccountDebtReportWizard(models.TransientModel):
         active_id = self._context.get('active_id', False)
         context = {
             # report keys
+            'company_currency': self.company_currency,
             'secondary_currency': self.secondary_currency,
             'result_selection': self.result_selection,
             'company_id': self.company_id.id,
