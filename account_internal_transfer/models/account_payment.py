@@ -31,9 +31,11 @@ class AccountPayment(models.Model):
     @api.depends('partner_id', 'journal_id', 'destination_journal_id')
     def _compute_is_internal_transfer(self):
         for payment in self:
-            payment.is_internal_transfer = (not payment.partner_id\
-                                           or payment.partner_id == payment.journal_id.company_id.partner_id)\
+            payment.is_internal_transfer = (not payment.partner_id
+                                           or payment.partner_id == payment.journal_id.company_id.partner_id) \
                                            and payment.destination_journal_id
+        if self._context.get('is_internal_transfer_menu'):
+            self.is_internal_transfer = True
 
     def _get_aml_default_display_name_list(self):
         values = super()._get_aml_default_display_name_list()

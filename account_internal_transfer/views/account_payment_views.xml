@@ -73,7 +73,8 @@
             {'default_payment_type': 'outbound',
             'default_is_internal_transfer': True,
             'default_move_journal_types': ('bank', 'cash'),
-            'display_account_trust': True}
+            'display_account_trust': True,
+            'is_internal_transfer_menu':True}
         </field>
         <field name="domain">[('is_internal_transfer', '=', True)]</field>
         <field name="help" type="html">
