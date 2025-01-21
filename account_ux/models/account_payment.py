@@ -20,6 +20,8 @@ class AccountPayment(models.Model):
                 not self.env.context.get('skip_payment_state_computation') and
                 payment.journal_id.type in ('bank', 'cash') and
                 payment.outstanding_account_id and
-                len(payment.move_id.line_ids._reconciled_lines()) > 1
+                len(payment.move_id.line_ids._reconciled_lines()) > 1 and
+                (payment.payment_method_line_id.payment_account_id.account_type != 'asset_current'
+                    or payment.payment_method_line_id.payment_account_id.account_type == False)
             ):
                 payment.state = 'paid'
