@@ -83,7 +83,7 @@
             </xpath>
 
             <header position="after">
-                <div class="alert alert-danger" role="alert" invisible="invoice_date or currency_id == company_currency_id">
+                <div class="alert alert-danger" role="alert" invisible="invoice_date or currency_id == company_currency_id or move_type == 'entry'">
                     Como el comprobante no tiene fecha, la cotización mostrada podría no ser la que se aplique, ya que se actualizará al validar o asignar una fecha. Para fijar la cotización y/o editar la tasa, debe asignar una fecha al comprobante
                 </div>
             </header>
