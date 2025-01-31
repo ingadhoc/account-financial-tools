@@ -11,6 +11,7 @@
             <!-- Permitimos ocultar subtotal sin impuestos -->
             <field name="price_subtotal" position="attributes">
                 <attribute name="optional">show</attribute>
+                <attribute name="string">Subtotal</attribute>
             </field>
             <!-- odoo lo hace invisible si la company tiene tax_calculation_rounding_method = rounding globally, -->
             <!-- nosotros dejamos que sin importqar ese parametro se puedamos mostrar -->
