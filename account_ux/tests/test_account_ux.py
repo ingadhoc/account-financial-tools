@@ -28,7 +28,7 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
             'partner_id': self.partner_ri.id,
             'date': self.today,
             'move_type': 'out_invoice',
-            'journal_id': self.first_company_journal_usd.id,
+            'journal_id': self.first_company_journal_ars.id,
             'company_id': self.first_company.id,
             'invoice_line_ids': [
                 Command.create({
@@ -39,8 +39,9 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
             ],
         })
         invoice.write({
-            'journal_id': self.first_company_journal_ars.id
+            'journal_id': self.first_company_journal_usd.id
         })
         invoice.action_post()
 
-        self.assertEqual(invoice.currency_id, self.first_company_journal_ars.currency_id, "La moneda de la factura no esta siendo modificada al cambiar el diario.")
+        self.assertEqual(invoice.currency_id, self.first_company_journal_usd.currency_id,
+                         "La moneda de la factura no está siendo modificada al cambiar el diario.")
