@@ -92,8 +92,9 @@ class ResPartner(models.Model):
             if len(company_currency_ids) == 1:
                 inicial_lines_currency = self.env['account.move.line'].sudo()._read_group(
                     initial_domain + [('currency_id', 'not in', company_currency_ids.ids)], groupby=['partner_id'], aggregates=['amount_currency:sum', 'currency_id:array_agg'])
-                balance_in_currency = inicial_lines_currency[0][1] if inicial_lines_currency else 0.0
-                balance_in_currency_name = self.env['res.currency'].browse(inicial_lines_currency[0][2][0]).display_name if inicial_lines_currency and inicial_lines_currency[0][2][0] else  ''
+                balance_in_currency = inicial_lines_currency[0]['amount_currency'] if inicial_lines_currency else 0.0
+                balance_in_currency_name = self.env['res.currency'].browse(inicial_lines_currency[0]['currency_id'][0]).display_name if inicial_lines_currency and inicial_lines_currency[0]['currency_id'][0] else  ''
+
             res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance, amount_currency=balance_in_currency, currency_name=balance_in_currency_name)]
             domain.append(('date', '>=', from_date))
         else:
