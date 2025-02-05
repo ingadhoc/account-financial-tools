@@ -18,26 +18,26 @@
 #
 ##############################################################################
 {
-    'name': 'Surcharges on payment terms',
-    'version': "18.0.1.0.0",
-    'category': 'Accounting',
-    'sequence': 14,
-    'summary': 'Allow to add surcharges for invoices on payment terms',
-    'author': 'ADHOC SA',
-    'website': 'www.adhoc.com.ar',
-    'license': 'AGPL-3',
-    'depends': [
-        'account',
-        'account_debit_note',
+    "name": "Surcharges on payment terms",
+    "version": "18.0.1.0.0",
+    "category": "Accounting",
+    "sequence": 14,
+    "summary": "Allow to add surcharges for invoices on payment terms",
+    "author": "ADHOC SA",
+    "website": "www.adhoc.com.ar",
+    "license": "AGPL-3",
+    "depends": [
+        "account",
+        "account_debit_note",
     ],
-    'data': [
-        'views/account_payment_term_view.xml',
-        'views/account_payment_term_surcharge_view.xml',
-        'views/account_move_views.xml',
-        'wizard/res_config_settings_views.xml',
-        'security/ir.model.access.csv',
-        'data/ir_cron_data.xml'
+    "data": [
+        "views/account_payment_term_view.xml",
+        "views/account_payment_term_surcharge_view.xml",
+        "views/account_move_views.xml",
+        "wizard/res_config_settings_views.xml",
+        "security/ir.model.access.csv",
+        "data/ir_cron_data.xml",
     ],
-    'installable': True,
-    'application': False,
+    "installable": True,
+    "application": False,
 }

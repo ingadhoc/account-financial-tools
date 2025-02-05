@@ -18,28 +18,25 @@
 #
 ##############################################################################
 {
-    'name': 'Journal Security',
-    'version': "18.0.1.0.0",
-    'category': 'Accounting',
-    'sequence': 14,
-    'summary': 'Restrict the use of certain journals to certain users',
-    'author': 'ADHOC SA',
-    'website': 'www.adhoc.com.ar',
-    'license': 'AGPL-3',
-    'images': [
+    "name": "Journal Security",
+    "version": "18.0.1.0.0",
+    "category": "Accounting",
+    "sequence": 14,
+    "summary": "Restrict the use of certain journals to certain users",
+    "author": "ADHOC SA",
+    "website": "www.adhoc.com.ar",
+    "license": "AGPL-3",
+    "images": [],
+    "depends": [
+        "account",
     ],
-    'depends': [
-        'account',
+    "data": [
+        "views/account_journal_views.xml",
+        "security/journal_security_security.xml",
     ],
-    'data': [
-        'views/account_journal_views.xml',
-        'security/journal_security_security.xml',
-    ],
-    'demo': [
-    ],
-    'test': [
-    ],
-    'installable': True,
-    'auto_install': False,
-    'application': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "auto_install": False,
+    "application": False,
 }

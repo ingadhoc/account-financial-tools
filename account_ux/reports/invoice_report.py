@@ -1,29 +1,46 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models, fields
+from odoo import fields, models
 from odoo.tools import SQL
 
-class AccountInvoiceReport(models.Model):
 
-    _inherit = 'account.invoice.report'
+class AccountInvoiceReport(models.Model):
+    _inherit = "account.invoice.report"
 
     # agregamos widgets monetary, referencia a company currency en string y help
     price_subtotal = fields.Monetary(
-        currency_field='company_currency_id', string="Untaxed Total (CC)", help="Untaxed Total in company currency")
-    price_total = fields.Monetary(string='Total', currency_field='invoice_currency_id')
+        currency_field="company_currency_id", string="Untaxed Total (CC)", help="Untaxed Total in company currency"
+    )
+    price_total = fields.Monetary(string="Total", currency_field="invoice_currency_id")
     price_average = fields.Monetary(
-        currency_field='company_currency_id', string='Average Price (CC)', help="Average Price in company currency")
+        currency_field="company_currency_id", string="Average Price (CC)", help="Average Price in company currency"
+    )
     # creamos nuevos campos para tener descuentos, vinculos e importes en moneda de compañía
     total_cc = fields.Monetary(
-        string='Total (CC)', readonly=True, help="Untaxed Total in company currency",
-        currency_field='company_currency_id')
-    invoice_currency_id = fields.Many2one('res.currency', string='Invoice Currency', readonly=True)
-    line_id = fields.Many2one('account.move.line', string='Journal Item', readonly=True)
-    price_subtotal_ic = fields.Monetary('Untaxed Total', readonly=True, currency_field='invoice_currency_id',)
-    price_unit = fields.Monetary('Unit Price', readonly=True, currency_field='invoice_currency_id',)
-    discount = fields.Float('Discount (%)', readonly=True)
-    discount_amount = fields.Monetary(readonly=True, aggregator="sum", currency_field='invoice_currency_id',)
+        string="Total (CC)",
+        readonly=True,
+        help="Untaxed Total in company currency",
+        currency_field="company_currency_id",
+    )
+    invoice_currency_id = fields.Many2one("res.currency", string="Invoice Currency", readonly=True)
+    line_id = fields.Many2one("account.move.line", string="Journal Item", readonly=True)
+    price_subtotal_ic = fields.Monetary(
+        "Untaxed Total",
+        readonly=True,
+        currency_field="invoice_currency_id",
+    )
+    price_unit = fields.Monetary(
+        "Unit Price",
+        readonly=True,
+        currency_field="invoice_currency_id",
+    )
+    discount = fields.Float("Discount (%)", readonly=True)
+    discount_amount = fields.Monetary(
+        readonly=True,
+        aggregator="sum",
+        currency_field="invoice_currency_id",
+    )
 
-    _depends = {'account.move.line': ['price_unit', 'discount']}
+    _depends = {"account.move.line": ["price_unit", "discount"]}
 
     def _select(self):
         query = SQL("""

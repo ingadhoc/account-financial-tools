@@ -8,34 +8,31 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     internal_notes = fields.Html()
-    inverse_invoice_currency_rate = fields.Float(compute='_compute_inverse_invoice_currency_rate')
+    inverse_invoice_currency_rate = fields.Float(compute="_compute_inverse_invoice_currency_rate")
 
     def get_invoice_report(self):
         self.ensure_one()
-        bin_data, __ = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', self.id)
+        bin_data, __ = self.env["ir.actions.report"]._render_qweb_pdf("account.account_invoices", self.id)
         return bin_data, __
 
     def delete_number(self):
-        self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
+        self.filtered(lambda x: x.state == "cancel").write({"name": "/"})
 
     def action_post(self):
-        """ After validate invoice will sent an email to the partner if the related journal has mail_template_id set """
+        """After validate invoice will sent an email to the partner if the related journal has mail_template_id set"""
         res = super().action_post()
         self.action_send_invoice_mail()
         return res
 
     def action_send_invoice_mail(self):
-        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id and x.partner_id.email):
+        for rec in self.filtered(
+            lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id and x.partner_id.email
+        ):
             try:
-                rec.message_post_with_source(
-                    rec.journal_id.mail_template_id,
-                    subtype_xmlid='mail.mt_comment'
-                )
-                rec.is_move_sent= True
+                rec.message_post_with_source(rec.journal_id.mail_template_id, subtype_xmlid="mail.mt_comment")
+                rec.is_move_sent = True
             except Exception as error:
-                title = _(
-                    "ERROR: Invoice was not sent via email"
-                )
+                title = _("ERROR: Invoice was not sent via email")
                 # message = _(
                 #     "Invoice %s was correctly validate but was not send"
                 #     " via email. Please review invoice chatter for more"
@@ -46,15 +43,18 @@ class AccountMove(models.Model):
                 #     message=message,
                 #     sticky=True,
                 # )
-                rec.message_post(body="<br/><br/>".join([
-                    "<b>" + title + "</b>",
-                    _("Please check the email template associated with"
-                      " the invoice journal."),
-                    "<code>" + str(error) + "</code>"
-                ]), body_is_html=True
+                rec.message_post(
+                    body="<br/><br/>".join(
+                        [
+                            "<b>" + title + "</b>",
+                            _("Please check the email template associated with" " the invoice journal."),
+                            "<code>" + str(error) + "</code>",
+                        ]
+                    ),
+                    body_is_html=True,
                 )
 
-    @api.onchange('partner_id')
+    @api.onchange("partner_id")
     def _onchange_partner_commercial(self):
         if self.partner_id.user_id:
             self.invoice_user_id = self.partner_id.user_id.id
@@ -72,8 +72,13 @@ class AccountMove(models.Model):
             else:
                 return abs(amount_currency) / abs(amount)
 
-        rate = get_accounting_rate(move.company_id.currency_id, move.amount_total_signed, move.amount_total_in_currency_signed, move.currency_id)
-        amount = abs(line.amount_residual) * rate 
+        rate = get_accounting_rate(
+            move.company_id.currency_id,
+            move.amount_total_signed,
+            move.amount_total_in_currency_signed,
+            move.currency_id,
+        )
+        amount = abs(line.amount_residual) * rate
         return amount
 
     ### Comentamos este método debido a que el campo invoice_outstanding_credits_debits_widget no se estaba seteando correctamente en super
@@ -113,27 +118,35 @@ class AccountMove(models.Model):
     #             amount_residual = self.env['account.move.line'].browse(item['id']).amount_residual
     #             item['amount'] = move.currency_id.round(amount_residual * rate)
 
-    @api.depends('invoice_date')
+    @api.depends("invoice_date")
     def _compute_invoice_date_due(self):
-        """ Si la factura no tiene término de pago y la misma tiene fecha de vencimiento anterior al día de hoy y la factura no tiene fecha entonces cuando se publica la factura, la fecha de vencimiento tiene que coincidir con la fecha de hoy. """
-        invoices_with_old_data_due = self.filtered(lambda x: x.invoice_date and not x.invoice_payment_term_id and (not x.invoice_date_due or x.invoice_date_due < x.invoice_date))
+        """Si la factura no tiene término de pago y la misma tiene fecha de vencimiento anterior al día de hoy y la factura no tiene fecha entonces cuando se publica la factura, la fecha de vencimiento tiene que coincidir con la fecha de hoy."""
+        invoices_with_old_data_due = self.filtered(
+            lambda x: x.invoice_date
+            and not x.invoice_payment_term_id
+            and (not x.invoice_date_due or x.invoice_date_due < x.invoice_date)
+        )
         invoices = self - invoices_with_old_data_due
         for inv in invoices_with_old_data_due:
             if inv.invoice_date:
                 inv.invoice_date_due = inv.invoice_date
         return super(AccountMove, invoices)._compute_invoice_date_due()
 
-    @api.constrains('date', 'invoice_date')
+    @api.constrains("date", "invoice_date")
     def _check_dates_on_invoices(self):
-        """ Prevenir que en facturas de cliente queden distintos los campos de factura/recibo y fecha (date e invoice date). Pueden quedar distintos si se modifica alguna de esas fechas a través de edición masiva por ejemplo, entonces con esta constrains queremos prevenir que eso suceda.  """
-        invoices_to_check = self.filtered(lambda x: x.date!=x.invoice_date if x.is_sale_document() and x.date and x.invoice_date else False)
+        """Prevenir que en facturas de cliente queden distintos los campos de factura/recibo y fecha (date e invoice date). Pueden quedar distintos si se modifica alguna de esas fechas a través de edición masiva por ejemplo, entonces con esta constrains queremos prevenir que eso suceda."""
+        invoices_to_check = self.filtered(
+            lambda x: x.date != x.invoice_date if x.is_sale_document() and x.date and x.invoice_date else False
+        )
         if invoices_to_check:
-            error_msg = _('\nDate\t\t\tInvoice Date\t\tInvoice\n')
+            error_msg = _("\nDate\t\t\tInvoice Date\t\tInvoice\n")
             for rec in invoices_to_check:
-                error_msg +=  str(rec.date) + '\t'*2 + str(rec.invoice_date) + '\t'*3 + rec.display_name + '\n'
-            raise UserError(_('The date and invoice date of a sale invoice must be the same: %s') % (error_msg))
+                error_msg += str(rec.date) + "\t" * 2 + str(rec.invoice_date) + "\t" * 3 + rec.display_name + "\n"
+            raise UserError(_("The date and invoice date of a sale invoice must be the same: %s") % (error_msg))
 
-    @api.depends('invoice_currency_rate')
+    @api.depends("invoice_currency_rate")
     def _compute_inverse_invoice_currency_rate(self):
         for record in self:
-            record.inverse_invoice_currency_rate = 1 / record.invoice_currency_rate if record.invoice_currency_rate else 1.0
+            record.inverse_invoice_currency_rate = (
+                1 / record.invoice_currency_rate if record.invoice_currency_rate else 1.0
+            )

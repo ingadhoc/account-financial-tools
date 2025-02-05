@@ -1,10 +1,11 @@
-from odoo import models, fields
+from odoo import fields, models
 
 
 class ResCompany(models.Model):
-    _inherit = 'res.company'
+    _inherit = "res.company"
 
     reconcile_on_company_currency = fields.Boolean(
         help="When reconciling debt with secondary currency, if the account doesn't have a currency configured, then"
         " reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing "
-        " same rate of the original document being reconcile")
+        " same rate of the original document being reconcile"
+    )

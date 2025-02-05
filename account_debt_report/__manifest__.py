@@ -18,26 +18,24 @@
 #
 ##############################################################################
 {
-    'name': 'Account Debt Report',
-    'version': "18.0.2.0.0",
-    'category': 'Account Reporting',
-    'author': 'ADHOC SA',
-    'website': 'www.adhoc.com.ar',
-    'license': 'AGPL-3',
-    'depends': [
-        'account',
-        'report_aeroo',
+    "name": "Account Debt Report",
+    "version": "18.0.2.0.0",
+    "category": "Account Reporting",
+    "author": "ADHOC SA",
+    "website": "www.adhoc.com.ar",
+    "license": "AGPL-3",
+    "depends": [
+        "account",
+        "report_aeroo",
     ],
-    'data': [
-        'report/account_debt_report.xml',
-        'data/mail_template_data.xml',
-        'security/ir.model.access.csv',
-        'wizard/account_debt_report_wizard_view.xml',
-        'views/account_move_line.xml',
+    "data": [
+        "report/account_debt_report.xml",
+        "data/mail_template_data.xml",
+        "security/ir.model.access.csv",
+        "wizard/account_debt_report_wizard_view.xml",
+        "views/account_move_line.xml",
     ],
-    'demo': [
-    ],
-    'test': [
-    ],
-    'installable': True,
+    "demo": [],
+    "test": [],
+    "installable": True,
 }
