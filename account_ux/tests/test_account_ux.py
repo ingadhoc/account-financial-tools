@@ -7,22 +7,23 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.today = fields.Date.today()
-        self.company_usd = self.env['res.company'].search([('currency_id.name', '=', 'USD')], limit=1)
-        self.partner_ri = self.env['res.partner'].search([], limit=1)
+        self.company_usd = self.env.ref('base.main_company')
+        self.partner = self.env.ref('base.res_partner_12')
 
-        self.currency_usd = self.env['res.currency'].search([('name', '=', 'USD')])
-        self.currency_ars = self.env['res.currency'].search([('name', '=', 'ARS')])
+        self.currency_usd = self.env.ref('base.USD')
+        self.currency_ars = self.env.ref('base.ARS')
 
-        usd_journals = self.env['account.journal'].search([('company_id', '=', self.company_usd.id),
-                                                           ('type', '=', 'sale')], limit=2)
+        self.journal_usd = self.env.ref('account.1_sale')
 
-        self.journal_usd = usd_journals[0]
-        self.journal_ars = usd_journals[1]
+        self.journal_ars = self.env['account.journal'].search([('company_id', '=', self.company_usd.id),
+                                                              ('type', '=', 'sale'),
+                                                              ('id', '!=', self.journal_usd.id)], limit=1)
+
         self.journal_ars.write({'currency_id': self.currency_ars})
 
     def test_account_ux_change_currency(self):
         invoice = self.env['account.move'].create({
-            'partner_id': self.partner_ri.id,
+            'partner_id': self.partner.id,
             'date': self.today,
             'move_type': 'out_invoice',
             'journal_id': self.journal_usd.id,
