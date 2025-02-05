@@ -61,6 +61,7 @@
             </label>
             <xpath expr="//div[@name='currency_div']" position="attributes">
                 <attribute name="groups" separator="," add="account.group_account_invoice" />
+                <attribute name="class">w-100 mt-n1</attribute>
             </xpath>
 
         <!-- Temas de multimoneda -->
@@ -74,10 +75,11 @@
                 <div name="currency_conversion_div"
                     class="d-flex text-muted float-start"
                     invisible="currency_id == company_currency_id">
-                    <span>1 </span>
+                    <span>1.00 </span>
                     <field name="currency_id" readonly="True" options="{'no_open': True}"/>
                     <span> = </span>
-                    <field name="inverse_invoice_currency_rate" digits="[12,3]" readonly="True"/>
+                    <field name="inverse_invoice_currency_rate" digits="[12,3]" readonly="True" invisible="inverse_invoice_currency_rate == 1.0"/>
+                    <span invisible="inverse_invoice_currency_rate != 1.0">1.00</span>
                     <span> </span>
                     <field name="company_currency_id" readonly="True" options="{'no_open': True}"/>
                 </div>
