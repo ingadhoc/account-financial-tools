@@ -36,7 +36,7 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
             ],
         })
         invoice.write({
-            'journal_id': self.journal_ars
+            'journal_id': self.journal_ars.id
         })
         invoice.action_post()
 
