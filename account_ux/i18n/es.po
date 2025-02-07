@@ -142,7 +142,7 @@ msgid "Contact Salesperson"
 msgstr "Contactar al Vendedor"
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__conversion_date
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__conversion_rate
 msgid "Conversion Rate"
 msgstr ""
 
@@ -409,7 +409,7 @@ msgid "Select a currency to apply on the invoice"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_change_currency__conversion_date
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__conversion_rate
 #: model:ir.model.fields,help:account_ux.field_account_move_change_rate__currency_rate
 msgid "Select a rate to apply on the invoice"
 msgstr "Selecciona una cotización para aplicar en la factura"
