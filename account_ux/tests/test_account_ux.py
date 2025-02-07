@@ -21,23 +21,25 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
         self.journal_ars.write({"currency_id": self.currency_ars})
 
     def test_account_ux_change_currency(self):
-        invoice = self.env['account.move'].create({
-            'partner_id': self.partner_ri.id,
-            'date': self.today,
-            'move_type': 'out_invoice',
-            'journal_id': self.journal_usd.id,
-            'company_id': self.company_usd.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'product_id': self.env.ref('product.product_product_16').id,
-                    'quantity': 1,
-                    'price_unit': 1000,
-                }),
-            ],
-        })
-        invoice.write({
-            'journal_id': self.journal_ars.id
-        })
+        invoice = self.env["account.move"].create(
+            {
+                "partner_id": self.partner_ri.id,
+                "date": self.today,
+                "move_type": "out_invoice",
+                "journal_id": self.journal_usd.id,
+                "company_id": self.company_usd.id,
+                "invoice_line_ids": [
+                    Command.create(
+                        {
+                            "product_id": self.env.ref("product.product_product_16").id,
+                            "quantity": 1,
+                            "price_unit": 1000,
+                        }
+                    ),
+                ],
+            }
+        )
+        invoice.write({"journal_id": self.journal_ars.id})
         invoice.action_post()
 
         self.assertEqual(
