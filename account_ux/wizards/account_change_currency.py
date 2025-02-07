@@ -23,19 +23,17 @@ class AccountChangeCurrency(models.TransientModel):
         required=True,
         help="Select a currency to apply on the invoice",
     )
-    conversion_date = fields.Float(
-        "Conversion Rate", required=True, digits=0, help="Select a rate to apply on the invoice"
-    )
+    conversion_rate = fields.Float(required=True, digits=0, help="Select a rate to apply on the invoice")
     move_id = fields.Many2one("account.move", default=get_move)
 
     @api.onchange("currency_to_id")
     def onchange_currency(self):
         if not self.currency_to_id:
-            self.conversion_date = False
+            self.conversion_rate = False
         else:
             currency = self.currency_from_id.with_context()
 
-            self.conversion_date = self.env["res.currency"]._get_conversion_rate(
+            self.conversion_rate = self.env["res.currency"]._get_conversion_rate(
                 from_currency=currency,
                 to_currency=self.currency_to_id,
                 company=self.move_id.company_id,
@@ -47,7 +45,7 @@ class AccountChangeCurrency(models.TransientModel):
         message = _("Currency changed from %s to %s with rate %s") % (
             self.move_id.currency_id.name,
             self.currency_to_id.name,
-            self.conversion_date,
+            self.conversion_rate,
         )
 
         move = self.move_id.with_context(check_move_validity=False)
@@ -56,7 +54,7 @@ class AccountChangeCurrency(models.TransientModel):
             # do not round on currency digits, it is rounded automatically
             # on price_unit precision
             if line.exists():
-                line.price_unit = line.price_unit * self.conversion_date
+                line.price_unit = line.price_unit * self.conversion_rate
 
         self.move_id.message_post(body=message)
         return {"type": "ir.actions.act_window_close"}
