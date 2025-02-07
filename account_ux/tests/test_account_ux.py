@@ -12,14 +12,16 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
 
         self.currency_usd = self.env.ref('base.USD')
         self.currency_ars = self.env.ref('base.ARS')
+        self.currency_ars.write({'active': True})
 
         self.journal_usd = self.env.ref('account.1_sale')
 
-        self.journal_ars = self.env['account.journal'].search([('company_id', '=', self.company_usd.id),
-                                                              ('type', '=', 'sale'),
-                                                              ('id', '!=', self.journal_usd.id)], limit=1)
+        self.journal_ars = self.env.ref('account.1_purchase')
 
-        self.journal_ars.write({'currency_id': self.currency_ars})
+        self.journal_ars.write({
+            'type': "sale",
+            'currency_id': self.currency_ars
+        })
 
     def test_account_ux_change_currency(self):
         invoice = self.env['account.move'].create({
@@ -36,10 +38,12 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
                 }),
             ],
         })
+
         invoice.write({
             'journal_id': self.journal_ars.id
         })
-        invoice.action_post()
 
+        invoice.action_post()
+        
         self.assertEqual(invoice.currency_id, self.journal_ars.currency_id,
                          "La moneda de la factura no está siendo modificada al cambiar el diario.")
