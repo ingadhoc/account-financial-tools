@@ -49,35 +49,37 @@ class AccountMove(models.Model):
         return res
 
     def action_send_invoice_mail(self):
-        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id and x.partner_id.email):
-            try:
-                rec.message_post_with_source(
-                    rec.journal_id.mail_template_id,
-                    subtype_xmlid='mail.mt_comment'
-                )
-                rec.is_move_sent= True
-            except Exception as error:
-                title = _(
-                    "ERROR: Invoice was not sent via email"
-                )
-                # message = _(
-                #     "Invoice %s was correctly validate but was not send"
-                #     " via email. Please review invoice chatter for more"
-                #     " information" % rec.display_name
-                # )
-                # self.env.user.notify_warning(
-                #     title=title,
-                #     message=message,
-                #     sticky=True,
-                # )
-                rec.message_post(body="<br/><br/>".join([
-                    "<b>" + title + "</b>",
-                    _("Please check the email template associated with"
-                      " the invoice journal."),
-                    "<code>" + str(error) + "</code>"
-                ]), body_is_html=True
-                )
-
+        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
+            if rec.partner_id.email:
+                try:
+                    rec.message_post_with_template(
+                        rec.journal_id.mail_template_id.id,
+                    )
+                    rec.is_move_sent= True
+                except Exception as error:
+                    title = _(
+                        "ERROR: Invoice was not sent via email"
+                    )
+                    # message = _(
+                    #     "Invoice %s was correctly validate but was not send"
+                    #     " via email. Please review invoice chatter for more"
+                    #     " information" % rec.display_name
+                    # )
+                    # self.env.user.notify_warning(
+                    #     title=title,
+                    #     message=message,
+                    #     sticky=True,
+                    # )
+                    rec.message_post(body="<br/><br/>".join([
+                        "<b>" + title + "</b>",
+                        _("Please check the email template associated with"
+                        " the invoice journal."),
+                        "<code>" + str(error) + "</code>"
+                    ]),
+                    )
+            else:
+                rec.message_post(body=_("<b>Error sending the invoice</b>: partner %s does not have an email address defined.", rec.partner_id.name))
+            
     @api.onchange('partner_id')
     def _onchange_partner_commercial(self):
         if self.partner_id.user_id:
