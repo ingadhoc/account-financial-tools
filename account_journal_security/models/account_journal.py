@@ -109,7 +109,7 @@ class AccountJournal(models.Model):
         if not self.env.is_superuser():
             domain += [
                 '|', ('modification_user_ids', '=', False),
-                ('id', 'in', user.modification_journal_ids.ids)]
+                ('id', 'not in', user.journal_ids.mapped('id'))]
         return super()._search(domain, offset, limit, order, access_rights_uid=access_rights_uid)
 
     @api.onchange('journal_restriction')
