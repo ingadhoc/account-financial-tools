@@ -112,8 +112,20 @@ class AccountJournal(models.Model):
         """
         user = self.env.user
         if not self.env.is_superuser():
+<<<<<<< HEAD
             domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", user.journal_ids.ids)]
         return super()._search(domain, offset, limit, order)
+||||||| parent of 8b2d313f (temp)
+            domain += [
+                '|', ('modification_user_ids', '=', False),
+                ('id', 'in', user.modification_journal_ids.ids)]
+        return super()._search(domain, offset, limit, order, access_rights_uid=access_rights_uid)
+=======
+            domain += [
+                '|', ('modification_user_ids', '=', False),
+                ('id', 'not in', user.journal_ids.mapped('id'))]
+        return super()._search(domain, offset, limit, order, access_rights_uid=access_rights_uid)
+>>>>>>> 8b2d313f (temp)
 
     @api.onchange("journal_restriction")
     def unset_modification_user_ids(self):
