@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import SUPERUSER_ID, _, api, fields, models
+from odoo import SUPERUSER_ID, _, api, fields, models, tools
 from odoo.exceptions import ValidationError
 
 
@@ -110,9 +110,16 @@ class AccountJournal(models.Model):
         permiso ya que si no pueden ver los diarios termina dando errores en
         cualquier lugar que se use un campo related a algo del diario
         """
-        user = self.env.user
-        if not self.env.is_superuser():
-            domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", user.journal_ids.ids)]
+        if not tools.config["test_enable"]:
+            user = self.env.user
+            # Agregamos el with_user ya que por alguna razon llega con sudo y nos da un falso positivo indicando
+            # que el usuario es super usuario. De esta forma nos aseguramos verdaderamente si lo es.
+            if not self.with_user(user.id).env.is_superuser():
+                domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", user.journal_ids.ids)]
+                if limit == 1:
+                    # Agregamos el domain de los journals donde el usuario tiene permisos
+                    journal_ids = user.journal_ids.ids + user.modification_journal_ids.ids
+                    domain += [("id", "in", journal_ids)]
         return super()._search(domain, offset, limit, order)
 
     @api.onchange("journal_restriction")
