@@ -41,30 +41,21 @@ def monkey_patches():
                 move.payment_state,
                 move.invoice_date,
                 move.invoice_date_due,
-                uom_template.id                                             AS product_uom_id,
-                template.categ_id                                           AS product_categ_id,
+                uom_template.id AS product_uom_id,
+                template.categ_id AS product_categ_id,
                 line.quantity / NULLIF(COALESCE(uom_line.factor, 1) / COALESCE(uom_template.factor, 1), 0.0) * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
-                                                                            AS quantity,
-                CASE
-                WHEN rc_currency_id <> line.company_currency_id THEN -line.balance * line.rate
-                WHEN rc_currency_id is null THEN line.price_total
-                ELSE -line.balance  END AS price_subtotal,
+                AS quantity,
+                line.price_subtotal,
                 line.price_total * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
-                                                                            AS price_total,
+                AS price_total,
                 CASE
-                WHEN rc_currency_id <> line.company_currency_id THEN
+                WHEN rc_currency_id <>  line.company_currency_id THEN
                  -COALESCE(
                    -- Average line price
                    (line.balance / NULLIF(line.quantity, 0.0)) * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
                    -- convert to template uom
                    * (NULLIF(COALESCE(uom_line.factor, 1), 0.0) / NULLIF(COALESCE(uom_template.factor, 1), 0.0)),
                    0.0) * line.rate
-                WHEN rc_currency_id is null THEN COALESCE(
-                   -- Average line price
-                   (line.price_total / NULLIF(line.quantity, 0.0)) * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
-                   -- convert to template uom
-                   * (NULLIF(COALESCE(uom_line.factor, 1), 0.0) / NULLIF(COALESCE(uom_template.factor, 1), 0.0)),
-                   0.0)
                 ELSE -COALESCE(
                    -- Average line price
                    (line.balance / NULLIF(line.quantity, 0.0)) * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
@@ -73,19 +64,50 @@ def monkey_patches():
                    0.0) END
                 AS price_average,
                 COALESCE(partner.country_id, commercial_partner.country_id) AS country_id,
-                line.currency_id                                            AS currency_id
+                line.currency_id AS currency_id
         ''' % self.env.company.id
 
     @api.model
     def _from_patch(self):
+        self._cr.execute("""
+        SELECT string_agg(concat('aml.',column_name), ', ')
+        FROM information_schema.columns
+        WHERE table_name = 'account_move_line'
+        AND column_name not in ('price_subtotal','price_total')
+        """)
+        cols = self._cr.fetchone()[0]
+
+        # Los campos de Odoo Studio contienen mayúsculas,
+        # si no los pasamos con "" postgre los pasa a minúsculas y no los encuentra.
+        cols = ', '.join('"{}"."{}"'.format(*col.strip().split('.')) for col in cols.split(','))
+
         return '''
             FROM (
-                SELECT aml.*, currency_table.rate, rc.currency_id as rc_currency_id
+                SELECT 
+                    %s, 
+                    currency_table.rate, 
+                    rc.currency_id as rc_currency_id,
+                    CASE
+                        WHEN rc.currency_id  <> aml.company_currency_id THEN -aml.balance * currency_table.rate
+                        ELSE aml.price_subtotal END
+                    AS price_subtotal,
+                    CASE
+                        WHEN rc.currency_id <> aml.company_currency_id THEN - aml.balance* currency_table.rate
+                        ELSE aml.price_total END
+                    AS price_total
                 FROM account_move_line aml
-                lEFT JOIN currency_rate currency_table on (
-                    (currency_table.currency_id = aml.currency_id) and
-                    currency_table.date_start <= COALESCE(aml.date, NOW()) and
-                    (currency_table.date_end IS NULL OR currency_table.date_end > COALESCE(aml.date, NOW())))
+                lEFT JOIN currency_rate currency_table
+                    ON (
+                        (currency_table.currency_id = aml.currency_id
+                        AND currency_table.date_start <= COALESCE(aml.date, NOW())
+                        AND (currency_table.date_end IS NULL OR currency_table.date_end > COALESCE(aml.date, NOW()))
+                        )
+                        OR
+                        (currency_table.currency_id = line.company_currency_id
+                        AND currency_table.date_start <= COALESCE(line.date, NOW())
+                        AND (currency_table.date_end IS NULL OR currency_table.date_end > COALESCE(aml.date, NOW()))
+                        )
+                    )
                 LEFT JOIN res_company rc on rc.id=currency_table.company_id
                 )AS line
                 LEFT JOIN res_partner partner ON partner.id = line.partner_id
@@ -96,7 +118,7 @@ def monkey_patches():
                 LEFT JOIN uom_uom uom_template ON uom_template.id = template.uom_id
                 INNER JOIN account_move move ON move.id = line.move_id
                 LEFT JOIN res_partner commercial_partner ON commercial_partner.id = move.commercial_partner_id
-        '''
+        ''' % cols
 
     def _patch_method(cls, name, method):
         origin = getattr(cls, name)

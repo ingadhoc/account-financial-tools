@@ -32,7 +32,6 @@
         'account',
     ],
     'data': [
-        'report/account_invoice_report_view.xml',
     ],
     'demo': [
     ],
