@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_ux_view_list" model="ir.ui.view">
+        <field name="name">account.account.tds.tcs.view.list.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="after">
+                <field name="is_monetary" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
