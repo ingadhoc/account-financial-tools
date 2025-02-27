@@ -8,6 +8,12 @@ class AccountChartTemplate(models.AbstractModel):
         res = super()._load(template_code, company, install_demo)
         return res
 
+    def _load_data(self, data, ignore_duplicates=False):
+        res = super()._load_data(data, ignore_duplicates=ignore_duplicates)
+        if res.get("res.company"):
+            self.env["account.account"].set_non_monetary(res["res.company"])
+        return res
+
     def _post_load_data(self, template_code, company, template_data):
         super()._post_load_data(template_code, company, template_data)
 

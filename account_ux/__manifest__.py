@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account UX",
-    "version": "18.0.1.10.0",
+    "version": "18.0.1.11.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -39,6 +39,7 @@
         "wizards/account_change_currency_views.xml",
         "wizards/account_move_change_rate_views.xml",
         "wizards/res_config_settings_views.xml",
+        "views/account_account_views.xml",
         "views/account_journal_views.xml",
         "views/account_move_line_views.xml",
         "views/account_reconcile_views.xml",
