@@ -273,7 +273,7 @@ class ResCompanyInterest(models.Model):
                 or journal
             )
 
-        move_line_domain = self._get_move_line_domains(to_date)
+        move_line_domain = self._get_move_line_domains()
         # Check if a filter is set
         if self.domain:
             move_line_domain += safe_eval(self.domain)
