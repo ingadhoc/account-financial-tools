@@ -226,6 +226,21 @@ class ResCompanyInterest(models.Model):
 
         return deuda
 
+    def _search_last_journal_for_partner(self, partner, debt):
+        journal = self.env['account.move'].with_context(
+            internal_type='debit_note', 
+            default_move_type='out_invoice'
+        ).new({
+            'partner_id': partner.id, 
+            'move_type': 'out_invoice',
+            'company_id':self.company_id.id
+        }).journal_id
+        
+        if self.receivable_account_ids != journal.default_account_id:
+            journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
+            
+        return journal
+
     def create_invoices(self, from_date, to_date):
         """
         Crea facturas de intereses a cada partner basadas en los cálculos de deuda.
@@ -243,15 +258,13 @@ class ResCompanyInterest(models.Model):
         # Calcular deudas e intereses
         deuda = self._calculate_debts(from_date, to_date)
 
-        journal = self.env['account.journal'].search([
-            ('type', '=', 'sale'),
-            ('company_id', '=', self.company_id.id)], limit=1)
-
         total_items = len(deuda)
         _logger.info('%s interest invoices will be generated', total_items)
 
         # Crear facturas
         for idx, partner in enumerate(deuda):
+            journal = self._search_last_journal_for_partner(partner,deuda[partner])
+            
             move_vals = self._prepare_interest_invoice(partner, deuda[partner], to_date, journal)
             if not move_vals:
                 continue
