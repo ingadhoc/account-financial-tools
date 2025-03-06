@@ -218,11 +218,12 @@ class ResCompanyInterest(models.Model):
             
             partials = self.env['account.partial.reconcile'].search(partial_domain).filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity).grouped('debit_move_id')
             for move_line, parts in partials.items():
-                due_date = max(from_date, parts.debit_move_id.date_maturity)
+                for part in parts:
+                    due_date = max(from_date, part.debit_move_id.date_maturity)
 
-                days = (parts.credit_move_id.date - due_date).days
-                interest =  parts.amount * days * (self._calculate_rate() / interest_rate[self.rule_type])
-            self._update_deuda(deuda, move_line.partner_id, 'Deuda pagos vencidos', interest)
+                    days = (part.credit_move_id.date - due_date).days
+                    interest = part.amount * days * (self._calculate_rate() / interest_rate[self.rule_type])
+                    self._update_deuda(deuda, move_line.partner_id, 'Deuda pagos vencidos', interest)
 
         return deuda
 
