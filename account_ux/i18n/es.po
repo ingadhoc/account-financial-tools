@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-06 16:58+0000\n"
+"POT-Creation-Date: 2025-03-07 20:02+0000\n"
 "PO-Revision-Date: 2024-11-08 12:53+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -57,6 +57,11 @@ msgid "<span>1.00 </span>"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model,name:account_ux.model_account_account
+msgid "Account"
+msgstr "Cuenta"
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_account_chart_template
 msgid "Account Chart Template"
 msgstr "Plantilla de plan contable"
@@ -72,6 +77,7 @@ msgid "Add an internal note..."
 msgstr "Agregar una nota interna"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__algolia_search
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__algolia_search
 #: model:ir.model.fields,field_description:account_ux.field_account_chart_template__algolia_search
 #: model:ir.model.fields,field_description:account_ux.field_account_group__algolia_search
@@ -337,6 +343,11 @@ msgstr "Moneda de la Factura"
 #: model:ir.model,name:account_ux.model_account_invoice_report
 msgid "Invoices Statistics"
 msgstr "Estadísticas de facturas"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__is_monetary
+msgid "Is Monetary"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
