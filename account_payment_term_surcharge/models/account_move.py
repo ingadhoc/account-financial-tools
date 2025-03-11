@@ -131,8 +131,9 @@ class AccountMove(models.Model):
                 rec.next_surcharge_percent = False
 
     def action_post(self):
-        super().action_post()
+        res = super().action_post()
         self.avoid_surcharge_invoice = False
+        return res
 
     def action_send_invoice_mail(self):
         """Filtramos solamente las facturas que no cuenta con el is_move_sent seteado en True"""
