@@ -11,16 +11,16 @@
                 <attribute name="decoration-muted">state == 'cancel'</attribute>
             </xpath>
             <field name="quantity" position="after">
-                <field name="price_unit"/>
-                <field name="discount" groups="sale.group_discount_per_so_line"/>
+                <field name="price_unit" optional="show"/>
+                <field name="discount" optional="hide" groups="sale.group_discount_per_so_line"/>
                 <field name="discount_amount" sum="Total" optional="hide" groups="sale.group_discount_per_so_line"/>
-                <field name="price_subtotal_ic" sum="Total" optional="hide"/>
             </field>
             <field name="price_total" position="after">
                 <field name="price_subtotal" position="move"/>
-                <field name="total_cc" sum="Total"/>
-                <field name="invoice_currency_id" optional="hide"/>
-                <field name="company_currency_id" column_invisible="True"/>
+                <field name="total_cc"  optional="hide" sum="Total"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="current_currency_id" optional="hide" column_invisible="True"/>
+                <field name="company_currency_id" optional="hide" column_invisible="True"/>
             </field>
             </field>
     </record>
@@ -32,7 +32,7 @@
         <field name="arch" type="xml">
             <filter name='user' position="after">
                 <filter string="Journal Entry" name="groupby_move_id" context="{'group_by':'move_id'}"/>
-                <filter string="Invoice Currency" name="groupby_invoice_currency_id" context="{'group_by':'invoice_currency_id'}"/>
+                <filter string="Invoice Currency" name="groupby_currency_id" context="{'group_by':'currency_id'}"/>
             </filter>
         </field>
     </record>
