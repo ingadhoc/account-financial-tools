@@ -52,8 +52,9 @@ class AccountMove(models.Model):
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             if rec.partner_id.email:
                 try:
-                    rec.message_post_with_template(
-                        rec.journal_id.mail_template_id.id,
+                    rec.message_post_with_source(
+                        rec.journal_id.mail_template_id,
+                        subtype_xmlid='mail.mt_comment'
                     )
                     rec.is_move_sent= True
                 except Exception as error:
@@ -75,10 +76,10 @@ class AccountMove(models.Model):
                         _("Please check the email template associated with"
                         " the invoice journal."),
                         "<code>" + str(error) + "</code>"
-                    ]),
+                    ]), body_is_html=True
                     )
             else:
-                rec.message_post(body=_("<b>Error sending the invoice</b>: partner %s does not have an email address defined.", rec.partner_id.name))
+                rec.message_post(body=_("<b>Error sending the invoice</b>: partner %s does not have an email address defined.", rec.partner_id.name), body_is_html=True)
             
     @api.onchange('partner_id')
     def _onchange_partner_commercial(self):
