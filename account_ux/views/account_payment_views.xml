@@ -21,4 +21,18 @@
             </field>
         </field>
     </record>
+    <record id="view_account_payment_form_inherited" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <button name="action_post" position="before">
+                    <button name="%(account.account_send_payment_receipt_by_email_action)d"
+                            string="Send receipt by email"
+                            type="action"
+                            class="btn-primary"
+                            invisible="state != 'in_process'"/>
+                </button>
+            </field>
+    </record>
 </odoo>
