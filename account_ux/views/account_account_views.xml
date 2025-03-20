@@ -10,4 +10,15 @@
             </xpath>
         </field>
     </record>
+
+    <record id="account_ux_form_list" model="ir.ui.view">
+        <field name="name">account.account.form.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="is_monetary"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
