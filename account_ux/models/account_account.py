@@ -8,10 +8,14 @@ _logger = logging.getLogger(__name__)
 class AccountAccount(models.Model):
     _inherit = "account.account"
 
-    is_monetary = fields.Boolean(default=True)
+    is_monetary = fields.Boolean(
+        store=True,
+        compute="_compute_is_monetary",
+        readonly=False,
+    )
 
-    @api.model
-    def set_non_monetary(self, company):
+    @api.depends("account_type")
+    def _compute_is_monetary(self):
         """Set is_monetary in False to the corresponding accounts taking into account the account type"""
         account_types = [
             "asset_non_current",
@@ -26,8 +30,8 @@ class AccountAccount(models.Model):
             "expense_direct_cost",
             "off_balance",
         ]
-        if accounts := self.search(
-            [("account_type", "in", account_types), *self.env["account.account"]._check_company_domain(company)]
-        ).filtered(lambda x: x.company_fiscal_country_code == "AR"):
-            accounts.write({"is_monetary": False})
-            _logger.info("Is Monetary is False on %s accounts ." % (company.name))
+        for rec in self:
+            if rec.account_type in account_types:
+                rec.is_monetary = False
+            else:
+                rec.is_monetary = True
