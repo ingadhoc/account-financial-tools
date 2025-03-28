@@ -53,6 +53,7 @@ class ResPartner(models.Model):
 
         self.ensure_one()
 
+<<<<<<< HEAD
         result_selection = self._context.get("result_selection", False)
         from_date = self._context.get("from_date", False)
         to_date = self._context.get("to_date", False)
@@ -60,6 +61,24 @@ class ResPartner(models.Model):
         company_id = self._context.get("company_id", False)
         show_invoice_detail = self._context.get("show_invoice_detail", False)
         only_currency_lines = not self._context.get("company_currency") and self._context.get("secondary_currency")
+||||||| parent of 4f81d362 (temp)
+        result_selection = self._context.get('result_selection', False)
+        from_date = self._context.get('from_date', False)
+        to_date = self._context.get('to_date', False)
+        historical_full = self._context.get('historical_full', False)
+        company_id = self._context.get('company_id', False)
+        show_invoice_detail = self._context.get('show_invoice_detail', False)
+        only_currency_lines = not self._context.get('company_currency') and self._context.get('secondary_currency')
+=======
+        result_selection = self._context.get('result_selection', False)
+        from_date = self._context.get('from_date', False)
+        to_date = self._context.get('to_date', False)
+        historical_full = self._context.get('historical_full', False)
+        company_id = self._context.get('company_id', False)
+        show_invoice_detail = self._context.get('show_invoice_detail', False)
+        secondary_currency = self._context.get("secondary_currency")
+        only_currency_lines = not self._context.get('company_currency') and secondary_currency
+>>>>>>> 4f81d362 (temp)
         balance_in_currency = 0.0
         balance_in_currency_name = ""
         domain = []
@@ -72,6 +91,9 @@ class ResPartner(models.Model):
             company_currency_ids = self.env.companies.mapped("currency_id")
         if only_currency_lines and len(company_currency_ids) == 1:
             domain += [("currency_id", "not in", company_currency_ids.ids)]
+
+        if secondary_currency:
+            domain += [('amount_currency', '>', 0.0)]
 
         if not historical_full:
             domain += [("reconciled", "=", False), ("full_reconcile_id", "=", False)]
