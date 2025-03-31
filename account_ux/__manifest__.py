@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account UX",
-    "version": "18.0.1.13.0",
+    "version": "18.0.1.14.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -59,4 +59,5 @@
     # instale
     "auto_install": True,
     "application": False,
+    "post_init_hook": "_change_receipt_name",
 }
