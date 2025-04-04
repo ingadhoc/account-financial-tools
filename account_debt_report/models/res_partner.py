@@ -77,7 +77,7 @@ class ResPartner(models.Model):
             domain += [("currency_id", "not in", company_currency_ids.ids)]
 
         if secondary_currency:
-            domain += [("amount_currency", ">", 0.0)]
+            domain += [("amount_currency", "!=", 0.0)]
 
         if not historical_full:
             domain += [("reconciled", "=", False), ("full_reconcile_id", "=", False)]
