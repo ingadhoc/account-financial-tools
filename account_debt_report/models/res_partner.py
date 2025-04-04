@@ -75,10 +75,10 @@ class ResPartner(models.Model):
             domain += [('company_id', 'in', self.env.companies.ids)]
             company_currency_ids = self.env.companies.mapped('currency_id')
         if only_currency_lines and len(company_currency_ids) == 1:
-            domain += [('currency_id', 'not in', company_currency_ids.ids), ('amount_currency', '>', 0.0)]
+            domain += [('currency_id', 'not in', company_currency_ids.ids)]
 
         if secondary_currency:
-            domain += [('amount_currency', '>', 0.0)]
+            domain += [('amount_currency', '!=', 0.0)]
 
         if not historical_full:
             domain += [('reconciled', '=', False), ('full_reconcile_id', '=', False)]
