@@ -1,4 +1,5 @@
-from odoo import api, models
+from odoo import _, api, models
+from odoo.exceptions import UserError
 
 
 class AccountPayment(models.Model):
@@ -26,3 +27,8 @@ class AccountPayment(models.Model):
                 )
             ):
                 payment.state = "paid"
+
+    @api.ondelete(at_uninstall=False)
+    def _check_payment_state(self):
+        if not self._context.get("force_delete") and any(m.state != "draft" or m.state != "canceled" for m in self):
+            raise UserError(_("You cannot delete this payment, you should set it back to draft first."))
