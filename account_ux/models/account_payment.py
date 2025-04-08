@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class AccountPayment(models.Model):
@@ -28,3 +29,10 @@ class AccountPayment(models.Model):
         and then the user selects "outbound" type, the journals remains selected."""
         if not self.journal_id or self.journal_id not in self.available_journal_ids._origin:
             self.journal_id = self.available_journal_ids._origin[:1]
+
+    @api.ondelete(at_uninstall=False)
+    def _check_payment_state(self):
+        if not self._context.get('force_delete') and any(m.state == 'posted' for m in self):
+            raise UserError(_(
+                "You cannot delete a posted payment, you should set it back to draft first."
+            ))
