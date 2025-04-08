@@ -7,11 +7,7 @@ class AccountPayment(models.Model):
 
     is_internal_transfer = fields.Boolean(
         string="Internal Transfer",
-        readonly=False,
-        store=True,
         tracking=True,
-        compute="_compute_is_internal_transfer",
-        precompute=True,
     )
 
     destination_journal_id = fields.Many2one(
@@ -37,15 +33,6 @@ class AccountPayment(models.Model):
         if self.is_internal_transfer:
             return "account_internal_transfer.report_account_transfer"
         return report_xml_id
-
-    @api.depends("partner_id", "journal_id", "destination_journal_id")
-    def _compute_is_internal_transfer(self):
-        for payment in self:
-            payment.is_internal_transfer = (
-                not payment.partner_id or payment.partner_id == payment.journal_id.company_id.partner_id
-            ) and payment.destination_journal_id
-        if self._context.get("is_internal_transfer_menu"):
-            self.is_internal_transfer = True
 
     def _get_aml_default_display_name_list(self):
         values = super()._get_aml_default_display_name_list()
@@ -154,5 +141,5 @@ class AccountPayment(models.Model):
     @api.depends("is_internal_transfer")
     def _compute_partner_id(self):
         super()._compute_partner_id()
-        for pay in self.filtered(lambda x: x.is_internal_transfer):
-            pay.partner_id = pay.journal_id.company_id.partner_id
+        for pay in self.filtered("is_internal_transfer"):
+            pay.partner_id = False
