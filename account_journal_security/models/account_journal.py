@@ -115,8 +115,8 @@ class AccountJournal(models.Model):
             journal_ids = (user.journal_ids.ids + user.modification_journal_ids.ids)
             if limit == 1 and journal_ids:
                 # Agregamos el domain de los journals donde el usuario tiene permisos
-                domain += ['|',
-                           ('journal_restriction', '=', 'none'),
+                domain += ['&',('modification_user_ids', '=', False),'|',
+                           ('user_ids', '=', False),
                            ('id', 'in', journal_ids)]
         return super()._search(domain, offset, limit, order, access_rights_uid=access_rights_uid)
 
