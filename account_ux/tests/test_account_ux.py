@@ -15,9 +15,9 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
 
         self.journal_usd = self.env.ref("account.1_sale")
 
-        self.journal_ars = self.env.ref("account.1_purchase")
+        self.journal_ars = self.journal_usd.copy()
 
-        self.journal_ars.write({"type": "sale", "currency_id": self.currency_ars})
+        self.journal_ars.write({"currency_id": self.currency_ars})
 
     def test_account_ux_change_currency(self):
         invoice = self.env["account.move"].create(
