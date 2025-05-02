@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-08 16:26+0000\n"
+"POT-Creation-Date: 2025-04-30 13:53+0000\n"
 "PO-Revision-Date: 2024-11-29 15:21+0000\n"
 "Last-Translator: Gonzalo, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -241,12 +241,6 @@ msgstr "Mostrar detalle de Facturas"
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__to_date
 msgid "To Date"
 msgstr "Hasta"
-
-#. module: account_debt_report
-#. odoo-python
-#: code:addons/account_debt_report/models/res_partner.py:0
-msgid "Total"
-msgstr "Total"
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
