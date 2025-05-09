@@ -59,6 +59,15 @@
             <label for="journal_id" position="attributes">
                 <attribute name="groups" separator="," add="account.group_account_invoice" />
             </label>
+            <label for="currency_id" position="attributes">
+                <attribute name="groups" separator="," add="!account.group_account_invoice" />
+            </label>
+            <xpath expr="//div[@name='journal_div']" position="attributes">
+                <attribute name="groups" separator="," add="account.group_account_invoice"/>
+            </xpath>
+            <xpath expr="//div[@name='journal_div']/field[@name='journal_id']" position="attributes">
+                <attribute name="groups" separator="," add="account.group_account_invoice"/>
+            </xpath>
             <xpath expr="//div[@name='currency_div']" position="attributes">
                 <attribute name="groups" separator="," add="account.group_account_invoice" />
                 <attribute name="class">w-100 mt-n1</attribute>
