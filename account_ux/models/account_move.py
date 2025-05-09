@@ -1,5 +1,6 @@
 # flake8: noqa
 import json
+import base64
 from odoo import models, api, fields, _
 from odoo.exceptions import UserError
 
@@ -13,7 +14,8 @@ class AccountMove(models.Model):
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env["ir.actions.report"]._render_qweb_pdf("account.account_invoices", self.id)
-        return bin_data, __
+        pdf_base64 = base64.b64encode(bin_data).decode("ascii")
+        return pdf_base64, __
 
     def delete_number(self):
         self.filtered(lambda x: x.state == "cancel").write({"name": "/"})
