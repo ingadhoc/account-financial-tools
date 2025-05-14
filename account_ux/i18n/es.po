@@ -3,16 +3,16 @@
 # 	* account_ux
 # 
 # Translators:
-# Gonzalo, 2025
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025
+# Gonzalo, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-25 18:51+0000\n"
+"POT-Creation-Date: 2025-05-14 00:54+0000\n"
 "PO-Revision-Date: 2024-11-08 12:53+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025\n"
+"Last-Translator: Gonzalo, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -342,7 +342,7 @@ msgstr "Estadísticas de facturas"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__is_monetary
 msgid "Is Monetary"
-msgstr ""
+msgstr "Es Monetario"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
