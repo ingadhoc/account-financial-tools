@@ -80,28 +80,60 @@ class ResCompanyInterest(models.Model):
         help="Extra filters that will be added to the standard search"
     )
     has_domain = fields.Boolean(compute="_compute_has_domain")
+    bypass_company_interest = fields.Boolean(
+        'Bypass Company Interest',
+        help='Bypass the company interest calculation',
+        default=False,
+    )
 
     late_payment_interest = fields.Boolean('Late payment interest', default=False, help="The interest calculation takes into account all late payments from the previous period. To obtain the daily rate, the interest is divided by the period. These days are considered depending on the type of period: 360 for annual, 30 for monthly and 7 for weekly.")
 
     @api.model
-    def _cron_recurring_interests_invoices(self):
+    def _cron_recurring_interests_invoices(self, batch_size=1):
+        # batch_size is the batch of companies to process
         _logger.info('Running Interest Invoices Cron Job')
         current_date = fields.Date.today()
-        companies_with_errors = []
 
-        for rec in self.search([('next_date', '<=', current_date)]):
+        parameter_name = 'account_interest.last_updated_record_id'
+        last_updated_param = self.env['ir.config_parameter'].sudo().search([('key', '=', parameter_name)], limit=1)
+        if not last_updated_param:
+            last_updated_param = self.env['ir.config_parameter'].sudo().create({'key': parameter_name, 'value': '0'})
+        # Obtiene los registros ordenados por id
+        domain = [('id', '>', int(last_updated_param.value)), ('next_date', '<=', current_date), ('bypass_company_interest', '=', False)]
+        records = self.with_context(prefetch_fields=False).search(domain, order='id asc', limit=batch_size + 1)
+        
+        #Ya de esta forma se esta recorriendo por compañia
+        for rec in records[:batch_size]:
             try:
                 rec.create_interest_invoices()
                 rec.env.cr.commit()
             except Exception as e:
-                _logger.error('Error creating interest invoices for company: %s, %s', rec.company_id.name, str(e))
-                companies_with_errors.append(rec.company_id.name)
+                _logger.error('Error creating interest invoices for company: %s, Error: %s', rec.company_id.name, str(e))
                 rec.env.cr.rollback()
+                rec.company_id.message_post(body=_(
+                    "We couldn't run interest invoices cron job in the company: %s,  Error: %s" % (rec.company_id.name, str(e))
+                ))
+                rec.bypass_company_interest = True
+                rec.env.cr.commit()
 
-        if companies_with_errors:
-            company_names = ', '.join(companies_with_errors)
-            error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
-            raise UserError(error_message)
+        if len(records) >= batch_size:
+            last_updated_id = records[batch_size-1].id
+        else:
+            last_updated_id = 0
+            avoid_companies = self.with_context(prefetch_fields=False).search([('next_date', '<=', current_date),('bypass_company_interest','=',True)])
+            if avoid_companies:
+                company_names = ', '.join(avoid_companies.mapped('company_id.name'))
+                error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
+                avoid_companies.bypass_company_interest = False
+                self.env.cr.commit()
+                raise UserError(error_message)
+
+        self.env['ir.config_parameter'].sudo().set_param(parameter_name, str(last_updated_id))
+        self.env.cr.commit()
+
+        if last_updated_id:
+            cron = self.env['ir.cron'].browse(self.env.context.get('job_id')) or self.env.ref('account_interests.cron_recurring_interests_invoices')
+            cron._trigger()
 
     def _calculate_date_deltas(self, rule_type, interval):
         """
@@ -260,28 +292,33 @@ class ResCompanyInterest(models.Model):
         deuda = self._calculate_debts(from_date, to_date)
 
         total_items = len(deuda)
+        batch_size = 100
+        batch_start = 0
         _logger.info('%s interest invoices will be generated', total_items)
 
-        # Crear facturas
-        for idx, partner in enumerate(deuda):
-            journal = self._search_last_journal_for_partner(partner,deuda[partner])
-            
-            move_vals = self._prepare_interest_invoice(partner, deuda[partner], to_date, journal)
-            if not move_vals:
-                continue
+        while batch_start < total_items:
+            items = list(deuda.items())
+            batch = dict(items[batch_start:batch_start + batch_size])
+            _logger.info('Processing batch %s to %s of %s', batch_start + 1, batch_start + len(batch), total_items)
+            # Crear facturas
+            for idx, partner in enumerate(batch, start=batch_start):
+                journal = self._search_last_journal_for_partner(partner,deuda[partner])
+                
+                move_vals = self._prepare_interest_invoice(partner, deuda[partner], to_date, journal)
+                if not move_vals:
+                    continue
 
-            _logger.info('Creating Interest Invoice (%s of %s) for partner ID: %s', idx + 1, total_items, partner.id)
+                _logger.info('Creating Interest Invoice (%s of %s) for partner ID: %s', idx + 1, total_items, partner.id)
 
-            move = self.env['account.move'].create(move_vals)
-            if self.automatic_validation:
-                try:
-                    move.action_post()
-                except Exception as e:
-                    _logger.error(
-                        "Something went wrong creating "
-                        "interests invoice: {}".format(e))
-
-
+                move = self.env['account.move'].create(move_vals)
+                if self.automatic_validation:
+                    try:
+                        move.action_post()
+                    except Exception as e:
+                        _logger.error(
+                            "Something went wrong creating "
+                            "interests invoice: {}".format(e))
+            batch_start += batch_size
 
 
     def _prepare_info(self, to_date):
