@@ -78,27 +78,60 @@ class ResCompanyInterest(models.Model):
         help="Extra filters that will be added to the standard search"
     )
     has_domain = fields.Boolean(compute="_compute_has_domain")
+    bypass_company_interest = fields.Boolean(
+        'Bypass Company Interest',
+        help='Bypass the company interest calculation',
+        default=False,
+    )
 
     @api.model
-    def _cron_recurring_interests_invoices(self):
+    def _cron_recurring_interests_invoices(self, batch_size=1):
+        # batch_size is the batch of companies to process
         _logger.info('Running Interest Invoices Cron Job')
         current_date = fields.Date.today()
-        companies_with_errors = []
 
-        for rec in self.search([('next_date', '<=', current_date)]):
+        parameter_name = 'account_interest.last_updated_record_id'
+        last_updated_param = self.env['ir.config_parameter'].sudo().search([('key', '=', parameter_name)], limit=1)
+        if not last_updated_param:
+            last_updated_param = self.env['ir.config_parameter'].sudo().create({'key': parameter_name, 'value': '0'})
+        # Obtiene los registros ordenados por id
+        domain = [('id', '>', int(last_updated_param.value)),('next_date', '<=', current_date),('bypass_company_interest','=',False)]
+        records = self.with_context(prefetch_fields=False).search(domain, order='id asc')
+        
+        #Ya de esta forma se esta recorriendo por compañia
+        for rec in records[:batch_size]:
             try:
                 rec.create_interest_invoices()
                 rec.env.cr.commit()
-            except:
-                _logger.error('Error creating interest invoices for company: %s', rec.company_id.name)
-                companies_with_errors.append(rec.company_id.name)
+            except Exception as e:
+                _logger.error('Error creating interest invoices for company: %s, Error: %s', rec.company_id.name, str(e))
                 rec.env.cr.rollback()
-                
-        if companies_with_errors:
-            company_names = ', '.join(companies_with_errors)
-            error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
-            raise UserError(error_message)
 
+                rec.company_id.message_post(body=_(
+                    "We couldn't run interest invoices cron job in the company: %s,  Error: %s" % (rec.company_id.name, str(e))
+                ))
+                rec.bypass_company_interest = True
+                rec.env.cr.commit()
+        
+        
+        if len(records) >= batch_size:
+            last_updated_id = records[batch_size-1].id
+        else:
+            last_updated_id = 0
+            avoid_companies = self.with_context(prefetch_fields=False).search([('next_date', '<=', current_date),('bypass_company_interest','=',True)])
+            if avoid_companies:
+                company_names = ', '.join(avoid_companies.mapped('company_id.name'))
+                error_message = _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
+                avoid_companies.bypass_company_interest = False
+                self.env.cr.commit()
+                raise UserError(error_message)
+
+        self.env['ir.config_parameter'].sudo().set_param(parameter_name, str(last_updated_id))
+        self.env.cr.commit()
+
+        if last_updated_id:
+            cron = self.env['ir.cron'].browse(self.env.context.get('job_id')) or self.env.ref('account_interests.cron_recurring_interests_invoices')
+            cron._trigger()
 
     def create_interest_invoices(self):
         for rec in self:
@@ -153,7 +186,6 @@ class ResCompanyInterest(models.Model):
 
     def create_invoices(self, to_date, groupby='partner_id'):
         self.ensure_one()
-
         move_line_domain = self._get_move_line_domains(to_date)
 
         # Check if a filter is set
@@ -170,51 +202,60 @@ class ResCompanyInterest(models.Model):
             fields=fields,
             groupby=[groupby],
         )
-        
+
+        total_items = len(grouped_lines)
+        batch_size = 100
+        batch_start = 0
+
         self = self.with_context(
             company_id=self.company_id.id,
             mail_notrack=True,
-            prefetch_fields=False).with_company(self.company_id)
+            prefetch_fields=False
+        ).with_company(self.company_id)
 
-        total_items = len(grouped_lines)
-        _logger.info('%s interest invoices will be generated', total_items)
-        for idx, line in enumerate(grouped_lines):
-            
-            _logger.info(
-                'Creating Interest Invoice (%s of %s) with values:\n%s',
-                idx + 1, total_items, line)
-            
-            debt = line['amount_residual']
+        while batch_start < total_items:
+            batch = grouped_lines[batch_start:batch_start + batch_size]
+            _logger.info('Processing batch %s to %s of %s', batch_start + 1, batch_start + len(batch), total_items)
 
-            if not debt or debt <= 0.0:
-                _logger.info("Debt is negative, skipping...")
-                continue
+            for idx, line in enumerate(batch, start=batch_start):
+                _logger.info(
+                    'Creating Interest Invoice (%s of %s) with values:\n%s',
+                    idx + 1, total_items, line)
 
-            partner_id = line[groupby][0]
+                debt = line['amount_residual']
+                if not debt or debt <= 0.0:
+                    _logger.info("Debt is negative, skipping...")
+                    continue
 
-            partner = self.env['res.partner'].browse(partner_id)
+                partner_id = line[groupby][0]
+                partner = self.env['res.partner'].browse(partner_id)
 
-            # Necesitamos que la factura a generar se cree en un diaro compatible, simulamos crear una nota de debito
-            # para que el odoo auto calcule el diario mas recomendable y usamos ese para crear las factura de interes
-            # relacionada a cada partner
-            journal = self.env['account.move'].with_context(
-                internal_type='debit_note', default_move_type='out_invoice').new(
-                    {'partner_id': partner_id, 'move_type': 'out_invoice'}).journal_id
-            if self.receivable_account_ids != journal.default_account_id:
-                journal = self.env['account.journal'].search([('default_account_id','in',self.receivable_account_ids.ids)], limit=1) or journal
-            move_vals = self._prepare_interest_invoice(
-                partner, debt, to_date, journal)
+                # Buscar el diario apropiado
+                journal = self.env['account.move'].with_context(
+                    internal_type='debit_note',
+                    default_move_type='out_invoice'
+                ).new({
+                    'partner_id': partner_id,
+                    'move_type': 'out_invoice'
+                }).journal_id
 
-            move = self.env['account.move'].create(move_vals)
+                if self.receivable_account_ids != journal.default_account_id:
+                    journal = self.env['account.journal'].search(
+                        [('default_account_id', 'in', self.receivable_account_ids.ids)],
+                        limit=1
+                    ) or journal
 
-            if self.automatic_validation:
-                try:
-                    move.action_post()
-                except Exception as e:
-                    _logger.error(
-                        "Something went wrong creating "
-                        "interests invoice: {}".format(e))
+                move_vals = self._prepare_interest_invoice(partner, debt, to_date, journal)
+                move = self.env['account.move'].create(move_vals)
 
+                if self.automatic_validation:
+                    try:
+                        move.action_post()
+                    except Exception as e:
+                        _logger.error("Something went wrong creating interests invoice: %s", e)
+
+            batch_start += batch_size
+        
     def prepare_info(self, to_date, debt):
         self.ensure_one()
 
