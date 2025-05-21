@@ -27,7 +27,7 @@ class AccountJournal(models.Model):
         'journal_security_journal_modification_users',
         'journal_id',
         'user_id',
-        string='Modifications restricted to',
+        string='Modifications allowed to',
         help='If choose some users, then only this users will be allow to '
         ' create, write or delete accounting data related of this journal. '
         'Information will still be visible for other users.',
