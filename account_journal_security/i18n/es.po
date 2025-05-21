@@ -71,8 +71,8 @@ msgstr "Diarios de modificacion"
 
 #. module: account_journal_security
 #: model:ir.model.fields,field_description:account_journal_security.field_account_journal__modification_user_ids
-msgid "Modifications restricted to"
-msgstr "Modificaciones restringidas a:"
+msgid "Modifications allowed to"
+msgstr "Modificaciones permitidas a:"
 
 #. module: account_journal_security
 #: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__none
