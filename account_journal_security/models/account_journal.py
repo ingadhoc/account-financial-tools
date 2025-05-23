@@ -119,8 +119,6 @@ class AccountJournal(models.Model):
             if limit == 1 and journal_ids:
                 # Agregamos el domain de los journals donde el usuario tiene permisos
                 domain += [
-                    "&",
-                    ("modification_user_ids", "=", False),
                     "|",
                     ("user_ids", "=", False),
                     ("id", "in", journal_ids),
