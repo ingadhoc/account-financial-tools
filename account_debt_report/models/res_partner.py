@@ -176,7 +176,12 @@ class ResPartner(models.Model):
             amount_currency = record.amount_currency
             amount_residual_currency = record.amount_residual_currency
             show_currency = record.currency_id != record.company_id.currency_id
-            balance_currency += record.amount_currency if show_currency else 0.0
+
+            if historical_full:
+                balance_currency += record.amount_currency if show_currency else 0.0
+            else:
+                balance_currency += record.amount_residual_currency if show_currency else 0.0
+
             if record.payment_id:
                 name += " - " + record.journal_id.name
 
