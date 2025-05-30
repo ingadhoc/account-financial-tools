@@ -7,7 +7,7 @@ import logging
 from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools.safe_eval import safe_eval
+from odoo.tools import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -148,7 +148,7 @@ class ResCompanyInterest(models.Model):
             ("parent_state", "=", "posted"),
         ]
         if self.domain:
-            move_line_domain += safe_eval(self.domain)
+            move_line_domain += safe_eval.safe_eval(self.domain)
         return move_line_domain
 
     def _update_deuda(self, deuda, partner, key, value):
@@ -227,7 +227,7 @@ class ResCompanyInterest(models.Model):
             ]
 
             if self.domain:
-                partial_domain.append(("debit_move_id", "any", safe_eval(self.domain)))
+                partial_domain.append(("debit_move_id", "any", safe_eval.safe_eval(self.domain)))
 
             partials = (
                 self.env["account.partial.reconcile"]
@@ -406,4 +406,15 @@ class ResCompanyInterest(models.Model):
     @api.depends("domain")
     def _compute_has_domain(self):
         for rec in self:
-            rec.has_domain = len(safe_eval(rec.domain)) > 0
+            domain = rec.domain or "[]"
+            evaluated_domain = safe_eval.safe_eval(
+                domain,
+                {
+                    "context_today": safe_eval.datetime.datetime.today,
+                    "datetime": safe_eval.datetime,
+                    "dateutil": safe_eval.dateutil,
+                    "relativedelta": safe_eval.dateutil.relativedelta.relativedelta,
+                    "time": safe_eval.time,
+                },
+            )
+            rec.has_domain = len(evaluated_domain) > 0
