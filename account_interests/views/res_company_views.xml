@@ -40,7 +40,7 @@
                                     <field name="next_date"/>
                                     <field name="late_payment_interest"/>
                                 </group>
-                                <field name="domain" widget="domain" options="{ 'model': 'account.move.line', 'in_dialog': True }" />
+                                <field name="domain" widget="domain" options="{ 'model': 'account.move.line', 'in_dialog': True, 'allow_expressions': True }" />
                             </group>
                         </form>
                     </field>
