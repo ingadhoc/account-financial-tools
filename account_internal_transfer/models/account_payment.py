@@ -14,8 +14,17 @@ class AccountPayment(models.Model):
         comodel_name="account.journal",
         string="Destination Journal",
         domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id)]",
-        check_company=True,
+        check_company=False,
     )
+    main_company_id = fields.Many2one(
+        "res.company",
+        compute="_compute_main_company",
+    )
+
+    @api.depends("company_id")
+    def _compute_main_company(self):
+        for rec in self:
+            rec.main_company_id = rec.company_id.parent_id or rec.company_id
 
     # TO DO: Check in v19+ if odoo delete the paired_internal_transfer_payment_id field, restore the field in this module
     # paired_internal_transfer_payment_id = fields.Many2one('account.payment',
@@ -80,6 +89,7 @@ class AccountPayment(models.Model):
             paired_payment = payment.copy(
                 {
                     "journal_id": payment.destination_journal_id.id,
+                    "company_id": payment.destination_journal_id.company_id.id,
                     "destination_journal_id": payment.journal_id.id,
                     "payment_type": paired_payment_type,
                     "payment_method_line_id": payment.destination_journal_id._get_available_payment_method_lines(
