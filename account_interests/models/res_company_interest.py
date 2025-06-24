@@ -181,7 +181,7 @@ class ResCompanyInterest(models.Model):
             ('parent_state', '=', 'posted'),
         ]
         if self.domain:
-            move_line_domain += safe_eval.safe_eval(self.domain)
+            move_line_domain += safe_eval.safe_eval(self.domain, self._get_eval_context())
         return move_line_domain
 
     def _update_deuda(self, deuda, partner, key, value):
@@ -246,7 +246,7 @@ class ResCompanyInterest(models.Model):
                 ('credit_move_id.date', '<', to_date)]
             
             if self.domain:
-                partial_domain.append(('debit_move_id', 'any', safe_eval.safe_eval(self.domain)))
+                partial_domain.append(('debit_move_id', 'any', safe_eval.safe_eval(self.domain, self._get_eval_context())))
             
             partials = self.env['account.partial.reconcile'].search(partial_domain).filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity).grouped('debit_move_id')
             for move_line, parts in partials.items():
@@ -396,15 +396,21 @@ class ResCompanyInterest(models.Model):
 
         return invoice_vals
 
-    @api.depends('domain')
+    @api.depends("domain")
     def _compute_has_domain(self):
         for rec in self:
-            domain = rec.domain or '[]'
-            evaluated_domain = safe_eval.safe_eval(domain, {
-                'context_today': safe_eval.datetime.datetime.today,
-                'datetime': safe_eval.datetime,
-                'dateutil': safe_eval.dateutil,
-                'relativedelta': safe_eval.dateutil.relativedelta.relativedelta,
-                'time': safe_eval.time,
-            })
+            domain = rec.domain or "[]"
+            evaluated_domain = safe_eval.safe_eval(domain, self._get_eval_context())
             rec.has_domain = len(evaluated_domain) > 0
+
+    def _get_eval_context(self):
+        """Prepare the context used when evaluating python code
+        :returns: dict -- evaluation context given to safe_eval
+        """
+        return {
+            'context_today': safe_eval.datetime.datetime.today,
+            'datetime': safe_eval.datetime,
+            'dateutil': safe_eval.dateutil,
+            'relativedelta': safe_eval.dateutil.relativedelta.relativedelta,
+            'time': safe_eval.time,
+        }
