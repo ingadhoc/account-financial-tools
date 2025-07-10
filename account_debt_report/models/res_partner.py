@@ -103,11 +103,27 @@ class ResPartner(models.Model):
                 initial_domain, groupby=['partner_id'], aggregates=['balance:sum'])
             balance = inicial_lines[0][1] if inicial_lines else 0.0
             if len(company_currency_ids) == 1:
+                balance_in_currency = 0.0
+                balance_in_currency_name = ''
                 inicial_lines_currency = self.env['account.move.line'].sudo()._read_group(
-                    initial_domain + [('currency_id', 'not in', company_currency_ids.ids)], groupby=['partner_id'], aggregates=['amount_currency:sum', 'currency_id:array_agg'])
-                balance_in_currency = inicial_lines_currency[0]['amount_currency'] if inicial_lines_currency else 0.0
-                balance_in_currency_name = self.env['res.currency'].browse(inicial_lines_currency[0]['currency_id'][0]).display_name if inicial_lines_currency and inicial_lines_currency[0]['currency_id'][0] else  ''
+                    initial_domain + [('currency_id', 'not in', company_currency_ids.ids)],
+                    groupby=['partner_id'],
+                    aggregates=['amount_currency:sum', 'currency_id:array_agg']
+                )
 
+                if inicial_lines_currency:
+                    first = inicial_lines_currency[0]
+                    if isinstance(first, dict):
+                        balance_in_currency = first.get('amount_currency', 0.0)
+                        balance_in_currency_name = self.env['res.currency'].browse(
+                            first.get('currency_id')[0]
+                        ).display_name if first.get('currency_id') else ''
+                    elif isinstance(first, tuple):
+                        balance_in_currency = first[1]
+                        balance_in_currency_name = self.env['res.currency'].browse(
+                            first[2][0]
+                        ).display_name if first[2] else ''
+                        
             res = [get_line_vals(name=_('INITIAL BALANCE'), balance=balance, amount_currency=balance_in_currency, currency_name=balance_in_currency_name)]
             domain.append(('date', '>=', from_date))
         else:
