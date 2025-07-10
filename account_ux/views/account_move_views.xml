@@ -74,7 +74,7 @@
 
         <!-- Temas de multimoneda -->
 
-            <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="attributes">
+            <xpath expr="//div[@name='currency_div']//div//field[@name='currency_id']" position="attributes">
                 <attribute name="class">w-50</attribute>
             </xpath>
 
@@ -99,7 +99,7 @@
                 </div>
             </header>
 
-            <xpath expr="//div[@name='currency_div']/field[@name='currency_id']" position="after">
+            <xpath expr="//div[@name='currency_div']//div//field[@name='currency_id']" position="after">
                 <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
 
