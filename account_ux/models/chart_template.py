@@ -14,5 +14,6 @@ class AccountChartTemplate(models.AbstractModel):
         company = (company or self.env.company)
         suspense_account = self.env['res.company'].browse(company.id).account_journal_suspense_account_id
         self.env['account.journal'].search([('type', 'in', ['bank', 'cash']),
+                                            ('company_id', '=', company.id),
                                             ('suspense_account_id', '=', False)
                                             ]).write({'suspense_account_id': suspense_account})
