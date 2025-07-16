@@ -57,7 +57,16 @@
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale
+<<<<<<< HEAD
     "auto_install": True,
     "application": False,
     "post_init_hook": "_change_receipt_name",
+||||||| parent of 119a6a5b (temp)
+    'auto_install': True,
+    'application': False,
+=======
+    'auto_install': True,
+    'application': False,
+    'post_load': 'monkey_patches',
+>>>>>>> 119a6a5b (temp)
 }
