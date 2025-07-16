@@ -5,3 +5,4 @@
 from . import reports
 from . import models
 from . import wizards
+from .tests.monkey_patches import monkey_patches
