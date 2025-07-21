@@ -17,6 +17,7 @@
             <!-- nosotros dejamos que sin importqar ese parametro se puedamos mostrar -->
             <field name="price_total" position="attributes">
                 <attribute name="column_invisible"></attribute>
+                <attribute name="optional">hide if parent.move_type in ['in_invoice', 'in_refund', 'in_receipt'] else show</attribute>
             </field>
 
             <button name="button_draft" position="after">
