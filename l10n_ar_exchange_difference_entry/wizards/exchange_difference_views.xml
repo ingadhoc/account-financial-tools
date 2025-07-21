@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_exchange_difference_wizard_form" model="ir.ui.view">
+        <field name="name">exchange_difference_wizard_form</field>
+        <field name="model">l10n_ar.exchange.difference.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="move_ids" options="{'no_create': True}" readonly="1">
+                    <list>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="date"/>
+                        <field name="currency_id"/>
+                        <field name="amount_total_signed"/>
+                        <field name="original_documents_ids" widget="many2many_tags"/>
+                    </list>
+                </field>
+
+                <footer>
+                    <button string="Create"
+                        name="action_create_debit_credit_note"
+                        type="object"
+                        class="oe_highlight"
+                        data-hotkey="q"/>
+                    <button string="Cancel"
+                        class="btn btn-secondary"
+                        special="cancel"
+                        data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>

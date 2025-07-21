@@ -1,0 +1,40 @@
+<odoo>
+    <record id="action_exchange_difference_server" model="ir.actions.server">
+        <field name="name">Exchange Difference Server</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['account.move'].action_exchange_difference()
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_exchange_difference"
+        action="action_exchange_difference_server"
+        parent="account.menu_finance_receivables"
+        groups="account.group_account_basic"
+        name="Exchange Difference"/>
+
+    <record id="view_invoice_exchange_list" model="ir.ui.view">
+        <field name="name">l10n_ar_exchange_difference_entry.invoice.list</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <list string="Invoices"
+                    create="false"
+                    import="false">
+                <header>
+                    <button name="action_open_exchange_difference_wizard"
+                            type="object"
+                            string="Convert to Debit Note"/>
+                </header>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="currency_id"/>
+                <field name="amount_total_signed"/>
+                <field name="original_documents_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+</odoo>

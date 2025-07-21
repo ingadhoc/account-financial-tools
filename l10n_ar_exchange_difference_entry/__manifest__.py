@@ -1,0 +1,26 @@
+{
+    "name": "Argentinean Exchange Difference Entry",
+    "version": "18.0.1.0.0",
+    "category": "Accounting",
+    "website": "www.adhoc.com.ar",
+    "author": "ADHOC SA",
+    "license": "AGPL-3",
+    "countries": ["ar"],
+    "icon": "/base/static/img/country_flags/ar.png",
+    "external_dependencies": {
+        "python": [],
+        "bin": [],
+    },
+    "depends": ["account", "l10n_ar"],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/res_config_settings.xml",
+        "views/account_move_views.xml",
+        "wizards/exchange_difference_views.xml",
+    ],
+    "installable": True,
+    "auto_install": False,
+    "application": False,
+    "demo": [],
+    "post_init_hook": "_post_init_hooks",
+}

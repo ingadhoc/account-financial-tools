@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+l10n_ar_exchange_difference_entry.access_l10n_ar_exchange_difference_wizard,access_l10n_ar_exchange_difference_wizard,l10n_ar_exchange_difference_entry.model_l10n_ar_exchange_difference_wizard,base.group_user,1,1,1,0
