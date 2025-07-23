@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-06 20:01+0000\n"
+"POT-Creation-Date: 2025-07-17 20:27+0000\n"
 "PO-Revision-Date: 2024-12-03 16:58+0000\n"
 "Last-Translator: Rocio Vega, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -44,6 +44,16 @@ msgstr "Validación Automática de Factura?"
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__automatic_validation
 msgid "Automatic Validation?"
 msgstr "Validación Automática?"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__bypass_company_interest
+msgid "Bypass Company Interest"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__bypass_company_interest
+msgid "Bypass the company interest calculation"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model,name:account_interests.model_res_company
@@ -217,6 +227,13 @@ msgstr ""
 "período anterior. Para obtener la tasa diaria, el interés se divide por el "
 "período. Estos días se consideran según el tipo de período: 360 para anual, "
 "30 para mensual y 7 para semanal."
+
+#. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+msgid ""
+"We couldn't run interest invoices cron job in the company: %s,  Error: %s"
+msgstr ""
 
 #. module: account_interests
 #. odoo-python

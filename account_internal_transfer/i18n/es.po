@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-22 18:18+0000\n"
+"POT-Creation-Date: 2025-07-23 12:20+0000\n"
 "PO-Revision-Date: 2024-11-08 12:53+0000\n"
 "Last-Translator: Gonzalo, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -119,6 +119,11 @@ msgstr "Transferencia Interna"
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.view_account_payment_search
 msgid "Internal Transfers"
 msgstr "Transferencias Internas"
+
+#. module: account_internal_transfer
+#: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__main_company_id
+msgid "Main Company"
+msgstr ""
 
 #. module: account_internal_transfer
 #: model:ir.model,name:account_internal_transfer.model_account_payment
