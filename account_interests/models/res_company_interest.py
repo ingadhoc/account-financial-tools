@@ -2,6 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
+import json
 import logging
 
 from dateutil.relativedelta import relativedelta
@@ -118,7 +119,7 @@ class ResCompanyInterest(models.Model):
                     % (rec.company_id.name, str(e))
                 )
                 rec.bypass_company_interest = True
-                rec.env.cr.commit()
+                rec.env.cr.commit()  # pragma pylint: disable=invalid-commit
 
         if len(records) >= batch_size:
             last_updated_id = records[batch_size - 1].id
@@ -178,6 +179,7 @@ class ResCompanyInterest(models.Model):
             rec.with_company(rec.company_id).with_context(
                 default_l10n_ar_afip_asoc_period_start=from_date, default_l10n_ar_afip_asoc_period_end=to_date
             ).create_invoices(from_date, to_date)
+            self._clear_processed_partner_ids_for_company(self.company_id)
 
             # seteamos proxima corrida en hoy mas un periodo
             rec.next_date = to_date + next_delta
@@ -339,7 +341,11 @@ class ResCompanyInterest(models.Model):
             batch = dict(items[batch_start : batch_start + batch_size])
             _logger.info("Processing batch %s to %s of %s", batch_start + 1, batch_start + len(batch), total_items)
             # Crear facturas
+            processed_partner_ids = self._get_processed_partner_ids_for_company(self.company_id)
+
             for idx, partner in enumerate(batch, start=batch_start):
+                if partner.id in processed_partner_ids:
+                    continue
                 journal = self._search_last_journal_for_partner(partner, deuda[partner])
 
                 move_vals = self._prepare_interest_invoice(partner, deuda[partner], to_date, journal)
@@ -351,11 +357,15 @@ class ResCompanyInterest(models.Model):
                 )
 
                 move = self.env["account.move"].create(move_vals)
+                processed_partner_ids.append(partner.id)
+
                 if self.automatic_validation:
                     try:
                         move.action_post()
                     except Exception as e:
                         _logger.error("Something went wrong creating " f"interests invoice: {e}")
+            self._set_processed_partner_ids_for_company(self.company_id, [p.id for p in batch])
+            self.env.cr.commit()  # pragma pylint: disable=invalid-commit
             batch_start += batch_size
 
     def _prepare_info(self, to_date):
@@ -386,9 +396,9 @@ class ResCompanyInterest(models.Model):
         self.ensure_one()
 
         if (
-            not debt.get("Deuda periodos anteriores")
-            and not debt.get("Deuda último periodo")
-            and not debt.get("Deuda pagos vencidos")
+            (not debt.get("Deuda periodos anteriores") or debt.get("Deuda periodos anteriores") <= 0)
+            and (not debt.get("Deuda último periodo") or debt.get("Deuda último periodo") <= 0)
+            and (not debt.get("Deuda pagos vencidos") or debt.get("Deuda pagos vencidos") <= 0)
         ):
             _logger.info("Debt is negative, skipping...")
             return
@@ -474,3 +484,46 @@ class ResCompanyInterest(models.Model):
             "relativedelta": safe_eval.dateutil.relativedelta.relativedelta,
             "time": safe_eval.time,
         }
+
+    def _get_processed_partner_ids_for_company(self, company_id):
+        param_key = "account_interest.company_processed_partner_ids"
+        param = self.env["ir.config_parameter"].sudo().search([("key", "=", param_key)], limit=1)
+        if not param:
+            return []
+
+        try:
+            value = json.loads(param.value)
+        except Exception:
+            return []
+
+        return value.get(str(company_id.id), [])
+
+    def _set_processed_partner_ids_for_company(self, company_id, partner_ids):
+        param_key = "account_interest.company_processed_partner_ids"
+        IrConfigParam = self.env["ir.config_parameter"].sudo()
+        param = IrConfigParam.search([("key", "=", param_key)], limit=1)
+        if not param:
+            value = {}
+        else:
+            try:
+                value = json.loads(param.value)
+            except Exception:
+                value = {}
+
+        value[str(company_id.id)] = list(set(value.get(str(company_id.id), []) + partner_ids))
+        if param:
+            param.write({"value": json.dumps(value)})
+        else:
+            IrConfigParam.create({"key": param_key, "value": json.dumps(value)})
+
+    def _clear_processed_partner_ids_for_company(self, company_id):
+        param_key = "account_interest.company_processed_partner_ids"
+        param = self.env["ir.config_parameter"].sudo().search([("key", "=", param_key)], limit=1)
+        if not param:
+            return
+        try:
+            value = json.loads(param.value)
+        except Exception:
+            value = {}
+        value.pop(str(company_id.id), None)
+        param.write({"value": json.dumps(value)})
