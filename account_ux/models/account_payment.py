@@ -22,7 +22,8 @@ class AccountPayment(models.Model):
                 and payment.outstanding_account_id
                 and len(payment.move_id.line_ids._reconciled_lines()) > 1
                 and (
-                    payment.payment_method_line_id.payment_account_id.account_type != "asset_current"
+                    payment.payment_method_line_id.payment_account_id.account_type
+                    not in ["asset_current", "liability_current"]
                     or payment.payment_method_line_id.payment_account_id.account_type == False
                 )
             ):
