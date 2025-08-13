@@ -13,7 +13,7 @@ class AccountPayment(models.Model):
     destination_journal_id = fields.Many2one(
         comodel_name="account.journal",
         string="Destination Journal",
-        domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id)]",
+        domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id),('company_id', 'child_of', main_company_id)]",
         check_company=False,
     )
     main_company_id = fields.Many2one(
