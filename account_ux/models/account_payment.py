@@ -21,10 +21,7 @@ class AccountPayment(models.Model):
                 and payment.journal_id.type in ("bank", "cash")
                 and payment.outstanding_account_id
                 and len(payment.move_id.line_ids._reconciled_lines()) > 1
-                and (
-                    payment.payment_method_line_id.payment_account_id.account_type != "asset_current"
-                    or payment.payment_method_line_id.payment_account_id.account_type == False
-                )
+                and not payment.payment_method_line_id.payment_account_id.reconcile
             ):
                 payment.state = "paid"
 
