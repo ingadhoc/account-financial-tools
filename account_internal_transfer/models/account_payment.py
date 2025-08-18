@@ -20,6 +20,7 @@ class AccountPayment(models.Model):
         "res.company",
         compute="_compute_main_company",
     )
+    available_partner_bank_ids = fields.Many2many(compute_sudo=True)
 
     @api.depends("company_id")
     def _compute_main_company(self):
