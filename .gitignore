@@ -60,10 +60,3 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
-<<<<<<< HEAD
-#
-.idea/
-
-.vscode/
-=======
->>>>>>> 11665d72 (Update from template)
