@@ -1,7 +1,7 @@
 # flake8: noqa
 import json
 import base64
-from odoo import models, api, fields, _
+from odoo import models, api, fields, _, Command
 from odoo.exceptions import UserError
 
 
@@ -91,6 +91,10 @@ class AccountMove(models.Model):
 
     def copy(self, default=None):
         res = super().copy(default=default)
+        for line_to_clean in res.mapped("line_ids").filtered(lambda x: False in x.mapped("tax_ids.active")):
+            line_to_clean.tax_ids = [
+                Command.unlink(x.id) for x in line_to_clean.tax_ids.filtered(lambda x: not x.active)
+            ]
         res._onchange_partner_commercial()
         return res
 
