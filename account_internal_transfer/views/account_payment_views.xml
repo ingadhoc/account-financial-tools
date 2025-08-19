@@ -84,7 +84,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_finance_bank_and_cash" parent="account.menu_finance" sequence="4" groups="account.group_account_basic" name="Bank and Cash"/>
+    <menuitem id="menu_finance_bank_and_cash" parent="account.menu_finance" sequence="3" groups="account.group_account_basic" name="Bank and Cash"/>
 
     <menuitem action="action_account_payments_transfer" id="menu_action_account_payments_transfer" parent="menu_finance_bank_and_cash" sequence="30" groups="account.group_account_basic"/>
 </odoo>
