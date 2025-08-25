@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-05 12:43+0000\n"
+"POT-Creation-Date: 2025-07-17 17:09+0000\n"
 "PO-Revision-Date: 2024-01-15 12:48+0000\n"
 "Last-Translator: Rocio Vega, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -75,6 +75,11 @@ msgid "Account Type's"
 msgstr "Tipos de Cuentas"
 
 #. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_currency
+msgid "Add columns for company currency?"
+msgstr ""
+
+#. module: account_debt_report
 #: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__secondary_currency
 msgid "Add columns for secondary currency?"
 msgstr "Agregar columnas para moneda secundaria?"
@@ -89,6 +94,11 @@ msgstr "Cancelar"
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
 msgid "Company"
 msgstr "Empresa"
+
+#. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__company_currency
+msgid "Company Currency"
+msgstr ""
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
@@ -111,6 +121,13 @@ msgid "Created on"
 msgstr "Creado el"
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/wizard/account_debt_report_wizard.py:0
+#, python-format
+msgid "Debe seleccionar por lo menos una moneda para el informe"
+msgstr ""
+
+#. module: account_debt_report
 #: model:mail.template,name:account_debt_report.email_template_debt_detail
 msgid "Debt Detail Mail"
 msgstr "Correo de detalle de deuda"
@@ -122,6 +139,7 @@ msgstr "Detalle de Deuda {{ object.company_id.name }}"
 
 #. module: account_debt_report
 #: model:ir.actions.act_window,name:account_debt_report.action_account_debt_report_wizard
+#: model_terms:ir.ui.view,arch_db:account_debt_report.view_move_line_payment_tree
 msgid "Debt Report"
 msgstr "Detalle de Deuda"
 
@@ -226,6 +244,13 @@ msgstr "Mostrar detalle de Facturas"
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__to_date
 msgid "To"
 msgstr "Hasta"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/res_partner.py:0
+#, python-format
+msgid "Total"
+msgstr ""
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form

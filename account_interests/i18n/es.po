@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-09 10:45+0000\n"
+"POT-Creation-Date: 2025-07-17 17:30+0000\n"
 "PO-Revision-Date: 2024-05-13 13:02+0000\n"
 "Last-Translator: Gonzalo, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -44,6 +44,16 @@ msgstr "Validación Automática de Factura?"
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__automatic_validation
 msgid "Automatic Validation?"
 msgstr "Validación Automática?"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__bypass_company_interest
+msgid "Bypass Company Interest"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__bypass_company_interest
+msgid "Bypass the company interest calculation"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model,name:account_interests.model_res_company
@@ -100,6 +110,15 @@ msgid "Deuda Vencida al %s con tasa de interés de %s"
 msgstr ""
 
 #. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+#, python-format
+msgid ""
+"Deuda Vencida al %s de periodos anteriores con tasa de interés de %s. Deuda "
+"Vencida al %s del ultimo periodo con tasa de interés de %s"
+msgstr ""
+
+#. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__display_name
 msgid "Display Name"
 msgstr "Nombre a Mostrar"
@@ -120,6 +139,14 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__past_due_rate
+msgid ""
+"If set, this rate will be used for overdue debts from previous periods. If "
+"not set, the standard interest rate (rate) for the current period will be "
+"applied."
+msgstr ""
+
+#. module: account_interests
 #: model_terms:ir.ui.view,arch_db:account_interests.view_automatic_interests_company_form
 msgid "Intereses Automáticos"
 msgstr "Intereses Automáticos"
@@ -134,6 +161,11 @@ msgstr "Interés"
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interest_product_id
 msgid "Interest Product"
 msgstr "Producto de Interés"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__past_due_rate
+msgid "Interest for Previous Period"
+msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__rule_type
@@ -189,6 +221,14 @@ msgid ""
 "previous period. To obtain the daily rate, the interest is divided by the "
 "period. These days are considered depending on the type of period: 360 for "
 "annual, 30 for monthly and 7 for weekly."
+msgstr ""
+
+#. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+#, python-format
+msgid ""
+"We couldn't run interest invoices cron job in the company: %s,  Error: %s"
 msgstr ""
 
 #. module: account_interests

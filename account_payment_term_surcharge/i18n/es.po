@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 12:50+0000\n"
+"POT-Creation-Date: 2025-01-13 20:04+0000\n"
 "PO-Revision-Date: 2024-04-08 13:03+0000\n"
 "Last-Translator: feg, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -234,6 +234,11 @@ msgid "Sequence"
 msgstr "Secuencia"
 
 #. module: account_payment_term_surcharge
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term__show_surcharge_warning
+msgid "Show Surcharge Warning"
+msgstr ""
+
+#. module: account_payment_term_surcharge
 #. odoo-python
 #: code:addons/account_payment_term_surcharge/models/account_move.py:0
 #, python-format
@@ -277,6 +282,13 @@ msgid "The number of days used for a payment term cannot be negative."
 msgstr ""
 "El número de días utilizados para una condición de pago no puede ser "
 "negativo."
+
+#. module: account_payment_term_surcharge
+#: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.view_payment_term_form
+msgid ""
+"The selected company does not have a surcharge product configured for this payment term. Please note that debit notes will not be created. \n"
+"                        To resolve this, configure the surcharge product in Settings &gt; Accounting for the selected company."
+msgstr ""
 
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_config_settings__payment_term_surcharge_invoice_auto_post

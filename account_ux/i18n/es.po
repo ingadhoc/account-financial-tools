@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-12 18:02+0000\n"
+"POT-Creation-Date: 2025-08-25 07:46+0000\n"
 "PO-Revision-Date: 2023-11-23 13:23+0000\n"
 "Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -31,6 +31,15 @@ msgid ""
 msgstr ""
 "\n"
 "Fecha\t\t\tFecha de Factura\t\tFactura\n"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+#, python-format
+msgid ""
+"<b>Error sending the invoice</b>: partner %s does not have an email address "
+"defined."
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
@@ -615,6 +624,14 @@ msgstr ""
 "No puede crear una cotización sin compañía ya que ya tiene cotizaciones "
 "antes de %s con la compañía definida. La cotización que desee crear no "
 "tendrá ningún efecto, no se tendrá en cuenta."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_payment.py:0
+#, python-format
+msgid ""
+"You cannot delete a posted payment, you should set it back to draft first."
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
