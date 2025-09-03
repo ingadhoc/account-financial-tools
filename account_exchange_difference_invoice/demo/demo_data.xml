@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="product_exchange_difference" model="product.product">
+        <field name="name">Exchange Rate Difference</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="standard_price">0.0</field>
+        <field name="list_price">0.0</field>
+        <field name="default_code">EXC-DIFF</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="base.main_company" model="res.company">
+        <field name="exchange_difference_product" ref="product_exchange_difference"/>
+    </record>
+
+</odoo>

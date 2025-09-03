@@ -1,0 +1,67 @@
+<odoo>
+
+    <!-- usamos los account.move.line en vez de account.move porque en los asientos de ajuste odoo no suele completar el campo partner (y tal vez falten otras cosas) -->
+
+    <record id="action_exchange_difference_server" model="ir.actions.server">
+        <field name="name">Exchange Difference</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="binding_model_id" ref="account.model_account_move_line"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['account.move.line'].action_exchange_difference()
+        </field>
+        <field name="binding_type">action</field>
+        <field name="binding_view_types">form</field>
+    </record>
+
+    <record id="view_account_move_line_filter" model="ir.ui.view">
+        <field name="name">account.move.line.search</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="arch" type="xml">
+            <filter position="before">
+                <filter name="previous_month" string="Previous Month" domain="[('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01')), ('date', '&lt;', (context_today()).strftime('%Y-%m-01'))]" context="{'previous_month': 1}"/>
+                <filter name="current_month" string="Current Month" domain="[('date', '&gt;=', (context_today()).strftime('%Y-%m-01')),('date', '&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))]" context="{'current_month': 1}" />
+                <separator/>
+                <filter name="to_process" string="To Process" domain="[('move_id.exchange_reversal_id', '=', False)]"/>
+                <filter name="processed" string="Processed" domain="[('move_id.exchange_reversal_id', '!=', False)]"/>
+                <separator/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_invoice_exchange_list" model="ir.ui.view">
+        <field name="name">account_exchange_difference_invoice.invoice.list</field>
+        <field name="model">account.move.line</field>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <header>
+                    <button name="action_open_exchange_difference_wizard"
+                            type="object"
+                            string="Convert to Debit/Credit Note"/>
+                </header>
+                <field name="date" readonly="1"/>
+                <!-- <field name="move_id" readonly="1"/> -->
+                <field name="move_name" string="Journal Entry" widget="open_move_widget" readonly="1"/>
+                <field name="ref" readonly="1"/>
+                <field name="exchange_info"/>
+                <field name="account_id" options="{'no_open': True, 'no_create': True}" domain="[('deprecated', '=', False), ('company_ids', 'parent_of', company_id)]" groups="account.group_account_readonly" readonly="1" optional="hide"/>
+                <field name="debit" sum="Total Debit" readonly="1" optional="hide"/>
+                <field name="credit" sum="Total Credit" readonly="1" optional="hide"/>
+                <field name="balance" sum="Total Balance" readonly="1"/>
+                <field name="matching_number" string="Matching" readonly="1" widget="matching_link_widget" optional="hide"/>
+                <field name="company_currency_id" column_invisible="True" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_exchange_difference"
+        action="action_exchange_difference_server"
+        parent="account.menu_finance_receivables"
+        groups="account.group_account_basic"
+    />
+
+
+</odoo>

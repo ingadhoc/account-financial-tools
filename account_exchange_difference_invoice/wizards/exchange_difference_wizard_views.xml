@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_exchange_difference_wizard_form" model="ir.ui.view">
+        <field name="name">exchange_difference_wizard_form</field>
+        <field name="model">account.exchange.difference.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="journal_id"/>
+                    <field name="line_ids">
+                        <list editable="bottom" create="false" edit="false">
+                            <field name="partner_id"/>
+                            <field name="balance"/>
+                            <field name="show_warning" widget="html" readonly="1" nolabel="1"/>
+                        </list>
+                    </field>
+                </group>
+
+                <footer>
+                    <button string="Create"
+                        name="action_create_debit_credit_notes"
+                        type="object"
+                        class="oe_highlight"
+                        data-hotkey="q"/>
+                    <button string="Cancel"
+                        class="btn btn-secondary"
+                        special="cancel"
+                        data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
