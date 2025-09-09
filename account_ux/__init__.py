@@ -7,6 +7,7 @@ from . import models
 from . import wizards
 from .hooks import uninstall_hook
 from odoo.addons.account.models.account_payment import AccountPayment
+from odoo.addons.account.models.account_move import AccountMove
 
 
 def _change_receipt_name(env):
@@ -33,6 +34,14 @@ def monkey_patches():
             else:
                 pay.available_journal_ids = journals.filtered("outbound_payment_method_line_ids")
 
+    def _compute_show_reset_to_draft_button(self):
+        for move in self:
+            move.show_reset_to_draft_button = (
+                not self._is_move_restricted(move)
+                and not move.journal_id.restrict_mode_hash_table
+                and (move.state == "cancel" or (move.state == "posted" and not move.need_cancel_request))
+            )
+
     def propagate(method1, method2):
         """Propagate decorators from ``method1`` to ``method2``, and return the
         resulting method.
@@ -56,3 +65,4 @@ def monkey_patches():
         setattr(cls, name, wrapped)
 
     _patch_method(AccountPayment, "_compute_available_journal_ids", _compute_available_journal_ids_patch)
+    _patch_method(AccountMove, "_compute_show_reset_to_draft_button", _compute_show_reset_to_draft_button)
