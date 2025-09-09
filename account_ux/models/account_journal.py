@@ -29,17 +29,6 @@ class AccountJournal(models.Model):
 
     def write(self, vals):
         """We need to allow to change to False the value for restricted for hash for the journal when this value is setted."""
-        if "type" in vals:
-            for journal in self:
-                if journal.type != vals["type"] and vals["type"] not in ("bank", "cash", "credit"):
-                    has_entries = self.env["account.move.line"].search_count([("journal_id", "=", journal.id)]) > 0
-                    if has_entries:
-                        raise ValidationError(
-                            _(
-                                "You cannot change the journal type for '%s' because it already has accounting entries associated with it."
-                            )
-                            % journal.name
-                        )
         if "restrict_mode_hash_table" in vals and not vals.get("restrict_mode_hash_table"):
             restrict_mode_hash_table = vals.get("restrict_mode_hash_table")
             vals.pop("restrict_mode_hash_table")

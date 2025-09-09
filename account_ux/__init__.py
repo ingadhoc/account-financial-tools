@@ -5,6 +5,8 @@
 from . import reports
 from . import models
 from . import wizards
+from .monkey_patches import monkey_patches
+from .hooks import uninstall_hook
 
 
 def _change_receipt_name(env):

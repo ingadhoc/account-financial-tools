@@ -230,3 +230,10 @@ class AccountMove(models.Model):
         tax_totals["total_amount"] = tax_totals["base_amount"] + subtotal["tax_amount"]
 
         return tax_totals
+
+    def button_draft(self):
+        for move in self:
+            if move.inalterable_hash and not move.journal_id.restrict_mode_hash_table:
+                move.env.cr.execute("update account_move set inalterable_hash = null where id = %s", (move.id,))
+                move.invalidate_recordset(["inalterable_hash"])
+        return super().button_draft()
