@@ -31,7 +31,7 @@
                             string="Send receipt by email"
                             type="action"
                             class="btn-primary"
-                            invisible="state != 'in_process'"/>
+                            invisible="state not in ('in_process','paid')"/>
                 </button>
             </field>
     </record>
