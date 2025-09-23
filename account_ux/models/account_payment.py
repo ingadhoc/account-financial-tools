@@ -19,11 +19,12 @@ class AccountPayment(models.Model):
             if (
                 not self.env.context.get("skip_payment_state_computation")
                 and payment.journal_id.type in ("bank", "cash")
+                and payment.state == "in_process"
                 and payment.outstanding_account_id
                 and len(payment.move_id.line_ids._reconciled_lines()) > 1
                 and not payment.payment_method_line_id.payment_account_id.reconcile
             ):
-                payment.state = "paid"
+                payment.action_post()
 
     @api.ondelete(at_uninstall=False)
     def _check_payment_state(self):
