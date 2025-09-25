@@ -35,7 +35,7 @@
         "views/report_account_transfer.xml",
     ],
     "demo": [],
-    "installable": True,
+    'installable': False,
     "auto_install": True,
     "application": False,
 }
