@@ -35,7 +35,7 @@
         "views/account_move_views.xml",
     ],
     "demo": [],
-    'installable': False,
+    "installable": False,
     "auto_install": False,
     "application": False,
     "post_load": "monkey_patches",

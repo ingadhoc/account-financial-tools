@@ -34,6 +34,6 @@
         "data/ir_cron_data.xml",
         "security/ir.model.access.csv",
     ],
-    'installable': False,
+    "installable": False,
     "application": False,
 }

@@ -53,7 +53,7 @@
         "reports/account_invoice_report_view.xml",
     ],
     "demo": [],
-    'installable': False,
+    "installable": False,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale
