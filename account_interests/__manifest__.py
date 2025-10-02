@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Interests Management",
-    "version": "18.0.1.4.0",
+    "version": "19.0.1.0.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "Calculate interests for selected partners",
@@ -30,10 +30,10 @@
         "account",
     ],
     "data": [
-        "views/res_company_views.xml",
+        "views/res_company_interest_views.xml",
         "data/ir_cron_data.xml",
         "security/ir.model.access.csv",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
 }

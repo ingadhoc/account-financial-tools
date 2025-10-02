@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_res_company_interest_list" model="ir.ui.view">
+        <field name="name">res.company.interest.list</field>
+        <field name="model">res.company.interest</field>
+        <field name="arch" type="xml">
+            <list string="Interest Configuration">
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="receivable_account_ids" widget="many2many_tags"/>
+                <field name="interest_product_id"/>
+                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                <field name="rule_type"/>
+                <field name="interval"/>
+                <field name="next_date"/>
+                <field name="automatic_validation"/>
+                <field name="rate"/>
+                <field name="past_due_rate"/>
+                <field name="late_payment_interest"/>
+                <field name="has_domain"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_res_company_interest_form" model="ir.ui.view">
+        <field name="name">res.company.interest.form</field>
+        <field name="model">res.company.interest</field>
+        <field name="arch" type="xml">
+            <form string="Interest Configuration">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="receivable_account_ids" widget="many2many_tags"/>
+                            <field name="interest_product_id"/>
+                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                        </group>
+                        <group>
+                            <field name="rule_type"/>
+                            <field name="interval"/>
+                            <field name="next_date"/>
+                            <field name="automatic_validation"/>
+                            <field name="rate"/>
+                            <field name="past_due_rate"/>
+                            <field name="late_payment_interest"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="domain" widget="domain" options="{'model': 'account.move.line', 'in_dialog': True, 'allow_expressions': True}"/>
+                        <field name="has_domain" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_res_company_interest_filter" model="ir.ui.view">
+        <field name="name">res.company.interest.select</field>
+        <field name="model">res.company.interest</field>
+        <field name="arch" type="xml">
+            <search string="Search Interest Configuration">
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="interest_product_id"/>
+                <filter string="Automatic Validation" name="automatic" domain="[('automatic_validation', '=', True)]"/>
+                <filter string="Manual Validation" name="manual" domain="[('automatic_validation', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_res_company_interest" model="ir.actions.act_window">
+        <field name="name">Interest Configuration</field>
+        <field name="res_model">res.company.interest</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_res_company_interest_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define interest configuration for overdue payments
+            </p>
+            <p>
+                Configure automatic interest calculation for each company based on
+                overdue receivables. Specify interest rates, recurrence intervals,
+                and additional filters to customize the interest calculation process.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem
+        id="menu_res_company_interest"
+        name="Interest Configuration"
+        parent="account.account_invoicing_menu"
+        action="action_res_company_interest"
+        groups="account.group_account_manager"
+        sequence="12"/>
+
+</odoo>

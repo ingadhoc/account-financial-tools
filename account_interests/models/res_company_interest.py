@@ -22,16 +22,15 @@ class ResCompanyInterest(models.Model):
         "Company",
         required=True,
         ondelete="cascade",
+        default=lambda self: self.env.company,
     )
     receivable_account_ids = fields.Many2many(
         "account.account",
         string="Cuentas a Cobrar",
         help="Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda",
         required=True,
-        domain=lambda self: [
-            ("account_type", "=", "asset_receivable"),
-            ("company_ids", "=", self._context.get("default_company_id") or self.env.company.id),
-        ],
+        check_company=True,
+        domain="[('account_type', '=', 'asset_receivable')]",
     )
     interest_product_id = fields.Many2one(
         "product.product",
@@ -42,13 +41,17 @@ class ResCompanyInterest(models.Model):
         "account.analytic.account",
         "Analytic account",
     )
-    rate = fields.Float("Interest", required=True, digits=(7, 4))
+    rate = fields.Float(
+        "First Due Interest Rate",
+        required=True,
+        digits=(7, 4),
+        help="Interest rate applied when debt becomes due for the first time. Must be specified in decimal values (e.g., 0.10 equals 10%). This rate only applies to the period between issuance date and first due date. The determined interest depends on recurrence; if monthly, the determined interest is monthly and is prorated daily based on how many days the document was overdue.",
+    )
     past_due_rate = fields.Float(
-        "Interest for Previous Period",
+        "Subsequent Due Interest Rate",
         digits=(7, 4),
         default=False,
-        help="If set, this rate will be used for overdue debts from previous periods. "
-        "If not set, the standard interest rate (rate) for the current period will be applied.",
+        help="Interest rate applied to balances already overdue for at least one period. Must be specified in decimal values (e.g., 0.10 equals 10%). Calculated for complete periods (e.g., 30 days if monthly), as the debt is considered to have been unpaid for that entire time since the first due date.",
     )
     automatic_validation = fields.Boolean(
         "Automatic Validation?",
@@ -81,70 +84,59 @@ class ResCompanyInterest(models.Model):
     )
 
     late_payment_interest = fields.Boolean(
-        "Late payment interest",
+        "Apply Late Payment Interest",
         default=False,
-        help="The interest calculation takes into account all late payments from the previous period. To obtain the daily rate, the interest is divided by the period. These days are considered depending on the type of period: 360 for annual, 30 for monthly and 7 for weekly.",
+        help="If enabled, interest will be charged when payment has been made after the due date, even if the debt is already settled. The interest rate applied will depend on the time elapsed since the due date. If payment occurs between the first due date and subsequent due date, the applicable interest will be the 'First Due Interest Rate' for the number of days between payment and first due date, and will be added in the next interest run. If payment occurs after the second due date, the applicable interest will be 'Subsequent Due Interest Rate' for the number of days between payment and previous due date, and will be added in subsequent interest runs.",
     )
 
+    @api.onchange("company_id")
+    def _onchange_company_id(self):
+        """Clear receivable accounts when company changes to avoid keeping accounts from previous company"""
+        self.receivable_account_ids = self.receivable_account_ids.filtered(
+            lambda account: self.company_id in account.company_ids
+        )
+
     @api.model
-    def _cron_recurring_interests_invoices(self, batch_size=1):
-        # batch_size is the batch of companies to process
+    def _cron_recurring_interests_invoices(self):
         _logger.info("Running Interest Invoices Cron Job")
         current_date = fields.Date.today()
 
-        parameter_name = "account_interest.last_updated_record_id"
-        last_updated_param = self.env["ir.config_parameter"].sudo().search([("key", "=", parameter_name)], limit=1)
-        if not last_updated_param:
-            last_updated_param = self.env["ir.config_parameter"].sudo().create({"key": parameter_name, "value": "0"})
         # Obtiene los registros ordenados por id
         domain = [
-            ("id", ">", int(last_updated_param.value)),
             ("next_date", "<=", current_date),
             ("bypass_company_interest", "=", False),
         ]
-        records = self.with_context(prefetch_fields=False).search(domain, order="id asc", limit=batch_size + 1)
+        records = self.with_context(prefetch_fields=False).search(domain, order="id asc")
+        total_len = len(records)
+        self.env["ir.cron"]._commit_progress(remaining=total_len)
 
-        # Ya de esta forma se esta recorriendo por compañia
-        for rec in records[:batch_size]:
+        for rec in records:
             try:
                 rec.create_interest_invoices()
-                rec.env.cr.commit()
+                self.env["ir.cron"]._commit_progress(processed=1)
             except Exception as e:
                 _logger.error(
                     "Error creating interest invoices for company: %s, Error: %s", rec.company_id.name, str(e)
                 )
                 rec.env.cr.rollback()
                 rec.company_id.message_post(
-                    body=_("We couldn't run interest invoices cron job in the company: %s,  Error: %s")
+                    body=_("We couldn't run interest invoices cron job in the company: %s, Error: %s")
                     % (rec.company_id.name, str(e))
                 )
                 rec.bypass_company_interest = True
                 rec.env.cr.commit()  # pragma pylint: disable=invalid-commit
 
-        if len(records) >= batch_size:
-            last_updated_id = records[batch_size - 1].id
-        else:
-            last_updated_id = 0
-            avoid_companies = self.with_context(prefetch_fields=False).search(
-                [("next_date", "<=", current_date), ("bypass_company_interest", "=", True)]
+        avoid_companies = self.with_context(prefetch_fields=False).search(
+            [("next_date", "<=", current_date), ("bypass_company_interest", "=", True)]
+        )
+        if avoid_companies:
+            company_names = ", ".join(avoid_companies.mapped("company_id.name"))
+            error_message = (
+                _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
             )
-            if avoid_companies:
-                company_names = ", ".join(avoid_companies.mapped("company_id.name"))
-                error_message = (
-                    _("We couldn't run interest invoices cron job in the following companies: %s.") % company_names
-                )
-                avoid_companies.bypass_company_interest = False
-                self.env.cr.commit()  # pragma pylint: disable=invalid-commit
-                raise UserError(error_message)
-
-        self.env["ir.config_parameter"].sudo().set_param(parameter_name, str(last_updated_id))
-        self.env.cr.commit()  # pragma pylint: disable=invalid-commit
-
-        if last_updated_id:
-            cron = self.env["ir.cron"].browse(self.env.context.get("job_id")) or self.env.ref(
-                "account_interests.cron_recurring_interests_invoices"
-            )
-            cron._trigger()
+            avoid_companies.bypass_company_interest = False
+            self.env.cr.commit()  # pragma pylint: disable=invalid-commit
+            raise UserError(error_message)
 
     def _calculate_date_deltas(self, rule_type, interval):
         """
@@ -363,7 +355,7 @@ class ResCompanyInterest(models.Model):
                     try:
                         move.action_post()
                     except Exception as e:
-                        _logger.error("Something went wrong creating " f"interests invoice: {e}")
+                        _logger.error(f"Something went wrong creating interests invoice: {e}")
             self._set_processed_partner_ids_for_company(self.company_id, [p.id for p in batch])
             self.env.cr.commit()  # pragma pylint: disable=invalid-commit
             batch_start += batch_size
