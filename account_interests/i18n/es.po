@@ -137,24 +137,12 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest__past_due_rate
-msgid ""
-"If set, this rate will be used for overdue debts from previous periods. If "
-"not set, the standard interest rate (rate) for the current period will be "
-"applied."
-msgstr ""
-"Si se establece, esta tasa se utilizará para deudas vencidas de períodos "
-"anteriores. Si no se establece, se aplicará la tasa de interés estándar "
-"(tasa) para el período actual."
-
-#. module: account_interests
 #: model_terms:ir.ui.view,arch_db:account_interests.view_automatic_interests_company_form
 msgid "Intereses Automáticos"
 msgstr ""
 
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company__interest_ids
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rate
 msgid "Interest"
 msgstr "Interés"
 
@@ -162,11 +150,6 @@ msgstr "Interés"
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interest_product_id
 msgid "Interest Product"
 msgstr "Producto de Interés"
-
-#. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__past_due_rate
-msgid "Interest for Previous Period"
-msgstr "Interés para el Período Anterior"
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__rule_type
@@ -184,11 +167,6 @@ msgstr "Última actualización realizada por"
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_date
 msgid "Last Updated on"
 msgstr "Última Actualización en"
-
-#. module: account_interests
-#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__late_payment_interest
-msgid "Late payment interest"
-msgstr "Interés por mora"
 
 #. module: account_interests
 #: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__monthly
@@ -216,19 +194,6 @@ msgid "Repeat every (Days/Week/Month/Year)"
 msgstr "Repetir cada (Día/Semana/Mes/Año)"
 
 #. module: account_interests
-#: model:ir.model.fields,help:account_interests.field_res_company_interest__late_payment_interest
-msgid ""
-"The interest calculation takes into account all late payments from the "
-"previous period. To obtain the daily rate, the interest is divided by the "
-"period. These days are considered depending on the type of period: 360 for "
-"annual, 30 for monthly and 7 for weekly."
-msgstr ""
-"El cálculo de intereses tiene en cuenta todos los pagos atrasados del "
-"período anterior. Para obtener la tasa diaria, el interés se divide por el "
-"período. Estos días se consideran según el tipo de período: 360 para anual, "
-"30 para mensual y 7 para semanal."
-
-#. module: account_interests
 #. odoo-python
 #: code:addons/account_interests/models/res_company_interest.py:0
 msgid ""
@@ -253,3 +218,33 @@ msgstr "Semana(s)"
 #: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__yearly
 msgid "Year(s)"
 msgstr "Año(s)"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rate
+msgid "First Due Interest Rate"
+msgstr "Interés al primer vencimiento"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__past_due_rate
+msgid "Subsequent Due Interest Rate"
+msgstr "Interés al vencimiento subsiguiente"
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__late_payment_interest
+msgid "Apply Late Payment Interest"
+msgstr "Aplicar interés por pago tardío"
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__rate
+msgid "Interest rate applied when debt becomes due for the first time. Must be specified in decimal values (e.g., 0.10 equals 10%). This rate only applies to the period between issuance date and first due date. The determined interest depends on recurrence; if monthly, the determined interest is monthly and is prorated daily based on how many days the document was overdue."
+msgstr "Interés que se aplica cuando la deuda vence por primera vez. Se debe determinar con valores decimales (ej. 0,10 equivale a 10%). Corresponde únicamente al período entre la fecha de emisión y el primer vencimiento. El interés determinado depende de la recurrencia, si es mensual, el interés determinado es mensual y se prorratea diariamente en función de cuántos días estuvo vencido el comprobante."
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__past_due_rate
+msgid "Interest rate applied to balances already overdue for at least one period. Must be specified in decimal values (e.g., 0.10 equals 10%). Calculated for complete periods (e.g., 30 days if monthly), as the debt is considered to have been unpaid for that entire time since the first due date."
+msgstr "Interés que se aplica a saldos ya vencidos al menos un período. Se debe determinar con valores decimales (ej. 0,10 equivale a 10%). Se calcula por períodos completos (ej. 30 días si es mensual), ya que se considera que la deuda estuvo todo ese tiempo impaga desde el primer vencimiento."
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__late_payment_interest
+msgid "If enabled, interest will be charged when payment has been made after the due date, even if the debt is already settled. The interest rate applied will depend on the time elapsed since the due date. If payment occurs between the first due date and subsequent due date, the applicable interest will be the 'First Due Interest Rate' for the number of days between payment and first due date, and will be added in the next interest run. If payment occurs after the second due date, the applicable interest will be 'Subsequent Due Interest Rate' for the number of days between payment and previous due date, and will be added in subsequent interest runs."
+msgstr "Si está activado, se cobrará interés cuando el pago se haya realizado después del vencimiento, aunque la deuda ya esté saldada. El tipo de interés aplicado dependerá del tiempo transcurrido desde el vencimiento. Si el pago ocurre entre el primer vencimiento y el vencimiento subsiguiente, el interés aplicable será el 'Interés al primer vencimiento' por la cantidad de días entre el pago y el primer vencimiento, y se sumará en la próxima corrida de intereses. Si el pago ocurre luego del segundo vencimiento, el interés aplicable será 'Interés al vencimiento subsiguiente' por la cantidad de días entre el pago y la fecha de vencimiento anterior, y se sumará en la corrida de intereses subsiguientes."
