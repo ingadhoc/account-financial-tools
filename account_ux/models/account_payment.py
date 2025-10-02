@@ -28,5 +28,5 @@ class AccountPayment(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _check_payment_state(self):
-        if not self._context.get("force_delete") and any(m.state not in ("draft", "canceled") for m in self):
+        if not self.env.context.get("force_delete") and any(m.state not in ("draft", "canceled") for m in self):
             raise UserError(_("You cannot delete this payment, you should set it back to draft first."))

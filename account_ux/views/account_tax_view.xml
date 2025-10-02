@@ -9,8 +9,8 @@
             <field name="description" position="attributes">
                 <attribute name="invisible">True</attribute>
             </field>
-            <field name="name_searchable" position="attributes">
-                <attribute name="filter_domain">['|', ('name_searchable', 'ilike', self), ('description', 'ilike', self)]</attribute>
+            <field name="name" position="attributes">
+                <attribute name="filter_domain">['|', ('name', 'ilike', self), ('description', 'ilike', self)]</attribute>
             </field>
         </field>
     </record>
