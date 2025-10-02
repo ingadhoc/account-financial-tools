@@ -29,7 +29,7 @@
             </field>
 
             <!-- odoo la hace visible o no segun una clave de contexto view_no_maturity, nosotros la queremos siempre visible (pero con opcional) -->
-            <xpath expr="//field[@name='line_ids']//field[@name='date_maturity']" position="attributes">
+            <xpath expr="//field[@name='journal_line_ids']//field[@name='date_maturity']" position="attributes">
                 <attribute name="column_invisible"/>
                 <attribute name="optional">hide</attribute>
             </xpath>

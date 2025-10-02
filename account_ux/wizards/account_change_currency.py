@@ -11,7 +11,7 @@ class AccountChangeCurrency(models.TransientModel):
 
     @api.model
     def get_move(self):
-        move = self.env["account.move"].browse(self._context.get("active_id", False))
+        move = self.env["account.move"].browse(self.env.context.get("active_id", False))
         return move
 
     currency_from_id = fields.Many2one(

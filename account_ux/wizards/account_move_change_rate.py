@@ -12,7 +12,7 @@ class AccountMoveChangeRate(models.TransientModel):
 
     @api.model
     def get_move(self):
-        move = self.env["account.move"].browse(self._context.get("active_id", False))
+        move = self.env["account.move"].browse(self.env.context.get("active_id", False))
         return move
 
     currency_rate = fields.Float(required=True, digits=(16, 6), help="Select a rate to apply on the invoice")
