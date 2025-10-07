@@ -18,7 +18,7 @@ class AccountPayment(models.Model):
         for payment in self:
             if (
                 not self.env.context.get("skip_payment_state_computation")
-                and payment.journal_id.type in ("bank", "cash")
+                and payment.journal_id.type in ("bank", "cash", "credit")
                 and payment.state == "in_process"
                 and payment.outstanding_account_id
                 and len(payment.move_id.line_ids._reconciled_lines()) > 1
