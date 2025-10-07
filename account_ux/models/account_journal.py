@@ -54,3 +54,13 @@ class AccountJournal(models.Model):
         super()._compute_payment_sequence()
         for journal in self:
             journal.payment_sequence = False
+
+    @api.model
+    def _fill_missing_values(self, vals, protected_codes=False):
+        journal_type = vals.get("type")
+        company = self.env["res.company"].browse(vals["company_id"]) if vals.get("company_id") else self.env.company
+        if journal_type == "credit":
+            if not vals.get("default_account_id"):
+                default_account_id = self._create_default_account(company, journal_type, vals)
+                vals["default_account_id"] = default_account_id
+        super()._fill_missing_values(vals, protected_codes=protected_codes)
