@@ -28,7 +28,7 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='main_group']/group[@name='group1']/field[@name='payment_type']" position="before">
                 <label for="is_internal_transfer" invisible="not is_internal_transfer"/>
-                <div>
+                <div invisible="not is_internal_transfer">
                     <field name="is_internal_transfer" readonly="state != 'draft'" invisible="1"  on_change="1"/>
                     <span invisible="paired_internal_transfer_payment_id or not is_internal_transfer or state != 'draft'"
                           class="fst-italic">
