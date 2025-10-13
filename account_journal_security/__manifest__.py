@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Journal Security",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "Restrict the use of certain journals to certain users",
@@ -36,7 +36,7 @@
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "auto_install": False,
     "application": False,
 }
