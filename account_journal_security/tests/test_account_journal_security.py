@@ -7,14 +7,15 @@ class TestAccountJournalSecurity(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.today = fields.Date.today()
-        self.first_company = self.env["res.company"].search([], limit=1)
-        self.company_bank_journal = self.env["account.journal"].search(
-            [("company_id", "=", self.first_company.id), ("type", "=", "bank")], limit=1
-        )
+        self.company_bank_journal = self.env["account.journal"].search([("type", "=", "bank")], limit=1)
+        self.first_company = self.company_bank_journal.company_id
 
-        self.user_admin = self.env.ref("base.default_user")
+        self.user_admin = self.env.ref("base.user_admin")
         self.user_admin.write({"company_ids": [(4, self.first_company.id)]})
         self.user_demo = self.env.ref("base.user_demo")
+
+        account_user_group = self.env.ref("account.group_account_user")
+        self.user_demo.write({"group_ids": [(6, 0, [account_user_group.id])]})
 
     def test_journal_security_1(self):
         self.company_bank_journal.write(

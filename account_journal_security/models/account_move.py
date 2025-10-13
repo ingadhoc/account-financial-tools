@@ -9,5 +9,5 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     journal_id = fields.Many2one(
-        auto_join=True,
+        bypass_search_access=True,
     )

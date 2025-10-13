@@ -4,6 +4,7 @@
 ##############################################################################
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import SQL
 
 
 class AccountJournal(models.Model):
@@ -103,7 +104,7 @@ class AccountJournal(models.Model):
         self.env.registry.clear_cache()
 
     @api.model
-    def _search(self, domain, offset=0, limit=None, order=None):
+    def _search(self, domain, offset=0, limit=None, order=None, **kwargs):
         """
         Para que usuarios los usuarios no puedan elegir diarios donde no puedan
         escribir, modificamos la funcion search. No lo hacemos por regla de
@@ -114,16 +115,45 @@ class AccountJournal(models.Model):
         # Agregamos el with_user ya que por alguna razon llega con sudo y nos da un falso positivo indicando
         # que el usuario es super usuario. De esta forma nos aseguramos verdaderamente si lo es.
         if not self.with_user(user.id).env.is_superuser():
-            domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", user.journal_ids.ids)]
-            journal_ids = user.journal_ids.ids + user.modification_journal_ids.ids
+            self.env.cr.execute(
+                """
+                SELECT journal_id
+                FROM journal_security_journal_users
+                WHERE user_id = %s
+            """,
+                (user.id,),
+            )
+            user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+
+            domain += ["|", ("user_ids", "=", False), ("id", "in", user_journal_ids)]
+
+            self.env.cr.execute(
+                """
+                SELECT journal_id
+                FROM journal_security_journal_modification_users
+                WHERE user_id != %s
+            """,
+                (user.id,),
+            )
+            modification_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+            self.env.cr.execute(
+                """
+                SELECT journal_id
+                FROM journal_security_journal_users
+                WHERE user_id != %s
+            """,
+                (user.id,),
+            )
+            restric_user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+            journal_ids = restric_user_journal_ids + modification_journal_ids
             if limit == 1 and journal_ids:
                 # Agregamos el domain de los journals donde el usuario tiene permisos
                 domain += [
                     "|",
                     ("user_ids", "=", False),
-                    ("id", "in", journal_ids),
+                    ("id", "not in", journal_ids),
                 ]
-        return super()._search(domain, offset, limit, order)
+        return super()._search(domain, offset, limit, order, **kwargs)
 
     @api.onchange("journal_restriction")
     def unset_modification_user_ids(self):
@@ -142,3 +172,15 @@ class AccountJournal(models.Model):
             # "Ninguna", sino no se guardan los cambios.
             self.user_ids = None
             self.modification_user_ids = None
+
+    def _get_to_check_payment_query(self):
+        query, selects = super()._get_to_check_payment_query()
+        new_selects = []
+        for select in selects:
+            if select.code in ("company_id"):
+                new_selects.append(SQL.identifier(query.table, select.code))
+            elif select.code in ("currency_id AS currency"):
+                new_selects.append(SQL("%s AS currency" % SQL.identifier(query.table, "currency_id").code))
+            else:
+                new_selects.append(select)
+        return query, new_selects
