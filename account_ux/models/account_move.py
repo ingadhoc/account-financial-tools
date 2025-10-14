@@ -159,3 +159,22 @@ class AccountMove(models.Model):
             record.inverse_invoice_currency_rate = (
                 1 / record.invoice_currency_rate if record.invoice_currency_rate else 1.0
             )
+
+    @api.constrains("state")
+    def _check_company_on_lines(self):
+        for move in self.filtered(lambda x: x.state == "posted"):
+            move_company = move.company_id
+            parent_company = move_company.parent_id
+
+            for line in move.line_ids:
+                # Si la cuenta pertenece a la compañía del move o a su padre, está ok
+                if move_company.id not in line.account_id.company_ids.ids and (
+                    not parent_company or parent_company.id not in line.account_id.company_ids.ids
+                ):
+                    raise UserError(
+                        _(
+                            "There is at least one account in the journal entry (id: %s) that belongs to a company "
+                            "different from the move’s company or its parent company."
+                        )
+                        % move.id
+                    )
