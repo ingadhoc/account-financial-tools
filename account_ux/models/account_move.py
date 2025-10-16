@@ -18,7 +18,49 @@ class AccountMove(models.Model):
         return pdf_base64, __
 
     def delete_number(self):
+<<<<<<< 4427c94b646a2b9398944177f71cd703e89df597
         self.filtered(lambda x: x.state == "cancel").write({"name": "/"})
+||||||| ffb1f90f8d6495bbc70cf59b5594b2479183d7d7
+        self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
+
+    def _post(self, soft=True):
+        move_lines = self.mapped('line_ids').filtered(
+            lambda x: x.account_id.analytic_distribution_required and not x.analytic_distribution)
+        if move_lines:
+            raise UserError(_(
+                "Some move lines don't have analytic account and "
+                "analytic account is required by theese accounts.\n"
+                "* Accounts: %s\n"
+                "* Move lines ids: %s" % (
+                    ", ".join(move_lines.mapped('account_id.name')),
+                    move_lines.ids
+                )
+            ))
+        res = super(AccountMove, self)._post(soft=soft)
+        return res
+=======
+        self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
+
+    def _post(self, soft=True):
+        for move in self.filtered(lambda x: x.is_invoice()):
+            if move.line_ids.mapped('tax_line_id')  - move.invoice_line_ids.mapped('tax_ids'):
+                raise UserError(_("Some tax lines are not linked to any invoice line."))
+
+        move_lines = self.mapped('line_ids').filtered(
+            lambda x: x.account_id.analytic_distribution_required and not x.analytic_distribution)
+        if move_lines:
+            raise UserError(_(
+                "Some move lines don't have analytic account and "
+                "analytic account is required by theese accounts.\n"
+                "* Accounts: %s\n"
+                "* Move lines ids: %s" % (
+                    ", ".join(move_lines.mapped('account_id.name')),
+                    move_lines.ids
+                )
+            ))
+        res = super(AccountMove, self)._post(soft=soft)
+        return res
+>>>>>>> bc86b3599f422341c010042cde0e2c78df23e423
 
     def action_post(self):
         """After validate invoice will sent an email to the partner if the related journal has mail_template_id set"""
