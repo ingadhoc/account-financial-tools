@@ -31,6 +31,10 @@ class AccountMove(models.Model):
         self.filtered(lambda x: x.state == 'cancel').write({'name': '/'})
 
     def _post(self, soft=True):
+        for move in self.filtered(lambda x: x.is_invoice()):
+            if move.line_ids.mapped('tax_line_id')  - move.invoice_line_ids.mapped('tax_ids'):
+                raise UserError(_("Some tax lines are not linked to any invoice line."))
+
         move_lines = self.mapped('line_ids').filtered(
             lambda x: x.account_id.analytic_distribution_required and not x.analytic_distribution)
         if move_lines:
