@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountPayment(models.Model):
@@ -85,6 +85,12 @@ class AccountPayment(models.Model):
         with opposite payment_type and swapped journal_id & destination_journal_id.
         Both payments liquidity transfer lines are then reconciled.
         """
+        if self.filtered(lambda x: x.move_id.state == "draft"):
+            raise UserError(
+                _(
+                    "We couldn't create the paired payment because the journal entry of the original payment is in draft state."
+                )
+            )
         for payment in self:
             paired_payment_type = "inbound" if payment.payment_type == "outbound" else "outbound"
             paired_payment = payment.copy(
