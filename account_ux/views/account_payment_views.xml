@@ -1,17 +1,6 @@
 <odoo>
 
-    <!-- view for payments from payment group, we need edit = true and create = true, we also clean some fields, we could also make and inherited view -->
-    <record id="view_account_payment_tree" model="ir.ui.view">
-        <field name="name">account.payment.list</field>
-        <field name="model">account.payment</field>
-        <field name="inherit_id" ref="account.view_account_payment_tree"/>
-        <field name="arch" type="xml">
-            <field name="payment_method_line_id" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
-        </field>
-    </record>
-    <record model="ir.ui.view" id="view_account_payment_tree_personalization">
+     <record model="ir.ui.view" id="view_account_payment_tree_personalization">
         <field name="name">account.payment.tree.personalization</field>
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_tree"/>
