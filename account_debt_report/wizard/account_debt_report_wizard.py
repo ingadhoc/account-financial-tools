@@ -38,7 +38,7 @@ class AccountDebtReportWizard(models.TransientModel):
     secondary_currency = fields.Boolean(help="Add columns for secondary currency?")
 
     def confirm(self):
-        active_ids = self._context.get("active_ids", False)
+        active_ids = self.env.context.get("active_ids", False)
         if not active_ids:
             return True
         partners = self.env["res.partner"].browse(active_ids)
@@ -69,8 +69,8 @@ class AccountDebtReportWizard(models.TransientModel):
         )
 
     def send_by_email(self):
-        active_ids = self._context.get("active_ids", [])
-        active_id = self._context.get("active_id", False)
+        active_ids = self.env.context.get("active_ids", [])
+        active_id = self.env.context.get("active_id", False)
         context = {
             # report keys
             "company_currency": self.company_currency,
