@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account Debt Report",
-    "version": "18.0.2.0.0",
+    "version": "19.0.1.0.0",
     "category": "Account Reporting",
     "author": "ADHOC SA",
     "website": "www.adhoc.com.ar",
@@ -37,5 +37,5 @@
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
 }

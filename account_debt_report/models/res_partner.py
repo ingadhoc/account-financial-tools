@@ -57,14 +57,14 @@ class ResPartner(models.Model):
 
         self.ensure_one()
 
-        result_selection = self._context.get("result_selection", False)
-        from_date = self._context.get("from_date", False)
-        to_date = self._context.get("to_date", False)
-        historical_full = self._context.get("historical_full", False)
-        company_id = self._context.get("company_id", False)
-        show_invoice_detail = self._context.get("show_invoice_detail", False)
-        secondary_currency = self._context.get("secondary_currency")
-        only_currency_lines = not self._context.get("company_currency") and secondary_currency
+        result_selection = self.env.context.get("result_selection", False)
+        from_date = self.env.context.get("from_date", False)
+        to_date = self.env.context.get("to_date", False)
+        historical_full = self.env.context.get("historical_full", False)
+        company_id = self.env.context.get("company_id", False)
+        show_invoice_detail = self.env.context.get("show_invoice_detail", False)
+        secondary_currency = self.env.context.get("secondary_currency")
+        only_currency_lines = not self.env.context.get("company_currency") and secondary_currency
         balance_in_currency = 0.0
         balance_currency = 0.0
         balance_in_currency_name = ""
