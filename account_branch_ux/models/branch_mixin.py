@@ -2,8 +2,8 @@ from odoo import api, fields, models
 
 
 class BranchMixin(models.AbstractModel):
-    _name = 'branch.mixin'
-    _description = 'Branch Mixin'
+    _name = "branch.mixin"
+    _description = "Branch Mixin"
 
     branch_company_id = fields.Many2one(
         "res.company",

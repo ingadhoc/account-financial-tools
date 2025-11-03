@@ -1,9 +1,12 @@
 from odoo import _, api, fields, models
+from odoo.addons.account_branch_ux import check_company_domain_child_of
 from odoo.exceptions import UserError, ValidationError
 
 
 class AccountPayment(models.Model):
-    _inherit = "account.payment"
+    _name = "account.payment"
+    _inherit = ["account.payment", "branch.mixin"]
+    _check_company_domain = check_company_domain_child_of
 
     is_internal_transfer = fields.Boolean(
         string="Internal Transfer",
@@ -13,20 +16,9 @@ class AccountPayment(models.Model):
     destination_journal_id = fields.Many2one(
         comodel_name="account.journal",
         string="Destination Journal",
-        domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id),('company_id', 'child_of', main_company_id)]",
-        check_company=False,
-    )
-    main_company_id = fields.Many2one(
-        "res.company",
-        compute="_compute_main_company",
+        domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id),'|', ('company_id', '=', False), ('company_id', 'child_of', main_company_id)]",
     )
     available_partner_bank_ids = fields.Many2many(compute_sudo=True)
-
-    @api.depends("company_id")
-    def _compute_main_company(self):
-        for rec in self:
-            rec.main_company_id = rec.company_id.parent_id or rec.company_id
-
     # TO DO: Check in v19+ if odoo delete the paired_internal_transfer_payment_id field, restore the field in this module
     # paired_internal_transfer_payment_id = fields.Many2one('account.payment',
     #     index='btree_not_null',

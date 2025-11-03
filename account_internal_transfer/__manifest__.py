@@ -28,7 +28,7 @@
     "license": "AGPL-3",
     "images": [],
     "depends": [
-        "account",
+        "account_branch_ux",
     ],
     "data": [
         "views/account_payment_views.xml",
