@@ -48,7 +48,7 @@ class AccountMove(models.Model):
                         body="<br/><br/>".join(
                             [
                                 "<b>" + title + "</b>",
-                                _("Please check the email template associated with" " the invoice journal."),
+                                _("Please check the email template associated with the invoice journal."),
                                 "<code>" + str(error) + "</code>",
                             ]
                         ),
@@ -73,7 +73,7 @@ class AccountMove(models.Model):
         res._onchange_partner_commercial()
         return res
 
-    # Sobrescribe el método de odoo en el PR https://github.com/odoo/odoo/pull/170066/files
+    # Sobrescribe el método de odoo en el PR https://github.com/odoo/odoo/pull/234605
     def get_amount_diff_foreign_currencies(self, line, move):
         def get_accounting_rate(company_currency, amount, amount_currency, currency):
             if company_currency.is_zero(amount) or currency.is_zero(amount_currency):
@@ -91,8 +91,7 @@ class AccountMove(models.Model):
         return amount
 
     ### Comentamos este método debido a que el campo invoice_outstanding_credits_debits_widget no se estaba seteando correctamente en super
-    ### Como FIX agregamos este PR a Odoo: https://github.com/odoo/odoo/pull/184611
-
+    ### Como FIX agregamos este PR a Odoo: https://github.com/odoo/odoo/pull/234605
     # def _compute_payments_widget_to_reconcile_info(self):
     #     """
     #     Modificamos el widget para que si la compañía tiene el setting de forzar concilacion en moneda y estamos
