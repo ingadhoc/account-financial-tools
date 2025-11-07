@@ -3,16 +3,15 @@
 # 	* account_debt_report
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025
-# Gonzalo, 2025
+# ADHOC - Bot <transbot@adhoc.com.ar>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-17 20:14+0000\n"
-"PO-Revision-Date: 2024-11-29 15:21+0000\n"
-"Last-Translator: Gonzalo, 2025\n"
+"POT-Creation-Date: 2025-11-06 12:01+0000\n"
+"PO-Revision-Date: 2025-11-06 12:01+0000\n"
+"Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,23 +40,6 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
-"<div style=\"margin: 0px; padding: 0px;\">\n"
-"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"       Estimado/a\n"
-"       <t t-if=\"object.parent_id\">\n"
-"           <t t-out=\"object.name or ''\"></t>\n"
-"           (<t t-out=\"object.parent_id.name or ''\"></t>),\n"
-"       </t>\n"
-"       <t t-else=\"\">\n"
-"           <t t-out=\"object.name or ''\"></t>,\n"
-"       </t>\n"
-"       <br /><br />\n"
-"       Aquí tiene su detalle de deuda de <t t-out=\"object.company_id.name or ''\"></t>\n"
-"       <br/><br/>\n"
-"       No dude en contactarnos si tiene alguna pregunta.\n"
-"    </p>\n"
-"</div>\n"
-"        "
 
 #. module: account_debt_report
 #: model:ir.actions.report,name:account_debt_report.account_debt_report
@@ -124,17 +106,17 @@ msgstr "Creado el"
 #. odoo-python
 #: code:addons/account_debt_report/wizard/account_debt_report_wizard.py:0
 msgid "Debe seleccionar por lo menos una moneda para el informe"
-msgstr "Debe seleccionar por lo menos una moneda para el informe"
+msgstr ""
 
 #. module: account_debt_report
 #: model:mail.template,name:account_debt_report.email_template_debt_detail
 msgid "Debt Detail Mail"
-msgstr "Correo de detalle de deuda"
+msgstr ""
 
 #. module: account_debt_report
 #: model:mail.template,subject:account_debt_report.email_template_debt_detail
 msgid "Debt Detail {{ object.company_id.name }}"
-msgstr "Detalle de Deuda {{ object.company_id.name }}"
+msgstr ""
 
 #. module: account_debt_report
 #: model:ir.actions.act_window,name:account_debt_report.action_account_debt_report_wizard
@@ -145,15 +127,16 @@ msgstr "Detalle de Deuda"
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
 msgid "Detallar desde"
-msgstr "Detallar desde"
+msgstr ""
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
 msgid "Detallar hasta"
-msgstr "Detallar hasta"
+msgstr ""
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__display_name
+#: model:ir.model.fields,field_description:account_debt_report.field_res_partner__display_name
 msgid "Display Name"
 msgstr "Nombre a Mostrar"
 
@@ -169,8 +152,9 @@ msgstr "Histórico"
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__id
+#: model:ir.model.fields,field_description:account_debt_report.field_res_partner__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: account_debt_report
 #. odoo-python
