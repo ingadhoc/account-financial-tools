@@ -3,15 +3,15 @@
 # 	* account_payment_term_surcharge
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024
+# ADHOC - Bot <transbot@adhoc.com.ar>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 14:24+0000\n"
-"PO-Revision-Date: 2024-12-13 13:14+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2024\n"
+"POT-Creation-Date: 2025-11-07 18:20+0000\n"
+"PO-Revision-Date: 2025-11-07 18:20+0000\n"
+"Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -100,9 +100,13 @@ msgid ""
 msgstr ""
 
 #. module: account_payment_term_surcharge
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term__display_name
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term_surcharge__display_name
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_config_settings__display_name
 msgid "Display Name"
-msgstr "Nombre mostrado"
+msgstr "Nombre para mostrar"
 
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.view_payment_term_line_surcharge_form
@@ -128,7 +132,11 @@ msgstr ""
 "condiciones de pago."
 
 #. module: account_payment_term_surcharge
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_move__id
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term__id
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term_surcharge__id
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_company__id
+#: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
