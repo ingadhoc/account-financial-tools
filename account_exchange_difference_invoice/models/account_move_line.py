@@ -1,5 +1,4 @@
 from odoo import fields, models
-from odoo.osv import expression
 
 
 class AccountMoveLine(models.Model):
@@ -61,21 +60,24 @@ class AccountMoveLine(models.Model):
             ("move_id.exchange_reversed_move_ids", "=", False),
         ]
 
-        exchange_domain = [
-            "|",
-            "|",
-            "&",
-            ("move_id.reversal_move_ids", "!=", False),
-            ("move_id.exchange_reversal_id", "!=", False),
-            "&",
-            ("move_id.reversal_move_ids", "=", False),
-            ("move_id.reversed_entry_id.exchange_reversal_id", "!=", False),
-            "&",
-            ("move_id.reversal_move_ids", "=", False),
-            ("move_id.reversed_entry_id", "=", False),
-        ]
+        # por ahora estamos borrando las reversiones puras de asientos de dif de cambio (Ver account.partial.reconcile)
+        # con ese cambio nos evitamos tener que hacer este filtro complejo
+        # exchange_domain = [
+        #     "|",
+        #     "|",
+        #     "&",
+        #     ("move_id.reversal_move_ids", "!=", False),
+        #     ("move_id.exchange_reversal_id", "!=", False),
+        #     "&",
+        #     ("move_id.reversal_move_ids", "=", False),
+        #     ("move_id.reversed_entry_id.exchange_reversal_id", "!=", False),
+        #     "&",
+        #     ("move_id.reversal_move_ids", "=", False),
+        #     ("move_id.reversed_entry_id", "=", False),
+        # ]
+        # return expression.AND([common_domain, exchange_domain])
 
-        return expression.AND([common_domain, exchange_domain])
+        return common_domain
 
     def action_exchange_difference(self):
         return {
