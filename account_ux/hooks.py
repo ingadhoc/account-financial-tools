@@ -1,0 +1,11 @@
+from odoo.addons.account.models.account_payment import AccountPayment
+
+
+def _revert_method(cls, name):
+    """Revertir el método original llamado 'name'"""
+    method = getattr(cls, name)
+    setattr(cls, name, method.origin)
+
+
+def uninstall_hook(cr, registry):
+    _revert_method(AccountPayment, "_compute_available_journal_ids")

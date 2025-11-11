@@ -30,3 +30,12 @@ class AccountPayment(models.Model):
     def _check_payment_state(self):
         if not self.env.context.get("force_delete") and any(m.state not in ("draft", "canceled") for m in self):
             raise UserError(_("You cannot delete this payment, you should set it back to draft first."))
+
+    def _compute_available_journal_ids(self):
+        super()._compute_available_journal_ids()
+        for pay in self:
+            if not pay.available_journal_ids:
+                raise UserError(
+                    _("No journals available for company %s and payment type %s.")
+                    % (pay.company_id.name, dict(pay._fields["payment_type"].selection).get(pay.payment_type))
+                )

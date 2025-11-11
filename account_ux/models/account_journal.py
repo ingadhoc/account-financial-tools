@@ -2,8 +2,10 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import ValidationError
+from odoo.fields import Domain
+from odoo.tools.misc import unquote
 
 
 class AccountJournal(models.Model):
@@ -16,6 +18,38 @@ class AccountJournal(models.Model):
         help="If set an email will be sent to the customer after the invoices"
         " related to this journal has been validated.",
     )
+    shared_to_branches = fields.Boolean(compute="_compute_shared_to_branches", store=True, readonly=False)
+
+    @api.onchange("shared_to_branches")
+    def _onchange_shared_to_branches(self):
+        if self.type == "sale" and self.shared_to_branches:
+            return {
+                "warning": {
+                    "title": _("Warning!"),
+                    "message": _("No se recomiendan compartir a sucursales los diarios de tipo 'Venta'."),
+                }
+            }
+
+    @api.depends("type")
+    def _compute_shared_to_branches(self):
+        shared = self.filtered(lambda j: j.type in ["general", "purchase"])
+        shared.shared_to_branches = True
+        (self - shared).shared_to_branches = False
+
+        # In case of test environment, share all journals to branches
+        if tools.config["test_enable"]:
+            self.shared_to_branches = True
+
+    def _check_company_domain(self, companies) -> Domain:
+        """TODO"""
+        if isinstance(companies, unquote):
+            companies = unquote(f"{companies}")
+        else:
+            companies = models.to_record_ids(companies)
+        domain = Domain("company_id", "in", companies) | Domain(
+            [("company_id", "parent_of", companies), ("shared_to_branches", "=", True)]
+        )
+        return domain
 
     def write(self, vals):
         """We need to allow to change to False the value for restricted for hash for the journal when this value is setted."""
