@@ -9,7 +9,6 @@ class AccountPayment(models.Model):
         string="Internal Transfer",
         tracking=True,
     )
-
     destination_journal_id = fields.Many2one(
         comodel_name="account.journal",
         string="Destination Journal",
