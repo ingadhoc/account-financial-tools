@@ -32,18 +32,10 @@ class AccountMove(models.Model):
     def action_post(self):
         res = super().action_post()
         for move in self:
-            reversed_lines = move.exchange_reversed_move_ids.line_ids
-            if not reversed_lines:
+            reverse_moves = move.exchange_reversed_move_ids
+            if not reverse_moves:
                 continue
 
-            # probar usar directamente método "_reconcile_reversed_moves"?
-            if move.amount_residual > 0:
-                target_line = reversed_lines.filtered(lambda l: l.credit > 0)
-            elif move.amount_residual < 0:
-                target_line = reversed_lines.filtered(lambda l: l.debit > 0)
-            else:
-                continue
-
-            if target_line:
-                move.js_assign_outstanding_line(target_line.id)
+            reverse_moves.exchange_reversed_move_ids.write({"ref": move.name})
+            move._reconcile_reversed_moves(reverse_moves, move_reverse_cancel=False)
         return res
