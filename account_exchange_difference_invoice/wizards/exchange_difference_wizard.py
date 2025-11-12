@@ -129,8 +129,8 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
                 for payment in related_payments:
                     payment.message_post(
                         body=_(
-                            "This payment has been reconciled with the exchange difference note: %s",
-                            debit_credit_note._get_html_link(),
+                            "This payment has been reconciled with this %s",
+                            debit_credit_note._get_html_link(title="exchange difference note"),
                         )
                     )
 
