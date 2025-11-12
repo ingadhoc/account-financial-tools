@@ -167,8 +167,10 @@ class AccountMove(models.Model):
 
             for line in move.line_ids:
                 # Si la cuenta pertenece a la compañía del move o a su padre, está ok
-                if move_company.id not in line.account_id.company_ids.ids and (
-                    not parent_company or parent_company.id not in line.account_id.company_ids.ids
+                if (
+                    line.account_id
+                    and move_company.id not in line.account_id.company_ids.ids
+                    and (not parent_company or parent_company.id not in line.account_id.company_ids.ids)
                 ):
                     raise UserError(
                         _(
