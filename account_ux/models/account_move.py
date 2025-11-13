@@ -162,21 +162,7 @@ class AccountMove(models.Model):
 
     @api.constrains("state")
     def _check_company_on_lines(self):
-        for move in self.filtered(lambda x: x.state == "posted"):
-            move_company = move.company_id
-            parent_company = move_company.parent_id
+        """Odoo con check company no protege bien los "tax_ids" (m2m) ni el account_id porque se computa con sql para no tener dolores de cabeza hacemos check de
+        ​company al postear"""
 
-            for line in move.line_ids:
-                # Si la cuenta pertenece a la compañía del move o a su padre, está ok
-                if (
-                    line.account_id
-                    and move_company.id not in line.account_id.company_ids.ids
-                    and (not parent_company or parent_company.id not in line.account_id.company_ids.ids)
-                ):
-                    raise UserError(
-                        _(
-                            "There is at least one account in the journal entry (id: %s) that belongs to a company "
-                            "different from the move’s company or its parent company."
-                        )
-                        % move.id
-                    )
+        self.filtered(lambda x: x.state == "posted").mapped("line_ids")._check_company()
