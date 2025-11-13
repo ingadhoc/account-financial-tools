@@ -42,7 +42,6 @@
                             string="Convert to Debit/Credit Note"/>
                 </header>
                 <field name="date" readonly="1"/>
-                <!-- <field name="move_id" readonly="1"/> -->
                 <field name="move_name" string="Journal Entry" widget="open_move_widget" readonly="1"/>
                 <field name="ref" readonly="1"/>
                 <field name="exchange_info"/>

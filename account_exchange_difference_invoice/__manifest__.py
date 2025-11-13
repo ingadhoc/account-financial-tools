@@ -14,7 +14,7 @@
         "wizards/exchange_difference_wizard_views.xml",
         "views/res_config_settings.xml",
     ],
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "application": False,
     "demo": [
