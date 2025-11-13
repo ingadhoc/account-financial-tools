@@ -64,11 +64,15 @@ class ExchangeDifferenceWizard(models.TransientModel):
         return res
 
     def action_create_debit_credit_notes(self):
-        return (
-            self.line_ids._create_invoice_and_reconcile(self.journal_id)
-            .filtered(lambda x: x.move_type != "entry")
-            ._get_records_action(name="Debit/Credit Notes")
-        )
+        if any(line.balance != 0 for line in self.line_ids):
+            return (
+                self.line_ids._create_invoice_and_reconcile(self.journal_id)
+                .filtered(lambda x: x.move_type != "entry")
+                ._get_records_action(name="Debit/Credit Notes")
+            )
+
+        self.line_ids._create_invoice_and_reconcile(self.journal_id)
+        return
 
     def _validate_entries_to_process(self, move_lines):
         if not move_lines:
@@ -98,8 +102,22 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
                 rec._prepare_reversal(self.env.company.currency_exchange_journal_id, rec_account)
             )
             amls = self.env["account.move.line"].browse(self.env.context["move_line_ids"])
-            amls.mapped("move_id").write({"exchange_reversal_id": move.id})
+            exch_moves = (
+                self.env["account.move.line"]
+                .search(
+                    [
+                        ("move_id", "in", amls.move_id.ids),
+                        ("partner_id", "=", rec.partner_id.id),
+                    ]
+                )
+                .mapped("move_id")
+            )
+            exch_moves.write({"exchange_reversal_id": move.id})
+
             move.action_post()
+
+            if rec.balance == 0.0:
+                continue
 
             debit_credit_note = (
                 self.env["account.move"]
@@ -270,6 +288,12 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             ams = self.env["account.move.line"].browse(self.env.context["move_line_ids"])
             ams = ams.filtered(lambda m: m.partner_id == line.partner_id).mapped("move_id")
             if all(bool(m.reversed_entry_id) for m in ams):
-                line.show_warning = '<i class="fa fa-exclamation-triangle text-warning" title="All selected entries for this partner are reversals"></i>'
+                line.show_warning = _(
+                    '<i class="fa fa-exclamation-triangle text-warning" title="All selected entries for this partner are reversals"></i>'
+                )
+            elif line.balance == 0.0:
+                line.show_warning = _(
+                    '<i class="fa fa-exclamation-triangle text-warning" title="The balance for this partner is zero, so no debit/credit note will be created."></i>'
+                )
             else:
                 line.show_warning = ""
