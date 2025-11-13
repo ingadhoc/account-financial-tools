@@ -40,8 +40,13 @@ class AccountMoveLine(models.Model):
 
     def _compute_totals(self):
         exchange_invoices = self.filtered(lambda x: x.product_id == self.env.company.exchange_difference_product)
-        super(AccountMoveLine, exchange_invoices.with_context(force_price_include=True))._compute_totals()
-        super(AccountMoveLine, self - exchange_invoices)._compute_totals()
+        normal_lines = self - exchange_invoices
+
+        if exchange_invoices:
+            super(AccountMoveLine, exchange_invoices.with_context(force_price_include=True))._compute_totals()
+
+        if normal_lines:
+            super(AccountMoveLine, normal_lines)._compute_totals()
 
     def _get_exchange_difference_domain(self):
         """Lo que queremos mostrar es:

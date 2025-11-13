@@ -5,9 +5,9 @@ class AccountPartialReconcile(models.Model):
     _inherit = "account.partial.reconcile"
 
     def unlink(self):
-        """Borramos asientos de diferencia de cambio al desconcilar pagos para evitar tener demasiados asientos.
-        Solo lo hacemos si el easiento no fue factura.
-        Solo lo hacemos si tienen este feature activo en la compañia (campo exchange_difference_product definido)"""
+        """Borramos asientos de diferencia de cambio al desconciliar pagos para evitar tener demasiados asientos.
+        Solo lo hacemos si el asiento no fue factura.
+        Solo lo hacemos si tienen este feature activo en la compañía (campo exchange_difference_product definido)"""
         exchange_move = False
         if (
             self.exchange_move_id
