@@ -24,7 +24,9 @@ class ExchangeDifferenceWizard(models.TransientModel):
 
         if not self.env.company.exchange_difference_product:
             raise UserError(
-                "Para utilizar esta funcionalidad debe configurar un producto para las diferencias de cambio en la configuración de la compañía"
+                _(
+                    "To use this functionality, you must configure a product for exchange differences in the company settings."
+                )
             )
 
         if "move_line_ids" in self.env.context:
@@ -64,15 +66,14 @@ class ExchangeDifferenceWizard(models.TransientModel):
         return res
 
     def action_create_debit_credit_notes(self):
-        if any(line.balance != 0 for line in self.line_ids):
-            return (
-                self.line_ids._create_invoice_and_reconcile(self.journal_id)
-                .filtered(lambda x: x.move_type != "entry")
-                ._get_records_action(name="Debit/Credit Notes")
-            )
+        moves = self.line_ids._create_invoice_and_reconcile(self.journal_id)
 
-        self.line_ids._create_invoice_and_reconcile(self.journal_id)
-        return
+        # Solo va a la vista de notas de debito/credito si se generó alguna
+        if any(line.balance != 0 for line in self.line_ids):
+            return moves.filtered(lambda x: x.move_type != "entry")._get_records_action(name="Debit/Credit Notes")
+
+        # Sino recarga la vista de Exchange entries (como si hiciera clic en el menú)
+        return self.env.ref("account_exchange_difference_invoice.action_exchange_difference_server").read()[0]
 
     def _validate_entries_to_process(self, move_lines):
         if not move_lines:
@@ -96,22 +97,19 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
 
     def _create_invoice_and_reconcile(self, journal):
         all_moves = self.env["account.move"]
+
+        amls = self.env["account.move.line"].browse(self.env.context.get("move_line_ids", []))
+        partner_to_moves = {
+            partner_id: lines.mapped("move_id") for partner_id, lines in amls.grouped(lambda r: r.partner_id.id).items()
+        }
+
         for rec in self:
             rec_account = rec.with_company(rec.wizard_id.company_id)._get_receivable_account()
             move = self.env["account.move"].create(
                 rec._prepare_reversal(self.env.company.currency_exchange_journal_id, rec_account)
             )
-            amls = self.env["account.move.line"].browse(self.env.context["move_line_ids"])
-            exch_moves = (
-                self.env["account.move.line"]
-                .search(
-                    [
-                        ("move_id", "in", amls.move_id.ids),
-                        ("partner_id", "=", rec.partner_id.id),
-                    ]
-                )
-                .mapped("move_id")
-            )
+
+            exch_moves = partner_to_moves.get(rec.partner_id.id, self.env["account.move"])
             exch_moves.write({"exchange_reversal_id": move.id})
 
             move.action_post()
@@ -151,8 +149,6 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
                             debit_credit_note._get_html_link(title="exchange difference note"),
                         )
                     )
-
-                # Y un mensaje en la nota de débito/crédito con los pagos relacionados
 
                 body = _(
                     "This debit/credit note has been reconciled with the following payments:%s",
@@ -218,7 +214,9 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             # es muy raro que la cuenta por defecto este en una divisa pero de ser necesario podriamos agregar una cuenta contable
             if rec_account.currency_id:
                 raise UserError(
-                    "para poder usar el asistente el cliente no debe tener una cuenta a cobrar en moneda extranjera"
+                    _(
+                        "To use the exchange difference wizard, the partner's receivable account must not be set to a foreign currency."
+                    )
                 )
 
         return rec_account
@@ -284,9 +282,10 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
         return invoice_vals
 
     def _compute_show_warning(self):
+        move_line_ids = self.env.context.get("move_line_ids", [])
+        ams_all = self.env["account.move.line"].browse(move_line_ids)
         for line in self:
-            ams = self.env["account.move.line"].browse(self.env.context["move_line_ids"])
-            ams = ams.filtered(lambda m: m.partner_id == line.partner_id).mapped("move_id")
+            ams = ams_all.filtered(lambda m: m.partner_id == line.partner_id).mapped("move_id")
             if all(bool(m.reversed_entry_id) for m in ams):
                 line.show_warning = _(
                     '<i class="fa fa-exclamation-triangle text-warning" title="All selected entries for this partner are reversals"></i>'
