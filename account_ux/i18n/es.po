@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-14 02:03+0000\n"
+"POT-Creation-Date: 2025-11-17 21:43+0000\n"
 "PO-Revision-Date: 2025-10-08 18:38+0000\n"
 "Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
@@ -529,14 +529,6 @@ msgid ""
 msgstr ""
 "El importe residual en un apunte contable expresado en su moneda "
 "(probablemente diferente de la utilizada por la compañía)."
-
-#. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_move.py:0
-msgid ""
-"There is at least one account in the journal entry (id: %s) that belongs to "
-"a company different from the move’s company or its parent company."
-msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
