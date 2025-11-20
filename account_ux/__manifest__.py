@@ -40,6 +40,7 @@
         "wizards/account_move_change_rate_views.xml",
         "wizards/res_config_settings_views.xml",
         "views/account_account_views.xml",
+        "views/account_fiscal_position_views.xml",
         "views/account_journal_views.xml",
         "views/account_move_line_views.xml",
         "views/account_reconcile_views.xml",
