@@ -1,0 +1,639 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_ux
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-21 20:06+0000\n"
+"PO-Revision-Date: 2025-11-21 20:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid ""
+"\n"
+"Date\t\t\tInvoice Date\t\tInvoice\n"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid ""
+"<b>Error sending the invoice</b>: partner %s does not have an email address "
+"defined."
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
+msgid ""
+"<i>Please note that when this box is selected, you must ensure that the\n"
+"                            payments follow a different sequence format.</i>"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid ""
+"<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
+"                    <span> </span>"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "<span> = </span>"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "<span>1.00 </span>"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_account
+msgid "Account"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_chart_template
+msgid "Account Chart Template"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_group
+msgid "Account Group"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "Add an internal note..."
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
+msgid "Amount total"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
+msgid "Amount untaxed"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_average
+msgid "Average Price (CC)"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_average
+msgid "Average Price in the company's currency where it is set"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
+msgid "Cancel"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_change_currency
+#: model:ir.model,name:account_ux.model_account_change_currency
+msgid "Change Currency"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_move_change_rate
+msgid "Change Currency Rate"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "Change Currency and Rate"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
+msgid "Change Rate"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid ""
+"Como el comprobante no tiene fecha, la cotización mostrada podría no ser la "
+"que se aplique, ya que se actualizará al validar o asignar una fecha. Para "
+"fijar la cotización y/o editar la tasa, debe asignar una fecha al "
+"comprobante"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Company"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__user_id
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Contact Salesperson"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__conversion_rate
+msgid "Conversion Rate"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_date
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Credit Jouranl Entry"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_from_id
+msgid "Currency From"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_currency_rate
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__currency_rate
+msgid "Currency Rate"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_change_currency.py:0
+msgid "Currency changed from %s to %s with rate %s"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
+msgid "Currency from Invoice"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_move_change_rate.py:0
+msgid "Currency rate changed from '%s' to '%s' . Currency rate forced"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
+msgid "Currency to"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__current_currency_id
+msgid "Current Company Currency"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_moves_customers_ledger
+#: model:ir.ui.menu,name:account_ux.menu_customer_ledger
+msgid "Customers Ledger"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
+msgid "Debit Jouranl Entry"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "Delete Number"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid ""
+"Deleting the number will allow you to delete this invoice or to get a new "
+"number if you re-validate it. If this invoice represents a voided invoice, "
+"then you should not clean it."
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__discount
+msgid "Discount (%)"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__discount_amount
+msgid "Discount Amount"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_chart_template__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_group__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_tax__display_name
+#: model:ir.model.fields,field_description:account_ux.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
+msgid "Due date"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid "ERROR: Invoice was not sent via email"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "Edit Rate"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__mail_template_id
+msgid "Email Template"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
+msgid "Full Reconciliations"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__id
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
+#: model:ir.model.fields,field_description:account_ux.field_account_chart_template__id
+#: model:ir.model.fields,field_description:account_ux.field_account_group__id
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__id
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__id
+#: model:ir.model.fields,field_description:account_ux.field_account_move__id
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__id
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__id
+#: model:ir.model.fields,field_description:account_ux.field_account_payment__id
+#: model:ir.model.fields,field_description:account_ux.field_account_tax__id
+#: model:ir.model.fields,field_description:account_ux.field_res_company__id
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__id
+#: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__id
+msgid "ID"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__mail_template_id
+msgid ""
+"If set an email will be sent to the customer after the invoices related to "
+"this journal has been validated."
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__internal_notes
+#: model:ir.model.fields,field_description:account_ux.field_account_move__internal_notes
+msgid "Internal Notes"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__inverse_invoice_currency_rate
+#: model:ir.model.fields,field_description:account_ux.field_account_move__inverse_invoice_currency_rate
+msgid "Inverse Invoice Currency Rate"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_report_search
+msgid "Invoice Currency"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_invoice_report
+msgid "Invoices Statistics"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__is_monetary
+msgid "Is Monetary"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_journal
+msgid "Journal"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_move
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_report_search
+msgid "Journal Entry"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_move_line
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__line_id
+msgid "Journal Item"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_date
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_margin
+msgid "Margin (CC)"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_margin
+msgid "Margin in the company's currency where it is set"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_tree_personalization
+msgid "Memo"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_change_currency__move_id
+#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__move_id
+msgid "Move"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
+msgid "Paid"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.ui.menu,name:account_ux.menu_partial_reconciliations
+msgid "Partial"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_move_partial_reconcile
+msgid "Partial reconciliations"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_payment
+msgid "Payments"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid "Please check the email template associated with the invoice journal."
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_res_company__reconcile_on_company_currency
+#: model:ir.model.fields,field_description:account_ux.field_res_config_settings__reconcile_on_company_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
+msgid "Reconcile On Company Currency"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
+msgid "Reconciliations"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_move_line__amount_residual_currency
+msgid "Residual Amount in Currency"
+msgstr ""
+
+#. module: account_ux
+#: model:res.groups,name:account_ux.group_restrict_change_currency_exchange
+msgid "Restrict Change Invoice Currency Exchange"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_move_line__user_id
+msgid "Salesperson of contact related to this journal item"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_to_id
+msgid "Select a currency to apply on the invoice"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_change_currency__conversion_rate
+#: model:ir.model.fields,help:account_ux.field_account_move_change_rate__currency_rate
+msgid "Select a rate to apply on the invoice"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_form_inherited
+msgid "Send receipt by email"
+msgstr ""
+
+#. module: account_ux
+#: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
+msgid "Show invoice reference field on tree and main form views"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "Source Document"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid "Subtotal"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_tax
+msgid "Tax"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.res_config_settings_view_form
+msgid ""
+"The accounting plan will be reloaded, creating accounts, taxes, and other "
+"records that may be missing. It is recommended to perform this action in a "
+"testing environment before implementing it in production to avoid potential "
+"inconsistencies"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid "The date and invoice date of a sale invoice must be the same: %s"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_move_line__amount_residual_currency
+msgid ""
+"The residual amount on a journal item expressed in its currency (possibly "
+"not the company currency)."
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
+msgid ""
+"This option enables open documents in the payment report when reconciling "
+"debt with secondary currency, if the account doesn't have a currency "
+"configured, then reconcile on company currency. This will avoid all the "
+"automatic exchange rates journal entries by forcing same rate of the "
+"original document being reconcile. IMPORTANT: If you change this setting if "
+"you reconcile any previous item and re-reconcile it, it will be reconciled "
+"with the new mechanism"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+msgid ""
+"This value will be used to update the values of the amount without forcing "
+"the currency rate"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_total
+#: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_line_report_tree
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
+msgid "Total"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__total_cc
+msgid "Total (CC)"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_tree
+msgid "Total Balance"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_unit
+msgid "Unit Price"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_subtotal_currency
+msgid "Untaxed Amount in Currency"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_subtotal
+msgid "Untaxed Total (CC)"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_subtotal
+#: model:ir.model.fields,help:account_ux.field_account_invoice_report__total_cc
+msgid "Untaxed Total in the company's currency where it is set"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
+#: model:ir.ui.menu,name:account_ux.menu_vendor_ledger
+msgid "Vendors Ledger"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/res_config_settings.py:0
+msgid "Warning for %s"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+msgid ""
+"Warning! This can't be undone. Deleting the number will allow you to delete "
+"this invoice or to get a new number if you re-validate it. If this invoice "
+"represents a voided invoice, then you should not clean it. Do you want to "
+"continue?"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_res_company__reconcile_on_company_currency
+#: model:ir.model.fields,help:account_ux.field_res_config_settings__reconcile_on_company_currency
+msgid ""
+"When reconciling debt with secondary currency, if the account doesn't have a"
+" currency configured, then reconcile on company currency. This will avoid "
+"all the automatic exchange rates journal entries by forcing  same rate of "
+"the original document being reconcile"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/res_config_settings.py:0
+msgid ""
+"You are deactivating 'Reconcile on company currency'. Future reconciliations"
+" will no longer use the company currency, which could reintroduce exchange "
+"rate differences."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/res_currency_rate.py:0
+msgid ""
+"You can not create a rate without company since you already have rates "
+"before %s with company set. The rate you want to create will not have any "
+"effect, will not be take into account."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_journal.py:0
+msgid ""
+"You cannot change the journal type for '%s' because it already has "
+"accounting entries associated with it."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_payment.py:0
+msgid "You cannot delete this payment, you should set it back to draft first."
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_move_change_rate
+msgid "account.move.change.rate"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
+msgid "or"
+msgstr ""
