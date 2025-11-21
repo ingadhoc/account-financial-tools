@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account UX",
-    "version": "18.0.1.23.0",
+    "version": "18.0.1.24.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -36,6 +36,7 @@
     "data": [
         "security/account_ux_security.xml",
         "security/ir.model.access.csv",
+        "data/mail_template_data.xml",
         "wizards/account_change_currency_views.xml",
         "wizards/account_move_change_rate_views.xml",
         "wizards/res_config_settings_views.xml",

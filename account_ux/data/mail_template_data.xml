@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Update email template for invoices to include default report -->
+    <record id="account.email_template_edi_invoice" model="mail.template">
+        <field name="report_template_ids" eval="[(4, ref('account.account_invoices'))]"/>
+    </record>
+
+    <!-- Update email template for credit notes to include default report -->
+    <record id="account.email_template_edi_credit_note" model="mail.template">
+        <field name="report_template_ids" eval="[(4, ref('account.account_invoices'))]"/>
+    </record>
+
+</odoo>
