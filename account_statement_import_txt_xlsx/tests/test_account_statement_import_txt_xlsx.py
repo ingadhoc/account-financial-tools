@@ -48,6 +48,19 @@ class TestAccountBankStatementImportTxtXlsx(common.TransactionCase):
             }
         )
 
+        # Create a general journal if it doesn't exist
+        general_journal = self.env["account.journal"].search([
+            ("type", "=", "general"),
+            ("company_id", "=", self.company.id),
+        ], limit=1)
+        if not general_journal:
+            self.env["account.journal"].create({
+                "name": "General Journal",
+                "code": "GEN",
+                "type": "general",
+                "company_id": self.company.id,
+            })
+
         self.parser = self.env["account.statement.import.sheet.parser"]
         # Mock the mapping object to return predefined separators
         self.mock_mapping_comma_dot = Mock()
@@ -250,16 +263,20 @@ class TestAccountBankStatementImportTxtXlsx(common.TransactionCase):
                 "sheet_mapping_id": statement_map.id,
             }
         )
-        wizard.with_context(
-            account_statement_import_txt_xlsx_test=True
-        ).import_file_button()
-        statement = self.AccountBankStatement.search([("journal_id", "=", journal.id)])
-        self.assertEqual(len(statement), 1)
-        self.assertEqual(len(statement.line_ids), 1)
 
-        line = statement.line_ids
-        self.assertFalse(line.foreign_currency_id)
-        self.assertEqual(line.amount, -33.5)
+        # Now we expect a UserError when there's a currency mismatch
+        with self.assertRaises(UserError) as cm:
+            wizard.with_context(account_statement_import_txt_xlsx_test=True).import_file_button()
+
+        # Check that the error message contains information about currency mismatch
+        # In test mode, the error is not wrapped with "Bad file/mapping: " prefix
+        error_message = str(cm.exception)
+        self.assertIn("Currency mismatch", error_message)
+        self.assertIn("EUR", error_message)
+        self.assertIn("USD", error_message)
+        
+        statement = self.AccountBankStatement.search([("journal_id", "=", journal.id)])
+        self.assertEqual(len(statement), 0)
 
     def test_balance(self):
         journal = self.AccountJournal.create(
@@ -410,7 +427,7 @@ class TestAccountBankStatementImportTxtXlsx(common.TransactionCase):
         )
         wizard.with_context(
             journal_id=journal.id,
-            account_bank_statement_import_txt_xlsx_test=True,
+            account_statement_import_txt_xlsx_test=True,
         ).import_file_button()
         statement = self.AccountBankStatement.search([("journal_id", "=", journal.id)])
         self.assertEqual(len(statement), 1)
@@ -457,7 +474,7 @@ class TestAccountBankStatementImportTxtXlsx(common.TransactionCase):
         )
         wizard.with_context(
             journal_id=journal.id,
-            account_bank_statement_import_txt_xlsx_test=True,
+            account_statement_import_txt_xlsx_test=True,
         ).import_file_button()
         statement = self.AccountBankStatement.search([("journal_id", "=", journal.id)])
         self.assertEqual(len(statement), 1)
