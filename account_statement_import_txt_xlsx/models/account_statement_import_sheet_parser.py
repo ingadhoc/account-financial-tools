@@ -254,7 +254,9 @@ class AccountStatementImportSheetParser(models.TransientModel):
                 values, columns, "timestamp_column"
             )
             currency = (
-                self._get_values_from_column(values, columns, "currency_column")
+                self._get_values_from_column(
+                    values, columns, "currency_column"
+                ).upper()
                 if columns["currency_column"]
                 else currency_code
             )
@@ -347,7 +349,11 @@ class AccountStatementImportSheetParser(models.TransientModel):
             )
 
             if currency != currency_code:
-                continue
+                raise UserError(
+                    _("Currency mismatch: Found '{}' but expected '{}' in line {}").format(
+                        currency, currency_code, index
+                    )
+                )
 
             if isinstance(timestamp, str):
                 timestamp = datetime.strptime(timestamp, mapping.timestamp_format)
