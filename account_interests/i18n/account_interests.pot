@@ -1,0 +1,274 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_interests
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 17:23+0000\n"
+"PO-Revision-Date: 2025-11-25 17:23+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_interests
+#: model:ir.model,name:account_interests.model_res_company_interest
+msgid "Account Interest"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__domain
+msgid "Additional Filters"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__analytic_account_id
+msgid "Analytic account"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__late_payment_interest
+msgid "Apply Late Payment Interest"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__automatic_validation
+msgid "Automatic Invoice Validation?"
+msgstr ""
+
+#. module: account_interests
+#: model_terms:ir.ui.view,arch_db:account_interests.view_res_company_interest_filter
+msgid "Automatic Validation"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__automatic_validation
+msgid "Automatic Validation?"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__bypass_company_interest
+msgid "Bypass Company Interest"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__bypass_company_interest
+msgid "Bypass the company interest calculation"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__company_id
+msgid "Company"
+msgstr ""
+
+#. module: account_interests
+#: model_terms:ir.actions.act_window,help:account_interests.action_res_company_interest
+msgid ""
+"Configure automatic interest calculation for each company based on\n"
+"                overdue receivables. Specify interest rates, recurrence intervals,\n"
+"                and additional filters to customize the interest calculation process."
+msgstr ""
+
+#. module: account_interests
+#: model:ir.actions.server,name:account_interests.cron_recurring_interests_invoices_ir_actions_server
+msgid "Create Interests Invoices"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__receivable_account_ids
+msgid "Cuentas a Cobrar"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__receivable_account_ids
+msgid "Cuentas a Cobrar que se tendrán en cuenta para evaular la deuda"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__next_date
+msgid "Date of Next Invoice"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__daily
+msgid "Day(s)"
+msgstr ""
+
+#. module: account_interests
+#: model_terms:ir.actions.act_window,help:account_interests.action_res_company_interest
+msgid "Define interest configuration for overdue payments"
+msgstr ""
+
+#. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+msgid "Deuda Vencida al %s con tasa de interés de %s"
+msgstr ""
+
+#. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+msgid ""
+"Deuda Vencida al %s de periodos anteriores con tasa de interés de %s. Deuda "
+"Vencida al %s del ultimo periodo con tasa de interés de %s"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__domain
+msgid "Extra filters that will be added to the standard search"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rate
+msgid "First Due Interest Rate"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__has_domain
+msgid "Has Domain"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__id
+msgid "ID"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__late_payment_interest
+msgid ""
+"If enabled, interest will be charged when payment has been made after the "
+"due date, even if the debt is already settled. The interest rate applied "
+"will depend on the time elapsed since the due date. If payment occurs "
+"between the first due date and subsequent due date, the applicable interest "
+"will be the 'First Due Interest Rate' for the number of days between payment"
+" and first due date, and will be added in the next interest run. If payment "
+"occurs after the second due date, the applicable interest will be "
+"'Subsequent Due Interest Rate' for the number of days between payment and "
+"previous due date, and will be added in subsequent interest runs."
+msgstr ""
+
+#. module: account_interests
+#: model:ir.actions.act_window,name:account_interests.action_res_company_interest
+#: model:ir.ui.menu,name:account_interests.menu_res_company_interest
+#: model_terms:ir.ui.view,arch_db:account_interests.view_res_company_interest_form
+#: model_terms:ir.ui.view,arch_db:account_interests.view_res_company_interest_list
+msgid "Interest Configuration"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interest_product_id
+msgid "Interest Product"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__past_due_rate
+msgid ""
+"Interest rate applied to balances already overdue for at least one period. "
+"Must be specified in decimal values (e.g., 0.10 equals 10%). Calculated for "
+"complete periods (e.g., 30 days if monthly), as the debt is considered to "
+"have been unpaid for that entire time since the first due date."
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__rate
+msgid ""
+"Interest rate applied when debt becomes due for the first time. Must be "
+"specified in decimal values (e.g., 0.10 equals 10%). This rate only applies "
+"to the period between issuance date and first due date. The determined "
+"interest depends on recurrence; if monthly, the determined interest is "
+"monthly and is prorated daily based on how many days the document was "
+"overdue."
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__rule_type
+msgid "Interests Invoice automatically repeat at specified interval"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: account_interests
+#: model_terms:ir.ui.view,arch_db:account_interests.view_res_company_interest_filter
+msgid "Manual Validation"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__monthly
+msgid "Month(s)"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__rule_type
+msgid "Recurrency"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__interval
+msgid "Repeat Every"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,help:account_interests.field_res_company_interest__interval
+msgid "Repeat every (Days/Week/Month/Year)"
+msgstr ""
+
+#. module: account_interests
+#: model_terms:ir.ui.view,arch_db:account_interests.view_res_company_interest_filter
+msgid "Search Interest Configuration"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields,field_description:account_interests.field_res_company_interest__past_due_rate
+msgid "Subsequent Due Interest Rate"
+msgstr ""
+
+#. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+msgid ""
+"We couldn't run interest invoices cron job in the company: %s, Error: %s"
+msgstr ""
+
+#. module: account_interests
+#. odoo-python
+#: code:addons/account_interests/models/res_company_interest.py:0
+msgid ""
+"We couldn't run interest invoices cron job in the following companies: %s."
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__weekly
+msgid "Week(s)"
+msgstr ""
+
+#. module: account_interests
+#: model:ir.model.fields.selection,name:account_interests.selection__res_company_interest__rule_type__yearly
+msgid "Year(s)"
+msgstr ""
