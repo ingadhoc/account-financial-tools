@@ -3,15 +3,15 @@
 # 	* account_journal_security
 # 
 # Translators:
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025
+# ADHOC - Bot <transbot@adhoc.com.ar>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-28 15:44+0000\n"
-"PO-Revision-Date: 2024-12-12 18:23+0000\n"
-"Last-Translator: Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025\n"
+"POT-Creation-Date: 2025-11-26 00:21+0000\n"
+"PO-Revision-Date: 2025-11-26 00:19+0000\n"
+"Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,6 +25,20 @@ msgid ""
 "<b>IMPORTANTE:</b> Los usuarios que no estén en la lista no podrán ver "
 "facturas, pagos, asientos, apuntes contables ni ninguna información "
 "relacionada a este diario en el sistema."
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_journal_security.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__id
+#: model:ir.model.fields,field_description:account_journal_security.field_account_move__id
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__id
+msgid "ID"
 msgstr ""
 
 #. module: account_journal_security
