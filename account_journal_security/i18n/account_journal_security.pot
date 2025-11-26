@@ -1,0 +1,131 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_journal_security
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-26 00:17+0000\n"
+"PO-Revision-Date: 2025-11-26 00:17+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_journal_security
+#: model_terms:ir.ui.view,arch_db:account_journal_security.view_journal_security_account_journal_form
+msgid ""
+"<b>IMPORTANTE:</b> Los usuarios que no estén en la lista no podrán ver "
+"facturas, pagos, asientos, apuntes contables ni ninguna información "
+"relacionada a este diario en el sistema."
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_journal_security.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__id
+#: model:ir.model.fields,field_description:account_journal_security.field_account_move__id
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__id
+msgid "ID"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,help:account_journal_security.field_account_journal__modification_user_ids
+msgid ""
+"If choose some users, then only this users will be allow to  create, write "
+"or delete accounting data related of this journal. Information will still be"
+" visible for other users."
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,help:account_journal_security.field_account_journal__user_ids
+msgid ""
+"If choose some users, then this journal and the information related to it "
+"will be only visible for those users."
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model,name:account_journal_security.model_account_journal
+#: model:ir.model.fields,field_description:account_journal_security.field_account_bank_statement_line__journal_id
+#: model:ir.model.fields,field_description:account_journal_security.field_account_move__journal_id
+msgid "Journal"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model,name:account_journal_security.model_account_move
+msgid "Journal Entry"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__modification
+msgid "Modificacion"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__modification_journal_ids
+msgid "Modification Journals"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__modification_user_ids
+msgid "Modifications allowed to"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__none
+msgid "Ninguna"
+msgstr ""
+
+#. module: account_journal_security
+#. odoo-python
+#: code:addons/account_journal_security/models/account_journal.py:0
+msgid ""
+"No puede restringir el diario \"%s\" a usuarios sin inclurise a usted mismo "
+"ya que dejaria de ver este diario"
+msgstr ""
+
+#. module: account_journal_security
+#. odoo-python
+#: code:addons/account_journal_security/models/account_journal.py:0
+msgid ""
+"No puede setear valores en \"Totalmente restricto a:\" y \"Modificaciones "
+"restrictas a:\" simultaneamente. Las opciones son excluyentes!"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_res_users__journal_ids
+msgid "Restricted Journals (TOTAL)"
+msgstr ""
+
+#. module: account_journal_security
+#: model_terms:ir.ui.view,arch_db:account_journal_security.view_journal_security_account_journal_form
+msgid "Restringir a Usuarios"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__journal_restriction
+msgid "Tipo de Restriccion"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields.selection,name:account_journal_security.selection__account_journal__journal_restriction__total
+msgid "Total"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model.fields,field_description:account_journal_security.field_account_journal__user_ids
+msgid "Totally allowed to"
+msgstr ""
+
+#. module: account_journal_security
+#: model:ir.model,name:account_journal_security.model_res_users
+msgid "User"
+msgstr ""
