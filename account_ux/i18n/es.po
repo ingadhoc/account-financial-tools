@@ -1,24 +1,25 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* account_ux
-# 
+#
 # Translators:
 # Juan José Scarafía <scarafia.juanjose@gmail.com>, 2025
 # ADHOC - Bot <transbot@adhoc.com.ar>, 2025
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 10:41+0000\n"
+"POT-Creation-Date: 2025-11-27 20:00+0000\n"
 "PO-Revision-Date: 2025-10-08 18:38+0000\n"
 "Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: es\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 
 #. module: account_ux
 #. odoo-python
@@ -44,8 +45,10 @@ msgid ""
 "<i>Please note that when this box is selected, you must ensure that the\n"
 "                            payments follow a different sequence format.</i>"
 msgstr ""
-"<i>Ten en cuenta que, cuando se seleccione esta casilla, debes asegurarte de que\n"
-"                            los pagos sigan un formato de secuencia diferente.</i>"
+"<i>Ten en cuenta que, cuando se seleccione esta casilla, debes asegurarte de "
+"que\n"
+"                            los pagos sigan un formato de secuencia "
+"diferente.</i>"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -137,8 +140,7 @@ msgstr "Modificar Tipo de Cambio"
 msgid ""
 "Como el comprobante no tiene fecha, la cotización mostrada podría no ser la "
 "que se aplique, ya que se actualizará al validar o asignar una fecha. Para "
-"fijar la cotización y/o editar la tasa, debe asignar una fecha al "
-"comprobante"
+"fijar la cotización y/o editar la tasa, debe asignar una fecha al comprobante"
 msgstr ""
 
 #. module: account_ux
@@ -573,8 +575,8 @@ msgstr ""
 "Esta opción permite abrir documentos en el informe de pagos al conciliar "
 "deudas con moneda secundaria. Si la cuenta no tiene una moneda configurada, "
 "entonces se concilia en la moneda de la empresa. Esto evitará todos los "
-"asientos contables automáticos de tipos de cambio al forzar el mismo tipo de"
-" cambio del documento original que se está conciliando. IMPORTANTE: Si "
+"asientos contables automáticos de tipos de cambio al forzar el mismo tipo de "
+"cambio del documento original que se está conciliando. IMPORTANTE: Si "
 "cambias esta configuración, cualquier ítem anterior que se concilie y se "
 "vuelva a conciliar se hará con el nuevo mecanismo."
 
@@ -654,29 +656,29 @@ msgid ""
 msgstr ""
 "¡Advertencia! Esto no se puede deshacer. Eliminar el número le permitirá "
 "eliminar esta factura u obtener un nuevo número si lo revalida. Si esta "
-"factura representa una factura anulada, entonces no debe limpiarla. ¿Quieres"
-" continuar?"
+"factura representa una factura anulada, entonces no debe limpiarla. ¿Quieres "
+"continuar?"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_res_company__reconcile_on_company_currency
 #: model:ir.model.fields,help:account_ux.field_res_config_settings__reconcile_on_company_currency
 msgid ""
-"When reconciling debt with secondary currency, if the account doesn't have a"
-" currency configured, then reconcile on company currency. This will avoid "
-"all the automatic exchange rates journal entries by forcing  same rate of "
-"the original document being reconcile"
+"When reconciling debt with secondary currency, if the account doesn't have a "
+"currency configured, then reconcile on company currency. This will avoid all "
+"the automatic exchange rates journal entries by forcing  same rate of the "
+"original document being reconcile"
 msgstr ""
-"Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene una"
-" moneda configurada, conciliará en la moneda de la compañía. Esto evitará el"
-" registro automático de diferencias de cambio al forzar el tipo de cambio a "
+"Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene una "
+"moneda configurada, conciliará en la moneda de la compañía. Esto evitará el "
+"registro automático de diferencias de cambio al forzar el tipo de cambio a "
 "la del documento original conciliado."
 
 #. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid ""
-"You are deactivating 'Reconcile on company currency'. Future reconciliations"
-" will no longer use the company currency, which could reintroduce exchange "
+"You are deactivating 'Reconcile on company currency'. Future reconciliations "
+"will no longer use the company currency, which could reintroduce exchange "
 "rate differences."
 msgstr ""
 
@@ -691,14 +693,6 @@ msgstr ""
 "No puede crear una cotización sin compañía ya que ya tiene cotizaciones "
 "antes de %s con la compañía definida. La cotización que desee crear no "
 "tendrá ningún efecto, no se tendrá en cuenta."
-
-#. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_journal.py:0
-msgid ""
-"You cannot change the journal type for '%s' because it already has "
-"accounting entries associated with it."
-msgstr ""
 
 #. module: account_ux
 #. odoo-python
