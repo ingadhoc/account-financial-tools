@@ -63,6 +63,7 @@ class AccountMoveLine(models.Model):
         company_credit_currency = credit_values["aml"].company_currency_id
         reconcile_on_company_currency = (
             debit_values["aml"].company_id.reconcile_on_company_currency
+            and not self.env.context.get("disable_reconcile_on_company_currency")
             and (
                 debit_values["aml"].currency_id != company_debit_currency
                 or credit_values["aml"].currency_id != company_debit_currency
