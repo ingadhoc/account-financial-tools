@@ -12,6 +12,9 @@ class TestActualizacionImpuestoFacturaPosteada(TransactionCase):
     def setUp(self):
         super().setUp()
 
+        # Configurar compañía
+        self.company = self.env.ref("base.main_company")
+
         # Crear impuesto fijo de $1.00
         self.impuesto_fijo_test = self.env["account.tax"].create(
             {
@@ -19,17 +22,23 @@ class TestActualizacionImpuestoFacturaPosteada(TransactionCase):
                 "amount_type": "fixed",
                 "amount": 1.00,
                 "type_tax_use": "purchase",
+                "company_id": self.company.id,
             }
         )
 
-        # Obtener cuenta de gastos
-        self.cuenta_gastos = self.env["account.account"].search([("account_type", "=", "expense")], limit=1)
+        # Obtener cuenta de gastos de la compañía
+        self.cuenta_gastos = self.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_ids", "in", self.company.id)],
+            limit=1,
+        )
 
         # Obtener proveedor de prueba
         self.proveedor = self.env.ref("base.res_partner_12")
 
-        # Obtener diario de compras
-        self.diario_compras = self.env["account.journal"].search([("type", "=", "purchase")], limit=1)
+        # Obtener diario de compras de la compañía
+        self.diario_compras = self.env["account.journal"].search(
+            [("type", "=", "purchase"), ("company_id", "=", self.company.id)], limit=1
+        )
 
         # Fecha de hoy para la factura
         self.today = fields.Date.today()
@@ -51,6 +60,7 @@ class TestActualizacionImpuestoFacturaPosteada(TransactionCase):
                 "partner_id": self.proveedor.id,
                 "journal_id": self.diario_compras.id,
                 "invoice_date": self.today,
+                "company_id": self.company.id,
                 "invoice_line_ids": [
                     Command.create(
                         {
