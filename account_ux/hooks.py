@@ -1,4 +1,4 @@
-from odoo.addons.sale_order_type.models.account_move import AccountMove
+from odoo.addons.account.models.account_move import AccountMove
 
 
 def _revert_method(cls, name):
