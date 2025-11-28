@@ -29,8 +29,8 @@ class AccountMove(models.Model):
             results["special_mode"] = "total_included"
         return results
 
-    def action_post(self):
-        res = super().action_post()
+    def _post(self, soft=True):
+        res = super()._post(soft=soft)
         for move in self:
             reverse_moves = move.exchange_reversed_move_ids
             if not reverse_moves:
