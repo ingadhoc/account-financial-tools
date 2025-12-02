@@ -6,6 +6,7 @@ from . import reports
 from . import models
 from . import wizards
 from .hooks import uninstall_hook
+from odoo.fields import Domain
 from odoo.addons.account.models.account_payment import AccountPayment
 from odoo.addons.account.models.account_move import AccountMove
 
@@ -23,11 +24,10 @@ def monkey_patches():
         Volvemos a usar _check_company_domain que odoo lo abandonó en 19
         """
         journals = self.env["account.journal"].search(
-            [
-                *self.env["account.journal"]._check_company_domain(self.company_id),
-                ("type", "in", ("bank", "cash", "credit")),
-            ]
+            Domain(self.env["account.journal"]._check_company_domain(self.company_id))
+            & Domain([("type", "in", ("bank", "cash", "credit"))])
         )
+
         for pay in self:
             if pay.payment_type == "inbound":
                 pay.available_journal_ids = journals.filtered("inbound_payment_method_line_ids")
