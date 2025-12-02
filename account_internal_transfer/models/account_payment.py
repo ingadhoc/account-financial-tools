@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Domain
 
 
 class AccountPayment(models.Model):
@@ -9,10 +10,18 @@ class AccountPayment(models.Model):
         string="Internal Transfer",
         tracking=True,
     )
+    destination_company_id = fields.Many2one(
+        "res.company",
+        compute="_compute_destination_company_id",
+        domain='["|", ("id", "parent_of", main_company_id), ("id", "child_of", main_company_id)]',
+        store=True,
+        readonly=False,
+    )
+    destination_journal_domain = fields.Binary(compute="_compute_destination_journal_domain")
     destination_journal_id = fields.Many2one(
         comodel_name="account.journal",
         string="Destination Journal",
-        domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id),('company_id', 'child_of', main_company_id)]",
+        domain="destination_journal_domain",
         check_company=False,
     )
     main_company_id = fields.Many2one(
@@ -20,6 +29,31 @@ class AccountPayment(models.Model):
         compute="_compute_main_company",
     )
     available_partner_bank_ids = fields.Many2many(compute_sudo=True)
+
+    @api.depends("company_id", "is_internal_transfer")
+    def _compute_destination_company_id(self):
+        for rec in self:
+            if rec.is_internal_transfer:
+                rec.destination_company_id = rec.company_id
+            else:
+                rec.destination_company_id = False
+
+    @api.depends("destination_company_id", "journal_id")
+    def _compute_destination_journal_domain(self):
+        for rec in self:
+            rec.destination_journal_domain = Domain(
+                rec.env["account.journal"]._check_company_domain(rec.destination_company_id)
+            ) & Domain([("type", "in", ("bank", "cash", "credit")), ("id", "!=", rec.journal_id.id)])
+
+    @api.constrains("destination_company_id", "destination_journal_id")
+    def _check_journal_company(self):
+        for rec in self:
+            if rec.destination_journal_id and rec.destination_journal_id not in rec.env["account.journal"].search(
+                rec.destination_journal_domain
+            ):
+                raise ValidationError(
+                    "The selected 'Destination Journal' does not belong to the selected destination company."
+                )
 
     @api.depends("company_id")
     def _compute_main_company(self):
@@ -95,7 +129,8 @@ class AccountPayment(models.Model):
             paired_payment = payment.copy(
                 {
                     "journal_id": payment.destination_journal_id.id,
-                    "company_id": payment.destination_journal_id.company_id.id,
+                    "company_id": payment.destination_company_id.id,
+                    "destination_company_id": payment.company_id.id,
                     "destination_journal_id": payment.journal_id.id,
                     "payment_type": paired_payment_type,
                     "payment_method_line_id": payment.destination_journal_id._get_available_payment_method_lines(
