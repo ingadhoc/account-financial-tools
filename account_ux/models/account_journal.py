@@ -17,7 +17,20 @@ class AccountJournal(models.Model):
         help="If set an email will be sent to the customer after the invoices"
         " related to this journal has been validated.",
     )
-    shared_to_branches = fields.Boolean(compute="_compute_shared_to_branches", store=True, readonly=False)
+    shared_to_branches = fields.Boolean(
+        compute="_compute_shared_to_branches",
+        store=True,
+        readonly=False,
+        help="If enabled, this journal will be available for use in child "
+        "companies (branches). This allows subsidiaries to use the parent "
+        "company's journals for their transactions.",
+    )
+    has_child_companies = fields.Boolean(compute="_compute_has_child_companies")
+
+    @api.depends("company_id", "company_id.child_ids")
+    def _compute_has_child_companies(self):
+        for journal in self:
+            journal.has_child_companies = bool(journal.company_id.child_ids)
 
     @api.onchange("shared_to_branches")
     def _onchange_shared_to_branches(self):
