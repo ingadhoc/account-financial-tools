@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
             <field name="country_code" position="before">
-                <field name="shared_to_branches" groups="base.group_multi_company"/>
+                <field name="has_child_companies" invisible="1"/>
+                <field name="shared_to_branches" groups="base.group_multi_company" invisible="not has_child_companies"/>
                 <field name="mail_template_id"  context="{'default_model': 'account.move'}"  invisible="type not in ['sale', 'purchase']"/>
             </field>
             <field name="payment_sequence" position="after">
