@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-27 20:00+0000\n"
-"PO-Revision-Date: 2025-11-27 20:00+0000\n"
+"POT-Creation-Date: 2025-12-02 14:26+0000\n"
+"PO-Revision-Date: 2025-12-02 14:26+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -300,6 +300,11 @@ msgid "Full Reconciliations"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__has_child_companies
+msgid "Has Child Companies"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__id
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
 #: model:ir.model.fields,field_description:account_ux.field_account_chart_template__id
@@ -316,6 +321,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__id
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__id
 msgid "ID"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__shared_to_branches
+msgid ""
+"If enabled, this journal will be available for use in child companies "
+"(branches). This allows subsidiaries to use the parent company's journals "
+"for their transactions."
 msgstr ""
 
 #. module: account_ux
