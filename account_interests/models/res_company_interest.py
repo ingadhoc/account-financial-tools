@@ -291,10 +291,11 @@ class ResCompanyInterest(models.Model):
             .journal_id
         )
 
-        if self.receivable_account_ids != journal.default_account_id:
+        # Si el journal está archivado o no coincide con las cuentas configuradas, buscar uno alternativo
+        if not journal.active or self.receivable_account_ids != journal.default_account_id:
             journal = (
                 self.env["account.journal"].search(
-                    [("default_account_id", "in", self.receivable_account_ids.ids)], limit=1
+                    [("default_account_id", "in", self.receivable_account_ids.ids), ("active", "=", True)], limit=1
                 )
                 or journal
             )
