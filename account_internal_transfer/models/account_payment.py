@@ -47,10 +47,10 @@ class AccountPayment(models.Model):
 
     @api.constrains("destination_company_id", "destination_journal_id")
     def _check_journal_company(self):
-        for rec in self:
-            if rec.destination_journal_id and rec.destination_journal_id not in rec.env["account.journal"].search(
-                rec.destination_journal_domain
-            ):
+        for rec in self.filtered("destination_journal_id"):
+            # Force recompute of the domain to ensure it's up to date
+            rec._compute_destination_journal_domain()
+            if rec.destination_journal_id not in rec.env["account.journal"].search(rec.destination_journal_domain):
                 raise ValidationError(
                     "The selected 'Destination Journal' does not belong to the selected destination company."
                 )
