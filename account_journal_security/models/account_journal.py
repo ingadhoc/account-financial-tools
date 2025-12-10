@@ -111,6 +111,9 @@ class AccountJournal(models.Model):
         permiso ya que si no pueden ver los diarios termina dando errores en
         cualquier lugar que se use un campo related a algo del diario
         """
+        # Ensure domain is a list
+        if not isinstance(domain, list):
+            domain = []
         user = self.env.user
         # Agregamos el with_user ya que por alguna razon llega con sudo y nos da un falso positivo indicando
         # que el usuario es super usuario. De esta forma nos aseguramos verdaderamente si lo es.
