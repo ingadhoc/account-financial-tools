@@ -45,7 +45,10 @@ class ResCompanyInterest(models.Model):
         "First Due Interest Rate",
         required=True,
         digits=(7, 4),
-        help="Interest rate applied when debt becomes due for the first time. Must be specified in decimal values (e.g., 0.10 equals 10%). This rate only applies to the period between issuance date and first due date. The determined interest depends on recurrence; if monthly, the determined interest is monthly and is prorated daily based on how many days the document was overdue.",
+        help="Interest rate applied when debt becomes due for the first time. Must be specified in decimal values "
+        "(e.g., 0.10 equals 10%). This rate only applies to the period between issuance date and first due date. "
+        "The determined interest depends on recurrence; if monthly, the determined interest is monthly and is "
+        "prorated daily based on how many days the document was overdue.",
     )
     past_due_rate = fields.Float(
         "Subsequent Due Interest Rate",
@@ -86,7 +89,13 @@ class ResCompanyInterest(models.Model):
     late_payment_interest = fields.Boolean(
         "Apply Late Payment Interest",
         default=False,
-        help="If enabled, interest will be charged when payment has been made after the due date, even if the debt is already settled. The interest rate applied will depend on the time elapsed since the due date. If payment occurs between the first due date and subsequent due date, the applicable interest will be the 'First Due Interest Rate' for the number of days between payment and first due date, and will be added in the next interest run. If payment occurs after the second due date, the applicable interest will be 'Subsequent Due Interest Rate' for the number of days between payment and previous due date, and will be added in subsequent interest runs.",
+        help="If enabled, interest will be charged when payment has been made after the due date, even if the debt "
+        "is already settled. The interest rate applied will depend on the time elapsed since the due date. If "
+        "payment occurs between the first due date and subsequent due date, the applicable interest will be the "
+        "'First Due Interest Rate' for the number of days between payment and first due date, and will be added "
+        "in the next interest run. If payment occurs after the second due date, the applicable interest will be "
+        "'Subsequent Due Interest Rate' for the number of days between payment and previous due date, and will be "
+        "added in subsequent interest runs.",
     )
 
     @api.onchange("company_id")
