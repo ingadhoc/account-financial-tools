@@ -10,14 +10,18 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-06 12:01+0000\n"
-"PO-Revision-Date: 2025-11-06 12:01+0000\n"
-"Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
-"Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
+"PO-Revision-Date: 2025-12-11 18:10+0000\n"
+"Last-Translator: Rocio Marina Vega <rov@adhoc.inc>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
+"account-financial-tools-19-0/"
+"account-financial-tools-19-0-account_debt_report/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: es\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
+" ? 1 : 2);\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: account_debt_report
 #: model:mail.template,body_html:account_debt_report.email_template_debt_detail
@@ -100,7 +104,7 @@ msgstr "Creado por"
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__create_date
 msgid "Created on"
-msgstr "Creado el"
+msgstr "Creado en"
 
 #. module: account_debt_report
 #. odoo-python
@@ -138,7 +142,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__display_name
 #: model:ir.model.fields,field_description:account_debt_report.field_res_partner__display_name
 msgid "Display Name"
-msgstr "Nombre a Mostrar"
+msgstr "Nombre para mostrar"
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__from_date
@@ -154,7 +158,7 @@ msgstr "Histórico"
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__id
 #: model:ir.model.fields,field_description:account_debt_report.field_res_partner__id
 msgid "ID"
-msgstr ""
+msgstr "ID (identificación)"
 
 #. module: account_debt_report
 #. odoo-python
@@ -182,12 +186,12 @@ msgstr ""
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__write_uid
 msgid "Last Updated by"
-msgstr "Última actualización por"
+msgstr "Última actualización realizada por"
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__write_date
 msgid "Last Updated on"
-msgstr "Última actualización en"
+msgstr "Última actualización el"
 
 #. module: account_debt_report
 #: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__result_selection__payable
