@@ -10,14 +10,18 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-17 21:28+0000\n"
-"PO-Revision-Date: 2025-11-17 21:28+0000\n"
-"Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
-"Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
+"PO-Revision-Date: 2025-12-11 18:10+0000\n"
+"Last-Translator: Rocio Marina Vega <rov@adhoc.inc>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
+"account-financial-tools-19-0/account-financial-tools-19-0-account_interests/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: es\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
+" ? 1 : 2);\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: account_interests
 #: model:ir.model,name:account_interests.model_res_company_interest
@@ -67,7 +71,7 @@ msgstr ""
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__company_id
 msgid "Company"
-msgstr "Compañía"
+msgstr "Empresa"
 
 #. module: account_interests
 #: model_terms:ir.actions.act_window,help:account_interests.action_res_company_interest
@@ -136,7 +140,7 @@ msgstr ""
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__display_name
 msgid "Display Name"
-msgstr "Nombre a Mostrar"
+msgstr "Nombre para mostrar"
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__domain
@@ -156,7 +160,7 @@ msgstr "Tiene Dominio"
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__id
 msgid "ID"
-msgstr ""
+msgstr "ID (identificación)"
 
 #. module: account_interests
 #: model:ir.model.fields,help:account_interests.field_res_company_interest__late_payment_interest
@@ -240,7 +244,7 @@ msgstr "Última actualización realizada por"
 #. module: account_interests
 #: model:ir.model.fields,field_description:account_interests.field_res_company_interest__write_date
 msgid "Last Updated on"
-msgstr "Última Actualización en"
+msgstr "Última actualización el"
 
 #. module: account_interests
 #: model_terms:ir.ui.view,arch_db:account_interests.view_res_company_interest_filter
