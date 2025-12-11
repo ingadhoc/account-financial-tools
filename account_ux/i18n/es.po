@@ -11,15 +11,17 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-02 14:26+0000\n"
-"PO-Revision-Date: 2025-10-08 18:38+0000\n"
-"Last-Translator: ADHOC - Bot <transbot@adhoc.com.ar>, 2025\n"
-"Language-Team: Spanish (https://app.transifex.com/adhoc/teams/46451/es/)\n"
+"PO-Revision-Date: 2025-12-11 18:10+0000\n"
+"Last-Translator: Rocio Marina Vega <rov@adhoc.inc>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
+"account-financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
-"1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
+" ? 1 : 2);\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: account_ux
 #. odoo-python
@@ -38,6 +40,8 @@ msgid ""
 "<b>Error sending the invoice</b>: partner %s does not have an email address "
 "defined."
 msgstr ""
+"<b>Error al enviar la factura</b>: el contacto %s no tiene una dirección de "
+"correo electrónico definida."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
@@ -52,20 +56,25 @@ msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+#, fuzzy
 msgid ""
 "<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
 "                    <span> </span>"
 msgstr ""
+"<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
+"                    <span> </span>"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+#, fuzzy
 msgid "<span> = </span>"
-msgstr ""
+msgstr "<span> = </span>"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+#, fuzzy
 msgid "<span>1.00 </span>"
-msgstr ""
+msgstr "<span>1.00 </span>"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
@@ -85,7 +94,7 @@ msgstr "Grupo de cuenta"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Add an internal note..."
-msgstr "Agregar una nota interna"
+msgstr "Agregar una nota interna..."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
@@ -137,11 +146,15 @@ msgstr "Modificar Tipo de Cambio"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
+#, fuzzy
 msgid ""
 "Como el comprobante no tiene fecha, la cotización mostrada podría no ser la "
 "que se aplique, ya que se actualizará al validar o asignar una fecha. Para "
 "fijar la cotización y/o editar la tasa, debe asignar una fecha al comprobante"
 msgstr ""
+"Como el comprobante no tiene fecha, la cotización mostrada podría no ser la "
+"que se aplique, ya que se actualizará al validar o asignar una fecha. Para "
+"fijar la cotización y/o editar la tasa, debe asignar una fecha al comprobante"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_company
@@ -153,7 +166,7 @@ msgstr "Compañías"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
 msgid "Company"
-msgstr "Compañía"
+msgstr "Empresa"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_config_settings
@@ -224,7 +237,7 @@ msgstr "Moneda Destino"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__current_currency_id
 msgid "Current Company Currency"
-msgstr ""
+msgstr "Moneda Actual de la Empresa"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_customers_ledger
@@ -346,6 +359,9 @@ msgid ""
 "(branches). This allows subsidiaries to use the parent company's journals "
 "for their transactions."
 msgstr ""
+"Si está habilitado, este diario estará disponible para su uso en las "
+"compañías hijas (sucursales). Esto permite que las subsidiarias utilicen los "
+"diarios de la compañía principal para sus transacciones."
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_journal__mail_template_id
@@ -420,12 +436,12 @@ msgstr "Margen"
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_margin
 msgid "Margin in the company's currency where it is set"
-msgstr ""
+msgstr "Margen en la moneda de la empresa donde está configurado"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_tree_personalization
 msgid "Memo"
-msgstr ""
+msgstr "Referencia"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__move_id
@@ -437,13 +453,13 @@ msgstr "Movimiento"
 #. odoo-python
 #: code:addons/account_ux/models/account_payment.py:0
 msgid "No journals available for company %s and payment type %s."
-msgstr ""
+msgstr "No hay diarios disponibles para la empresa %s y el tipo de pago %s."
 
 #. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/models/account_journal.py:0
 msgid "No se recomiendan compartir a sucursales los diarios de tipo 'Venta'."
-msgstr ""
+msgstr "No se recomiendan compartir a sucursales los diarios de tipo 'Venta'."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
@@ -514,7 +530,7 @@ msgstr "Selecciona una cotización para aplicar en la factura"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_payment_form_inherited
 msgid "Send receipt by email"
-msgstr ""
+msgstr "Enviar recibo por correo electrónico"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__sequence
@@ -524,7 +540,7 @@ msgstr "Secuencia"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__shared_to_branches
 msgid "Shared To Branches"
-msgstr ""
+msgstr "Compartido con Sucursales"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
@@ -541,7 +557,7 @@ msgstr "Documento de Origen"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Subtotal"
-msgstr ""
+msgstr "Subtotal"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_tax
@@ -559,7 +575,7 @@ msgstr ""
 "El plan contable se recargará, creando cuentas, impuestos y otros registros "
 "que puedan faltar. Se recomienda realizar esta acción en un entorno de "
 "prueba antes de implementarla en producción para evitar posibles "
-"inconsistencias."
+"inconsistencias"
 
 #. module: account_ux
 #. odoo-python
@@ -593,7 +609,7 @@ msgstr ""
 "asientos contables automáticos de tipos de cambio al forzar el mismo tipo de "
 "cambio del documento original que se está conciliando. IMPORTANTE: Si "
 "cambias esta configuración, cualquier ítem anterior que se concilie y se "
-"vuelva a conciliar se hará con el nuevo mecanismo."
+"vuelva a conciliar se hará con el nuevo mecanismo"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
@@ -602,20 +618,22 @@ msgid ""
 "the currency rate"
 msgstr ""
 "Este valor se utilizará para actualizar los valores del monto sin forzar la "
-"tasa de cambio."
+"tasa de cambio"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_total
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_line_report_tree
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
+#, fuzzy
 msgid "Total"
-msgstr "Total en moneda"
+msgstr "Total"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__total_cc
+#, fuzzy
 msgid "Total (CC)"
-msgstr ""
+msgstr "Total (CC)"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_tree
@@ -653,13 +671,13 @@ msgstr "Mayor de Proveedores"
 #. odoo-python
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid "Warning for %s"
-msgstr ""
+msgstr "Advertencia para %s"
 
 #. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/models/account_journal.py:0
 msgid "Warning!"
-msgstr ""
+msgstr "Advertencia!"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -686,7 +704,7 @@ msgstr ""
 "Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene una "
 "moneda configurada, conciliará en la moneda de la compañía. Esto evitará el "
 "registro automático de diferencias de cambio al forzar el tipo de cambio a "
-"la del documento original conciliado."
+"la del documento original conciliado"
 
 #. module: account_ux
 #. odoo-python
@@ -696,6 +714,9 @@ msgid ""
 "will no longer use the company currency, which could reintroduce exchange "
 "rate differences."
 msgstr ""
+"Estás desactivando \"Conciliar en la moneda de la compañía\". Las futuras "
+"conciliaciones ya no utilizarán la moneda de la compañía, lo que podría "
+"volver a introducir diferencias de tipo de cambio."
 
 #. module: account_ux
 #. odoo-python
@@ -713,12 +734,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/models/account_payment.py:0
 msgid "You cannot delete this payment, you should set it back to draft first."
-msgstr ""
+msgstr "No podés eliminar este pago; primero debés volverlo al estado borrador."
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move_change_rate
 msgid "account.move.change.rate"
-msgstr ""
+msgstr "Cambio de tipo de cambio en el asiento contable"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
