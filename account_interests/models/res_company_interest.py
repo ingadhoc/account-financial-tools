@@ -2,11 +2,14 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models, fields, api, _
-from odoo.tools.safe_eval import safe_eval
+import logging
+
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
-import logging
+from odoo.tools.safe_eval import safe_eval
+
+from odoo import _, api, fields, models
+
 _logger = logging.getLogger(__name__)
 
 
@@ -130,7 +133,7 @@ class ResCompanyInterest(models.Model):
         self.env.cr.commit()
 
         if last_updated_id:
-            cron = self.env['ir.cron'].browse(self.env.context.get('job_id')) or self.env.ref('account_interests.cron_recurring_interests_invoices')
+            cron = self.env.ref('account_interests.cron_recurring_interests_invoices')
             cron._trigger()
 
     def create_interest_invoices(self):
