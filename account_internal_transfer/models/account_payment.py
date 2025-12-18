@@ -194,3 +194,31 @@ class AccountPayment(models.Model):
         super()._compute_partner_id()
         for pay in self.filtered("is_internal_transfer"):
             pay.partner_id = False
+
+    def _prepare_move_line_default_vals(self, write_off_line_vals=None, force_balance=None):
+        # Call the parent method to get the default move line values
+        line_vals_list = super()._prepare_move_line_default_vals(
+            write_off_line_vals=write_off_line_vals, force_balance=force_balance
+        )
+        # If the destination journal uses a different currency than the company and this is not a paired internal transfer
+        # (to avoid conversion in the entries of new payment, that should be in secondary currency)
+        if (
+            # This is to avoid dependency on payment_pro
+            "amount_company_currency" in self._fields
+            and self.is_internal_transfer
+            and self.destination_journal_id.currency_id != self.company_id.currency_id
+            and not self.paired_internal_transfer_payment_id
+        ):
+            for line_vals in line_vals_list:
+                if "amount_currency" in line_vals:
+                    # Set the currency to the company's currency
+                    line_vals["currency_id"] = self.company_id.currency_id.id
+                    # Adjust the amount_currency based on whether it's a debit or credit
+                    if line_vals["debit"] > 0:
+                        line_vals["amount_currency"] = self.amount_company_currency
+                    elif line_vals["credit"] > 0:
+                        line_vals["amount_currency"] = -self.amount_company_currency
+                    else:
+                        # When both debit and credit are zero, ensure amount_currency is neutral
+                        line_vals["amount_currency"] = 0.0
+        return line_vals_list
