@@ -4,11 +4,17 @@
 ##############################################################################
 import json
 import logging
+from datetime import date
+from typing import TYPE_CHECKING, Any
 
 from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import safe_eval
+
+if TYPE_CHECKING:
+    from odoo.addons.account.models.account_journal import AccountJournal
+    from odoo.addons.base.models.res_partner import ResPartner
 
 _logger = logging.getLogger(__name__)
 
@@ -196,7 +202,9 @@ class ResCompanyInterest(models.Model):
             move_line_domain += safe_eval.safe_eval(self.domain, self._get_eval_context())
         return move_line_domain
 
-    def _update_deuda(self, deuda, partner, key, value):
+    def _update_deuda(
+        self, deuda: dict["ResPartner", dict[str, float]], partner: "ResPartner", key: str, value: float
+    ) -> None:
         """
         Actualiza el diccionario de deuda para un partner específico.
         Si el partner no existe en la deuda, lo inicializa.
@@ -211,7 +219,9 @@ class ResCompanyInterest(models.Model):
             return self.past_due_rate
         return self.rate
 
-    def _calculate_debts(self, from_date, to_date, groupby=None):
+    def _calculate_debts(
+        self, from_date: date, to_date: date, groupby: list[str] | None = None
+    ) -> dict["ResPartner", dict[str, float]]:
         """
         Calcula las deudas e intereses por partner.
         Retorna un diccionario estructurado con los cálculos.
@@ -221,7 +231,7 @@ class ResCompanyInterest(models.Model):
         if groupby is None:
             groupby = ["partner_id"]
 
-        deuda = {}
+        deuda: dict[ResPartner, dict[str, float]] = {}
 
         interest_rate = {
             "daily": 1,
@@ -391,19 +401,21 @@ class ResCompanyInterest(models.Model):
             )
         return res
 
-    def _prepare_interest_invoice(self, partner, debt, to_date, journal):
+    def _prepare_interest_invoice(
+        self, partner: "ResPartner", debt: dict[str, float], to_date: date, journal: "AccountJournal"
+    ) -> dict[str, Any] | None:
         """
         Retorna un diccionario con los datos para crear la factura
         """
         self.ensure_one()
 
         if (
-            (not debt.get("Deuda periodos anteriores") or debt.get("Deuda periodos anteriores") <= 0)
-            and (not debt.get("Deuda último periodo") or debt.get("Deuda último periodo") <= 0)
-            and (not debt.get("Deuda pagos vencidos") or debt.get("Deuda pagos vencidos") <= 0)
+            debt.get("Deuda periodos anteriores", 0) <= 0
+            and debt.get("Deuda último periodo", 0) <= 0
+            and debt.get("Deuda pagos vencidos", 0) <= 0
         ):
             _logger.info("Debt is negative, skipping...")
-            return
+            return None
 
         comment = self._prepare_info(to_date)
         fpos = partner.property_account_position_id
