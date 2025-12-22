@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-07 18:20+0000\n"
-"PO-Revision-Date: 2025-12-11 18:10+0000\n"
-"Last-Translator: Rocio Marina Vega <rov@adhoc.inc>\n"
+"PO-Revision-Date: 2025-12-22 15:10+0000\n"
+"Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
 "account-financial-tools-19-0/"
 "account-financial-tools-19-0-account_payment_term_surcharge/es/>\n"
@@ -30,6 +30,10 @@ msgid ""
 "specific.\" aria-label=\"Values set here are company-specific.\" "
 "groups=\"base.group_multi_company\" role=\"img\"/>"
 msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title="
+"\"Los valores establecidos aquí son específicos de la empresa.\" aria-label="
+"\"Los valores establecidos aquí son específicos de la empresa.\" groups="
+"\"base.group_multi_company\" role=\"img\"/>"
 
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
@@ -102,6 +106,8 @@ msgid ""
 "Deuda Vencida al %s: %s\n"
 "Tasa de interés: %s"
 msgstr ""
+"Deuda Vencida al %s: %s\n"
+"Tasa de interés: %s"
 
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_move__display_name
@@ -223,12 +229,12 @@ msgstr ""
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_config_settings__payment_term_surcharge_product_id
 msgid "Producto por defecto para los recargos"
-msgstr ""
+msgstr "Producto por defecto para los recargos"
 
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
 msgid "Producto por defecto para realizar recargos"
-msgstr ""
+msgstr "Producto por defecto para realizar recargos"
 
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term_surcharge__sequence
@@ -238,7 +244,7 @@ msgstr "Secuencia"
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_account_payment_term__show_surcharge_warning
 msgid "Show Surcharge Warning"
-msgstr ""
+msgstr "Mostrar advertencia de recargo"
 
 #. module: account_payment_term_surcharge
 #. odoo-python
@@ -288,16 +294,20 @@ msgid ""
 "The selected company for this payment term does not have a surcharge product configured.\n"
 "                        Please configure the product in Settings / Accounting for the selected company or companies."
 msgstr ""
+"La empresa seleccionada para este plazo de pago no tiene configurado ningún "
+"producto de recargo.\n"
+"                        Por favor configure el producto en Ajustes / "
+"Contabilidad para la(s) empresa(s) seleccionada(s)."
 
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_config_settings__payment_term_surcharge_invoice_auto_post
 msgid "Validad automaticamente las facturas"
-msgstr ""
+msgstr "Validad automaticamente las facturas"
 
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
 msgid "Validar automaticamente facturas de recargo"
-msgstr ""
+msgstr "Validar automaticamente facturas de recargo"
 
 #. module: account_payment_term_surcharge
 #. odoo-python
