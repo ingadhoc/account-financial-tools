@@ -5,19 +5,17 @@
     "website": "www.adhoc.com.ar",
     "author": "ADHOC SA",
     "license": "AGPL-3",
-    "depends": [
-        "account_debit_note",
-    ],
+    "depends": ["account_debit_note", "l10n_ar"],
     "data": [
         "security/ir.model.access.csv",
         "views/account_move_line_views.xml",
         "wizards/exchange_difference_wizard_views.xml",
         "views/res_config_settings.xml",
     ],
+    "demo": [
+        "demo/account_exchange_demo.xml",
+    ],
     "installable": True,
     "auto_install": False,
     "application": False,
-    "demo": [
-        "demo/demo_data.xml",
-    ],
 }
