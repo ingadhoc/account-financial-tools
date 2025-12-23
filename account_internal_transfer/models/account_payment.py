@@ -1,3 +1,4 @@
+from markupsafe import Markup, escape
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
@@ -29,6 +30,7 @@ class AccountPayment(models.Model):
         compute="_compute_main_company",
     )
     available_partner_bank_ids = fields.Many2many(compute_sudo=True)
+    show_warning = fields.Html(compute="_compute_show_warning")
 
     @api.depends("company_id", "is_internal_transfer")
     def _compute_destination_company_id(self):
@@ -196,18 +198,18 @@ class AccountPayment(models.Model):
             pay.partner_id = False
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None, force_balance=None):
-        # Call the parent method to get the default move line values
         line_vals_list = super()._prepare_move_line_default_vals(
             write_off_line_vals=write_off_line_vals, force_balance=force_balance
         )
-        # If the destination journal uses a different currency than the company and this is not a paired internal transfer
-        # (to avoid conversion in the entries of new payment, that should be in secondary currency)
+
         if (
             # This is to avoid dependency on payment_pro
             "amount_company_currency" in self._fields
             and self.is_internal_transfer
+            # Payment journal is in company currency (either not set or explicitly set to company currency)
+            and (not self.journal_id.currency_id or self.journal_id.currency_id == self.company_id.currency_id)
+            and self.destination_journal_id.currency_id  # Destination journal has a different currency
             and self.destination_journal_id.currency_id != self.company_id.currency_id
-            and not self.paired_internal_transfer_payment_id
         ):
             for line_vals in line_vals_list:
                 if "amount_currency" in line_vals:
@@ -222,3 +224,73 @@ class AccountPayment(models.Model):
                         # When both debit and credit are zero, ensure amount_currency is neutral
                         line_vals["amount_currency"] = 0.0
         return line_vals_list
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Avoid recursion when updating paired payments
+        if self.env.context.get("skip_paired_payment_update"):
+            return res
+
+        # Update paired payment when amount or journal changes
+        for payment in self.filtered(lambda p: p.is_internal_transfer and p.paired_internal_transfer_payment_id):
+            paired_payment = payment.paired_internal_transfer_payment_id
+            updates = {}
+
+            # Sync amount
+            if "amount" in vals and payment.amount != paired_payment.amount:
+                updates["amount"] = payment.amount
+
+            # Sync journals (swapped relationship)
+            if "journal_id" in vals and payment.journal_id != paired_payment.destination_journal_id:
+                updates["destination_journal_id"] = payment.journal_id.id
+
+            if "destination_journal_id" in vals and payment.destination_journal_id != paired_payment.journal_id:
+                updates["journal_id"] = payment.destination_journal_id.id
+
+            # Apply updates to paired payment
+            if updates:
+                paired_payment.with_context(skip_paired_payment_update=True).write(updates)
+
+        return res
+
+    @api.depends("state", "paired_internal_transfer_payment_id.state")
+    def _compute_show_warning(self):
+        for pay in self:
+            paired_pay = pay.paired_internal_transfer_payment_id
+            if pay.is_internal_transfer and paired_pay and paired_pay.state != pay.state:
+                state_labels = dict(pay._fields["state"]._description_selection(pay.env))
+                base_url = pay.env["ir.config_parameter"].sudo().get_param("web.base.url")
+                action_url = f"{base_url}/web#id={paired_pay.id}&model=account.payment&view_type=form"
+                # Escape all dynamic values to prevent XSS
+                pay_state = escape(state_labels.get(pay.state, pay.state))
+                paired_state = escape(state_labels.get(paired_pay.state, paired_pay.state))
+                safe_url = escape(action_url)
+                pay.show_warning = Markup(
+                    _(
+                        '<div class="alert alert-warning" role="alert">'
+                        '<i class="fa fa-exclamation-triangle"></i> '
+                        "This payment is in <strong>%s</strong> state but the paired one is in <strong>%s</strong> state. "
+                        "Ensure both are in the same state when finished making changes. "
+                        '<a href="%s" class="btn btn-sm btn-warning" style="margin-left: 10px;">'
+                        '<i class="fa fa-external-link"></i> Go to Paired Payment'
+                        "</a>"
+                        "</div>"
+                    )
+                ) % (pay_state, paired_state, safe_url)
+            else:
+                pay.show_warning = ""
+
+    def action_open_paired_payment(self):
+        """Navigate to the paired internal transfer payment."""
+        self.ensure_one()
+        if not self.paired_internal_transfer_payment_id:
+            return
+
+        return {
+            "name": _("Paired Payment"),
+            "type": "ir.actions.act_window",
+            "res_model": "account.payment",
+            "view_mode": "form",
+            "res_id": self.paired_internal_transfer_payment_id.id,
+            "target": "current",
+        }
