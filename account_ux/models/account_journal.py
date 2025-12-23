@@ -9,6 +9,7 @@ from odoo.tools.misc import unquote
 
 class AccountJournal(models.Model):
     _inherit = "account.journal"
+    _order = "branch_order,sequence, type, code"
 
     mail_template_id = fields.Many2one(
         "mail.template",
@@ -26,11 +27,37 @@ class AccountJournal(models.Model):
         "company's journals for their transactions.",
     )
     has_child_companies = fields.Boolean(compute="_compute_has_child_companies")
+    branch_order = fields.Integer(
+        compute="_compute_branch_order",
+        store=True,
+        help="Priority sequence for branches. Low number if I am a branch, high number if I am a parent",
+    )
 
     @api.depends("company_id", "company_id.child_ids")
     def _compute_has_child_companies(self):
         for journal in self:
             journal.has_child_companies = bool(journal.company_id.child_ids)
+
+    @api.depends("company_id", "company_id.child_ids", "company_id.parent_id")
+    def _compute_branch_order(self):
+        for journal in self:
+            # Calculate the leves of the child hierarchy
+            level = 0
+            companies_to_check = journal.company_id.child_ids
+            while companies_to_check:
+                level += 10
+                # Get all children of the next level
+                companies_to_check = companies_to_check.mapped("child_ids")
+
+            if journal.company_id.child_ids:
+                # If it has children, the base value is 100 plus level
+                journal.branch_order = 100 + level
+            elif journal.company_id.parent_id:
+                # If it's a branch (has a parent), low value
+                journal.branch_order = 100
+            else:
+                # If it has neither parent nor children, base value
+                journal.branch_order = 10
 
     @api.onchange("shared_to_branches")
     def _onchange_shared_to_branches(self):
