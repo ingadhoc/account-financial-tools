@@ -20,11 +20,14 @@ class ExchangeDifferenceWizard(models.TransientModel):
     fiscal_position = fields.Selection(
         [("automatic", "Automatic"), ("manual", "Manual")],
         default="automatic",
+        string="Fiscal Position Mode",
         required=True,
         help="If automatic, fiscal position will be auto detected for each customer, if manual you can force one or none fiscal position.",
     )
     fiscal_position_id = fields.Many2one(
-        "account.fiscal.position", string="Fiscal Position", help="Fiscal position to use for all the customers."
+        "account.fiscal.position",
+        string="Fiscal Position",
+        help="Fiscal position to use for all the customers.",
     )
 
     @api.model
@@ -45,7 +48,10 @@ class ExchangeDifferenceWizard(models.TransientModel):
                 # Recuperamos las líneas de movimiento
                 # por ahora directamente filtramos los que ya se procesaron
                 move_lines = self.env["account.move.line"].search(
-                    [("move_id.exchange_reversal_id", "=", False), ("move_id.exchange_reversed_move_ids", "=", False)]
+                    [
+                        ("move_id.exchange_reversal_id", "=", False),
+                        ("move_id.exchange_reversed_move_ids", "=", False),
+                    ]
                     + [("id", "in", move_line_ids)]
                 )
 
@@ -266,6 +272,7 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             if is_argentina:
                 # Solo consideramos impuestos de IVA (con l10n_ar_vat_afip_code seteado)
                 taxes = line.tax_ids.filtered("tax_group_id.l10n_ar_vat_afip_code")
+                other_taxes = line.tax_ids - taxes
             else:
                 taxes = line.tax_ids
             tax_key = frozenset(taxes.ids)
@@ -274,7 +281,10 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
                     "tax_ids": taxes,
                     "subtotal": 0.0,
                 }
-            tax_groups[tax_key]["subtotal"] += line.price_total
+            if not self.wizard_id.fiscal_position_id:
+                tax_groups[tax_key]["subtotal"] += line.price_total
+            else:
+                tax_groups[tax_key]["subtotal"] += line.price_total - sum(other_taxes.mapped("amount"))
 
         # Calcular el total de subtotales para el prorrateo
         total_subtotal = sum(group["subtotal"] for group in tax_groups.values())
@@ -374,8 +384,11 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             "invoice_line_ids": invoice_line_vals,
         }
 
-        if self.wizard_id.fiscal_position == "manual" and self.wizard_id.fiscal_position_id:
-            invoice_vals["fiscal_position_id"] = self.wizard_id.fiscal_position_id.id
+        if self.wizard_id.fiscal_position == "manual":
+            if self.wizard_id.fiscal_position_id:
+                invoice_vals["fiscal_position_id"] = self.wizard_id.fiscal_position_id.id
+            else:
+                invoice_vals["fiscal_position_id"] = False
 
         # hack para evitar modulo glue con l10n_latam_document
         # hasta el momento tenemos feedback de dos clientes uruguayos de que los ajustes por intereses
