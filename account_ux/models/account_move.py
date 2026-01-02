@@ -23,7 +23,10 @@ class AccountMove(models.Model):
     def _post(self, soft=True):
         """After validate invoice will sent an email to the partner if the related journal has mail_template_id set"""
         res = super()._post(soft=soft)
-        self.action_send_invoice_mail()
+        invoices_ready_to_send = self.filtered(
+            lambda x: not x.is_move_sent and x._is_ready_to_be_sent() and x.state == "posted"
+        )
+        invoices_ready_to_send.action_send_invoice_mail()
         return res
 
     def action_send_invoice_mail(self):
