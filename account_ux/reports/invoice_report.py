@@ -17,12 +17,14 @@ class AccountInvoiceReport(models.Model):
         currency_field="current_currency_id",
         string="Untaxed Total (CC)",
         help="Untaxed Total in the company's currency where it is set",
+        aggregator="sum",
     )
-    price_total = fields.Monetary(string="Total", currency_field="currency_id")
+    price_total = fields.Monetary(string="Total", currency_field="currency_id", aggregator="sum")
     price_average = fields.Monetary(
         currency_field="current_currency_id",
         string="Average Price (CC)",
         help="Average Price in the company's currency where it is set",
+        aggregator="avg",
     )
     price_margin = fields.Float(string="Margin (CC)", help="Margin in the company's currency where it is set")
     # creamos nuevos campos para tener descuentos, vinculos e importes en moneda de compañía
@@ -31,9 +33,14 @@ class AccountInvoiceReport(models.Model):
         readonly=True,
         help="Untaxed Total in the company's currency where it is set",
         currency_field="current_currency_id",
+        aggregator="sum",
     )
     line_id = fields.Many2one("account.move.line", string="Journal Item", readonly=True)
-    price_subtotal_currency = fields.Monetary(string="Untaxed Amount in Currency", currency_field="currency_id")
+    price_subtotal_currency = fields.Monetary(
+        string="Untaxed Amount in Currency",
+        currency_field="currency_id",
+        aggregator="sum",
+    )
     price_unit = fields.Monetary(
         "Unit Price",
         readonly=True,
