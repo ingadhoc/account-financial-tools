@@ -10,17 +10,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-02 14:26+0000\n"
+"POT-Creation-Date: 2026-01-07 14:40+0000\n"
 "PO-Revision-Date: 2025-12-22 15:10+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
-"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
-"account-financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
+"financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
-" ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
+"0) ? 1 : 2);\n"
 "X-Generator: Weblate 5.10.4\n"
 
 #. module: account_ux
@@ -112,6 +112,11 @@ msgstr "Precio promedio"
 #: model:ir.model.fields,help:account_ux.field_account_invoice_report__price_average
 msgid "Average Price in the company's currency where it is set"
 msgstr "Precio Promedio en moneda de la compañía"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__branch_order
+msgid "Branch Order"
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
@@ -484,6 +489,13 @@ msgstr ""
 "facturas."
 
 #. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__branch_order
+msgid ""
+"Priority sequence for branches. Low number if I am a branch, high number if "
+"I am a parent"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_company__reconcile_on_company_currency
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__reconcile_on_company_currency
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
@@ -726,7 +738,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/models/account_payment.py:0
 msgid "You cannot delete this payment, you should set it back to draft first."
-msgstr "No podés eliminar este pago; primero debés volverlo al estado borrador."
+msgstr ""
+"No podés eliminar este pago; primero debés volverlo al estado borrador."
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move_change_rate
