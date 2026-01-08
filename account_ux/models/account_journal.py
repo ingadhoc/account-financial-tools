@@ -69,9 +69,11 @@ class AccountJournal(models.Model):
                 }
             }
 
-    @api.depends("type")
+    @api.depends("type", "company_id.child_ids", "company_id.parent_id")
     def _compute_shared_to_branches(self):
-        shared = self.filtered(lambda j: j.type in ["general", "purchase"])
+        shared = self.filtered(
+            lambda j: j.type in ["general", "purchase"] and j.company_id.child_ids and not j.company_id.parent_id
+        )
         shared.shared_to_branches = True
         (self - shared).shared_to_branches = False
 
