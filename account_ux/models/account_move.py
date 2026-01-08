@@ -172,3 +172,12 @@ class AccountMove(models.Model):
                 move.env.cr.execute("update account_move set inalterable_hash = null where id = %s", (move.id,))
                 move.invalidate_recordset(["inalterable_hash"])
         return super().button_draft()
+
+    @api.model
+    def _cron_account_move_send(self, job_count=10):
+        # The _render_qweb_pdf_prepare_streams method does not correctly generate individual PDF streams when the PDF outlines are missing or invalid.
+        # so we set the limit into 1 in order to ensure that each PDF is generated separately.
+        # mention here https://github.com/odoo/odoo/pull/230813
+        # TODO v20: Check if we still need this workaround.
+        job_count = 1
+        super()._cron_account_move_send(job_count=job_count)
