@@ -8,9 +8,9 @@ class AccountMoveLine(models.Model):
 
     def _compute_account_id(self):
         term_lines = self.env["account.move.line"]
-        if self._context.get("exchange_diff_account_receivable_id"):
+        if self.env.context.get("exchange_diff_account_receivable_id"):
             term_lines = self.filtered(lambda line: line.display_type == "payment_term")
-            term_lines.account_id = self._context.get("exchange_diff_account_receivable_id")
+            term_lines.account_id = self.env.context.get("exchange_diff_account_receivable_id")
         super(AccountMoveLine, self - term_lines)._compute_account_id()
 
     def _compute_exchange_info(self):
@@ -80,7 +80,7 @@ class AccountMoveLine(models.Model):
         #     ("move_id.reversal_move_ids", "=", False),
         #     ("move_id.reversed_entry_id", "=", False),
         # ]
-        # return expression.AND([common_domain, exchange_domain])
+        # return Domain.AND([common_domain, exchange_domain])
 
         return common_domain
 
