@@ -45,7 +45,7 @@
                 <field name="move_name" string="Journal Entry" widget="open_move_widget" readonly="1"/>
                 <field name="ref" readonly="1"/>
                 <field name="exchange_info"/>
-                <field name="account_id" options="{'no_open': True, 'no_create': True}" domain="[('deprecated', '=', False), ('company_ids', 'parent_of', company_id)]" groups="account.group_account_readonly" readonly="1" optional="hide"/>
+                <field name="account_id" options="{'no_open': True, 'no_create': True}" domain="[('active', '=', True), ('company_ids', 'parent_of', company_id)]" groups="account.group_account_readonly" readonly="1" optional="hide"/>
                 <field name="debit" sum="Total Debit" readonly="1" optional="hide"/>
                 <field name="credit" sum="Total Credit" readonly="1" optional="hide"/>
                 <field name="balance" sum="Total Balance" readonly="1"/>
