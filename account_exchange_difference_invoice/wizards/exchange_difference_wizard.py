@@ -144,7 +144,7 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             # Mandamos un mensaje a los pagos relacionados con la diferencia de cambio
             # para que quede constancia de la conciliación con la nota de débito/crédito
             am_id = amls.filtered(lambda x: x.partner_id == rec.partner_id).mapped("move_id.id")
-            partial_reconcile = self.env["account.partial.reconcile"].search([("exchange_move_id.id", "=", am_id)])
+            partial_reconcile = self.env["account.partial.reconcile"].search([("exchange_move_id.id", "in", am_id)])
             related_payments = (
                 (partial_reconcile.mapped("debit_move_id") + partial_reconcile.mapped("credit_move_id"))
                 .filtered(lambda l: l.move_type == "entry")
@@ -353,7 +353,7 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
         invoice_line_vals = []
         for exchange_move in exch_moves:
             partial_reconcile = self.env["account.partial.reconcile"].search(
-                [("exchange_move_id", "=", exchange_move.ids)]
+                [("exchange_move_id", "in", exchange_move.ids)]
             )
             invoice_lines = (
                 (partial_reconcile.debit_move_id + partial_reconcile.credit_move_id)

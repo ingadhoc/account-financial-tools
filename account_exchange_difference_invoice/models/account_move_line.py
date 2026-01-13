@@ -17,7 +17,7 @@ class AccountMoveLine(models.Model):
         for rec in self:
             rec.exchange_info = ""
             partial_reconciles = self.env["account.partial.reconcile"].search(
-                [("exchange_move_id.id", "=", rec.move_id.id)]
+                [("exchange_move_id.id", "in", [rec.move_id.id])]
             )
             if partial_reconciles:
                 exchange_info = (
