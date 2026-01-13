@@ -34,13 +34,6 @@ class ExchangeDifferenceWizard(models.TransientModel):
     def default_get(self, fields):
         res = super().default_get(fields)
 
-        if not self.env.company.exchange_difference_product:
-            raise UserError(
-                _(
-                    "To use this functionality, you must configure a product for exchange differences in the company settings."
-                )
-            )
-
         if "move_line_ids" in self.env.context:
             move_line_ids = self.env.context["move_line_ids"]
 
