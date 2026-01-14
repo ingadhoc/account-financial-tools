@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-13 12:07+0000\n"
-"PO-Revision-Date: 2026-01-13 12:07+0000\n"
+"POT-Creation-Date: 2026-01-14 16:57+0000\n"
+"PO-Revision-Date: 2026-01-14 16:57+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -152,6 +152,7 @@ msgstr ""
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_company__exchange_difference_product
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_config_settings__exchange_difference_product
+#: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.res_config_settings_view_form
 msgid "Exchange Difference Product"
 msgstr ""
 
@@ -299,6 +300,11 @@ msgid "This payment has been reconciled with this %s"
 msgstr ""
 
 #. module: account_exchange_difference_invoice
+#: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.res_config_settings_view_form
+msgid "This product will be set in exchange difference debit/credit notes"
+msgstr ""
+
+#. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_account_move_line_filter
 msgid "To Process"
 msgstr ""
@@ -309,6 +315,14 @@ msgstr ""
 msgid ""
 "To use the exchange difference wizard, the partner's receivable account must"
 " not be set to a foreign currency."
+msgstr ""
+
+#. module: account_exchange_difference_invoice
+#. odoo-python
+#: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
+msgid ""
+"To use this functionality, you must configure a product for exchange "
+"differences in the company settings."
 msgstr ""
 
 #. module: account_exchange_difference_invoice
