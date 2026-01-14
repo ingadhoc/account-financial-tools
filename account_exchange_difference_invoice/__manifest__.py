@@ -14,6 +14,7 @@
         "security/ir.model.access.csv",
         "views/account_move_line_views.xml",
         "wizards/exchange_difference_wizard_views.xml",
+        "views/res_config_settings.xml",
     ],
     "demo": [
         "demo/account_exchange_demo.xml",
