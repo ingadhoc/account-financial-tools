@@ -22,6 +22,7 @@ class AccountChartTemplate(models.AbstractModel):
             self = self.with_company(company)
 
             demo_data = {
+                "product.product": self._exchange_diff_invoice_demo_products(),
                 "res.currency.rate": self._exchange_diff_invoice_demo_rates(),
                 "account.move": self._exchange_diff_invoice_demo_invoices(),
                 "account.journal": self._exchange_diff_invoice_demo_journals(),
@@ -31,8 +32,25 @@ class AccountChartTemplate(models.AbstractModel):
             self.sudo().with_context(skip_pdf_attachment_generation=True, skip_readonly_check=True)._load_data(
                 demo_data
             )
+            # Set exchange product on the company
+            company.exchange_difference_product = self.ref("product_exchange_difference")
             self._exchange_diff_invoice_demo_post_invoices()
             self._exchange_diff_invoice_demo_create_payments()
+
+    @api.model
+    def _exchange_diff_invoice_demo_products(self):
+        return {
+            "product_exchange_difference": {
+                "name": "Exchange Rate Difference",
+                "type": "service",
+                "sale_ok": False,
+                "purchase_ok": False,
+                "standard_price": 0.0,
+                "list_price": 0.0,
+                "default_code": "EXC-DIFF",
+                "company_id": False,
+            },
+        }
 
     @api.model
     def _exchange_diff_invoice_demo_rates(self):
