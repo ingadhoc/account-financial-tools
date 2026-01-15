@@ -132,13 +132,15 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             if rec.balance == 0.0:
                 continue
 
+            invoice_vals = rec._prepare_debit_credit_note(exch_moves, journal, rec_account)
             debit_credit_note = (
                 self.env["account.move"]
                 .with_context(exchange_diff_account_receivable_id=rec_account.id)
-                .create(rec._prepare_debit_credit_note(exch_moves, journal))
+                .create(invoice_vals)
             )
+            # Check the final amount_total to determine document type
             if debit_credit_note.currency_id.round(debit_credit_note.amount_total) < 0:
-                # switch to credit note if the amount is negative
+                # switch to credit note if the final total is negative
                 debit_credit_note.action_switch_move_type()
 
             # estamos dejando el link por ahora solo para facilitar el computado del campo que agregamos en account.move.line
@@ -337,7 +339,7 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
 
         return invoice_line_vals
 
-    def _prepare_debit_credit_note(self, exch_moves, journal):
+    def _prepare_debit_credit_note(self, exch_moves, journal, rec_account):
         """
         Retorna un diccionario con los datos para crear la nota de débito/crédito
         Prorratea el balance entre las diferentes combinaciones de impuestos presentes en las líneas de factura
@@ -367,9 +369,11 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
                 .filtered(lambda move: move.is_sale_document())
                 .mapped("invoice_line_ids")
             )
-            invoice_line_vals += self._prepare_invoice_lines_by_taxes(
-                invoice_lines, account, exchange_move.amount_total_signed
+            # Get balance from receivable account line - this preserves the sign
+            exchange_balance = sum(
+                exchange_move.line_ids.filtered(lambda l: l.account_id == rec_account).mapped("balance")
             )
+            invoice_line_vals += self._prepare_invoice_lines_by_taxes(invoice_lines, account, exchange_balance)
 
         invoice_vals = {
             "move_type": "out_invoice",
