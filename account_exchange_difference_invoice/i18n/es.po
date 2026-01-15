@@ -7,14 +7,17 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-14 16:57+0000\n"
-"PO-Revision-Date: 2026-01-13 12:07+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-01-15 18:10+0000\n"
+"Last-Translator: Gonzalo Lenzi <gl@adhoc.inc>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
+"account-financial-tools-19-0/"
+"account-financial-tools-19-0-account_exchange_difference_invoice/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
@@ -97,7 +100,7 @@ msgstr ""
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
 msgid "Convert to Debit/Credit Note"
-msgstr ""
+msgstr "Convertir a ND/NC"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_exchange_difference_wizard_form
@@ -125,7 +128,7 @@ msgstr ""
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_account_move_line_filter
 msgid "Current Month"
-msgstr ""
+msgstr "Mes Corriente"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_chart_template__display_name
@@ -143,7 +146,7 @@ msgstr ""
 #: model:ir.actions.server,name:account_exchange_difference_invoice.action_exchange_difference_server
 #: model:ir.ui.menu,name:account_exchange_difference_invoice.menu_exchange_difference
 msgid "Exchange Difference"
-msgstr ""
+msgstr "Diferencia de Cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_exchange_difference_line_wizard
@@ -171,7 +174,7 @@ msgstr ""
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_move_line__exchange_info
 msgid "Exchange Info"
-msgstr ""
+msgstr "Info Diferencia de Cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_bank_statement_line__exchange_reversal_id
@@ -182,12 +185,12 @@ msgstr ""
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__fiscal_position_id
 msgid "Fiscal Position"
-msgstr ""
+msgstr "Posición Fiscal"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__fiscal_position
 msgid "Fiscal Position Mode"
-msgstr ""
+msgstr "Modo Posición Fiscal"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,help:account_exchange_difference_invoice.field_account_exchange_difference_wizard__fiscal_position_id
