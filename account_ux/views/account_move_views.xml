@@ -96,6 +96,11 @@
                 <button name="%(action_account_move_change_rate)d" type="action" icon="fa-pencil" class="btn-link" invisible="not invoice_date or state != 'draft' or currency_id == company_currency_id" title="Edit Rate"/>
             </div>
 
+            <!-- Hide the bill/receipt selector widget -->
+            <xpath expr="//div[hasclass('oe_title')]/span[hasclass('o_form_label')][field[@name='move_type'][@widget='receipt_selector']]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
         </field>
     </record>
 
