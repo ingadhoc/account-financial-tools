@@ -5,3 +5,4 @@
 from . import account_change_currency
 from . import account_move_change_rate
 from . import res_config_settings
+from . import mail_compose_message
