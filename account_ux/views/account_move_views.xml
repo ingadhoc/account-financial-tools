@@ -115,6 +115,12 @@
                 <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
 
+
+            <!-- Hide the bill/receipt selector widget -->
+            <xpath expr="//div[hasclass('oe_title')]/span[hasclass('o_form_label')][field[@name='move_type'][@widget='receipt_selector']]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
         </field>
     </record>
 

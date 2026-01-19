@@ -9,6 +9,9 @@
                 <attribute name="confirm">The accounting plan will be reloaded, creating accounts, taxes, and other records that may be missing. It is recommended to perform this action in a testing environment before implementing it in production to avoid potential inconsistencies
                 </attribute>
             </xpath>
+            <xpath expr="//setting[@id='show_sale_receipts']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
