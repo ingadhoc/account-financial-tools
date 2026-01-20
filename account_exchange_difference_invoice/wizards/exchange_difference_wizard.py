@@ -129,6 +129,8 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
 
             move.action_post()
 
+            invoice_vals = rec._prepare_debit_credit_note(exch_moves, journal, rec_account)
+
             if rec.balance == 0.0:
                 continue
 
