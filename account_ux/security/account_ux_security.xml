@@ -8,4 +8,18 @@
         <field name="name">Show invoice reference field on tree and main form views</field>
     </record>
 
+    <record id="account.journal_comp_rule" model="ir.rule">
+        <field name="name">Journal multi-company</field>
+        <field name="model_id" ref="model_account_journal"/>
+        <field name="domain_force">
+            [
+                '|',
+                ('company_id', 'in', company_ids),
+                '&amp;',
+                ('company_id', 'parent_of', company_ids),
+                ('shared_to_branches', '=', True)
+            ]
+        </field>
+    </record>
+
 </odoo>
