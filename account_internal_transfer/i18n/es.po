@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-03 20:00+0000\n"
-"PO-Revision-Date: 2025-12-18 18:10+0000\n"
+"POT-Creation-Date: 2026-01-21 14:11+0000\n"
+"PO-Revision-Date: 2026-01-21 14:11+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
 "account-financial-tools-19-0/"
@@ -68,16 +68,31 @@ msgstr ""
 "                <strong>Total Transacción:</strong>"
 
 #. module: account_internal_transfer
+#. odoo-python
+#: code:addons/account_internal_transfer/models/account_payment.py:0
+msgid ""
+"<div class=\"alert alert-warning\" role=\"alert\"><i class=\"fa fa-"
+"exclamation-triangle\"></i> This payment is in <strong>%s</strong> state but"
+" the paired one is in <strong>%s</strong> state. Ensure both are in the same"
+" state when finished making changes. <a href=\"%s\" class=\"btn btn-sm btn-"
+"warning\" style=\"margin-left: 10px;\"><i class=\"fa fa-external-link\"></i>"
+" Go to Paired Payment</a></div>"
+msgstr ""
+"<div class=\"alert alert-warning\" role=\"alert\"><i class=\"fa fa-"
+"exclamation-triangle\"></i> Este pago está en estado <strong>%s</strong> pero"
+" el pago relacionado está en estado <strong>%s</strong>. Asegúrese de que ambos estén en el mismo"
+" estado cuando termine de hacer cambios. <a href=\"%s\" class=\"btn btn-sm btn-"
+"warning\" style=\"margin-left: 10px;\"><i class=\"fa fa-external-link\"></i>"
+" Ir al Pago Emparejado</a></div>"
+
+#. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.view_account_payment_form
 msgid ""
-"<span invisible=\"paired_internal_transfer_payment_id or not "
-"is_internal_transfer or state != 'draft'\" class=\"fst-italic\">\n"
-"                        A second payment will be created in the destination "
-"journal.\n"
+"<span invisible=\"paired_internal_transfer_payment_id or not is_internal_transfer or state != 'draft'\" class=\"fst-italic\">\n"
+"                        A second payment will be created in the destination journal.\n"
 "                    </span>"
 msgstr ""
-"<span invisible=\"paired_internal_transfer_payment_id or not "
-"is_internal_transfer or state != 'draft'\" class=\"fst-italic\">\n"
+"<span invisible=\"paired_internal_transfer_payment_id or not is_internal_transfer or state != 'draft'\" class=\"fst-italic\">\n"
 "                        Un segundo pago se creará en el diario destino.\n"
 "                    </span>"
 
@@ -167,6 +182,12 @@ msgid "Main Company"
 msgstr "Empresa Principal"
 
 #. module: account_internal_transfer
+#. odoo-python
+#: code:addons/account_internal_transfer/models/account_payment.py:0
+msgid "Paired Payment"
+msgstr "Pago Emparejado"
+
+#. module: account_internal_transfer
 #: model:ir.model,name:account_internal_transfer.model_account_payment
 msgid "Payments"
 msgstr "Pagos"
@@ -177,10 +198,16 @@ msgid "Reporte de Transferencia"
 msgstr "Reporte de Transferencia"
 
 #. module: account_internal_transfer
+#: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__show_warning
+msgid "Show Warning"
+msgstr "Mostrar Advertencia"
+
+#. module: account_internal_transfer
 #. odoo-python
 #: code:addons/account_internal_transfer/models/account_payment.py:0
 msgid ""
-"The origin or destination payment methods do not have an outstanding account."
+"The origin or destination payment methods do not have an outstanding "
+"account."
 msgstr ""
 "Los métodos de pago de origen o destino no tienen una cuenta pendiente."
 
