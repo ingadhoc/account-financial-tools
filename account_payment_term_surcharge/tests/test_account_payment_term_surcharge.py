@@ -13,6 +13,8 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
         self.partner_ri = self.env['res.partner'].search([('name', '=', 'ADHOC SA')], limit=1)
         self.first_company_journal = self.env.ref('account.1_sale')
 
+        self.env.company = self.first_company
+
         self.product_surcharge = self.env.ref('product.product_product_16')
         self.env['res.config.settings'].search([('company_id', '=', self.first_company.id)]).payment_term_surcharge_product_id = self.product_surcharge.id
 
@@ -40,7 +42,7 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
             'invoice_payment_term_id': self.payment_term.id,
             'invoice_line_ids': [
                 Command.create({
-                    'product_id': self.env.ref('product.product_product_16').id,
+                    'product_id': self.env.ref('product.product_product_6').id,
                     'quantity': 1,
                     'price_unit': 1000,
                 }),
