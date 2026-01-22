@@ -79,7 +79,7 @@ class ResPartner(models.Model):
         if only_currency_lines and len(company_currency_ids) == 1:
             domain += [("currency_id", "not in", company_currency_ids.ids)]
 
-        if secondary_currency:
+        if only_currency_lines:
             domain += [("amount_currency", "!=", 0.0)]
 
         if not historical_full:
