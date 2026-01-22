@@ -60,6 +60,12 @@ class AccountMove(models.Model):
                     body_is_html=True,
                 )
 
+    def _get_mail_template(self):
+        res = super()._get_mail_template()
+        if self.journal_id.mail_template_id:
+            res = self.journal_id.mail_template_id
+        return res
+
     @api.onchange("partner_id")
     def _onchange_partner_commercial(self):
         if self.partner_id.user_id:
