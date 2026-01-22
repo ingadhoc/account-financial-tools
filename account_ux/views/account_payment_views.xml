@@ -24,4 +24,16 @@
                 </button>
             </field>
     </record>
+    <record id="view_account_payment_search" model="ir.ui.view">
+        <field name="name">account.payment.search.inherit.not.sent</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="(//filter[@name='state_sent'])[2]" position="attributes">
+                <attribute name="domain">
+                    [('is_sent', '=', False), ('state', '!=', 'cancel')]
+                </attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>
