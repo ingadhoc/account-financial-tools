@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account UX",
-    "version": "19.0.1.4.0",
+    "version": "19.0.1.5.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -28,7 +28,7 @@
     "license": "AGPL-3",
     "images": [],
     "depends": [
-        "account",
+        "account_background_post",
         "sale",
         "base_vat",
         "account_debit_note",
