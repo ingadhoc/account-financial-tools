@@ -92,23 +92,15 @@
             </xpath>
 
         <!-- Temas de multimoneda -->
-
-            <xpath expr="//div[@name='currency_div']//div//field[@name='currency_id']" position="attributes">
-                <attribute name="class">w-50</attribute>
-            </xpath>
-
-            <!-- TODO que si alguna localizacion lo solicita al reves tenemos que analizar de hacerlo parametrizable o hardcodeado por país o algo así. -->
             <xpath expr="//div[@name='currency_conversion_div']" position="replace">
                 <div name="currency_conversion_div"
-                    class="d-flex text-muted float-start"
+                    class="d-flex gap-1 text-muted"
                     invisible="currency_id == company_currency_id">
-                    <span>1.00 </span>
-                    <field name="currency_id" readonly="True" options="{'no_open': True}"/>
-                    <span> = </span>
-                    <field name="inverse_invoice_currency_rate" digits="[12,3]" readonly="True" invisible="inverse_invoice_currency_rate == 1.0"/>
-                    <span invisible="inverse_invoice_currency_rate != 1.0">1.00</span>
-                    <span> </span>
-                    <field name="company_currency_id" readonly="True" options="{'no_open': True}"/>
+                    <span>1</span>
+                    <field name="currency_id" readonly="True" options="{'no_open': True}" class="w-auto"/>
+                    <span>=</span>
+                    <field name="user_currency_rate" digits="[12,3]" readonly="state != 'draft' or not invoice_date" style="max-width: 21ch;"/>
+                    <field name="company_currency_id" readonly="True" options="{'no_open': True}" class="w-auto"/>
                 </div>
             </xpath>
 
@@ -118,13 +110,10 @@
                 </div>
             </header>
 
-            <xpath expr="//div[@name='currency_div']//div//field[@name='currency_id']" position="after">
+            <!-- Reemplazar el widget del calendario por el botón de cambio de moneda en línea -->
+            <xpath expr="//widget[@name='account_pick_currency_date']" position="replace">
                 <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
-
-            <div name="currency_conversion_div">
-                <button name="%(action_account_move_change_rate)d" type="action" icon="fa-pencil" class="btn-link" invisible="not invoice_date or state != 'draft' or currency_id == company_currency_id" title="Edit Rate"/>
-            </div>
 
         </field>
     </record>
