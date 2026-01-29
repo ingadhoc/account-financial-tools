@@ -38,7 +38,6 @@
         "security/ir.model.access.csv",
         "data/mail_template_data.xml",
         "wizards/account_change_currency_views.xml",
-        "wizards/account_move_change_rate_views.xml",
         "wizards/res_config_settings_views.xml",
         "views/account_account_views.xml",
         "views/account_fiscal_position_views.xml",

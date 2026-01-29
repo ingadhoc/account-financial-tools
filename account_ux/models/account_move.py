@@ -10,6 +10,26 @@ class AccountMove(models.Model):
 
     internal_notes = fields.Html()
     inverse_invoice_currency_rate = fields.Float(compute="_compute_inverse_invoice_currency_rate")
+    user_currency_rate = fields.Float(
+        string="User Invoice Currency Rate",
+        compute="_compute_user_currency_rate",
+        inverse="_inverse_user_currency_rate",
+        store=False,
+    )
+
+    @api.depends("invoice_currency_rate")
+    def _compute_user_currency_rate(self):
+        for rec in self:
+            rec.user_currency_rate = 1.0 / rec.invoice_currency_rate if rec.invoice_currency_rate else 0.0
+
+    def _inverse_user_currency_rate(self):
+        for rec in self:
+            if rec.user_currency_rate:
+                self.message_post(
+                    body=_("Invoice currency rate changed from %s to %s")
+                    % (1.0 / rec.invoice_currency_rate, rec.user_currency_rate)
+                )
+                rec.invoice_currency_rate = 1.0 / rec.user_currency_rate
 
     def get_invoice_report(self):
         self.ensure_one()
