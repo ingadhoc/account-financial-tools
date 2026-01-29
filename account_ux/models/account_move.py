@@ -42,6 +42,12 @@ class AccountMove(models.Model):
 
     def action_post(self):
         """After validate invoice will sent an email to the partner if the related journal has mail_template_id set"""
+
+        # Refresh the currency rate if no invoice date is set and the currency is different from company currency
+        for move in self:
+            if not move.invoice_date and move.currency_id != move.company_id.currency_id:
+                move.refresh_invoice_currency_rate()
+
         # Use action_post to ensure the mail is sent only when the move is posted
         res = super().action_post()
         self.action_send_invoice_mail()
