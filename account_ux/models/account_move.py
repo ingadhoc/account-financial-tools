@@ -28,23 +28,19 @@ class AccountMove(models.Model):
         return res
 
     def action_send_invoice_mail(self):
+        move_send = self.env["account.move.send"]
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             if rec.partner_id.email:
                 try:
-                    rec.message_post_with_source(rec.journal_id.mail_template_id, subtype_xmlid="mail.mt_comment")
+                    move_send._generate_and_send_invoices(
+                        rec,
+                        allow_raising=False,
+                        sending_methods={"email"},
+                        mail_template=rec.journal_id.mail_template_id,
+                    )
                     rec.is_move_sent = True
                 except Exception as error:
                     title = _("ERROR: Invoice was not sent via email")
-                    # message = _(
-                    #     "Invoice %s was correctly validate but was not send"
-                    #     " via email. Please review invoice chatter for more"
-                    #     " information" % rec.display_name
-                    # )
-                    # self.env.user.notify_warning(
-                    #     title=title,
-                    #     message=message,
-                    #     sticky=True,
-                    # )
                     rec.message_post(
                         body="<br/><br/>".join(
                             [
