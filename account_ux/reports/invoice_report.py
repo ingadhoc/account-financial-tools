@@ -29,7 +29,7 @@ class AccountInvoiceReport(models.Model):
     total_cc = fields.Monetary(
         string="Total (CC)",
         readonly=True,
-        help="Untaxed Total in the company's currency where it is set",
+        help="Taxed Total in the company's currency where it is set",
         currency_field="current_currency_id",
     )
     line_id = fields.Many2one("account.move.line", string="Journal Item", readonly=True)
