@@ -20,6 +20,11 @@
                 <attribute name="optional">hide if parent.move_type in ['in_invoice', 'in_refund', 'in_receipt'] else show</attribute>
             </field>
 
+            <!-- lo dejamos siempre visible para que si el cliente modifica cosas por edicion masiva, expo/impo u otras o manualmente, pueda siempre re-computar según la FP -->
+            <button name="action_update_fpos_values" position="attributes">
+                <attribute name="invisible">state in ['cancel', 'posted']</attribute>
+            </button>
+
             <button name="button_draft" position="after">
                 <button name="delete_number" string="Delete Number" invisible="state != 'cancel' or not name or name == '/'" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
             </button>
