@@ -184,3 +184,15 @@ class AccountMove(models.Model):
         # TODO v20: Check if we still need this workaround.
         job_count = 1
         super()._cron_account_move_send(job_count=job_count)
+
+    @api.onchange("fiscal_position_id")
+    def _onchange_fiscal_position_id(self):
+        """
+        Hacemos similar a sale_ux, cambiar FP re-computa automáticamente impuestos.
+        No llamamos a action_update_fpos_values() porque hace más cosas y lo queremos matener mínimo similar a sale_ux
+        """
+        self.ensure_one()
+        lines_to_recompute = self.invoice_line_ids.filtered(
+            lambda line: line.display_type not in ("line_section", "line_note")
+        )
+        lines_to_recompute._compute_tax_ids()
