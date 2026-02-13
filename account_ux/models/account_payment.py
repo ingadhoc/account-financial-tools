@@ -30,3 +30,7 @@ class AccountPayment(models.Model):
     def _check_payment_state(self):
         if not self._context.get("force_delete") and any(m.state not in ("draft", "canceled") for m in self):
             raise UserError(_("You cannot delete this payment, you should set it back to draft first."))
+
+    def action_post(self):
+        super().action_post()
+        self.filtered(lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card").state = "paid"
