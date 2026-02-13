@@ -39,3 +39,7 @@ class AccountPayment(models.Model):
                     _("No journals available for company %s and payment type %s.")
                     % (pay.company_id.name, dict(pay._fields["payment_type"].selection).get(pay.payment_type))
                 )
+
+    def action_post(self):
+        super().action_post()
+        self.filtered(lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card").state = "paid"
