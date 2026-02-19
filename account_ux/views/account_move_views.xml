@@ -22,8 +22,33 @@
 
             <!-- lo dejamos siempre visible para que si el cliente modifica cosas por edicion masiva, expo/impo u otras o manualmente, pueda siempre re-computar según la FP -->
             <button name="action_update_fpos_values" position="attributes">
-                <attribute name="invisible">state in ['cancel', 'posted']</attribute>
+                <attribute name="invisible">True</attribute>
             </button>
+
+            <xpath expr="//page[@id='other_tab']//field[@name='fiscal_position_id']" position="replace">
+                <label for="fiscal_position_id"/>
+                <div class="o_row">
+                    <field name="fiscal_position_id"/>
+                    <button name="action_update_fpos_values" type="object"
+                        string=" Update Taxes"
+                        help="Recompute all taxes based on this fiscal position"
+                        class="btn-link mb-1 px-0" icon="fa-refresh"
+                        confirm="This will update all taxes based on the currently selected fiscal position."
+                        invisible="state in ['cancel', 'posted']"/>
+                </div>
+            </xpath>
+            <xpath expr="//page[@id='other_tab_entry']//field[@name='fiscal_position_id']" position="replace">
+                <label for="fiscal_position_id"/>
+                <div class="o_row">
+                    <field name="fiscal_position_id"/>
+                    <button name="action_update_fpos_values" type="object"
+                        string=" Update Taxes"
+                        help="Recompute all taxes based on this fiscal position"
+                        class="btn-link mb-1 px-0" icon="fa-refresh"
+                        confirm="This will update all taxes based on the currently selected fiscal position."
+                        invisible="state in ['cancel', 'posted']"/>
+                </div>
+            </xpath>
 
             <button name="button_draft" position="after">
                 <button name="delete_number" string="Delete Number" invisible="state != 'cancel' or not name or name == '/'" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
