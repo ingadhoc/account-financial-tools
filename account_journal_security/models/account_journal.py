@@ -117,45 +117,36 @@ class AccountJournal(models.Model):
         user = self.env.user
         # Agregamos el with_user ya que por alguna razon llega con sudo y nos da un falso positivo indicando
         # que el usuario es super usuario. De esta forma nos aseguramos verdaderamente si lo es.
-        if not self.with_user(user.id).env.is_superuser():
-            self.env.cr.execute(
-                """
-                SELECT journal_id
-                FROM journal_security_journal_users
-                WHERE user_id = %s
-            """,
-                (user.id,),
-            )
-            user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
-
-            domain += ["|", ("user_ids", "=", False), ("id", "in", user_journal_ids)]
-
-            self.env.cr.execute(
-                """
+        self.env.cr.execute(
+            """
                 SELECT journal_id
                 FROM journal_security_journal_modification_users
                 WHERE user_id != %s
             """,
-                (user.id,),
-            )
-            modification_journal_ids = [r[0] for r in self.env.cr.fetchall()]
-            self.env.cr.execute(
-                """
+            (user.id,),
+        )
+        modification_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+        self.env.cr.execute(
+            """
                 SELECT journal_id
                 FROM journal_security_journal_users
                 WHERE user_id != %s
             """,
-                (user.id,),
-            )
-            restric_user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
-            journal_ids = restric_user_journal_ids + modification_journal_ids
-            if limit == 1 and journal_ids:
-                # Agregamos el domain de los journals donde el usuario tiene permisos
-                domain += [
-                    "|",
-                    ("user_ids", "=", False),
-                    ("id", "not in", journal_ids),
-                ]
+            (user.id,),
+        )
+        restric_user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+        journal_ids = restric_user_journal_ids + modification_journal_ids
+        if not self.with_user(user.id).env.is_superuser() and self.env.context.get("journal_security", False):
+            domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", journal_ids)]
+        if limit == 1 and not self.with_user(user.id).env.is_superuser():
+            # Agregamos el domain de los journals donde el usuario tiene permisos
+            domain += [
+                "|",
+                "&",
+                ("user_ids", "=", False),
+                ("modification_user_ids", "=", False),
+                ("id", "not in", journal_ids),
+            ]
         return super()._search(domain, offset, limit, order, **kwargs)
 
     @api.onchange("journal_restriction")
