@@ -56,33 +56,21 @@ class AccountMove(models.Model):
         return super()._post(soft=soft)
 
     def action_send_invoice_mail(self):
-        move_send = self.env["account.move.send"]
+        # Backport de mejora de 19, el envío de facturas lo hacemos siempre asincrónico para no sobrecargar el proceso de posteo de factura
         for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
             if rec.partner_id.email:
-                try:
-                    move_send._generate_and_send_invoices(
-                        rec,
-                        allow_raising=False,
-                        sending_methods={"email"},
-                        mail_template=rec.journal_id.mail_template_id,
-                    )
-                    rec.is_move_sent = True
-                except Exception as error:
-                    title = _("ERROR: Invoice was not sent via email")
-                    rec.message_post(
-                        body="<br/><br/>".join(
-                            [
-                                "<b>" + title + "</b>",
-                                _("Please check the email template associated with the invoice journal."),
-                                "<code>" + str(error) + "</code>",
-                            ]
-                        ),
-                        body_is_html=True,
-                    )
+                # Seteamos la data para que el cron nativo lo procese luego
+                rec.sending_data = {
+                    "sending_methods": ["email"],
+                    "mail_template_id": rec.journal_id.mail_template_id.id,
+                    "author_partner_id": self.env.user.partner_id.id,
+                }
+                continue
             else:
+                # Si no hay email del partner, registramos un error en el chatter
                 rec.message_post(
                     body=_(
-                        "<b>Error sending the invoice</b>: partner %s does not have an email address defined.",
+                        "<b>Error enviando la factura</b>: el partner %s no tiene una dirección de correo definida.",
                         rec.partner_id.name,
                     ),
                     body_is_html=True,
