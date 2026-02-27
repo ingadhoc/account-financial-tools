@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 13:44+0000\n"
+"POT-Creation-Date: 2026-02-27 13:52+0000\n"
 "PO-Revision-Date: 2025-12-22 15:10+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -56,22 +56,13 @@ msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
-msgid ""
-"<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
-"                    <span> </span>"
+msgid "<span>1</span>"
 msgstr ""
-"<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
-"                    <span> </span>"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
-msgid "<span> = </span>"
-msgstr "<span> = </span>"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
-msgid "<span>1.00 </span>"
-msgstr "<span>1.00 </span>"
+msgid "<span>=</span>"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
@@ -120,7 +111,6 @@ msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -131,20 +121,10 @@ msgid "Change Currency"
 msgstr "Cambiar Moneda"
 
 #. module: account_ux
-#: model:ir.actions.act_window,name:account_ux.action_account_move_change_rate
-msgid "Change Currency Rate"
-msgstr "Modificar Tipo de Cambio"
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Change Currency and Rate"
 msgstr "Modificar Moneda y Tipo de Cambio"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
-msgid "Change Rate"
-msgstr "Modificar Tipo de Cambio"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -187,13 +167,11 @@ msgstr "Tasa de Conversión"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_date
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__create_date
 msgid "Created on"
 msgstr "Creado en"
 
@@ -209,7 +187,6 @@ msgstr "Moneda Origen"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_currency_rate
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__currency_rate
 msgid "Currency Rate"
 msgstr "Tipo de cambio"
 
@@ -223,12 +200,6 @@ msgstr "Moneda cambiada de %s a %s con tasa %s"
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
 msgid "Currency from Invoice"
 msgstr "Moneda de la Factura"
-
-#. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/wizards/account_move_change_rate.py:0
-msgid "Currency rate changed from '%s' to '%s' . Currency rate forced"
-msgstr "El tipo de cambio se modificó de '%s' a '%s' . Tipo de cambio forzado"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
@@ -286,7 +257,6 @@ msgstr "Importe de Descuento"
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_move__display_name
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_payment_method_line__display_name
@@ -308,11 +278,6 @@ msgstr "Fecha de Vencimiento"
 #: code:addons/account_ux/models/account_move.py:0
 msgid "ERROR: Invoice was not sent via email"
 msgstr "ERROR: La factura no fue enviada por correo electrónico"
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
-msgid "Edit Rate"
-msgstr "Modificar Tasa"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__mail_template_id
@@ -348,7 +313,6 @@ msgstr "Tiene sucursales"
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__id
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__id
 #: model:ir.model.fields,field_description:account_ux.field_account_move__id
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__id
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__id
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__id
 #: model:ir.model.fields,field_description:account_ux.field_account_payment_method_line__id
@@ -399,6 +363,12 @@ msgid "Invoice Currency"
 msgstr "Moneda de la Factura"
 
 #. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid "Invoice currency rate changed from %s to %s"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_account_invoice_report
 msgid "Invoices Statistics"
 msgstr "Estadísticas de facturas"
@@ -427,13 +397,11 @@ msgstr "Apunte contable"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización realizada por"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_date
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 
@@ -454,7 +422,6 @@ msgstr "Referencia"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__move_id
-#: model:ir.model.fields,field_description:account_ux.field_account_move_change_rate__move_id
 msgid "Move"
 msgstr "Movimiento"
 
@@ -549,7 +516,6 @@ msgstr "Selecciona una moneda para aplicar en la factura"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__conversion_rate
-#: model:ir.model.fields,help:account_ux.field_account_move_change_rate__currency_rate
 msgid "Select a rate to apply on the invoice"
 msgstr "Selecciona una cotización para aplicar en la factura"
 
@@ -702,6 +668,12 @@ msgid "Update Taxes"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__user_currency_rate
+#: model:ir.model.fields,field_description:account_ux.field_account_move__user_currency_rate
+msgid "User Invoice Currency Rate"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
 #: model:ir.ui.menu,name:account_ux.menu_vendor_ledger
 msgid "Vendors Ledger"
@@ -778,12 +750,35 @@ msgstr ""
 "No podés eliminar este pago; primero debés volverlo al estado borrador."
 
 #. module: account_ux
-#: model:ir.model,name:account_ux.model_account_move_change_rate
-msgid "account.move.change.rate"
-msgstr "Cambio de tipo de cambio en el asiento contable"
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
 msgid "or"
 msgstr "o"
+
+#~ msgid ""
+#~ "<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
+#~ "                    <span> </span>"
+#~ msgstr ""
+#~ "<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
+#~ "                    <span> </span>"
+
+#~ msgid "<span> = </span>"
+#~ msgstr "<span> = </span>"
+
+#~ msgid "<span>1.00 </span>"
+#~ msgstr "<span>1.00 </span>"
+
+#~ msgid "Change Currency Rate"
+#~ msgstr "Modificar Tipo de Cambio"
+
+#~ msgid "Change Rate"
+#~ msgstr "Modificar Tipo de Cambio"
+
+#~ msgid "Currency rate changed from '%s' to '%s' . Currency rate forced"
+#~ msgstr ""
+#~ "El tipo de cambio se modificó de '%s' a '%s' . Tipo de cambio forzado"
+
+#~ msgid "Edit Rate"
+#~ msgstr "Modificar Tasa"
+
+#~ msgid "account.move.change.rate"
+#~ msgstr "Cambio de tipo de cambio en el asiento contable"
