@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-27 13:52+0000\n"
-"PO-Revision-Date: 2026-02-27 13:52+0000\n"
+"POT-Creation-Date: 2026-03-10 13:57+0000\n"
+"PO-Revision-Date: 2026-03-10 13:57+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -530,15 +530,6 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_invoice_report__total_cc
 msgid "Taxed Total in the company's currency where it is set"
-msgstr ""
-
-#. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.res_config_settings_view_form
-msgid ""
-"The accounting plan will be reloaded, creating accounts, taxes, and other "
-"records that may be missing. It is recommended to perform this action in a "
-"testing environment before implementing it in production to avoid potential "
-"inconsistencies"
 msgstr ""
 
 #. module: account_ux
