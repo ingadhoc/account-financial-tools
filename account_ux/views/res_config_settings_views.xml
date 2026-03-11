@@ -8,6 +8,14 @@
             <xpath expr="//button[@name='reload_template']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='sale_tax_id']" position="attributes">
+                <attribute name="domain">[]</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='purchase_tax_id']" position="attributes">
+                <attribute name="domain">[]</attribute>
+            </xpath>
+
         </field>
     </record>
 </odoo>
