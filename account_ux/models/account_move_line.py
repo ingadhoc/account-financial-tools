@@ -112,13 +112,29 @@ class AccountMoveLine(models.Model):
         """Cuando se realiza un cobro de un recibo y el comprobante que se paga tiene moneda secundaria y queda totalmente conciliado en moneda de compañía pero no en moneda secundaria (ejemplo: diferencia de un centavo) lo que hacemos con este método es forzar que quede conciliado también en moneda secundaria."""
         super()._compute_amount_residual()
         need_amount_residual_currency_adjustment = self.filtered(
-            lambda x: not x.reconciled
-            and x.company_id.reconcile_on_company_currency
-            and (x.account_id.reconcile or x.account_id.account_type in ("asset_cash", "liability_credit_card"))
-            and (x.company_currency_id or self.env.company.currency_id).is_zero(x.amount_residual)
-            and not (x.currency_id or (x.company_currency_id or self.env.company.currency_id)).is_zero(
-                x.amount_residual_currency
+            lambda x: (
+                not x.reconciled
+                and x.company_id.reconcile_on_company_currency
+                and (x.account_id.reconcile or x.account_id.account_type in ("asset_cash", "liability_credit_card"))
+                and (x.company_currency_id or self.env.company.currency_id).is_zero(x.amount_residual)
+                and not (x.currency_id or (x.company_currency_id or self.env.company.currency_id)).is_zero(
+                    x.amount_residual_currency
+                )
             )
         )
         need_amount_residual_currency_adjustment.amount_residual_currency = 0.0
         need_amount_residual_currency_adjustment.reconciled = True
+
+    def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None, **kwargs):
+        # Usamos la fecha del pago solo cuando todas las líneas comparten la misma,
+        # y hacemos fallback al exchange_date recibido en caso contrario.
+        payment_dates = self.mapped("payment_id.date")
+        safe_exchange_date = exchange_date
+        if payment_dates:
+            unique_dates = set(payment_dates)
+            if len(unique_dates) == 1:
+                safe_exchange_date = payment_dates[0]
+
+        return super()._prepare_exchange_difference_move_vals(
+            amounts_list, company=company, exchange_date=safe_exchange_date, **kwargs
+        )
