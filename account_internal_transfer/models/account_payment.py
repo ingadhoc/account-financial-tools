@@ -257,7 +257,12 @@ class AccountPayment(models.Model):
     def _compute_show_warning(self):
         for pay in self:
             paired_pay = pay.paired_internal_transfer_payment_id
-            if pay.is_internal_transfer and paired_pay and paired_pay.state != pay.state:
+            if (
+                pay.is_internal_transfer
+                and paired_pay
+                and paired_pay.state != pay.state
+                and (pay.state in ["draft", "canceled"] or paired_pay.state in ["draft", "canceled"])
+            ):
                 state_labels = dict(pay._fields["state"]._description_selection(pay.env))
                 base_url = pay.env["ir.config_parameter"].sudo().get_param("web.base.url")
                 action_url = f"{base_url}/web#id={paired_pay.id}&model=account.payment&view_type=form"
