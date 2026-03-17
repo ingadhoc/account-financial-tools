@@ -134,8 +134,19 @@ class AccountJournal(models.Model):
             """,
             (user.id,),
         )
+        self.env.cr.execute(
+            """
+                SELECT journal_id
+                FROM journal_security_journal_users
+                WHERE user_id = %s
+            """,
+            (user.id,),
+        )
+        user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
         restric_user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
         journal_ids = restric_user_journal_ids + modification_journal_ids
+        if not self.with_user(user.id).env.is_superuser() and not self.env.context.get("journal_security", False):
+            domain += ["|", ("user_ids", "=", False), ("id", "in", user_journal_ids)]
         if not self.with_user(user.id).env.is_superuser() and self.env.context.get("journal_security", False):
             domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", journal_ids)]
         if limit == 1 and not self.with_user(user.id).env.is_superuser():
