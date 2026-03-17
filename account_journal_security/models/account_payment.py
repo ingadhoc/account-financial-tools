@@ -1,9 +1,8 @@
-from odoo import fields, models
+from odoo import models
 
 
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
-    journal_id = fields.Many2one(
-        context={"journal_security": True},
-    )
+    def _compute_available_journal_ids(self):
+        super(AccountPayment, self.with_context(journal_security=True))._compute_available_journal_ids()
