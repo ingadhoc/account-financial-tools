@@ -1,5 +1,5 @@
 <odoo>
-    <record id="account_debt_report" model="ir.actions.report">
+<!--    <record id="account_debt_report" model="ir.actions.report">
         <field name="name">Account Debt Report</field>
         <field name="model">res.partner</field>
         <field name="report_name">account_debt_report</field>
@@ -8,5 +8,5 @@
         <field name="out_format" ref="report_aeroo.report_mimetypes_xls_odt"/>
         <field name="report_file">account_debt_report/report/account_debt_report.ods</field>
         <field name="tml_source">file</field>
-    </record>
+    </record>-->
 </odoo>
