@@ -9,6 +9,22 @@ class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     reconcile_on_company_currency = fields.Boolean(related="company_id.reconcile_on_company_currency", readonly=False)
+    sale_tax_id = fields.Many2one(
+        "account.tax",
+        string="Default Sale Tax",
+        related="company_id.account_sale_tax_id",
+        readonly=False,
+        check_company=True,
+        domain=[("type_tax_use", "in", ["sale", "all"])],
+    )
+    purchase_tax_id = fields.Many2one(
+        "account.tax",
+        string="Default Purchase Tax",
+        related="company_id.account_purchase_tax_id",
+        readonly=False,
+        check_company=True,
+        domain=[("type_tax_use", "in", ["purchase", "all"])],
+    )
 
     @api.onchange("reconcile_on_company_currency")
     def _onchange_reconcile_on_company_currency(self):
