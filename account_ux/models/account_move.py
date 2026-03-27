@@ -9,27 +9,29 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     internal_notes = fields.Html()
-    inverse_invoice_currency_rate = fields.Float(compute="_compute_inverse_invoice_currency_rate")
-    user_currency_rate = fields.Float(
-        string="User Invoice Currency Rate",
-        compute="_compute_user_currency_rate",
-        inverse="_inverse_user_currency_rate",
-        store=False,
+    inverse_invoice_currency_rate = fields.Float(
+        compute="_compute_inverse_invoice_currency_rate", inverse="_inverse_inverse_invoice_currency_rate"
     )
 
     @api.depends("invoice_currency_rate")
-    def _compute_user_currency_rate(self):
+    def _compute_inverse_invoice_currency_rate(self):
         for rec in self:
-            rec.user_currency_rate = 1.0 / rec.invoice_currency_rate if rec.invoice_currency_rate else 0.0
+            rec.inverse_invoice_currency_rate = 1.0 / rec.invoice_currency_rate if rec.invoice_currency_rate else 1.0
 
-    def _inverse_user_currency_rate(self):
+    def _inverse_inverse_invoice_currency_rate(self):
         for rec in self:
-            if rec.user_currency_rate:
-                self.message_post(
-                    body=_("Invoice currency rate changed from %s to %s")
-                    % (1.0 / rec.invoice_currency_rate, rec.user_currency_rate)
-                )
-                rec.invoice_currency_rate = 1.0 / rec.user_currency_rate
+            if rec.inverse_invoice_currency_rate is not None:
+                if rec.inverse_invoice_currency_rate != 0:
+                    if rec.invoice_currency_rate:
+                        previous_rate = 1.0 / rec.invoice_currency_rate
+                        if previous_rate != rec.inverse_invoice_currency_rate:  # Verificar si realmente cambió
+                            rec.message_post(
+                                body=_("Invoice currency rate changed from %s to %s")
+                                % (previous_rate, rec.inverse_invoice_currency_rate)
+                            )
+                    rec.invoice_currency_rate = 1.0 / rec.inverse_invoice_currency_rate
+                else:
+                    raise UserError(_("Currency rate cannot be set to zero."))
 
     def get_invoice_report(self):
         self.ensure_one()
@@ -184,13 +186,6 @@ class AccountMove(models.Model):
             for rec in invoices_to_check:
                 error_msg += str(rec.date) + "\t" * 2 + str(rec.invoice_date) + "\t" * 3 + rec.display_name + "\n"
             raise UserError(_("The date and invoice date of a sale invoice must be the same: %s") % (error_msg))
-
-    @api.depends("invoice_currency_rate")
-    def _compute_inverse_invoice_currency_rate(self):
-        for record in self:
-            record.inverse_invoice_currency_rate = (
-                1 / record.invoice_currency_rate if record.invoice_currency_rate else 1.0
-            )
 
     @api.constrains("state")
     def _check_company_on_lines(self):
