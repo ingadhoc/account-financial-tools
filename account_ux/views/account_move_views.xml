@@ -91,15 +91,20 @@
                 <attribute name="readonly">1</attribute>
             </xpath>
 
+            <!-- Limit journal_id width to prevent pushing currency rate off screen -->
+            <xpath expr="//div[@name='journal_div']/field[@name='journal_id']" position="attributes">
+                <attribute name="style">max-width: 25ch;</attribute>
+            </xpath>
+
         <!-- Temas de multimoneda -->
             <xpath expr="//div[@name='currency_conversion_div']" position="replace">
                 <div name="currency_conversion_div"
-                    class="d-flex gap-1 text-muted"
+                    class="d-flex flex-nowrap gap-1 text-muted"
                     invisible="currency_id == company_currency_id">
                     <span>1</span>
                     <field name="currency_id" readonly="True" options="{'no_open': True}" class="w-auto"/>
                     <span>=</span>
-                    <field name="user_currency_rate" digits="[12,3]" readonly="state != 'draft' or not invoice_date" style="max-width: 21ch;"/>
+                    <field name="inverse_invoice_currency_rate" digits="[12,3]" readonly="state != 'draft' or not invoice_date" style="max-width: 15ch;"/>
                     <field name="company_currency_id" readonly="True" options="{'no_open': True}" class="w-auto"/>
                 </div>
             </xpath>
