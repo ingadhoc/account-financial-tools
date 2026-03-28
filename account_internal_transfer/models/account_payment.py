@@ -115,6 +115,28 @@ class AccountPayment(models.Model):
         res = super()._get_trigger_fields_to_synchronize()
         return res + ("is_internal_transfer",)
 
+    def _prepare_paired_payment_values(self):
+        """Valores para crear el paired payment de una transferencia interna.
+        Hookable: account_payment_pro lo extiende para convertir el amount entre monedas.
+        """
+        self.ensure_one()
+        paired_payment_type = "inbound" if self.payment_type == "outbound" else "outbound"
+        return {
+            "journal_id": self.destination_journal_id.id,
+            "currency_id": (self.destination_journal_id.currency_id or self.company_currency_id).id,
+            "company_id": self.destination_company_id.id,
+            "destination_company_id": self.company_id.id,
+            "destination_journal_id": self.journal_id.id,
+            "payment_type": paired_payment_type,
+            "payment_method_line_id": self.destination_journal_id._get_available_payment_method_lines(
+                paired_payment_type
+            )[:1].id,
+            "move_id": None,
+            "memo": self.memo,
+            "paired_internal_transfer_payment_id": self.id,
+            "date": self.date,
+        }
+
     def _create_paired_internal_transfer_payment(self):
         """When an internal transfer is posted, a paired payment is created
         with opposite payment_type and swapped journal_id & destination_journal_id.
@@ -127,23 +149,7 @@ class AccountPayment(models.Model):
                 )
             )
         for payment in self:
-            paired_payment_type = "inbound" if payment.payment_type == "outbound" else "outbound"
-            paired_payment = payment.copy(
-                {
-                    "journal_id": payment.destination_journal_id.id,
-                    "company_id": payment.destination_company_id.id,
-                    "destination_company_id": payment.company_id.id,
-                    "destination_journal_id": payment.journal_id.id,
-                    "payment_type": paired_payment_type,
-                    "payment_method_line_id": payment.destination_journal_id._get_available_payment_method_lines(
-                        paired_payment_type
-                    )[:1].id,
-                    "move_id": None,
-                    "memo": payment.memo,
-                    "paired_internal_transfer_payment_id": payment.id,
-                    "date": payment.date,
-                }
-            )
+            paired_payment = payment.copy(payment._prepare_paired_payment_values())
             # The payment method line ID in 'paired_payment' needs to be computed manually,
             # as it does not compute automatically.
             # This ensures not to use the same payment method line ID of the original transfer payment.
@@ -155,7 +161,18 @@ class AccountPayment(models.Model):
                 raise ValidationError(
                     _("The origin or destination payment methods do not have an outstanding account.")
                 )
-            paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry()
+            paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry(
+                # Force the exact ARS balance from the original transfer line to avoid
+                # rounding discrepancies when both journals are in different foreign currencies
+                # (e.g. USD → EUR), which would prevent full reconciliation of the bridge lines.
+                force_balance=abs(
+                    sum(
+                        payment.move_id.line_ids.filtered(
+                            lambda l: l.account_id == payment.destination_account_id
+                        ).mapped("balance")
+                    )
+                )
+            )
             paired_payment.move_id._post(soft=False)
             payment.paired_internal_transfer_payment_id = paired_payment
             body = _("This payment has been created from:") + payment._get_html_link()
