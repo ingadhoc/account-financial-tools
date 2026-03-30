@@ -215,13 +215,13 @@ class AccountPayment(models.Model):
                 if "amount_currency" in line_vals:
                     # Set the currency to the company's currency
                     line_vals["currency_id"] = self.company_id.currency_id.id
-                    # Adjust the amount_currency based on whether it's a debit or credit
-                    if line_vals["debit"] > 0:
+                    # Adjust the amount_currency based on the balance
+                    if line_vals["balance"] > 0:
                         line_vals["amount_currency"] = self.amount_company_currency
-                    elif line_vals["credit"] > 0:
+                    elif line_vals["balance"] < 0:
                         line_vals["amount_currency"] = -self.amount_company_currency
                     else:
-                        # When both debit and credit are zero, ensure amount_currency is neutral
+                        # When balance is zero, ensure amount_currency is neutral
                         line_vals["amount_currency"] = 0.0
         return line_vals_list
 
