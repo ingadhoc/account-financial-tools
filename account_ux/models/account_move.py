@@ -186,13 +186,6 @@ class AccountMove(models.Model):
 
         self.filtered(lambda x: x.state == "posted").mapped("line_ids")._check_company()
 
-    def button_draft(self):
-        for move in self:
-            if move.inalterable_hash and not move.journal_id.restrict_mode_hash_table:
-                move.env.cr.execute("update account_move set inalterable_hash = null where id = %s", (move.id,))
-                move.invalidate_recordset(["inalterable_hash"])
-        return super().button_draft()
-
     @api.model
     def _cron_account_move_send(self, job_count=10):
         # The _render_qweb_pdf_prepare_streams method does not correctly generate individual PDF streams when the PDF outlines are missing or invalid.

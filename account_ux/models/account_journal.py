@@ -90,16 +90,6 @@ class AccountJournal(models.Model):
         )
         return domain
 
-    def write(self, vals):
-        """We need to allow to change to False the value for restricted for hash for the journal when this value is setted."""
-        if "restrict_mode_hash_table" in vals and not vals.get("restrict_mode_hash_table"):
-            restrict_mode_hash_table = vals.get("restrict_mode_hash_table")
-            vals.pop("restrict_mode_hash_table")
-            res = super().write(vals)
-            self._write({"restrict_mode_hash_table": restrict_mode_hash_table})
-            return res
-        return super().write(vals)
-
     @api.depends("type")
     def _compute_payment_sequence(self):
         # Por defecto lo ponemos en False para evitar errores en la secuencia
