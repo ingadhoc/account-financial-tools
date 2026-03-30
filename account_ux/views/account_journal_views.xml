@@ -5,6 +5,9 @@
         <field name="model">account.journal</field>
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
+            <field name="restrict_mode_hash_table" position="attributes">
+                <attribute name="invisible" separator=" or " add="type == 'purchase' and not restrict_mode_hash_table"/>
+            </field>
             <field name="country_code" position="before">
                 <field name="has_child_companies" invisible="1"/>
                 <field name="shared_to_branches" groups="base.group_multi_company" invisible="not has_child_companies"/>
@@ -18,6 +21,7 @@
                         </p>
                     </div>
             </field>
+
         </field>
     </record>
 </odoo>
