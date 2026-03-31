@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-26 13:31+0000\n"
+"POT-Creation-Date: 2026-03-31 13:59+0000\n"
 "PO-Revision-Date: 2025-12-22 15:10+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -200,6 +200,12 @@ msgstr "Moneda cambiada de %s a %s con tasa %s"
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_from_id
 msgid "Currency from Invoice"
 msgstr "Moneda de la Factura"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid "Currency rate cannot be set to zero."
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
@@ -662,12 +668,6 @@ msgstr "Total sin impuestos en moneda de la compañía"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Update Taxes"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_bank_statement_line__user_currency_rate
-#: model:ir.model.fields,field_description:account_ux.field_account_move__user_currency_rate
-msgid "User Invoice Currency Rate"
 msgstr ""
 
 #. module: account_ux
