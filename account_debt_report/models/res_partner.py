@@ -3,12 +3,66 @@
 # directory
 ##############################################################################
 from odoo import _, models
+from odoo.tools.misc import formatLang
 
 # from odoo.exceptions import ValidationError
 
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
+
+    def _format_debt_report_amount(self, amount, currency=False, currency_label=False):
+        if amount is False or amount is None:
+            return False
+
+        digits = currency.decimal_places if currency else 2
+        formatted_number = formatLang(self.env, abs(amount), digits=digits).replace("\N{NO-BREAK SPACE}", " ")
+
+        label = currency_label
+        if not label and currency:
+            label = currency.symbol or currency.name or currency.display_name
+
+        formatted_amount = f"{label} {formatted_number}".strip() if label else formatted_number
+        return f"- {formatted_amount}" if amount < 0 else formatted_amount
+
+    def _format_debt_report_line(self, line_vals, company_currency=False, secondary_currency=False):
+        amount_raw = line_vals.get("amount")
+        amount_residual_raw = line_vals.get("amount_residual")
+        balance_raw = line_vals.get("balance")
+        amount_currency_raw = line_vals.get("amount_currency")
+        amount_residual_currency_raw = line_vals.get("amount_residual_currency")
+        balance_currency_raw = line_vals.get("balance_currency")
+        currency_name = line_vals.get("currency_name")
+
+        line_vals.update(
+            {
+                "amount_raw": amount_raw,
+                "amount_residual_raw": amount_residual_raw,
+                "balance_raw": balance_raw,
+                "amount_currency_raw": amount_currency_raw,
+                "amount_residual_currency_raw": amount_residual_currency_raw,
+                "balance_currency_raw": balance_currency_raw,
+                "amount": self._format_debt_report_amount(amount_raw, company_currency),
+                "amount_residual": self._format_debt_report_amount(amount_residual_raw, company_currency),
+                "balance": self._format_debt_report_amount(balance_raw, company_currency),
+                "amount_currency": self._format_debt_report_amount(
+                    amount_currency_raw,
+                    secondary_currency,
+                    currency_name,
+                ),
+                "amount_residual_currency": self._format_debt_report_amount(
+                    amount_residual_currency_raw,
+                    secondary_currency,
+                    currency_name,
+                ),
+                "balance_currency": self._format_debt_report_amount(
+                    balance_currency_raw,
+                    secondary_currency,
+                    currency_name,
+                ),
+            }
+        )
+        return line_vals
 
     def action_open_debt_report_wizard(self):
         return {
@@ -35,7 +89,6 @@ class ResPartner(models.Model):
             amount_currency=None,
             amount_residual_currency=None,
             balance_currency=None,
-            currency_name=None,
             move_line=None,
         ):
             if not detail_lines:
@@ -51,7 +104,6 @@ class ResPartner(models.Model):
                 "amount_currency": amount_currency,
                 "amount_residual_currency": amount_residual_currency,
                 "balance_currency": balance_currency,
-                "currency_name": currency_name,
                 "move_line": move_line,
             }
 
@@ -114,12 +166,16 @@ class ResPartner(models.Model):
                     initial_domain, company_currency_ids
                 )
 
+            initial_line = get_line_vals(
+                name=_("INITIAL BALANCE"),
+                balance=balance,
+                amount_currency=balance_in_currency,
+            )
             res = [
-                get_line_vals(
-                    name=_("INITIAL BALANCE"),
-                    balance=balance,
-                    amount_currency=balance_in_currency,
-                    currency_name=balance_in_currency_name,
+                self._format_debt_report_line(
+                    initial_line,
+                    company_currency=company_currency_ids[0] if len(company_currency_ids) == 1 else False,
+                    secondary_currency=False,
                 )
             ]
             domain.append(("date", ">=", from_date))
@@ -176,20 +232,24 @@ class ResPartner(models.Model):
                 name += " - " + record.journal_id.name
 
             # TODO tal vez la suma podriamos probar hacerla en el xls como hacemos en libro iva v11/v12
+            line_vals = get_line_vals(
+                date=date,
+                name=name,
+                detail_lines=detail_lines,
+                date_maturity=date_maturity,
+                amount=amount,
+                amount_residual=amount_residual,
+                balance=balance,
+                amount_currency=amount_currency if show_currency else False,
+                amount_residual_currency=amount_residual_currency if show_currency else False,
+                balance_currency=balance_currency if show_currency else False,
+                # move_line=record.move_line_id,
+            )
             res.append(
-                get_line_vals(
-                    date=date,
-                    name=name,
-                    detail_lines=detail_lines,
-                    date_maturity=date_maturity,
-                    amount=amount,
-                    amount_residual=amount_residual,
-                    balance=balance,
-                    amount_currency=amount_currency if show_currency else False,
-                    amount_residual_currency=amount_residual_currency if show_currency else False,
-                    balance_currency=balance_currency if show_currency else False,
-                    currency_name=currency.name if show_currency else False,
-                    # move_line=record.move_line_id,
+                self._format_debt_report_line(
+                    line_vals,
+                    company_currency=record.company_id.currency_id,
+                    secondary_currency=currency if show_currency else False,
                 )
             )
 
