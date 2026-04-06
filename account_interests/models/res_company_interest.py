@@ -278,7 +278,9 @@ class ResCompanyInterest(models.Model):
             partials = (
                 self.env["account.partial.reconcile"]
                 .search(partial_domain)
-                .filtered(lambda x: x.credit_move_id.date > x.debit_move_id.date_maturity)
+                .filtered(
+                    lambda x: x.debit_move_id.date_maturity and x.credit_move_id.date > x.debit_move_id.date_maturity
+                )
                 .grouped("debit_move_id")
             )
             for move_line, parts in partials.items():
