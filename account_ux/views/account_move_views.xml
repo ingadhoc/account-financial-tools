@@ -49,7 +49,6 @@
                         invisible="state in ['cancel', 'posted']"/>
                 </div>
             </xpath>
-
             <button name="button_draft" position="after">
                 <button name="delete_number" string="Delete Number" invisible="state != 'cancel' or not name or name == '/'" type="object" help="Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it." confirm="Warning! This can't be undone. Deleting the number will allow you to delete this invoice or to get a new number if you re-validate it. If this invoice represents a voided invoice, then you should not clean it. Do you want to continue?" groups="account.group_account_manager"/>
             </button>
@@ -124,6 +123,16 @@
             <!-- Hide the bill/receipt selector widget -->
             <xpath expr="//div[hasclass('oe_title')]/span[hasclass('o_form_label')][field[@name='move_type'][@widget='receipt_selector']]" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//list[@name='journal_items']//field[@name='product_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+             <xpath expr="//list[@name='journal_items']//field[@name='quantity']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+             <xpath expr="//list[@name='journal_items']//field[@name='product_uom_id']" position="attributes">
+                <attribute name="optional">show</attribute>
             </xpath>
 
         </field>
