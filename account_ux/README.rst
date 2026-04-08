@@ -29,6 +29,11 @@ Several Improvements to accounting:
 #. Add a payment method description on payment tree view to be extende (For eg. by checks and withholdings) to show more info on tree view
 #. Add maturity date on manual journal entries
 #. Add internal notes on invoices (account.move) to be used later by sales / pickings
+#. Add wizard to transfer accounting entries between partners. Adds the action
+   "Transfer Accounting Entries" on invoices to move amounts from the
+   original partner to a destination partner. Supports multiple selected
+   invoices, previews the resulting journal entries and creates balanced
+   transfer moves.
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
 #. Add filter by vat in the partners list views.
 #. Allow to disable the hash in the journal to restrict entries deletion.

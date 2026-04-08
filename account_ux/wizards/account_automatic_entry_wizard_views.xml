@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_automatic_entry_wizard_form_inherit" model="ir.ui.view">
+        <field name="name">account.automatic.entry.wizard.form.inherit</field>
+        <field name="model">account.automatic.entry.wizard</field>
+        <field name="inherit_id" ref="account.account_automatic_entry_wizard_form"/>
+        <field name="arch" type="xml">
+            <!-- Add change_partner group -->
+            <group position="before">
+                <group invisible="action != 'change_partner'">
+                    <field name="date" string="Transfer Date"/>
+
+                    <label for="partner_id" string="To Partner"/>
+                    <div class="o_row">
+                        <field name="partner_id" required="action == 'change_partner' and not destination_account_id" class="oe_inline"/>
+                        <label for="destination_account_id" string="Destination Account" class="oe_inline"/>
+                        <field name="destination_account_id" required="action == 'change_partner'" class="oe_inline"/>
+                    </div>
+
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

@@ -1,8 +1,9 @@
 # flake8: noqa
 import json
 import base64
+
 from odoo import models, api, fields, _, Command
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessError
 
 
 class AccountMove(models.Model):
@@ -206,3 +207,35 @@ class AccountMove(models.Model):
             lambda line: line.display_type not in ("line_section", "line_note")
         )
         lines_to_recompute._compute_tax_ids()
+
+    def action_open_automatic_entry_wizard(self):
+        """Opens the automatic entry wizard with the invoice lines"""
+        if not self.env.user.has_group("account.group_account_invoice"):
+            raise AccessError(
+                _(
+                    "You don't have the necessary permissions to transfer accounting entries. "
+                    "Please contact your system administrator."
+                )
+            )
+
+        # Support being called on multiple moves: gather lines from all selected moves
+        # Filter only payable/receivable account lines
+        filtered_lines = self.mapped("line_ids").filtered(
+            lambda line: line.account_id.account_type in ("asset_receivable", "liability_payable")
+        )
+
+        if not filtered_lines:
+            raise UserError(_("No payable/receivable lines found for the selected moves."))
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Transfer Accounting Entries"),
+            "res_model": "account.automatic.entry.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "active_model": "account.move.line",
+                "active_ids": filtered_lines.ids,
+                "default_action": "change_partner",
+            },
+        }
