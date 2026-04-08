@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 account_ux.access_account_change_currency,access_account_change_currency,account_ux.model_account_change_currency,base.group_user,1,1,1,0
+access_account_automatic_entry_wizard_invoice,access.account.automatic.entry.wizard.invoice,account.model_account_automatic_entry_wizard,account.group_account_invoice,1,1,1,0

@@ -5,3 +5,4 @@
 from . import account_change_currency
 from . import res_config_settings
 from . import mail_compose_message
+from . import account_automatic_entry_wizard

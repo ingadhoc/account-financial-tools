@@ -387,6 +387,42 @@ msgid "Invoices Statistics"
 msgstr "Estadísticas de facturas"
 
 #. module: account_ux
+#: wizards/account_automatic_entry_wizard.py:11
+msgid "Change Partner"
+msgstr "Cambiar Contacto"
+
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard_views.xml:12
+msgid "To Partner"
+msgstr "Al Contacto"
+
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard_views.xml:15
+msgid "Destination Account"
+msgstr "Cuenta destino"
+
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard.py:49
+msgid "Transfer to %s"
+msgstr "Transferir a %s"
+
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard.py:54
+msgid "Transfer from %s"
+msgstr "Transferir desde %s"
+
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard.py:41
+msgid "Transfer entry to %s"
+msgstr "Asiento de transferencia a %s"
+
+#. module: account_ux
+#: models/account_move.py:238
+#: data/account_automatic_entry_actions.xml:5
+msgid "Transfer Accounting Entries"
+msgstr "Transferir asientos contables"
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__is_monetary
 msgid "Is Monetary"
 msgstr "Es Monetario"
@@ -750,6 +786,25 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "or"
 msgstr "o"
+#
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard_views.xml:0
+msgid "Transfer Date"
+msgstr "Fecha de transferencia"
+
+#. module: account_ux
+#: models/account_move.py:0
+msgid ""
+"You don't have the necessary permissions to transfer accounting entries. "
+"Please contact your system administrator."
+msgstr ""
+"No tiene los permisos necesarios para transferir asientos contables. "
+"Por favor, contacte a su administrador del sistema."
+
+#. module: account_ux
+#: wizards/account_automatic_entry_wizard.py:0
+msgid "No payable/receivable lines found for the selected moves."
+msgstr "No se encontraron líneas a pagar/por cobrar para los asientos seleccionados."
 
 #~ msgid ""
 #~ "<b>Error sending the invoice</b>: partner %s does not have an email "
