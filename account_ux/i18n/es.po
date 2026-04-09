@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-06 19:19+0000\n"
+"POT-Creation-Date: 2026-04-09 12:02+0000\n"
 "PO-Revision-Date: 2025-12-22 15:10+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -37,11 +37,9 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid ""
-"<b>Error sending the invoice</b>: partner %s does not have an email address "
-"defined."
+"<b>Error enviando la factura</b>: el partner %s no tiene una dirección de "
+"correo definida."
 msgstr ""
-"<b>Error al enviar la factura</b>: el contacto %s no tiene una dirección de "
-"correo electrónico definida."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
@@ -291,12 +289,6 @@ msgid "Due date"
 msgstr "Fecha de Vencimiento"
 
 #. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_move.py:0
-msgid "ERROR: Invoice was not sent via email"
-msgstr "ERROR: La factura no fue enviada por correo electrónico"
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__mail_template_id
 msgid "Email Template"
 msgstr "Plantilla de correo electrónico"
@@ -480,14 +472,6 @@ msgstr ""
 #: model:ir.model,name:account_ux.model_account_payment
 msgid "Payments"
 msgstr "Pagos"
-
-#. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_move.py:0
-msgid "Please check the email template associated with the invoice journal."
-msgstr ""
-"Compruebe la plantilla de correo electrónico asociada con el diario de "
-"facturas."
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_reconcile_model
@@ -760,6 +744,21 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "or"
 msgstr "o"
+
+#~ msgid ""
+#~ "<b>Error sending the invoice</b>: partner %s does not have an email "
+#~ "address defined."
+#~ msgstr ""
+#~ "<b>Error al enviar la factura</b>: el contacto %s no tiene una dirección "
+#~ "de correo electrónico definida."
+
+#~ msgid "ERROR: Invoice was not sent via email"
+#~ msgstr "ERROR: La factura no fue enviada por correo electrónico"
+
+#~ msgid "Please check the email template associated with the invoice journal."
+#~ msgstr ""
+#~ "Compruebe la plantilla de correo electrónico asociada con el diario de "
+#~ "facturas."
 
 #~ msgid ""
 #~ "The accounting plan will be reloaded, creating accounts, taxes, and other "
