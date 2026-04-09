@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-06 19:19+0000\n"
-"PO-Revision-Date: 2026-04-06 19:19+0000\n"
+"POT-Creation-Date: 2026-04-09 12:02+0000\n"
+"PO-Revision-Date: 2026-04-09 12:02+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,8 +27,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid ""
-"<b>Error sending the invoice</b>: partner %s does not have an email address "
-"defined."
+"<b>Error enviando la factura</b>: el partner %s no tiene una dirección de "
+"correo definida."
 msgstr ""
 
 #. module: account_ux
@@ -270,12 +270,6 @@ msgid "Due date"
 msgstr ""
 
 #. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_move.py:0
-msgid "ERROR: Invoice was not sent via email"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__mail_template_id
 msgid "Email Template"
 msgstr ""
@@ -453,12 +447,6 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment
 msgid "Payments"
-msgstr ""
-
-#. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/account_move.py:0
-msgid "Please check the email template associated with the invoice journal."
 msgstr ""
 
 #. module: account_ux
