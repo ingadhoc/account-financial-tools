@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-09 12:02+0000\n"
-"PO-Revision-Date: 2025-12-22 15:10+0000\n"
+"PO-Revision-Date: 2026-04-13 22:41+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
-"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
-"financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
+"account-financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
-"0) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
+" ? 1 : 2);\n"
 "X-Generator: Weblate 5.10.4\n"
 
 #. module: account_ux
@@ -40,6 +40,8 @@ msgid ""
 "<b>Error enviando la factura</b>: el partner %s no tiene una dirección de "
 "correo definida."
 msgstr ""
+"<b>Error enviando la factura</b>: el contacto %s no tiene una dirección de "
+"correo definida."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
@@ -55,12 +57,12 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "<span>1</span>"
-msgstr ""
+msgstr "<span>1</span>"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "<span>=</span>"
-msgstr ""
+msgstr "<span>=</span>"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_account
@@ -203,7 +205,7 @@ msgstr "Moneda de la Factura"
 #. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid "Currency rate cannot be set to zero."
-msgstr ""
+msgstr "El tipo de cambio no puede establecerse en cero."
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_to_id
@@ -229,12 +231,12 @@ msgstr "Entrada en el Diario de Débito"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__purchase_tax_id
 msgid "Default Purchase Tax"
-msgstr ""
+msgstr "Impuesto de compra predeterminado"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__sale_tax_id
 msgid "Default Sale Tax"
-msgstr ""
+msgstr "Impuesto de venta predeterminado"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -377,7 +379,7 @@ msgstr "Moneda de la Factura"
 #. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid "Invoice currency rate changed from %s to %s"
-msgstr ""
+msgstr "El tipo de cambio de la factura cambió de %s a %s"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_invoice_report
@@ -466,7 +468,7 @@ msgstr "Conciliaciones Parciales"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment_method_line
 msgid "Payment Methods"
-msgstr ""
+msgstr "Métodos de pago"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment
@@ -478,6 +480,8 @@ msgstr "Pagos"
 msgid ""
 "Preset to create journal entries during a invoices and payments matching"
 msgstr ""
+"Preconfigurado para crear asientos contables durante la conciliación de "
+"facturas y pagos"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_journal__branch_order
@@ -489,7 +493,7 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Recompute all taxes based on this fiscal position"
-msgstr ""
+msgstr "Recalcular todos los impuestos en función de la posición fiscal"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_company__reconcile_on_company_currency
@@ -620,6 +624,8 @@ msgstr ""
 msgid ""
 "This will update all taxes based on the currently selected fiscal position."
 msgstr ""
+"Esto actualizará todos los impuestos en función de la posición fiscal "
+"seleccionada actualmente."
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_total
@@ -662,7 +668,7 @@ msgstr "Total sin impuestos en moneda de la compañía"
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Update Taxes"
-msgstr ""
+msgstr "Actualizar impuestos"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
