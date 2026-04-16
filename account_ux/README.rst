@@ -52,6 +52,7 @@ Several Improvements to accounting:
    * Display table of debt being cancelled only if there is debt being cancelled
    * When all invoices being paid are of a second currency and the same currency, hide a column that doesn´t add value
    * Not yet improved, if you paid invoices of different currencies the report is not so good. This is not improved yet as it is not a common use case
+#. Add tracking to fiscal position field on invoices so changes are logged in the chatter
 
 Installation
 ============

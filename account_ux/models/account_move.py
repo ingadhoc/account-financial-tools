@@ -33,6 +33,8 @@ class AccountMove(models.Model):
                 else:
                     raise UserError(_("Currency rate cannot be set to zero."))
 
+    fiscal_position_id = fields.Many2one(tracking=True)
+
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env["ir.actions.report"]._render_qweb_pdf("account.account_invoices", self.id)
