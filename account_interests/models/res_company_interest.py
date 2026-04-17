@@ -6,6 +6,7 @@ import json
 import logging
 
 from dateutil.relativedelta import relativedelta
+from markupsafe import Markup, escape
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import safe_eval
@@ -147,6 +148,51 @@ class ResCompanyInterest(models.Model):
             self.env.cr.commit()  # pragma pylint: disable=invalid-commit
             raise UserError(error_message)
 
+    @api.model
+    def _load_demo_interest_rules_for_active_companies(self):
+        """Create demo monthly 8% interest rules for every active company."""
+        companies = self.env["res.company"].search([("active", "=", True), ("parent_id", "=", False)])
+        if not companies:
+            return True
+
+        interest_product = self.env["product.product"].search([("default_code", "=", "DEMO_INTEREST_8P")], limit=1)
+        if not interest_product:
+            interest_product = self.env["product.product"].create(
+                {
+                    "name": _("Demo Interest Product"),
+                    "default_code": "DEMO_INTEREST_8P",
+                    "type": "service",
+                    "sale_ok": False,
+                    "purchase_ok": False,
+                    "list_price": 0.0,
+                }
+            )
+
+        for company in companies:
+            receivable_accounts = self.env["account.account"].search(
+                [
+                    ("account_type", "=", "asset_receivable"),
+                    ("company_ids", "in", company.id),
+                ]
+            )
+
+            if not receivable_accounts:
+                _logger.info("Skipping demo interest rule for company %s: no receivable accounts found", company.name)
+                continue
+
+            self.create(
+                {
+                    "company_id": company.id,
+                    "receivable_account_ids": [(6, 0, receivable_accounts.ids)],
+                    "interest_product_id": interest_product.id,
+                    "rate": 0.08,
+                    "past_due_rate": 0.08,
+                    "rule_type": "monthly",
+                    "interval": 1,
+                }
+            )
+        return True
+
     def _calculate_date_deltas(self, rule_type, interval):
         """
         Calcula los intervalos de fechas para la generación de intereses.
@@ -196,15 +242,17 @@ class ResCompanyInterest(models.Model):
             move_line_domain += safe_eval.safe_eval(self.domain, self._get_eval_context())
         return move_line_domain
 
-    def _update_deuda(self, deuda, partner, key, value):
+    def _update_deuda(self, deuda, partner, key, value, detail=None):
         """
         Actualiza el diccionario de deuda para un partner específico.
         Si el partner no existe en la deuda, lo inicializa.
         Si la clave no existe para el partner, la agrega.
         """
         if partner not in deuda:
-            deuda[partner] = {}
-        deuda[partner][key] = deuda[partner].get(key, 0) + value
+            deuda[partner] = {"values": {}, "details": []}
+        deuda[partner]["values"][key] = deuda[partner]["values"].get(key, 0) + value
+        if detail:
+            deuda[partner]["details"].append(detail)
 
     def _calculate_rate(self):
         if self.past_due_rate and self.env.context.get("debt_past_period"):
@@ -231,19 +279,30 @@ class ResCompanyInterest(models.Model):
         }
 
         # Deudas de períodos anteriores
-        previous_grouped_lines = self.env["account.move.line"]._read_group(
-            domain=self._get_move_line_domains()
-            + [("full_reconcile_id", "=", False), ("date_maturity", "<", from_date)],
-            groupby=groupby,
-            aggregates=["amount_residual:sum"],
+        previous_lines = self.env["account.move.line"].search(
+            self._get_move_line_domains()
+            + [
+                ("full_reconcile_id", "=", False),
+                ("amount_residual", ">", 0),
+                ("date_maturity", "<", from_date),
+            ]
         )
-        for x in previous_grouped_lines:
-            self._update_deuda(
-                deuda,
-                x[0],
-                "Deuda periodos anteriores",
-                x[1] * self.with_context(debt_past_period=True)._calculate_rate() * self.interval,
-            )
+        past_due_rate = self.with_context(debt_past_period=True)._calculate_rate()
+        for line in previous_lines:
+            partner = line[groupby[0]] if groupby else line.partner_id
+            if not partner:
+                continue
+            residual_amount = line.amount_residual
+            interest = residual_amount * past_due_rate * self.interval
+            detail = _(
+                "Invoice %(invoice_name)s: Residual %(residual)s x %(interval)s periods -> Interest: %(interest)s"
+            ) % {
+                "invoice_name": line.move_id.name or line.move_name or "-",
+                "residual": round(residual_amount, 2),
+                "interval": self.interval,
+                "interest": round(interest, 2),
+            }
+            self._update_deuda(deuda, partner, "Deuda periodos anteriores", interest, detail)
 
         # Intereses por el último período
         last_period_lines = self.env["account.move.line"].search(
@@ -251,13 +310,23 @@ class ResCompanyInterest(models.Model):
             + [("amount_residual", ">", 0), ("date_maturity", ">=", from_date), ("date_maturity", "<", to_date)]
         )
         for partner, amls in last_period_lines.grouped("partner_id").items():
-            interest = sum(
-                move.amount_residual
-                * ((to_date - move.invoice_date_due).days)
-                * (self._calculate_rate() / interest_rate[self.rule_type])
-                for move, lines in amls.grouped("move_id").items()
-            )
-            self._update_deuda(deuda, partner, "Deuda último periodo", interest)
+            for move, lines in amls.grouped("move_id").items():
+                due_date = move.invoice_date_due or lines[:1].date_maturity
+                if not due_date:
+                    continue
+                days = max((to_date - due_date).days, 0)
+                residual_amount = move.amount_residual
+                interest = residual_amount * days * (self._calculate_rate() / interest_rate[self.rule_type])
+                detail = _(
+                    "Invoice %(invoice_name)s: Due %(due_date)s | Residual %(residual)s x %(days)s days -> Interest: %(interest)s"
+                ) % {
+                    "invoice_name": move.name or lines[:1].move_name or "-",
+                    "due_date": due_date,
+                    "residual": round(residual_amount, 2),
+                    "days": days,
+                    "interest": round(interest, 2),
+                }
+                self._update_deuda(deuda, partner, "Deuda último periodo", interest, detail)
 
         # Intereses por pagos tardíos
         if self.late_payment_interest:
@@ -290,7 +359,15 @@ class ResCompanyInterest(models.Model):
 
                     days = (part.credit_move_id.date - due_date).days
                     interest = part.amount * days * (self._calculate_rate() / interest_rate[self.rule_type])
-                    self._update_deuda(deuda, move_line.partner_id, "Deuda pagos vencidos", interest)
+                    detail = _(
+                        "Payment %(payment_name)s applied to %(invoice_name)s on %(payment_date)s -> Interest: %(interest)s"
+                    ) % {
+                        "payment_name": part.credit_move_id.move_id.name or part.credit_move_id.name or "-",
+                        "invoice_name": part.debit_move_id.move_id.name or part.debit_move_id.name or "-",
+                        "payment_date": part.credit_move_id.date,
+                        "interest": round(interest, 2),
+                    }
+                    self._update_deuda(deuda, move_line.partner_id, "Deuda pagos vencidos", interest, detail)
 
         return deuda
 
@@ -347,12 +424,14 @@ class ResCompanyInterest(models.Model):
             # Crear facturas
             processed_partner_ids = self._get_processed_partner_ids_for_company(self.company_id)
 
-            for idx, partner in enumerate(batch, start=batch_start):
+            for idx, (partner, partner_debt_data) in enumerate(batch.items(), start=batch_start):
                 if partner.id in processed_partner_ids:
                     continue
-                journal = self._search_last_journal_for_partner(partner, deuda[partner])
+                partner_values = partner_debt_data.get("values", {})
+                partner_details = partner_debt_data.get("details", [])
+                journal = self._search_last_journal_for_partner(partner, partner_values)
 
-                move_vals = self._prepare_interest_invoice(partner, deuda[partner], to_date, journal)
+                move_vals = self._prepare_interest_invoice(partner, partner_values, to_date, journal)
                 if not move_vals:
                     continue
 
@@ -361,6 +440,11 @@ class ResCompanyInterest(models.Model):
                 )
 
                 move = self.env["account.move"].create(move_vals)
+                if partner_details:
+                    message_body = Markup("<ul>%s</ul>") % Markup().join(
+                        [Markup("<li>%s</li>") % escape(detail) for detail in partner_details]
+                    )
+                    move.message_post(body=message_body)
                 processed_partner_ids.append(partner.id)
 
                 if self.automatic_validation:

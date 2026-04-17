@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <function model="res.company.interest" name="_load_demo_interest_rules_for_active_companies"/>
+</odoo>
