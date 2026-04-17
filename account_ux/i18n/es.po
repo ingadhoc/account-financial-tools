@@ -933,6 +933,7 @@ msgstr ""
 #~ "<b>Error al enviar la factura</b>: el contacto %s no tiene una dirección "
 #~ "de correo electrónico definida."
 
+<<<<<<< faa0a9f3824392f23370f3c40193410b6cf2d92d
 #~ msgid "ERROR: Invoice was not sent via email"
 #~ msgstr "ERROR: La factura no fue enviada por correo electrónico"
 
@@ -980,3 +981,21 @@ msgstr ""
 
 #~ msgid "account.move.change.rate"
 #~ msgstr "Cambio de tipo de cambio en el asiento contable"
+||||||| 67cbc4687ef094aa05ec116b48aa81d42e93591c
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
+msgid "or"
+msgstr "o"
+=======
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
+msgid "or"
+msgstr "o"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_reconcile_model_partner_mapping__payment_ref_regex
+msgid "The system will search for labels that start with the entered text"
+msgstr "El sistema buscará etiquetas que comiencen con el texto ingresado"
+>>>>>>> d1f2b6331760febc2d9705592b25dc548cbc7680
