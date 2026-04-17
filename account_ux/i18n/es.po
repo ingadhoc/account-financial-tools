@@ -10,17 +10,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-09 12:02+0000\n"
+"POT-Creation-Date: 2026-04-17 15:34+0000\n"
 "PO-Revision-Date: 2026-04-13 22:41+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
-"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
-"account-financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
+"financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
-" ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
+"0) ? 1 : 2);\n"
 "X-Generator: Weblate 5.10.4\n"
 
 #. module: account_ux
@@ -32,6 +32,12 @@ msgid ""
 msgstr ""
 "\n"
 "Fecha\t\t\tFecha de Factura\t\tFactura\n"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "%d moves"
+msgstr ""
 
 #. module: account_ux
 #. odoo-python
@@ -65,6 +71,8 @@ msgid "<span>=</span>"
 msgstr "<span>=</span>"
 
 #. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 #: model:ir.model,name:account_ux.model_account_account
 msgid "Account"
 msgstr "Cuenta"
@@ -80,9 +88,20 @@ msgid "Account Group"
 msgstr "Grupo de cuenta"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_automatic_entry_wizard__action
+msgid "Action"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Add an internal note..."
 msgstr "Agregar una nota interna..."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Adjusting Entry"
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
@@ -110,6 +129,12 @@ msgid "Branch Order"
 msgstr ""
 
 #. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "C"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
 msgid "Cancel"
 msgstr "Cancelar"
@@ -125,6 +150,11 @@ msgstr "Cambiar Moneda"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Change Currency and Rate"
 msgstr "Modificar Moneda y Tipo de Cambio"
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__account_automatic_entry_wizard__action__change_partner
+msgid "Change Partner"
+msgstr "Cambiar Contacto"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -166,6 +196,11 @@ msgid "Conversion Rate"
 msgstr "Tasa de Conversión"
 
 #. module: account_ux
+#: model:ir.model,name:account_ux.model_account_automatic_entry_wizard
+msgid "Create Automatic Entries"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
 msgid "Created by"
 msgstr "Creado por"
@@ -174,6 +209,12 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_date
 msgid "Created on"
 msgstr "Creado en"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Credit"
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
@@ -224,6 +265,18 @@ msgid "Customers Ledger"
 msgstr "Mayor de Clientes"
 
 #. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "D"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Debit"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
 msgid "Debit Jouranl Entry"
 msgstr "Entrada en el Diario de Débito"
@@ -255,6 +308,11 @@ msgstr ""
 "entonces no debe limpiarla."
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_automatic_entry_wizard_form_inherit
+msgid "Destination Account"
+msgstr "Cuenta destino"
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__discount
 msgid "Discount (%)"
 msgstr "Descuento (%)"
@@ -266,6 +324,7 @@ msgstr "Importe de Descuento"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_automatic_entry_wizard__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_chart_template__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__display_name
@@ -317,6 +376,7 @@ msgstr "Tiene sucursales"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__id
+#: model:ir.model.fields,field_description:account_ux.field_account_automatic_entry_wizard__id
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
 #: model:ir.model.fields,field_description:account_ux.field_account_chart_template__id
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__id
@@ -387,42 +447,6 @@ msgid "Invoices Statistics"
 msgstr "Estadísticas de facturas"
 
 #. module: account_ux
-#: wizards/account_automatic_entry_wizard.py:11
-msgid "Change Partner"
-msgstr "Cambiar Contacto"
-
-#. module: account_ux
-#: wizards/account_automatic_entry_wizard_views.xml:12
-msgid "To Partner"
-msgstr "Al Contacto"
-
-#. module: account_ux
-#: wizards/account_automatic_entry_wizard_views.xml:15
-msgid "Destination Account"
-msgstr "Cuenta destino"
-
-#. module: account_ux
-#: wizards/account_automatic_entry_wizard.py:49
-msgid "Transfer to %s"
-msgstr "Transferir a %s"
-
-#. module: account_ux
-#: wizards/account_automatic_entry_wizard.py:54
-msgid "Transfer from %s"
-msgstr "Transferir desde %s"
-
-#. module: account_ux
-#: wizards/account_automatic_entry_wizard.py:41
-msgid "Transfer entry to %s"
-msgstr "Asiento de transferencia a %s"
-
-#. module: account_ux
-#: models/account_move.py:238
-#: data/account_automatic_entry_actions.xml:5
-msgid "Transfer Accounting Entries"
-msgstr "Transferir asientos contables"
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_account__is_monetary
 msgid "Is Monetary"
 msgstr "Es Monetario"
@@ -443,6 +467,12 @@ msgstr "Asiento contable"
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__line_id
 msgid "Journal Item"
 msgstr "Apunte contable"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Label"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
@@ -476,9 +506,22 @@ msgstr "Movimiento"
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "No Partner"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_payment.py:0
 msgid "No journals available for company %s and payment type %s."
 msgstr "No hay diarios disponibles para la empresa %s y el tipo de pago %s."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid "No payable/receivable lines found for the selected moves."
+msgstr ""
+"No se encontraron líneas a pagar/por cobrar para los asientos seleccionados."
 
 #. module: account_ux
 #. odoo-python
@@ -500,6 +543,12 @@ msgstr "Parcial"
 #: model:ir.actions.act_window,name:account_ux.action_account_move_partial_reconcile
 msgid "Partial reconciliations"
 msgstr "Conciliaciones Parciales"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Partner"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment_method_line
@@ -628,6 +677,12 @@ msgstr ""
 "(probablemente diferente de la utilizada por la compañía)."
 
 #. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "This entry transfers the following amounts to %(destination)s"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
 msgid ""
 "This option enables open documents in the payment report when reconciling "
@@ -664,6 +719,12 @@ msgstr ""
 "seleccionada actualmente."
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_automatic_entry_wizard__partner_id
+#: model_terms:ir.ui.view,arch_db:account_ux.account_automatic_entry_wizard_form_inherit
+msgid "To Partner"
+msgstr "Al Contacto"
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_total
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_line_report_tree
@@ -680,6 +741,43 @@ msgstr "Total (CC)"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_line_payment_tree
 msgid "Total Balance"
 msgstr "Balance Total"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Transfer"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+#: model:ir.actions.server,name:account_ux.action_account_move_automatic_entry_wizard
+msgid "Transfer Accounting Entries"
+msgstr "Transferir asientos contables"
+
+#
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_automatic_entry_wizard_form_inherit
+msgid "Transfer Date"
+msgstr "Fecha de transferencia"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Transfer entry to %s"
+msgstr "Asiento de transferencia a %s"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Transfer from %s"
+msgstr "Transferir desde %s"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "Transfer to %s"
+msgstr "Transferir a %s"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_unit
@@ -783,28 +881,39 @@ msgstr ""
 "No podés eliminar este pago; primero debés volverlo al estado borrador."
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
-msgid "or"
-msgstr "o"
-#
-#. module: account_ux
-#: wizards/account_automatic_entry_wizard_views.xml:0
-msgid "Transfer Date"
-msgstr "Fecha de transferencia"
-
-#. module: account_ux
-#: models/account_move.py:0
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
 msgid ""
 "You don't have the necessary permissions to transfer accounting entries. "
 "Please contact your system administrator."
 msgstr ""
-"No tiene los permisos necesarios para transferir asientos contables. "
-"Por favor, contacte a su administrador del sistema."
+"No tiene los permisos necesarios para transferir asientos contables. Por "
+"favor, contacte a su administrador del sistema."
 
 #. module: account_ux
-#: wizards/account_automatic_entry_wizard.py:0
-msgid "No payable/receivable lines found for the selected moves."
-msgstr "No se encontraron líneas a pagar/por cobrar para los asientos seleccionados."
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "[Not set]"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
+msgid "or"
+msgstr "o"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid ""
+"{amount} ({debit_credit}) from <strong>{partner_source_name}</strong> were "
+"transferred to <strong>{partner_target_name}</strong> by {link}"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
+msgid "{amount} ({debit_credit}) from {link}"
+msgstr ""
 
 #~ msgid ""
 #~ "<b>Error sending the invoice</b>: partner %s does not have an email "
