@@ -661,3 +661,8 @@ msgstr "account.move.change.rate"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_change_rate
 msgid "or"
 msgstr "o"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_reconcile_model_partner_mapping__payment_ref_regex
+msgid "The system will search for labels that start with the entered text"
+msgstr "El sistema buscará etiquetas que comiencen con el texto ingresado"
