@@ -34,6 +34,9 @@
         "data/ir_cron_data.xml",
         "security/ir.model.access.csv",
     ],
+    "demo": [
+        "demo/res_company_interest_demo.xml",
+    ],
     "installable": True,
     "application": False,
 }
