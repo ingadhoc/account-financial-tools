@@ -54,42 +54,57 @@ class AccountChartTemplate(models.AbstractModel):
 
     @api.model
     def _exchange_diff_invoice_demo_rates(self):
-        first_day_of_month = fields.Date.today() + relativedelta(day=1)
-        rates = [1000, 1100, 1200, 1300]  # 01, 02, 03, 04 of actual month
+        """Genera tres tasas demo para USD usando hoy como referencia.
+
+        Crea tasas para: un día antes, el día exacto y un día después de hoy.
+        """
+        # Usar la fecha 'hoy' del contexto (si aplica) o la fecha del sistema
+        today = fields.Date.context_today(self) or fields.Date.today()
+
+        dates = [
+            today + relativedelta(days=-1),
+            today,
+            today + relativedelta(days=1),
+        ]
+
+        rates_values = [1200, 1300, 1400]
+
         rates_data = {}
-        for days_ago, rate_value in enumerate(rates):
-            date_value = first_day_of_month + relativedelta(days=days_ago)
-            rates_data[f"exchange_rate_{days_ago}"] = {
+        for idx, date_value in enumerate(dates):
+            rate_value = rates_values[idx]
+            rates_data[f"exchange_rate_{idx}"] = {
                 "currency_id": "base.USD",
                 "name": date_value.isoformat(),
-                "rate": 1 / rate_value,
+                "rate": 1.0 / rate_value,
             }
+
         return rates_data
 
     @api.model
     def _exchange_diff_invoice_demo_invoices(self):
         """Create demo invoices in USD with specific amounts and tax breakdown."""
-        first_day_of_month = fields.Date.today() + relativedelta(day=1)
+        # Use the same 'today' reference as rates to avoid missing exchange rates
+        today = fields.Date.context_today(self) or fields.Date.today()
         return {
             "demo_invoice_1": {
                 "move_type": "out_invoice",
                 "partner_id": "l10n_ar_tax.res_partner_adhoc_caba",
                 "currency_id": "base.USD",
-                "invoice_date": first_day_of_month,
+                "invoice_date": today,
                 "invoice_line_ids": [Command.create({"product_id": "product.product_product_2", "quantity": 1})],
             },
             "demo_invoice_2": {
                 "move_type": "out_invoice",
                 "partner_id": "l10n_ar_tax.res_partner_adhoc_caba",
                 "currency_id": "base.USD",
-                "invoice_date": first_day_of_month + relativedelta(days=1),
+                "invoice_date": today + relativedelta(days=1),
                 "invoice_line_ids": [Command.create({"product_id": "product.product_product_2", "quantity": 1})],
             },
             "demo_invoice_3": {
                 "move_type": "out_invoice",
                 "partner_id": "l10n_ar_tax.res_partner_adhoc_caba",
                 "currency_id": "base.USD",
-                "invoice_date": first_day_of_month + relativedelta(days=2),
+                "invoice_date": today + relativedelta(days=2),
                 "invoice_line_ids": [Command.create({"product_id": "product.product_product_2", "quantity": 1})],
             },
             # otro partner y otra jurisdicción
@@ -97,7 +112,7 @@ class AccountChartTemplate(models.AbstractModel):
                 "move_type": "out_invoice",
                 "partner_id": "l10n_ar.res_partner_gritti_agrimensura",
                 "currency_id": "base.USD",
-                "invoice_date": first_day_of_month,
+                "invoice_date": today,
                 "invoice_line_ids": [Command.create({"product_id": "product.product_product_2", "quantity": 1})],
             },
         }
@@ -111,11 +126,11 @@ class AccountChartTemplate(models.AbstractModel):
 
     @api.model
     def _exchange_diff_invoice_demo_create_payments(self):
-        first_day_of_month = fields.Date.today() + relativedelta(day=1)
+        today = fields.Date.context_today(self) or fields.Date.today()
         for invoices_xml_ids, payment_date in [
-            (["demo_invoice_1", "demo_invoice_2"], first_day_of_month + relativedelta(days=2)),
-            (["demo_invoice_3"], first_day_of_month + relativedelta(days=3)),
-            (["demo_invoice_4"], first_day_of_month + relativedelta(days=1)),
+            (["demo_invoice_1", "demo_invoice_2"], today + relativedelta(days=2)),
+            (["demo_invoice_3"], today + relativedelta(days=3)),
+            (["demo_invoice_4"], today + relativedelta(days=1)),
         ]:
             invoices = self.env["account.move"]
             for xmlid in invoices_xml_ids:
