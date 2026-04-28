@@ -182,6 +182,7 @@
                 <field name="amount_total" string="Amount total" sum="Total" optional="hide"/>
                 <field name="amount_untaxed" string="Amount untaxed" sum="Total" optional="hide"/>
                 <field name="amount_total_signed" sum="Total" optional="hide"/>
+                <field name="amount_residual" sum="Total" optional="hide"/>
             </field>
             <field name="amount_tax_signed" position="after">
                 <field name="amount_untaxed_signed" invisible="move_type not in ('out_invoice','in_invoice')" sum="Total" optional="hide"/>
