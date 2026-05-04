@@ -6,13 +6,18 @@ from odoo.exceptions import AccessError
 class TestAccountJournalSecurity(common.TransactionCase):
     def setUp(self):
         super().setUp()
+        # If account_multi_store is installed but its fields are not yet registered
+        # (happens when tests run before account_multi_store loads in the sequence),
+        # deactivate its ir.rules temporarily to avoid interference.
+        if "store_id" not in self.env["account.journal"]._fields:
+            self.env["ir.rule"].sudo().search([("name", "ilike", "multi-store")]).write({"active": False})
         self.today = fields.Date.today()
-        self.first_company = self.env["res.company"].search([], limit=1)
+        self.first_company = self.env.ref("base.main_company")
         self.company_bank_journal = self.env["account.journal"].search(
             [("company_id", "=", self.first_company.id), ("type", "=", "bank")], limit=1
         )
 
-        self.user_admin = self.env.ref("base.default_user")
+        self.user_admin = self.env.ref("base.user_admin")
         self.user_admin.write({"company_ids": [(4, self.first_company.id)]})
         self.user_demo = self.env.ref("base.user_demo")
 
