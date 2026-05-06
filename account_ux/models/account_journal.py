@@ -5,6 +5,7 @@
 from odoo import _, api, fields, models, tools
 from odoo.fields import Domain
 from odoo.tools.misc import unquote
+from odoo.tools.safe_eval import safe_eval
 
 
 class AccountJournal(models.Model):
@@ -106,3 +107,9 @@ class AccountJournal(models.Model):
                 default_account_id = self._create_default_account(company, journal_type, vals)
                 vals["default_account_id"] = default_account_id
         super()._fill_missing_values(vals, protected_codes=protected_codes)
+
+    def open_invalid_statements_action(self):
+        self.ensure_one()
+        res = super().open_invalid_statements_action()
+        res["domain"] = str(safe_eval(res["domain"]) + [("journal_id", "=", self.id)])
+        return res
