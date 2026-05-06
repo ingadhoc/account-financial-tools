@@ -319,3 +319,33 @@ class AccountPayment(models.Model):
             "res_id": self.paired_internal_transfer_payment_id.id,
             "target": "current",
         }
+
+    def action_draft(self):
+        res = super().action_draft()
+        if self.env.context.get("skip_paired_sync"):
+            return res
+        paired = self.filtered(
+            lambda p: (
+                p.is_internal_transfer
+                and p.paired_internal_transfer_payment_id
+                and p.paired_internal_transfer_payment_id.state != "draft"
+            )
+        ).mapped("paired_internal_transfer_payment_id")
+        if paired:
+            paired.with_context(skip_paired_sync=True).action_draft()
+        return res
+
+    def action_cancel(self):
+        res = super().action_cancel()
+        if self.env.context.get("skip_paired_sync"):
+            return res
+        paired = self.filtered(
+            lambda p: (
+                p.is_internal_transfer
+                and p.paired_internal_transfer_payment_id
+                and p.paired_internal_transfer_payment_id.state != "canceled"
+            )
+        ).mapped("paired_internal_transfer_payment_id")
+        if paired:
+            paired.with_context(skip_paired_sync=True).action_cancel()
+        return res
