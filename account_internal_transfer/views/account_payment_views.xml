@@ -26,9 +26,6 @@
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="before">
-                <field name="show_warning" invisible="not show_warning"/>
-            </xpath>
             <xpath expr="//group[@name='main_group']/group[@name='group1']/field[@name='payment_type']" position="before">
                 <label for="is_internal_transfer" invisible="not is_internal_transfer"/>
                 <div invisible="not is_internal_transfer">
