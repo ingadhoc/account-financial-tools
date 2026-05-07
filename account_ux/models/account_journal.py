@@ -76,8 +76,8 @@ class AccountJournal(models.Model):
         shared.shared_to_branches = True
         (self - shared).shared_to_branches = False
 
-        # In case of test environment, share all journals to branches
-        if tools.config["test_enable"]:
+        # In case of test environment (but not demo data loading), share all journals to branches
+        if tools.config["test_enable"] and not self.env.context.get("demo"):
             self.shared_to_branches = True
 
     def _check_company_domain(self, companies) -> Domain:
