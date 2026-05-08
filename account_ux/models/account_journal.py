@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import _, api, fields, models, tools
+from odoo.exceptions import ValidationError
 from odoo.fields import Domain
 from odoo.tools.misc import unquote
 from odoo.tools.safe_eval import safe_eval
@@ -113,3 +114,20 @@ class AccountJournal(models.Model):
         res = super().open_invalid_statements_action()
         res["domain"] = str(safe_eval(res["domain"]) + [("journal_id", "=", self.id)])
         return res
+
+    def write(self, vals):
+        if vals.get("default_account_id"):
+            new_account = self.env["account.account"].browse(vals["default_account_id"])
+            for journal in self.filtered(lambda j: j.has_entries and j.default_account_id):
+                if new_account.account_type != journal.default_account_id.account_type:
+                    raise ValidationError(
+                        _(
+                            "Cannot change the account type of the default account on journal '%(journal)s' "
+                            "because it already has accounting entries. "
+                            "Current type: '%(old_type)s', new type: '%(new_type)s'.",
+                            journal=journal.display_name,
+                            old_type=journal.default_account_id.account_type,
+                            new_type=new_account.account_type,
+                        )
+                    )
+        return super().write(vals)
