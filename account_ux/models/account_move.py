@@ -241,3 +241,10 @@ class AccountMove(models.Model):
                 "default_action": "change_partner",
             },
         }
+
+    @api.constrains("journal_id")
+    def _check_journal(self):
+        """Check that the journal and the allows to post in the move's company."""
+        for move in self:
+            if move.state == "posted":
+                raise UserError(_("You cannot change the journal of a posted move (%s).") % move.display_name)
