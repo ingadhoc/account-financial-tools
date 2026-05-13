@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-17 20:04+0000\n"
-"PO-Revision-Date: 2026-04-17 20:04+0000\n"
+"POT-Creation-Date: 2026-05-13 13:53+0000\n"
+"PO-Revision-Date: 2026-05-13 13:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -47,18 +47,6 @@ msgstr ""
 msgid ""
 "<br/>\n"
 "                <strong>Total Transacción:</strong>"
-msgstr ""
-
-#. module: account_internal_transfer
-#. odoo-python
-#: code:addons/account_internal_transfer/models/account_payment.py:0
-msgid ""
-"<div class=\"alert alert-warning\" role=\"alert\"><i class=\"fa fa-"
-"exclamation-triangle\"></i> This payment is in <strong>%s</strong> state but"
-" the paired one is in <strong>%s</strong> state. Ensure both are in the same"
-" state when finished making changes. <a href=\"%s\" class=\"btn btn-sm btn-"
-"warning\" style=\"margin-left: 10px;\"><i class=\"fa fa-external-link\"></i>"
-" Go to Paired Payment</a></div>"
 msgstr ""
 
 #. module: account_internal_transfer
@@ -168,11 +156,6 @@ msgstr ""
 #. module: account_internal_transfer
 #: model:ir.actions.report,name:account_internal_transfer.action_report_account_transfer
 msgid "Reporte de Transferencia"
-msgstr ""
-
-#. module: account_internal_transfer
-#: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__show_warning
-msgid "Show Warning"
 msgstr ""
 
 #. module: account_internal_transfer
