@@ -8,7 +8,7 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.today = fields.Date.today()
-        self.first_company = self.env["res.company"].search([], limit=1)
+        self.first_company = self.env.ref("base.main_company")
         self.partner_ri = self.env["res.partner"].search([], limit=1)
         self.first_company_journal = self.env["account.journal"].search(
             [("company_id", "=", self.first_company.id), ("type", "=", "sale")]
