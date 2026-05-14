@@ -1,7 +1,10 @@
+import logging
 from datetime import timedelta
 
 from odoo import Command, fields
 from odoo.tests import common, tagged
+
+_logger = logging.getLogger(__name__)
 
 
 class TestAccountPaymentTermSurcharge(common.TransactionCase):
@@ -13,6 +16,7 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
         self.first_company_journal = self.env["account.journal"].search(
             [("company_id", "=", self.first_company.id), ("type", "=", "sale")]
         )
+        _logger.info(f"Journal name: {self.first_company_journal.name}")
 
         self.product_surcharge = self.env.ref("product.product_product_16")
         self.first_company.payment_term_surcharge_product_id = self.product_surcharge.id
