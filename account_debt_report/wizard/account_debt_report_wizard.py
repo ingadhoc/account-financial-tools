@@ -14,7 +14,7 @@ class AccountDebtReportWizard(models.TransientModel):
         return "all" if self.env.user.has_group("account.group_account_invoice") else "receivable"
 
     company_id = fields.Many2one(
-        "res.company", "Company", help="If you don't select a company, debt for all companies will be " "exported."
+        "res.company", "Company", help="If you don't select a company, debt for all companies will be exported."
     )
     result_selection = fields.Selection(
         [
@@ -32,7 +32,7 @@ class AccountDebtReportWizard(models.TransientModel):
     # TODO implementar
     # show_receipt_detail = fields.Boolean('Show Receipt Detail')
     historical_full = fields.Boolean(
-        help="If true, then it will show all partner history. If not, only " "unreconciled items will be shown."
+        help="If true, then it will show all partner history. If not, only unreconciled items will be shown."
     )
     company_currency = fields.Boolean(default=True, help="Add columns for company currency?")
     secondary_currency = fields.Boolean(help="Add columns for secondary currency?")
@@ -71,6 +71,8 @@ class AccountDebtReportWizard(models.TransientModel):
     def send_by_email(self):
         active_ids = self.env.context.get("active_ids", [])
         active_id = self.env.context.get("active_id", False)
+        partner_ids = active_ids or ([active_id] if active_id else [])
+        composition_mode = "comment" if len(partner_ids) == 1 else "mass_mail"
         context = {
             # report keys
             "company_currency": self.company_currency,
@@ -85,7 +87,9 @@ class AccountDebtReportWizard(models.TransientModel):
             "active_ids": active_ids,
             "active_id": active_id,
             "active_model": "res.partner",
-            "default_composition_mode": "mass_mail",
+            "default_model": "res.partner",
+            "default_res_ids": partner_ids,
+            "default_composition_mode": composition_mode,
             "default_use_template": True,
             "default_template_id": self.env.ref("account_debt_report.email_template_debt_detail").id,
             "default_partner_to": "{{ object.id or '' }}",

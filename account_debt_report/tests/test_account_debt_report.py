@@ -48,6 +48,7 @@ class TestAccountDebtReportWizard(TransactionCase):
         super(TestAccountDebtReportWizard, self).setUp()
         # Crear un partner de prueba
         self.partner = self.env["res.partner"].create({"name": "Test Partner", "email": "test@example.com"})
+        self.partner_2 = self.env["res.partner"].create({"name": "Test Partner 2", "email": "test2@example.com"})
         # Crear el wizard para el reporte de deuda
         self.wizard = self.env["account.debt.report.wizard"].create(
             {
@@ -62,8 +63,20 @@ class TestAccountDebtReportWizard(TransactionCase):
         action = self.wizard.with_context(active_ids=[self.partner.id]).confirm()
         self.assertTrue(action, "El método confirm debería retornar una acción de reporte")
 
-    def test_send_by_email_method(self):
-        # Verificar que el método send_by_email se ejecuta correctamente
+    def test_send_by_email_method_single_partner_uses_comment(self):
         action = self.wizard.with_context(active_id=self.partner.id).send_by_email()
         self.assertTrue(action, "El método send_by_email debería retornar una acción de ventana")
         self.assertEqual(action["res_model"], "mail.compose.message", "El modelo debería ser 'mail.compose.message'")
+        self.assertEqual(action["context"]["default_composition_mode"], "comment")
+        self.assertEqual(action["context"]["active_ids"], [])
+        self.assertEqual(action["context"]["active_id"], self.partner.id)
+        self.assertEqual(action["context"]["default_res_ids"], [self.partner.id])
+        self.assertEqual(action["context"]["default_partner_to"], "{{ object.id or '' }}")
+
+    def test_send_by_email_method_multiple_partners_uses_mass_mail(self):
+        action = self.wizard.with_context(active_ids=[self.partner.id, self.partner_2.id]).send_by_email()
+        self.assertTrue(action, "El método send_by_email debería retornar una acción de ventana")
+        self.assertEqual(action["context"]["default_composition_mode"], "mass_mail")
+        self.assertEqual(action["context"]["active_ids"], [self.partner.id, self.partner_2.id])
+        self.assertEqual(action["context"]["default_res_ids"], [self.partner.id, self.partner_2.id])
+        self.assertEqual(action["context"]["default_partner_to"], "{{ object.id or '' }}")
