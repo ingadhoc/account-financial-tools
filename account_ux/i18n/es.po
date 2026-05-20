@@ -599,6 +599,11 @@ msgid "Reconcile On Company Currency"
 msgstr "Conciliar en moneda de la compañía"
 
 #. module: account_ux
+#: model:ir.ui.menu,name:account_ux.menu_action_reconcile_model
+msgid "Reconciliation Models"
+msgstr "Modelos de conciliación"
+
+#. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_reconciliations_main
 msgid "Reconciliations"
 msgstr "Conciliaciones"
