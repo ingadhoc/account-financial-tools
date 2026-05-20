@@ -1,48 +1,33 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* account_payment_term_surcharge
-# 
+#
 # Translators:
 # ADHOC - Bot <transbot@adhoc.com.ar>, 2025
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:20+0000\n"
+"POT-Creation-Date: 2026-05-20 12:16+0000\n"
 "PO-Revision-Date: 2025-12-22 15:10+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
-"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
-"account-financial-tools-19-0/"
-"account-financial-tools-19-0-account_payment_term_surcharge/es/>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
+"financial-tools-19-0/account-financial-tools-19-0-"
+"account_payment_term_surcharge/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
-" ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
+"0) ? 1 : 2);\n"
 "X-Generator: Weblate 5.10.4\n"
 
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
 msgid ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" aria-label=\"Values set here are company-specific.\" "
-"groups=\"base.group_multi_company\" role=\"img\"/>"
+"<span class=\"o_form_label\">Default payment term surcharge product</span>"
 msgstr ""
-"<span class=\"fa fa-lg fa-building-o\" title="
-"\"Los valores establecidos aquí son específicos de la empresa.\" aria-label="
-"\"Los valores establecidos aquí son específicos de la empresa.\" groups="
-"\"base.group_multi_company\" role=\"img\"/>"
-
-#. module: account_payment_term_surcharge
-#: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
-msgid ""
-"<span class=\"o_form_label\">Default payment term surcharge product</span>\n"
-"                        <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\" role=\"img\"/>"
-msgstr ""
-"<span class=\"o_form_label\">Producto predeterminado de \"Recargo Financiero\" por plazo de pago</span>\n"
-"                        <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\" role=\"img\"/>"
 
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.view_payment_term_line_surcharge_form
@@ -135,8 +120,7 @@ msgstr "Recargo de"
 
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,help:account_payment_term_surcharge.field_account_payment_term_surcharge__sequence
-msgid ""
-"Gives the sequence order when displaying a list of payment terms lines."
+msgid "Gives the sequence order when displaying a list of payment terms lines."
 msgstr ""
 "Proporciona el orden de secuencia al mostrar una lista de líneas de "
 "condiciones de pago."
@@ -253,8 +237,8 @@ msgid ""
 "Something went wrong creating the surcharge invoice from this invoice. "
 "Please take a look on it."
 msgstr ""
-"Se produjo un error al crear la factura de recargo a partir de esta factura."
-" Por favor, échale un vistazo."
+"Se produjo un error al crear la factura de recargo a partir de esta factura. "
+"Por favor, échale un vistazo."
 
 #. module: account_payment_term_surcharge
 #: model:ir.model.fields,field_description:account_payment_term_surcharge.field_res_company__payment_term_surcharge_product_id
@@ -291,8 +275,10 @@ msgstr ""
 #. module: account_payment_term_surcharge
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.view_payment_term_form
 msgid ""
-"The selected company for this payment term does not have a surcharge product configured.\n"
-"                        Please configure the product in Settings / Accounting for the selected company or companies."
+"The selected company for this payment term does not have a surcharge product "
+"configured.\n"
+"                        Please configure the product in Settings / "
+"Accounting for the selected company or companies."
 msgstr ""
 "La empresa seleccionada para este plazo de pago no tiene configurado ningún "
 "producto de recargo.\n"
@@ -308,6 +294,11 @@ msgstr "Validad automaticamente las facturas"
 #: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
 msgid "Validar automaticamente facturas de recargo"
 msgstr "Validar automaticamente facturas de recargo"
+
+#. module: account_payment_term_surcharge
+#: model_terms:ir.ui.view,arch_db:account_payment_term_surcharge.res_config_settings_view_form
+msgid "Values set here are company-specific."
+msgstr ""
 
 #. module: account_payment_term_surcharge
 #. odoo-python
@@ -335,3 +326,28 @@ msgstr "del mes actual"
 #: model:ir.model.fields.selection,name:account_payment_term_surcharge.selection__account_payment_term_surcharge__option__day_following_month
 msgid "of the following month"
 msgstr "del mes siguiente"
+
+#~ msgid ""
+#~ "<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are "
+#~ "company-specific.\" aria-label=\"Values set here are company-specific.\" "
+#~ "groups=\"base.group_multi_company\" role=\"img\"/>"
+#~ msgstr ""
+#~ "<span class=\"fa fa-lg fa-building-o\" title=\"Los valores establecidos "
+#~ "aquí son específicos de la empresa.\" aria-label=\"Los valores "
+#~ "establecidos aquí son específicos de la empresa.\" groups=\"base."
+#~ "group_multi_company\" role=\"img\"/>"
+
+#~ msgid ""
+#~ "<span class=\"o_form_label\">Default payment term surcharge product</"
+#~ "span>\n"
+#~ "                        <span class=\"fa fa-lg fa-building-o\" "
+#~ "title=\"Values set here are company-specific.\" aria-label=\"Values set "
+#~ "here are company-specific.\" groups=\"base.group_multi_company\" "
+#~ "role=\"img\"/>"
+#~ msgstr ""
+#~ "<span class=\"o_form_label\">Producto predeterminado de \"Recargo "
+#~ "Financiero\" por plazo de pago</span>\n"
+#~ "                        <span class=\"fa fa-lg fa-building-o\" "
+#~ "title=\"Values set here are company-specific.\" aria-label=\"Values set "
+#~ "here are company-specific.\" groups=\"base.group_multi_company\" "
+#~ "role=\"img\"/>"
