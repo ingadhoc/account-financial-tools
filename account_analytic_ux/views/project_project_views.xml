@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_form_segmented_analytics" model="ir.ui.view">
+        <field name="name">project.project.form.segmented.analytics</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='analytic']" position="inside">
+                <field name="use_segmented_analytics"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
