@@ -39,4 +39,13 @@
         parent="menu_reconciliations_main"
         groups="base.group_no_one"
         />
+
+    <menuitem
+        id="menu_action_reconcile_model"
+        name="Reconciliation Models"
+        sequence="10"
+        action="account.action_account_reconcile_model"
+        parent="account.account_account_menu"
+        groups="account.group_account_manager"
+        />
 </odoo>
