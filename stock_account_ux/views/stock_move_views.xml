@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="stock_move_line_view_tree_account_link">
+        <field name="name">stock.move.line.list.account.link</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="quantity" position="after">
+                <field name="related_account_move_id"
+                    string="Journal Entry"
+                    optional="hide"
+                    readonly="1"
+                    widget="many2one"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="stock_move_view_tree_account_link">
+        <field name="name">stock.move.list.account.link</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="related_account_move_id"
+                    string="Journal Entry"
+                    optional="hide"
+                    readonly="1"
+                    widget="many2one"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="stock_move_line_view_search_account_link">
+        <field name="name">stock.move.line.search.account.link</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
+        <field name="arch" type="xml">
+            <field name="reference" position="after">
+                <field name="related_account_move_id" string="Journal Entry"/>
+            </field>
+            <filter name="inventory" position="after">
+                <separator/>
+                <filter string="With Journal Entry" name="with_account_move"
+                    domain="[('related_account_move_id', '!=', False)]"/>
+                <filter string="Without Journal Entry" name="without_account_move"
+                    domain="[('related_account_move_id', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="stock_move_view_search_account_link">
+        <field name="name">stock.move.search.account.link</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_search"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="related_account_move_id" string="Journal Entry"/>
+            </field>
+            <filter name="inventory" position="after">
+                <separator/>
+                <filter string="With Journal Entry" name="with_account_move"
+                    domain="[('related_account_move_id', '!=', False)]"/>
+                <filter string="Without Journal Entry" name="without_account_move"
+                    domain="[('related_account_move_id', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="stock_move_valuation_view_account_link">
+        <field name="name">stock.move.valuation.list.account.link</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock_account.stock_move_view_list_valuation"/>
+        <field name="arch" type="xml">
+            <field name="value_justification" position="before">
+                <field name="related_account_move_id"
+                    string="Journal Entry"
+                    optional="show"
+                    readonly="1"
+                    widget="many2one"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>
