@@ -34,6 +34,8 @@ class AccountJournal(models.Model):
         help="Priority sequence for branches. Low number if I am a branch, high number if I am a parent",
     )
 
+    show_warning_shared_to_branches = fields.Boolean(compute="_compute_show_warning_shared_to_branches")
+
     @api.depends("company_id", "company_id.child_ids")
     def _compute_has_child_companies(self):
         for journal in self:
@@ -97,6 +99,12 @@ class AccountJournal(models.Model):
         super()._compute_payment_sequence()
         for journal in self:
             journal.payment_sequence = False
+
+    def _compute_show_warning_shared_to_branches(self):
+        for journal in self:
+            journal.show_warning_shared_to_branches = (
+                journal.type in ["sale", "purchase"] and not journal.company_id.vat and journal.l10n_latam_use_documents
+            )
 
     @api.model
     def _fill_missing_values(self, vals, protected_codes=False):

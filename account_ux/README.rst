@@ -38,6 +38,7 @@ Several Improvements to accounting:
 #. Add filter by vat in the partners list views.
 #. Allow to disable the hash in the journal to restrict entries deletion.
 #. Add boolean shared_to_branches on account.journal to allow journals to choose if journals can be used by branches.
+#. Show a warning on sale/purchase journals when the company has no VAT number configured and the journal uses Latin American documents (``l10n_latam_use_documents``). This alert helps detect misconfigured journals that may cause issues with document sequencing.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
    * Preview and allow to change the rate thats is going to be used.

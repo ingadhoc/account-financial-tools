@@ -18,6 +18,13 @@
                         </p>
                     </div>
             </field>
+            <xpath expr="//form/sheet" position="before">
+                <div class="alert alert-warning" invisible="not show_warning_shared_to_branches" colspan="2" role="alert">
+                    <p>
+                    <b>Warning:</b> This journal seems to be using documents without a VAT number setting in the company.
+                    </p>
+                </div>
+            </xpath>
         </field>
     </record>
 </odoo>
