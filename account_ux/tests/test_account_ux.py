@@ -137,8 +137,6 @@ class TestComputeFiscalPosition(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.delivery_group = cls.env.ref("account.group_delivery_invoice_address")
-        cls.env.user.groups_id -= cls.delivery_group
-
         cls.fiscal_position = cls.env["account.fiscal.position"].create({"name": "Test FP"})
         cls.receipt_fp = cls.env["account.fiscal.position"].create({"name": "Receipt FP"})
         cls.partner = cls.env["res.partner"].create(
@@ -147,6 +145,11 @@ class TestComputeFiscalPosition(TransactionCase):
                 "property_account_position_id": cls.fiscal_position.id,
             }
         )
+
+    def setUp(self):
+        super().setUp()
+        # Ensure user doesn't have the delivery group so our override is executed
+        self.env.user.write({"group_ids": [(3, self.delivery_group.id)]})
 
     def test_invoice_fiscal_position_from_partner(self):
         """Without group_delivery_invoice_address, invoice FP is set from partner."""
