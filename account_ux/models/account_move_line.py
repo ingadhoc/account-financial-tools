@@ -126,15 +126,15 @@ class AccountMoveLine(models.Model):
         need_amount_residual_currency_adjustment.reconciled = True
 
     def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None, **kwargs):
-        # Usamos la fecha del pago solo cuando todas las líneas comparten la misma,
-        # y hacemos fallback al exchange_date recibido en caso contrario.
-        payment_dates = self.mapped("payment_id.date")
-        safe_exchange_date = exchange_date
-        if payment_dates:
-            unique_dates = set(payment_dates)
-            if len(unique_dates) == 1:
-                safe_exchange_date = payment_dates[0]
-
-        return super()._prepare_exchange_difference_move_vals(
-            amounts_list, company=company, exchange_date=safe_exchange_date, **kwargs
+        res = super()._prepare_exchange_difference_move_vals(
+            amounts_list, company=company, exchange_date=exchange_date, **kwargs
         )
+
+        if not res:
+            return res
+        payment_dates = set(self.mapped("payment_id.date"))
+        if len(payment_dates) == 1:
+            res["move_values"]["date"] = payment_dates.pop()
+        elif exchange_date:
+            res["move_values"]["date"] = exchange_date
+        return res
