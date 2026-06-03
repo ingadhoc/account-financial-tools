@@ -25,7 +25,11 @@ class AccountMove(models.Model):
 
         # Refresh the currency rate if no invoice date is set and the currency is different from company currency
         for move in self:
-            if not move.invoice_date and move.currency_id != move.company_id.currency_id:
+            if (
+                not move.invoice_date
+                and move.currency_id != move.company_id.currency_id
+                and move.is_invoice(include_receipts=True)
+            ):
                 move.refresh_invoice_currency_rate()
 
         # Use action_post to ensure the mail is sent only when the move is posted
