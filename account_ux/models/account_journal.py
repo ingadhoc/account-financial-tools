@@ -119,5 +119,8 @@ class AccountJournal(models.Model):
     def open_invalid_statements_action(self):
         self.ensure_one()
         res = super().open_invalid_statements_action()
-        res["domain"] = str(safe_eval(res["domain"]) + [("journal_id", "=", self.id)])
+        domain = res["domain"]
+        if isinstance(domain, str):
+            domain = safe_eval(domain)
+        res["domain"] = domain + [("journal_id", "=", self.id)]
         return res
