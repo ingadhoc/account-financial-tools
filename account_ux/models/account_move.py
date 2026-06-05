@@ -198,6 +198,20 @@ class AccountMove(models.Model):
         job_count = 1
         super()._cron_account_move_send(job_count=job_count)
 
+    def _compute_fiscal_position_id(self):
+        if self.env.user.has_group("account.group_delivery_invoice_address"):
+            return super()._compute_fiscal_position_id()
+        for move in self:
+            receipt_fp = {"in_receipt": move.company_id.account_purchase_receipt_fiscal_position_id}.get(move.move_type)
+            if receipt_fp:
+                move.fiscal_position_id = receipt_fp
+                continue
+            move.fiscal_position_id = (
+                self.env["account.fiscal.position"]
+                .with_company(move.company_id)
+                ._get_fiscal_position(move.partner_id, delivery=move.partner_id)
+            )
+
     @api.onchange("fiscal_position_id")
     def _onchange_fiscal_position_id(self):
         """
