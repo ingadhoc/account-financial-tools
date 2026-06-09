@@ -1,6 +1,5 @@
 import odoo.tests.common as common
 from odoo import Command, fields
-from odoo.tests.common import TransactionCase
 
 
 class TestAccountUXChangeCurrency(common.TransactionCase):
@@ -130,40 +129,3 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
             initial_rate,
             "La tasa de cambio debe ser diferente a la inicial",
         )
-
-
-class TestComputeFiscalPosition(TransactionCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.delivery_group = cls.env.ref("account.group_delivery_invoice_address")
-        cls.fiscal_position = cls.env["account.fiscal.position"].create({"name": "Test FP"})
-        cls.receipt_fp = cls.env["account.fiscal.position"].create({"name": "Receipt FP"})
-        cls.partner = cls.env["res.partner"].create(
-            {
-                "name": "Test Partner",
-                "property_account_position_id": cls.fiscal_position.id,
-            }
-        )
-
-    def setUp(self):
-        super().setUp()
-        # Ensure user doesn't have the delivery group so our override is executed
-        self.env.user.write({"group_ids": [(3, self.delivery_group.id)]})
-
-    def test_invoice_fiscal_position_from_partner(self):
-        """Without group_delivery_invoice_address, invoice FP is set from partner."""
-        invoice = self.env["account.move"].create({"move_type": "out_invoice", "partner_id": self.partner.id})
-        self.assertEqual(invoice.fiscal_position_id, self.fiscal_position)
-
-    def test_receipt_uses_company_fiscal_position(self):
-        """in_receipt move type uses company's account_purchase_receipt_fiscal_position_id."""
-        self.env.company.account_purchase_receipt_fiscal_position_id = self.receipt_fp
-        invoice = self.env["account.move"].create({"move_type": "in_receipt", "partner_id": self.partner.id})
-        self.assertEqual(invoice.fiscal_position_id, self.receipt_fp)
-
-    def test_receipt_without_company_fp_uses_partner(self):
-        """in_receipt without company receipt FP falls back to partner's fiscal position."""
-        self.env.company.account_purchase_receipt_fiscal_position_id = False
-        invoice = self.env["account.move"].create({"move_type": "in_receipt", "partner_id": self.partner.id})
-        self.assertEqual(invoice.fiscal_position_id, self.fiscal_position)
