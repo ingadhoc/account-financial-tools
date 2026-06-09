@@ -42,4 +42,13 @@ class AccountPayment(models.Model):
 
     def action_post(self):
         super().action_post()
-        self.filtered(lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card").state = "paid"
+        cc_payments = self.filtered(lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card")
+        if cc_payments:
+            # Post any moves left in draft before setting state='paid'. Without this,
+            # write({'state': 'paid'}) triggers a second move.action_post() on incomplete
+            # move lines (left in draft by _synchronize_to_moves during action_post when
+            # withholding taxes are involved), leaving the move in draft.
+            cc_payments.move_id.filtered(lambda m: m.state == "draft").with_context(
+                skip_account_move_synchronization=True
+            ).action_post()
+            cc_payments.state = "paid"
