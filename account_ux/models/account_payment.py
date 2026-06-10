@@ -33,4 +33,16 @@ class AccountPayment(models.Model):
 
     def action_post(self):
         super().action_post()
-        self.filtered(lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card").state = "paid"
+        credit_card_payments = self.filtered(
+            lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card"
+        )
+        # Withholding sequence assignment in l10n_ar_tax.action_post() writes
+        # l10n_ar_withholding_line_ids before super(), which triggers
+        # _synchronize_to_moves() on the draft move and can leave it in draft
+        # again after the base action_post() runs.  Post those moves explicitly
+        # before forcing state='paid' so _reconcile_after_post() doesn't find
+        # unposted entries.
+        draft_moves = credit_card_payments.move_id.filtered(lambda m: m.state == "draft")
+        if draft_moves:
+            draft_moves.with_context(skip_account_move_synchronization=True).action_post()
+        credit_card_payments.state = "paid"
