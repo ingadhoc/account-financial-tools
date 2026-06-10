@@ -40,6 +40,11 @@ class AccountPayment(models.Model):
                     % (pay.company_id.name, dict(pay._fields["payment_type"].selection).get(pay.payment_type))
                 )
 
+    def _synchronize_to_moves(self, changed_fields):
+        if self.env.context.get("skip_account_move_synchronization"):
+            return
+        return super()._synchronize_to_moves(changed_fields)
+
     def action_post(self):
         super().action_post()
         self.filtered(lambda pay: pay.outstanding_account_id.account_type == "liability_credit_card").state = "paid"
