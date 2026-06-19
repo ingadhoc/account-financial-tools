@@ -37,7 +37,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "%d moves"
-msgstr ""
+msgstr "%d movimientos"
 
 #. module: account_ux
 #. odoo-python
@@ -54,7 +54,7 @@ msgstr ""
 msgid ""
 "<b>Warning:</b> This journal seems to be using documents without a VAT "
 "number setting in the company."
-msgstr ""
+msgstr "<b>Advertencia:</b> Este diario parece estar utilizando documentos sin un número de identificación fiscal configurado en la compañía."
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
@@ -97,7 +97,7 @@ msgstr "Grupo de cuenta"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_automatic_entry_wizard__action
 msgid "Action"
-msgstr ""
+msgstr "Acción"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -108,7 +108,7 @@ msgstr "Agregar una nota interna..."
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Adjusting Entry"
-msgstr ""
+msgstr "Asiento de ajuste"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
@@ -133,7 +133,7 @@ msgstr "Precio Promedio en moneda de la compañía"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__branch_order
 msgid "Branch Order"
-msgstr ""
+msgstr "Orden de sucursal"
 
 #. module: account_ux
 #. odoo-python
@@ -205,7 +205,7 @@ msgstr "Tasa de Conversión"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_automatic_entry_wizard
 msgid "Create Automatic Entries"
-msgstr ""
+msgstr "Crear asientos automáticos"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__create_uid
@@ -221,7 +221,7 @@ msgstr "Creado en"
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Credit"
-msgstr ""
+msgstr "Haber"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
@@ -281,7 +281,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Debit"
-msgstr ""
+msgstr "Debe"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
@@ -364,7 +364,7 @@ msgstr "Plantilla de correo electrónico"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_mail_compose_message
 msgid "Email composition wizard"
-msgstr ""
+msgstr "Asistente de redacción de correo electrónico"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_fiscal_position
@@ -380,7 +380,7 @@ msgid ""
 "Fiscal positions are used to adapt taxes and accounts for particular "
 "customers or sales orders/invoices. The default value comes from the "
 "customer."
-msgstr ""
+msgstr "Las posiciones fiscales se utilizan para adaptar impuestos y cuentas para determinados clientes o pedidos de venta/facturas. El valor por defecto viene del cliente."
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_move_full_reconcile
@@ -490,7 +490,7 @@ msgstr "Apunte contable"
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Label"
-msgstr ""
+msgstr "Etiqueta"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__write_uid
@@ -526,7 +526,7 @@ msgstr "Movimiento"
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "No Partner"
-msgstr ""
+msgstr "Sin contacto"
 
 #. module: account_ux
 #. odoo-python
@@ -566,7 +566,7 @@ msgstr "Conciliaciones Parciales"
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Partner"
-msgstr ""
+msgstr "Contacto"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment_method_line
@@ -591,7 +591,7 @@ msgstr ""
 msgid ""
 "Priority sequence for branches. Low number if I am a branch, high number if "
 "I am a parent"
-msgstr ""
+msgstr "Secuencia de prioridad para sucursales. Número bajo si soy una sucursal, número alto si soy una matriz"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -660,7 +660,7 @@ msgstr "Compartido con Sucursales"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__show_warning_shared_to_branches
 msgid "Show Warning Shared To Branches"
-msgstr ""
+msgstr "Mostrar advertencia de compartido a sucursales"
 
 #. module: account_ux
 #: model:res.groups,name:account_ux.group_reference_on_tree_and_main_form
@@ -687,7 +687,7 @@ msgstr "Impuesto"
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_invoice_report__total_cc
 msgid "Taxed Total in the company's currency where it is set"
-msgstr ""
+msgstr "Total con impuestos en la moneda de la compañía donde está configurada"
 
 #. module: account_ux
 #. odoo-python
@@ -708,7 +708,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "This entry transfers the following amounts to %(destination)s"
-msgstr ""
+msgstr "Este asiento transferirá los siguientes importes a %(destination)s"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
@@ -774,7 +774,7 @@ msgstr "Balance Total"
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Transfer"
-msgstr ""
+msgstr "Traslado"
 
 #. module: account_ux
 #. odoo-python
@@ -922,7 +922,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "[Not set]"
-msgstr ""
+msgstr "[No establecido]"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_change_currency
@@ -935,13 +935,13 @@ msgstr "o"
 msgid ""
 "{amount} ({debit_credit}) from <strong>{partner_source_name}</strong> were "
 "transferred to <strong>{partner_target_name}</strong> by {link}"
-msgstr ""
+msgstr "{amount} ({debit_credit}) de <strong>{partner_source_name}</strong> fueron transferidos a <strong>{partner_target_name}</strong> por {link}"
 
 #. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "{amount} ({debit_credit}) from {link}"
-msgstr ""
+msgstr "{amount} ({debit_credit}) de {link}"
 
 #~ msgid ""
 #~ "<b>Error sending the invoice</b>: partner %s does not have an email "
