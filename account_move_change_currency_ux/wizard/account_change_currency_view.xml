@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_change_currency_ux" model="ir.ui.view">
+        <field name="name">Change Currency (UX)</field>
+        <field name="model">account.change.currency</field>
+        <field name="inherit_id" ref="account_ux.view_account_change_currency"/>
+        <field name="arch" type="xml">
+            <field name="conversion_rate" position="after">
+                <field name="inverse_currency_rate" invisible="inverse_currency_rate &lt;= 1.0" groups="!account_ux.group_restrict_change_currency_exchange"/>
+                <field name="inverse_currency_rate" invisible="inverse_currency_rate &lt;= 1.0" readonly="1" groups="account_ux.group_restrict_change_currency_exchange" force_save="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>
