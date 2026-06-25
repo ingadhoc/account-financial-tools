@@ -1,6 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
+from odoo.tools import float_compare
 
 
 class AccountPayment(models.Model):
@@ -155,6 +156,7 @@ class AccountPayment(models.Model):
             # as it does not compute automatically.
             # This ensures not to use the same payment method line ID of the original transfer payment.
             paired_payment._compute_payment_method_line_id()
+
             if (
                 not payment.payment_method_line_id.payment_account_id
                 or not paired_payment.payment_method_line_id.payment_account_id
@@ -249,14 +251,52 @@ class AccountPayment(models.Model):
         if self.env.context.get("skip_paired_payment_update"):
             return res
 
-        # Update paired payment when amount or journal changes
+        # Update paired payment when amount, rate or journal changes
         for payment in self.filtered(lambda p: p.is_internal_transfer and p.paired_internal_transfer_payment_id):
             paired_payment = payment.paired_internal_transfer_payment_id
             updates = {}
 
-            # Sync amount
-            if "amount" in vals and payment.amount != paired_payment.amount:
-                updates["amount"] = payment.amount
+            # Sync amounts: use counterpart_currency_amount for proper cross-currency conversion
+            amount_fields_changed = any(
+                f in vals
+                for f in [
+                    "amount",
+                    "counterpart_currency_amount",
+                    "user_accounting_rate",
+                    "user_counterpart_rate",
+                    "accounting_rate",
+                    "counterpart_rate",
+                ]
+            )
+
+            use_payment_pro = getattr(payment.company_id, "use_payment_pro", False)
+            if amount_fields_changed and use_payment_pro:
+                counterpart_amount = getattr(payment, "counterpart_currency_amount", False)
+                if counterpart_amount:
+                    # Sin redondear: counterpart_currency_amount ya viene redondeado y
+                    # le quitaría precisión a amount_exact del paired (drift 99.994,50).
+                    origin_rate = getattr(payment, "counterpart_rate", 0.0)
+                    origin_exact = getattr(payment, "amount_exact", 0.0) or payment.amount
+                    precise_amount = abs(origin_exact * origin_rate) if origin_rate else abs(counterpart_amount)
+                    if paired_payment.currency_id.round(precise_amount) != paired_payment.amount:
+                        updates["amount"] = paired_payment.currency_id.round(precise_amount)
+                        updates["amount_exact"] = precise_amount
+            elif "amount" in vals:
+                if payment.amount != paired_payment.amount:
+                    updates["amount"] = payment.amount
+
+            # Sync rates: invert counterpart_rate because paired payment has swapped currencies
+            rate_fields_changed = any(
+                f in vals
+                for f in ["user_accounting_rate", "user_counterpart_rate", "accounting_rate", "counterpart_rate"]
+            )
+            counterpart_rate = getattr(payment, "counterpart_rate", False)
+            if rate_fields_changed and use_payment_pro and counterpart_rate:
+                inverse_rate = 1.0 / counterpart_rate
+                current_paired_rate = getattr(paired_payment, "counterpart_rate", 0)
+                # Use float_compare with 6 decimal precision to avoid floating-point comparison issues
+                if float_compare(inverse_rate, current_paired_rate, precision_digits=6) != 0:
+                    updates["counterpart_rate"] = inverse_rate
 
             # Sync journals (swapped relationship)
             if "journal_id" in vals and payment.journal_id != paired_payment.destination_journal_id:
