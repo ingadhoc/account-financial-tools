@@ -27,6 +27,39 @@ class AccountJournal(models.Model):
                 )
             )
 
+    @api.constrains(
+        "suspense_account_id",
+        "inbound_payment_method_line_ids",
+        "outbound_payment_method_line_ids",
+    )
+    def _check_suspense_account_not_outstanding(self):
+        """La cuenta transitoria (suspense) del diario no puede coincidir con una
+        cuenta de pagos/cobros pendientes (outstanding).
+
+        Si coinciden, el widget de conciliación bancaria nunca habilita "Validar":
+        ``bank.rec.widget._compute_state`` deja ``state='invalid'`` mientras la cuenta
+        transitoria siga presente en las líneas, y al conciliar contra un pago cuya
+        contrapartida está en esa misma cuenta, la transitoria nunca sale. El botón
+        queda gris sin mensaje que lo explique. Bloqueamos la configuración de raíz.
+        """
+        for journal in self:
+            suspense = journal.suspense_account_id
+            if not suspense:
+                continue
+            outstanding_accounts = (
+                journal.inbound_payment_method_line_ids | journal.outbound_payment_method_line_ids
+            ).payment_account_id
+            if suspense in outstanding_accounts:
+                raise ValidationError(
+                    _(
+                        "En el diario «%(journal)s» la cuenta transitoria (%(account)s) no puede ser la "
+                        "misma que una cuenta de pagos/cobros pendientes (outstanding). Si lo son, no vas a "
+                        "poder validar las conciliaciones bancarias contra esos pagos. Configurá cuentas distintas.",
+                        journal=journal.display_name,
+                        account=suspense.display_name,
+                    )
+                )
+
     def write(self, vals):
         """We need to allow to change to False the value for restricted for hash for the journal when this value is setted."""
         if "restrict_mode_hash_table" in vals and not vals.get("restrict_mode_hash_table"):
