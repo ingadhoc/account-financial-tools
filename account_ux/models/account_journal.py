@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import _, api, fields, models, tools
+from odoo.exceptions import ValidationError
 from odoo.fields import Domain
 from odoo.tools.misc import unquote
 from odoo.tools.safe_eval import safe_eval
@@ -92,6 +93,39 @@ class AccountJournal(models.Model):
             [("company_id", "parent_of", companies), ("shared_to_branches", "=", True)]
         )
         return domain
+
+    @api.constrains(
+        "suspense_account_id",
+        "inbound_payment_method_line_ids",
+        "outbound_payment_method_line_ids",
+    )
+    def _check_suspense_account_not_outstanding(self):
+        """La cuenta transitoria (suspense) del diario no puede coincidir con una
+        cuenta de pagos/cobros pendientes (outstanding).
+
+        Si coinciden, el widget de conciliación bancaria nunca habilita "Validar":
+        ``bank.rec.widget._compute_state`` deja ``state='invalid'`` mientras la cuenta
+        transitoria siga presente en las líneas, y al conciliar contra un pago cuya
+        contrapartida está en esa misma cuenta, la transitoria nunca sale. El botón
+        queda gris sin mensaje que lo explique. Bloqueamos la configuración de raíz.
+        """
+        for journal in self:
+            suspense = journal.suspense_account_id
+            if not suspense:
+                continue
+            outstanding_accounts = (
+                journal.inbound_payment_method_line_ids | journal.outbound_payment_method_line_ids
+            ).payment_account_id
+            if suspense in outstanding_accounts:
+                raise ValidationError(
+                    _(
+                        "En el diario «%(journal)s» la cuenta transitoria (%(account)s) no puede ser la "
+                        "misma que una cuenta de pagos/cobros pendientes (outstanding). Si lo son, no vas a "
+                        "poder validar las conciliaciones bancarias contra esos pagos. Configurá cuentas distintas.",
+                        journal=journal.display_name,
+                        account=suspense.display_name,
+                    )
+                )
 
     @api.depends("type")
     def _compute_payment_sequence(self):
