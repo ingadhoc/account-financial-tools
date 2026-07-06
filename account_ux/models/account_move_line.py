@@ -109,6 +109,18 @@ class AccountMoveLine(models.Model):
                 )
         return res
 
+    def reconcile(self):
+        # Con reconcile_on_company_currency se concilia al TC del comprobante, así que el residuo remanente
+        # es puro redondeo y no debe generar diferencia de cambio. Propagamos no_exchange_difference a todo
+        # el reconcile porque el override del partial no alcanza la fase donde se crea el asiento.
+        if (
+            not self.env.context.get("no_exchange_difference")
+            and self.company_id.reconcile_on_company_currency
+            and not self.account_id.currency_id
+        ):
+            self = self.with_context(no_exchange_difference=True)
+        return super().reconcile()
+
     def _compute_amount_residual(self):
         """Cuando se realiza un cobro de un recibo y el comprobante que se paga tiene moneda secundaria y queda totalmente conciliado en moneda de compañía pero no en moneda secundaria (ejemplo: diferencia de un centavo) lo que hacemos con este método es forzar que quede conciliado también en moneda secundaria."""
         super()._compute_amount_residual()
