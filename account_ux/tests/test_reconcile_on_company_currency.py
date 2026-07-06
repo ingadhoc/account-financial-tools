@@ -105,3 +105,22 @@ class TestReconcileOnCompanyCurrency(AccountTestInvoicingCommon):
         # El partial cancela 99,50 de compañía = 99.500 EUR a la cotización del recibo.
         self.assertAlmostEqual(res["partial_values"]["amount"], 99.50)
         self.assertAlmostEqual(res["partial_values"]["credit_amount_currency"], 99500.0)
+
+    def test_rounding_residual_does_not_create_exchange_move(self):
+        """Con ``reconcile_on_company_currency`` activo, conciliar dos apuntes en la misma moneda
+        secundaria que cierran exacto en secundaria pero difieren por redondeo en moneda de compañía
+        NO debe generar un asiento de diferencia de cambio (la promesa del setting)."""
+        exchange_journal = self.company.currency_exchange_journal_id
+        domain = [("journal_id", "=", exchange_journal.id)]
+        moves_before = self.env["account.move"].search_count(domain)
+        # Cierran exacto en moneda secundaria (100.000 EUR) pero difieren 0,01 en moneda de compañía.
+        debit_line = self._receivable_line(100.01, self.foreign_currency, 100000.0)
+        credit_line = self._receivable_line(-100.00, self.foreign_currency, -100000.0)
+
+        (debit_line + credit_line).reconcile()
+
+        self.assertEqual(
+            self.env["account.move"].search_count(domain),
+            moves_before,
+            "No debe crearse un asiento de diferencia de cambio por el residuo de redondeo.",
+        )
