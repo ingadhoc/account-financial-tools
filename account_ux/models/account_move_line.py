@@ -101,12 +101,25 @@ class AccountMoveLine(models.Model):
                 res["partial_values"]["credit_amount_currency"] = credit_values["aml"].currency_id.round(
                     res["partial_values"]["credit_amount_currency"] * rate
                 )
+                # El residual que devuelve super quedó expresado en moneda de la compañía (por el shadow de
+                # arriba). Lo reexpresamos en la moneda secundaria real a la cotización del comprobante, igual
+                # que hacemos con el partial. Si no, el residual queda con el valor en moneda de compañía pero
+                # asociado a un apunte cuya currency_id es la secundaria, y cualquier consumidor del residual
+                # (ej. el wizard de conciliación / ajuste) lo interpreta como moneda secundaria sin convertir.
+                if res.get("credit_values"):
+                    res["credit_values"]["amount_residual_currency"] = credit_values["aml"].currency_id.round(
+                        res["credit_values"]["amount_residual"] * rate
+                    )
             if "original_currency" in debit_values:
                 debit_values["currency"] = debit_values["original_currency"]
                 rate = get_accounting_rate(debit_values)
-                res["partial_values"]["debit_amount_currency"] = credit_values["aml"].currency_id.round(
+                res["partial_values"]["debit_amount_currency"] = debit_values["aml"].currency_id.round(
                     res["partial_values"]["debit_amount_currency"] * rate
                 )
+                if res.get("debit_values"):
+                    res["debit_values"]["amount_residual_currency"] = debit_values["aml"].currency_id.round(
+                        res["debit_values"]["amount_residual"] * rate
+                    )
         return res
 
     def _compute_amount_residual(self):
