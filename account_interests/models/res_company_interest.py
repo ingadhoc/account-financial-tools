@@ -372,6 +372,22 @@ class ResCompanyInterest(models.Model):
         return deuda
 
     def _search_last_journal_for_partner(self, partner, debt):
+        self.ensure_one()
+
+        # Prioridad: respetar el diario sobre el cual se emitieron las facturas
+        # de deuda del partner. Buscamos el apunte más reciente del partner en
+        # las cuentas a cobrar configuradas correspondiente a una factura de
+        # cliente y usamos su diario.
+        last_line = self.env["account.move.line"].search(
+            self._get_move_line_domains()
+            + [("partner_id", "=", partner.id), ("move_id.move_type", "=", "out_invoice")],
+            order="date desc, id desc",
+            limit=1,
+        )
+        if last_line.move_id.journal_id.active:
+            return last_line.move_id.journal_id
+
+        # Fallback: diario por defecto del partner/compañía si no hay facturas previas
         journal = (
             self.env["account.move"]
             .with_context(internal_type="debit_note", default_move_type="out_invoice")
