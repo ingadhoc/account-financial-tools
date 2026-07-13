@@ -1,0 +1,58 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_analytic_ux
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-13 14:10+0000\n"
+"PO-Revision-Date: 2026-07-13 14:10+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_analytic_ux
+#: model:ir.model,name:account_analytic_ux.model_account_analytic_line
+msgid "Analytic Line"
+msgstr ""
+
+#. module: account_analytic_ux
+#: model:ir.model.fields,field_description:account_analytic_ux.field_account_analytic_line__display_name
+#: model:ir.model.fields,field_description:account_analytic_ux.field_project_project__display_name
+#: model:ir.model.fields,field_description:account_analytic_ux.field_stock_move__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_analytic_ux
+#: model:ir.model.fields,field_description:account_analytic_ux.field_account_analytic_line__id
+#: model:ir.model.fields,field_description:account_analytic_ux.field_project_project__id
+#: model:ir.model.fields,field_description:account_analytic_ux.field_stock_move__id
+msgid "ID"
+msgstr ""
+
+#. module: account_analytic_ux
+#: model:ir.model,name:account_analytic_ux.model_project_project
+msgid "Project"
+msgstr ""
+
+#. module: account_analytic_ux
+#: model:ir.model.fields,field_description:account_analytic_ux.field_project_project__use_segmented_analytics
+msgid "Segmentación Automática de Costos (Horas/Materiales)"
+msgstr ""
+
+#. module: account_analytic_ux
+#: model:ir.model.fields,help:account_analytic_ux.field_project_project__use_segmented_analytics
+msgid ""
+"Separa automáticamente los costos del proyecto en cuentas analíticas de "
+"Horas y Materiales. Las partes de horas se imputan al Plan de Horas, los "
+"movimientos de inventario al Plan de Materiales."
+msgstr ""
+
+#. module: account_analytic_ux
+#: model:ir.model,name:account_analytic_ux.model_stock_move
+msgid "Stock Move"
+msgstr ""
