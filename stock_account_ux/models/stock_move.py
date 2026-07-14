@@ -15,6 +15,16 @@ class StockMove(models.Model):
         search="_search_related_account_move_id",
         string="Journal Entry",
     )
+    # Movimientos cuya valorización ya quedó contabilizada en la v18 (el asiento
+    # se reenganchó a ``account_move_id`` en el post-migration 18->19). Como el
+    # gasto ya se reconoció en la versión anterior, al facturar en v19 no
+    # corresponde volver a generar el COGS anglosajón para ellos. Ver la override
+    # de ``_stock_account_prepare_realtime_out_lines_vals`` en account_move.py.
+    stock_valuation_migrated = fields.Boolean(
+        string="Valuation Booked in v18",
+        default=False,
+        copy=False,
+    )
 
     @api.depends("account_move_id", "picking_id", "state", "product_id.valuation")
     def _compute_related_account_move_id(self):
