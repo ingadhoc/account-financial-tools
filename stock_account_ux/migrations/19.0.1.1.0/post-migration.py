@@ -58,5 +58,24 @@ def migrate(env, version):
         env.cr.rowcount,
     )
 
+    # Marcar TODOS los movimientos que tenían valorización en la v18 (los del
+    # backup), tengan o no ``account_move_id`` ya seteado. La valorización de
+    # esos movimientos ya se contabilizó en la versión anterior, así que al
+    # facturarlos en v19 no debe re-generarse el COGS anglosajón. Lo consume la
+    # override de ``account.move._stock_account_prepare_realtime_out_lines_vals``.
+    env.cr.execute(
+        """
+        UPDATE stock_move sm
+           SET stock_valuation_migrated = TRUE
+          FROM %s bu
+         WHERE bu.stock_move_id = sm.id
+        """
+        % BACKUP_TABLE
+    )
+    _logger.info(
+        "Marcados %s movimientos con stock_valuation_migrated=True",
+        env.cr.rowcount,
+    )
+
     env.cr.execute("DROP TABLE IF EXISTS %s" % BACKUP_TABLE)
     _logger.info("Eliminada la tabla backup %s", BACKUP_TABLE)
