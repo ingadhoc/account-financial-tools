@@ -25,19 +25,46 @@ class AccountAnalyticLine(models.Model):
                 return account_vals
         return super()._timesheet_preprocess_get_accounts(vals)
 
+    def _enforce_segmented_timesheet_plans(self):
+        """Pin timesheet analytic lines of segmented projects to the Hours plan.
+
+        A timesheet on a segmented project must land on the Hours plan account (so its
+        cost feeds the Hours budget) and never on the Materials plan. Relying only on
+        ``_timesheet_preprocess_get_accounts`` is not enough: when ``create``/``write``
+        carry an ``analytic_distribution`` (as the UI does when budgets/dashboards are
+        involved), its inverse rewrites the plan columns from the project's main account
+        and wipes the Hours account. So we enforce the final state after super() ran:
+        set the Hours plan column and clear the Materials one. Uses super().write to
+        avoid recursing through this override.
+        """
+        hours_fname, materials_fname = self.env["project.project"]._get_segmented_plan_fnames()
+        if not hours_fname:
+            return
+        for line in self.filtered(lambda l: l.category != "picking_entry" and l.project_id.use_segmented_analytics):
+            fixed = {}
+            hours_account = line.project_id._get_hours_analytic_account()
+            if hours_account and line[hours_fname] != hours_account:
+                fixed[hours_fname] = hours_account.id
+            if materials_fname and line[materials_fname]:
+                fixed[materials_fname] = False
+            if fixed:
+                super(AccountAnalyticLine, line).write(fixed)
+
     @api.model_create_multi
     def create(self, vals_list):
-        # Force non-billable (empty so_line) for every line, timesheet or picking.
-        # For stock picking analytic lines also avoid hr_timesheet employee
-        # validation by not setting project_id: we only keep the account_id
-        # derived from the project. project_id is left set only on timesheets.
+        # Force non-billable (empty so_line) only for stock picking lines: their cost
+        # must never be tied to a sale order line. For those picking lines also avoid
+        # hr_timesheet employee validation by not setting project_id; we only keep the
+        # account_id derived from the project. Timesheet lines are left untouched so
+        # they keep their so_line and the service stays billable.
         processed = list(vals_list)
         deferred = {}
         for idx, vals in enumerate(vals_list):
-            vals = dict(vals, so_line=False)
-            if vals.get("category") == "picking_entry" and vals.get("project_id"):
-                deferred[idx] = vals["project_id"]
-                vals = {k: v for k, v in vals.items() if k != "project_id"}
+            if vals.get("category") == "picking_entry":
+                vals = dict(vals, so_line=False)
+                if vals.get("project_id"):
+                    deferred[idx] = vals["project_id"]
+                    vals = {k: v for k, v in vals.items() if k != "project_id"}
             processed[idx] = vals
 
         records = super().create(processed)
@@ -47,7 +74,15 @@ class AccountAnalyticLine(models.Model):
             if not records[idx].account_id and project.account_id:
                 records[idx].sudo().write({"account_id": project.account_id.id})
 
+        records._enforce_segmented_timesheet_plans()
         return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Re-assert the Hours/Materials segmentation on edits too (an edit can recompute
+        # analytic_distribution and drop the Hours account again).
+        self._enforce_segmented_timesheet_plans()
+        return res
 
     def _timesheet_postprocess_values(self, values):
         # Segmented-analytics timesheets route costs to the Hours plan. For records
