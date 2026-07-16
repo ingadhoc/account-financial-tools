@@ -67,7 +67,7 @@ class AccountMove(models.Model):
                 # Seteamos la data para que el cron nativo lo procese luego
                 rec.sending_data = {
                     "sending_methods": ["email"],
-                    "mail_template_id": rec.journal_id.mail_template_id.id,
+                    "mail_template_id": rec._get_mail_template().id,
                     "author_partner_id": self.env.user.partner_id.id,
                 }
                 continue
@@ -83,7 +83,7 @@ class AccountMove(models.Model):
 
     def _get_mail_template(self):
         res = super()._get_mail_template()
-        if self.journal_id.mail_template_id:
+        if self.journal_id.mail_template_id and not all(move.move_type in ("out_refund", "in_refund") for move in self):
             res = self.journal_id.mail_template_id
         return res
 
