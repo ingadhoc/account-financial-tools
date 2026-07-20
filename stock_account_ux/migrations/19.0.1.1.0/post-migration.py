@@ -58,6 +58,34 @@ def migrate(env, version):
         env.cr.rowcount,
     )
 
+    # Volcar el valor del asiento histórico al movimiento. En v19 el valor vive
+    # en ``stock_move.value`` (stored); reenganchar ``account_move_id`` no lo
+    # recalcula, así que lo seteamos desde la partida de valorización del asiento.
+    # Filtramos por ``product_id`` para aislar la pata de débito de ESTE producto
+    # (así funciona aunque un asiento agrupe varios movimientos de distinto producto).
+    env.cr.execute(
+        """
+        UPDATE stock_move sm
+           SET value = sub.value
+          FROM (
+                SELECT bu.stock_move_id,
+                       SUM(aml.debit) AS value
+                  FROM %s bu
+                  JOIN stock_move m2 ON m2.id = bu.stock_move_id
+                  JOIN account_move_line aml
+                    ON aml.move_id = bu.account_move_id
+                   AND aml.product_id = m2.product_id
+                 GROUP BY bu.stock_move_id
+               ) sub
+         WHERE sm.id = sub.stock_move_id
+        """
+        % BACKUP_TABLE
+    )
+    _logger.info(
+        "Actualizado value en %s movimientos desde el asiento histórico",
+        env.cr.rowcount,
+    )
+
     # Marcar TODOS los movimientos que tenían valorización en la v18 (los del
     # backup), tengan o no ``account_move_id`` ya seteado. La valorización de
     # esos movimientos ya se contabilizó en la versión anterior, así que al
