@@ -4,6 +4,15 @@ from odoo import models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    def _post(self, soft=True):
+        """Al postear una factura, ``stock_account._post`` revaloriza los
+        movimientos de entrada/dropship (``stock.move._set_value``) contra el
+        precio facturado. Marcamos el contexto para que la override de
+        ``stock.move._set_value`` saltee esa revalorización en los movimientos
+        migrados de la v18, cuyo valor ya está contabilizado. Ver tarea 70174.
+        """
+        return super(AccountMove, self.with_context(skip_migrated_stock_revaluation=True))._post(soft=soft)
+
     def _stock_account_prepare_realtime_out_lines_vals(self):
         """Evitar la doble contabilización al facturar en v19 movimientos que ya
         se valorizaron en la v18.

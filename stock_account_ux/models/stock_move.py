@@ -45,6 +45,43 @@ class StockMove(models.Model):
             # y, si no hay, cae en la primera factura relacionada.
             move.related_account_move_id = entries[:1]
 
+    def _set_value(self, correction_quantity=None):
+        """No revalorizar al facturar los movimientos ya valorizados en la v18.
+
+        De fábrica ``account.move._post`` llama ``_set_value`` sobre los
+        movimientos de entrada/dropship de la factura para recomputar su
+        ``value`` (y de ahí el ``standard_price`` del producto) a partir del
+        precio facturado. Para un movimiento migrado ese valor ya viene de la
+        v18 (lo backfilleó el post-migration), así que recomputarlo lo pisaría
+        con una base distinta. Sólo lo salteamos en el flujo de posteo de la
+        factura, que marca el contexto ``skip_migrated_stock_revaluation``; el
+        resto de los llamados a ``_set_value`` quedan intactos. Ver tarea 70174.
+        """
+        moves = self
+        if self.env.context.get("skip_migrated_stock_revaluation"):
+            moves = self.filtered(lambda m: not (m.stock_valuation_migrated and (m.is_in or m.is_dropship)))
+        return super(StockMove, moves)._set_value(correction_quantity=correction_quantity)
+
+    def _get_migrated_valuation_counterpart_account(self):
+        """Cuenta de contrapartida del asiento de valorización que la v18 dejó
+        reenganchado en ``account_move_id`` (post-migration 18->19).
+
+        En ese asiento el ingreso se contabilizó como alta de activo: débito a
+        la cuenta de valorización de stock (Existencias) contra esta
+        contrapartida (típicamente una cuenta de compra de mercadería). Es la
+        cuenta a la que debe imputarse la línea de factura en v19 para no
+        volver a debitar Existencias. Devuelve un recordset vacío si no hay
+        asiento o no se puede determinar la contrapartida.
+        """
+        self.ensure_one()
+        entry = self.account_move_id
+        if not entry:
+            return self.env["account.account"]
+        accounts = self.product_id.product_tmpl_id.with_company(self.company_id).get_product_accounts()
+        valuation_account = accounts.get("stock_valuation")
+        counterpart = entry.line_ids.filtered(lambda line: line.account_id and line.account_id != valuation_account)
+        return counterpart[:1].account_id
+
     def _search_related_account_move_id(self, operator, value):
         """El campo es calculado y no se almacena (las facturas relacionadas se
         resuelven al vuelo), por lo que necesitamos un search method para poder
