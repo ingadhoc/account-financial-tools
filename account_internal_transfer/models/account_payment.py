@@ -84,7 +84,10 @@ class AccountPayment(models.Model):
     def _get_aml_default_display_name_list(self):
         values = super()._get_aml_default_display_name_list()
         values = [
-            (key, _("Internal Transfer") if self.is_internal_transfer and key == "label" else value)
+            (
+                key,
+                _("Internal Transfer") if self.is_internal_transfer and key == "label" else value,
+            )
             for key, value in values
         ]
         return values
@@ -164,6 +167,8 @@ class AccountPayment(models.Model):
                 raise ValidationError(
                     _("The origin or destination payment methods do not have an outstanding account.")
                 )
+            if self.env.context.get("default_payment_method_line_id"):
+                paired_payment.payment_method_line_id = self.env.context.get("default_payment_method_line_id")
             paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry(
                 # Force the exact ARS balance from the original transfer line to avoid
                 # rounding discrepancies when both journals are in different foreign currencies
@@ -184,14 +189,14 @@ class AccountPayment(models.Model):
             payment.message_post(body=body)
 
             lines = (payment.move_id.line_ids + paired_payment.move_id.line_ids).filtered(
-                lambda l: l.account_id == payment.destination_account_id and not l.reconciled
+                lambda l: (l.account_id == payment.destination_account_id and not l.reconciled)
             )
             lines.reconcile()
 
     def action_post(self):
         super().action_post()
         self.filtered(
-            lambda pay: pay.is_internal_transfer and not pay.paired_internal_transfer_payment_id
+            lambda pay: (pay.is_internal_transfer and not pay.paired_internal_transfer_payment_id)
         )._create_paired_internal_transfer_payment()
 
     def action_open_destination_journal(self):
