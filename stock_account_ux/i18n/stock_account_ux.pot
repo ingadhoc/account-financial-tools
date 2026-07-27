@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-13 11:51+0000\n"
-"PO-Revision-Date: 2026-07-13 11:51+0000\n"
+"POT-Creation-Date: 2026-07-27 13:27+0000\n"
+"PO-Revision-Date: 2026-07-27 13:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,6 +27,8 @@ msgstr ""
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_account__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_account_move__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_account_move_line__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_res_company__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__display_name
@@ -35,6 +37,8 @@ msgstr ""
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_account__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_account_move__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_account_move_line__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_res_company__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__id
@@ -42,6 +46,7 @@ msgid "ID"
 msgstr ""
 
 #. module: stock_account_ux
+#: model:ir.model,name:stock_account_ux.model_account_move
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__related_account_move_id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__related_account_move_id
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_line_view_search_account_link
@@ -53,6 +58,11 @@ msgid "Journal Entry"
 msgstr ""
 
 #. module: stock_account_ux
+#: model:ir.model,name:stock_account_ux.model_account_move_line
+msgid "Journal Item"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_stock_move_line
 msgid "Product Moves (Stock Move Line)"
 msgstr ""
@@ -60,6 +70,11 @@ msgstr ""
 #. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_stock_move
 msgid "Stock Move"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__stock_valuation_migrated
+msgid "Valuation Booked in v18"
 msgstr ""
 
 #. module: stock_account_ux
