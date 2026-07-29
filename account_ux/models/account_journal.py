@@ -42,18 +42,28 @@ class AccountJournal(models.Model):
         for journal in self:
             journal.has_child_companies = bool(journal.company_id.child_ids)
 
-    @api.depends("company_id", "company_id.child_ids", "company_id.parent_id")
+    @api.depends(
+        "company_id",
+        "company_id.child_ids",
+        "company_id.child_ids.active",
+        "company_id.parent_id",
+    )
     def _compute_branch_order(self):
         for journal in self:
+            # Only active children count: an archived branch must not keep its
+            # parent in the "parent company" tier. We filter on active instead of
+            # relying on active_test because this field is stored, so its value
+            # cannot depend on the context of whoever triggers the recompute.
+            children = journal.company_id.child_ids.filtered("active")
             # Calculate the leves of the child hierarchy
             level = 0
-            companies_to_check = journal.company_id.child_ids
+            companies_to_check = children
             while companies_to_check:
                 level += 10
                 # Get all children of the next level
-                companies_to_check = companies_to_check.mapped("child_ids")
+                companies_to_check = companies_to_check.mapped("child_ids").filtered("active")
 
-            if journal.company_id.child_ids:
+            if children:
                 # If it has children, the base value is 100 plus level
                 journal.branch_order = 100 + level
             elif journal.company_id.parent_id:
