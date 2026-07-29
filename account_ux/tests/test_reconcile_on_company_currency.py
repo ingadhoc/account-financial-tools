@@ -105,3 +105,123 @@ class TestReconcileOnCompanyCurrency(AccountTestInvoicingCommon):
         # El partial cancela 99,50 de compañía = 99.500 EUR a la cotización del recibo.
         self.assertAlmostEqual(res["partial_values"]["amount"], 99.50)
         self.assertAlmostEqual(res["partial_values"]["credit_amount_currency"], 99500.0)
+<<<<<<< 7a5fc51bcafb526a45666854fec7d3855355486c
+||||||| c9fc2554f50d132180459435cd65af55129bbe3e
+
+    def test_rounding_residual_does_not_create_exchange_move(self):
+        """Con ``reconcile_on_company_currency`` activo, conciliar dos apuntes en la misma moneda
+        secundaria que cierran exacto en secundaria pero difieren por redondeo en moneda de compañía
+        NO debe generar un asiento de diferencia de cambio (la promesa del setting)."""
+        exchange_journal = self.company.currency_exchange_journal_id
+        domain = [("journal_id", "=", exchange_journal.id)]
+        moves_before = self.env["account.move"].search_count(domain)
+        # Cierran exacto en moneda secundaria (100.000 EUR) pero difieren 0,01 en moneda de compañía.
+        debit_line = self._receivable_line(100.01, self.foreign_currency, 100000.0)
+        credit_line = self._receivable_line(-100.00, self.foreign_currency, -100000.0)
+
+        (debit_line + credit_line).reconcile()
+
+        self.assertEqual(
+            self.env["account.move"].search_count(domain),
+            moves_before,
+            "No debe crearse un asiento de diferencia de cambio por el residuo de redondeo.",
+        )
+=======
+
+    def test_rounding_residual_does_not_create_exchange_move(self):
+        """Con ``reconcile_on_company_currency`` activo, conciliar dos apuntes en la misma moneda
+        secundaria que cierran exacto en secundaria pero difieren por redondeo en moneda de compañía
+        NO debe generar un asiento de diferencia de cambio (la promesa del setting)."""
+        exchange_journal = self.company.currency_exchange_journal_id
+        domain = [("journal_id", "=", exchange_journal.id)]
+        moves_before = self.env["account.move"].search_count(domain)
+        # Cierran exacto en moneda secundaria (100.000 EUR) pero difieren 0,01 en moneda de compañía.
+        debit_line = self._receivable_line(100.01, self.foreign_currency, 100000.0)
+        credit_line = self._receivable_line(-100.00, self.foreign_currency, -100000.0)
+
+        (debit_line + credit_line).reconcile()
+
+        self.assertEqual(
+            self.env["account.move"].search_count(domain),
+            moves_before,
+            "No debe crearse un asiento de diferencia de cambio por el residuo de redondeo.",
+        )
+
+
+@tagged("post_install", "-at_install")
+class TestReconcileBranchCompanies(AccountTestInvoicingCommon):
+    """Conciliar apuntes de dos compañías del mismo grupo (sucursal <-> matriz).
+
+    El override de ``reconcile()`` leía ``self.company_id.reconcile_on_company_currency``
+    sobre el recordset, lo que es un ``ensure_one()`` implícito y rompía con
+    ``ValueError: Expected singleton`` cuando los apuntes son de dos compañías.
+
+    El flujo es válido: odoo valida ``len(self.company_id.root_id) > 1``, no
+    ``len(self.company_id)``, así que conciliar entre sucursales de una misma raíz está
+    permitido; y ``account_internal_transfer`` concilia a propósito la línea del pago
+    origen con la del pago par, que vive en la otra compañía del árbol.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.root_company = cls.company_data["company"]
+        cls.root_company.write({"child_ids": [Command.create({"name": "Branch account_ux"})]})
+        cls.cr.precommit.run()  # carga el plan de cuentas de la sucursal
+        cls.branch = cls.root_company.child_ids
+        cls.companies = cls.root_company + cls.branch
+        # reconcile_on_company_currency sólo se permite con país Argentina (constraint de
+        # saas_client_account), y las compañías argentinas exigen redondeo global (constraint
+        # de saas_client_l10n_ar); seteamos ambos junto al país para no pegar contra un estado
+        # intermedio inválido.
+        cls.companies.write(
+            {
+                "country_id": cls.env.ref("base.ar").id,
+                "tax_calculation_rounding_method": "round_globally",
+            }
+        )
+        cls.companies.reconcile_on_company_currency = True
+
+    def _cross_company_payment_term_lines(self):
+        """Factura en la sucursal y nota de crédito en la matriz, por el mismo importe.
+
+        Devuelve las dos líneas de término de pago, listas para conciliar entre sí.
+        """
+        invoice = self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "invoice_date": "2016-01-01",
+                "company_id": self.branch.id,
+                "partner_id": self.partner_a.id,
+                "invoice_line_ids": [Command.create({"name": "product", "price_unit": 1000})],
+            }
+        )
+        invoice.action_post()
+        refund = self.env["account.move"].create(
+            {
+                "move_type": "out_refund",
+                "invoice_date": "2016-01-01",
+                "company_id": self.root_company.id,
+                "partner_id": self.partner_a.id,
+                "invoice_line_ids": [Command.create({"name": "product", "price_unit": 1000})],
+            }
+        )
+        refund.action_post()
+        return (invoice + refund).line_ids.filtered(lambda line: line.display_type == "payment_term")
+
+    def test_reconcile_branch_against_root(self):
+        lines = self._cross_company_payment_term_lines()
+
+        lines.reconcile()
+
+        self.assertEqual(lines.mapped("amount_residual"), [0, 0])
+
+    def test_reconcile_branch_against_root_setting_off_on_branch(self):
+        """El recordset multi-compañía tampoco debe romper si el setting no está uniforme."""
+        self.branch.reconcile_on_company_currency = False
+        lines = self._cross_company_payment_term_lines()
+
+        lines.reconcile()
+
+        self.assertEqual(lines.mapped("amount_residual"), [0, 0])
+>>>>>>> 7742fc0a32cc9eec7170ad12068fcbfd401aa707

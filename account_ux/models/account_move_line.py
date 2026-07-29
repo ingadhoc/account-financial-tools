@@ -122,6 +122,39 @@ class AccountMoveLine(models.Model):
                     )
         return res
 
+<<<<<<< 7a5fc51bcafb526a45666854fec7d3855355486c
+||||||| c9fc2554f50d132180459435cd65af55129bbe3e
+    def reconcile(self):
+        # Con reconcile_on_company_currency se concilia al TC del comprobante, así que el residuo remanente
+        # es puro redondeo y no debe generar diferencia de cambio. Propagamos no_exchange_difference a todo
+        # el reconcile porque el override del partial no alcanza la fase donde se crea el asiento.
+        if (
+            not self.env.context.get("no_exchange_difference")
+            and self.company_id.reconcile_on_company_currency
+            and not self.account_id.currency_id
+        ):
+            self = self.with_context(no_exchange_difference=True)
+        return super().reconcile()
+
+=======
+    def reconcile(self):
+        # Con reconcile_on_company_currency se concilia al TC del comprobante, así que el residuo remanente
+        # es puro redondeo y no debe generar diferencia de cambio. Propagamos no_exchange_difference a todo
+        # el reconcile porque el override del partial no alcanza la fase donde se crea el asiento.
+        # Los apuntes pueden ser de compañías distintas de un mismo grupo (ejemplo: transferencia interna
+        # entre sucursal y matriz, que odoo permite si comparten root_id), por eso no leemos los campos
+        # directo del recordset: sería un ensure_one() implícito.
+        companies = self.company_id
+        if (
+            not self.env.context.get("no_exchange_difference")
+            and companies
+            and all(companies.mapped("reconcile_on_company_currency"))
+            and not self.account_id.mapped("currency_id")
+        ):
+            self = self.with_context(no_exchange_difference=True)
+        return super().reconcile()
+
+>>>>>>> 7742fc0a32cc9eec7170ad12068fcbfd401aa707
     def _compute_amount_residual(self):
         """Cuando se realiza un cobro de un recibo y el comprobante que se paga tiene moneda secundaria y queda totalmente conciliado en moneda de compañía pero no en moneda secundaria (ejemplo: diferencia de un centavo) lo que hacemos con este método es forzar que quede conciliado también en moneda secundaria."""
         super()._compute_amount_residual()
