@@ -125,10 +125,15 @@ class AccountMoveLine(models.Model):
         # Con reconcile_on_company_currency se concilia al TC del comprobante, así que el residuo remanente
         # es puro redondeo y no debe generar diferencia de cambio. Propagamos no_exchange_difference a todo
         # el reconcile porque el override del partial no alcanza la fase donde se crea el asiento.
+        # Los apuntes pueden ser de compañías distintas de un mismo grupo (ejemplo: transferencia interna
+        # entre sucursal y matriz, que odoo permite si comparten root_id), por eso no leemos los campos
+        # directo del recordset: sería un ensure_one() implícito.
+        companies = self.company_id
         if (
             not self.env.context.get("no_exchange_difference")
-            and self.company_id.reconcile_on_company_currency
-            and not self.account_id.currency_id
+            and companies
+            and all(companies.mapped("reconcile_on_company_currency"))
+            and not self.account_id.mapped("currency_id")
         ):
             self = self.with_context(no_exchange_difference=True)
         return super().reconcile()
