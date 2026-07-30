@@ -7,8 +7,5 @@
         <xpath expr="//table[@name='invoices']" position="inside">
             <t t-if="not any(inv.currency_id != o.currency_id and inv.currency_id != o.company_id.currency_id for inv in invoices)" t-set="otherCurrency" t-value="False"/>
         </xpath>
-        <xpath expr="//div[@name='payment_method']//span[@t-field='o.payment_method_id.name']" position="attributes">
-            <attribute name="t-field">o.payment_method_line_id.name</attribute>
-        </xpath>
     </template>
 </data>
