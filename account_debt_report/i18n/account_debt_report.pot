@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 18:39+0000\n"
-"PO-Revision-Date: 2025-11-25 18:39+0000\n"
+"POT-Creation-Date: 2026-07-31 21:08+0000\n"
+"PO-Revision-Date: 2026-07-31 21:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -50,16 +50,6 @@ msgstr ""
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__result_selection
 msgid "Account Type's"
-msgstr ""
-
-#. module: account_debt_report
-#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_currency
-msgid "Add columns for company currency?"
-msgstr ""
-
-#. module: account_debt_report
-#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__secondary_currency
-msgid "Add columns for secondary currency?"
 msgstr ""
 
 #. module: account_debt_report
@@ -169,6 +159,22 @@ msgstr ""
 #: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_id
 msgid ""
 "If you don't select a company, debt for all companies will be exported."
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__secondary_currency
+msgid ""
+"Includes only the items issued in a currency other than the company one, expressed in their own currency. Exchange rate differences booked in the company currency are left out, as they do not represent debt in this one.\n"
+"\n"
+"Checking both options gives the consolidated report: every item, the ones in foreign currency converted to the company currency along with their original amount, exchange rate differences included."
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_currency
+msgid ""
+"Includes the items issued in the company currency; the ones issued in other currencies are left out, not converted. Exchange rate differences follow the currency they were booked in, so a reconciliation between currencies can leave one here without the foreign item that generated it. For both reasons this report may not match the general ledger of the account.\n"
+"\n"
+"Checking both options gives the consolidated report: every item, the ones in foreign currency converted to the company currency along with their original amount, exchange rate differences included."
 msgstr ""
 
 #. module: account_debt_report

@@ -3,6 +3,7 @@
 # directory
 ##############################################################################
 from odoo import _, models
+from odoo.fields import Domain
 from odoo.tools.misc import formatLang
 
 # from odoo.exceptions import ValidationError
@@ -76,6 +77,62 @@ class ResPartner(models.Model):
             },
         }
 
+    def _get_debt_report_currency_mode(self):
+        """Currency mode requested for the report: "company", "secondary" or False.
+
+        The wizard lets the user tick the company currency, the secondary one or both.
+        Asking for both -or for none, which is what happens when the report is rendered
+        without these context keys- means the consolidated report, so we don't filter.
+        """
+        company_currency = bool(self.env.context.get("company_currency"))
+        secondary_currency = bool(self.env.context.get("secondary_currency"))
+        if company_currency == secondary_currency:
+            return False
+        return "company" if company_currency else "secondary"
+
+    def _get_debt_report_unfiltered_companies(self, companies):
+        """Companies whose items are never narrowed down by currency.
+
+        A company reconciling on its own currency books the exchange difference of a
+        foreign document as a separate debit note in the company currency. Filtering
+        would leave that note in without the document it adjusts, and the balance would
+        come out wrong, so those companies keep the behaviour they had before the filter
+        existed. The setting belongs to account_ux, which this module does not depend on,
+        hence checking that the field is there at all.
+        """
+        if "reconcile_on_company_currency" not in companies._fields:
+            return companies.browse()
+        return companies.filtered("reconcile_on_company_currency")
+
+    def _get_debt_report_currency_domain(self, currency_mode, companies):
+        """Domain restricting the items to the currency requested for the report.
+
+        An item is issued in the company currency when the currency it carries is the
+        currency of its own company, both of them stored on the line. Pairing them keeps
+        the filter exact even when the report spans companies with different currencies.
+        """
+        if not currency_mode:
+            return []
+        unfiltered = self._get_debt_report_unfiltered_companies(companies)
+        filtered = companies - unfiltered
+        if not filtered:
+            return []
+        in_company_currency = Domain.OR(
+            [
+                Domain("company_currency_id", "=", currency.id) & Domain("currency_id", "=", currency.id)
+                for currency in filtered.mapped("currency_id")
+            ]
+        )
+        if currency_mode == "company":
+            wanted = in_company_currency
+        else:
+            wanted = ~in_company_currency & Domain("amount_currency", "!=", 0.0)
+        # the filter only governs the companies it applies to
+        domain = wanted & Domain("company_id", "in", filtered.ids)
+        if unfiltered:
+            domain |= Domain("company_id", "in", unfiltered.ids)
+        return list(domain)
+
     def _get_debt_report_lines(self):
         # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
@@ -115,24 +172,20 @@ class ResPartner(models.Model):
         historical_full = self.env.context.get("historical_full", False)
         company_id = self.env.context.get("company_id", False)
         show_invoice_detail = self.env.context.get("show_invoice_detail", False)
-        secondary_currency = self.env.context.get("secondary_currency")
-        only_currency_lines = not self.env.context.get("company_currency") and secondary_currency
+        currency_mode = self._get_debt_report_currency_mode()
         balance_in_currency = 0.0
         balance_currency = 0.0
         balance_in_currency_name = ""
         domain = []
 
         if company_id:
-            domain += [("company_id", "=", company_id)]
-            company_currency_ids = self.env["res.company"].browse(company_id).currency_id
+            companies = self.env["res.company"].browse(company_id)
         else:
-            domain += [("company_id", "in", self.env.companies.ids)]
-            company_currency_ids = self.env.companies.mapped("currency_id")
-        if only_currency_lines and len(company_currency_ids) == 1:
-            domain += [("currency_id", "not in", company_currency_ids.ids)]
+            companies = self.env.companies
+        company_currencies = companies.mapped("currency_id")
+        domain += [("company_id", "in", companies.ids)]
 
-        if only_currency_lines:
-            domain += [("amount_currency", "!=", 0.0)]
+        domain += self._get_debt_report_currency_domain(currency_mode, companies)
 
         if not historical_full:
             domain += [("reconciled", "=", False), ("full_reconcile_id", "=", False)]
@@ -161,20 +214,25 @@ class ResPartner(models.Model):
             balance = inicial_lines[0][1] if inicial_lines else 0.0
             balance_in_currency = 0.0
             balance_in_currency_name = ""
-            if len(company_currency_ids) == 1:
-                balance_in_currency, balance_in_currency_name = self._get_currency_balance(
-                    initial_domain, company_currency_ids
-                )
+            # asking only for the company currency leaves no secondary amount to show,
+            # and the domain of _get_currency_balance would contradict the one above
+            if currency_mode != "company":
+                balance_in_currency, balance_in_currency_name = self._get_currency_balance(initial_domain, companies)
+            # the running balance in currency has to start off the initial one too,
+            # otherwise its column ignores everything before from_date
+            balance_currency = balance_in_currency
 
             initial_line = get_line_vals(
                 name=_("INITIAL BALANCE"),
                 balance=balance,
                 amount_currency=balance_in_currency,
+                balance_currency=balance_in_currency,
             )
+            initial_line["currency_name"] = balance_in_currency_name
             res = [
                 self._format_debt_report_line(
                     initial_line,
-                    company_currency=company_currency_ids[0] if len(company_currency_ids) == 1 else False,
+                    company_currency=company_currencies[0] if len(company_currencies) == 1 else False,
                     secondary_currency=False,
                 )
             ]
@@ -255,12 +313,13 @@ class ResPartner(models.Model):
 
         return res
 
-    def _get_currency_balance(self, initial_domain, company_currency_ids):
+    def _get_currency_balance(self, initial_domain, companies):
         inicial_lines_currency = (
             self.env["account.move.line"]
             .sudo()
             ._read_group(
-                initial_domain + [("currency_id", "not in", company_currency_ids.ids)],
+                # same notion of "issued in a foreign currency" as the detail uses
+                initial_domain + self._get_debt_report_currency_domain("secondary", companies),
                 groupby=["partner_id"],
                 aggregates=["amount_currency:sum", "currency_id:array_agg"],
             )
@@ -274,13 +333,14 @@ class ResPartner(models.Model):
             first = inicial_lines_currency[0]
             if isinstance(first, dict):
                 balance_in_currency = first.get("amount_currency", 0.0)
-                balance_in_currency_name = (
-                    self.env["res.currency"].browse(first.get("currency_id")[0]).display_name
-                    if first.get("currency_id")
-                    else ""
-                )
-            elif isinstance(first, tuple):
+                currency_ids = first.get("currency_id") or []
+            else:
                 balance_in_currency = first[1]
-                balance_in_currency_name = self.env["res.currency"].browse(first[2][0]).display_name if first[2] else ""
+                currency_ids = first[2] or []
+            # only label the amount when every item shares one currency: the sum of
+            # several foreign currencies cannot be attributed to any single one
+            currencies = self.env["res.currency"].browse(set(currency_ids))
+            if len(currencies) == 1:
+                balance_in_currency_name = currencies.display_name
 
         return balance_in_currency, balance_in_currency_name

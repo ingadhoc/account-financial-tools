@@ -34,8 +34,26 @@ class AccountDebtReportWizard(models.TransientModel):
     historical_full = fields.Boolean(
         help="If true, then it will show all partner history. If not, only unreconciled items will be shown."
     )
-    company_currency = fields.Boolean(default=True, help="Add columns for company currency?")
-    secondary_currency = fields.Boolean(help="Add columns for secondary currency?")
+    company_currency = fields.Boolean(
+        default=True,
+        help="Includes the items issued in the company currency; the ones issued in other "
+        "currencies are left out, not converted. Exchange rate differences follow the "
+        "currency they were booked in, so a reconciliation between currencies can leave "
+        "one here without the foreign item that generated it. For both reasons this "
+        "report may not match the general ledger of the account.\n\n"
+        "Checking both options gives the consolidated report: every item, the ones in "
+        "foreign currency converted to the company currency along with their original "
+        "amount, exchange rate differences included.",
+    )
+    secondary_currency = fields.Boolean(
+        default=True,
+        help="Includes only the items issued in a currency other than the company one, "
+        "expressed in their own currency. Exchange rate differences booked in the company "
+        "currency are left out, as they do not represent debt in this one.\n\n"
+        "Checking both options gives the consolidated report: every item, the ones in "
+        "foreign currency converted to the company currency along with their original "
+        "amount, exchange rate differences included.",
+    )
 
     def confirm(self):
         active_ids = self.env.context.get("active_ids", False)

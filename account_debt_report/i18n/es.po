@@ -79,16 +79,6 @@ msgid "Account Type's"
 msgstr "Tipos de Cuentas"
 
 #. module: account_debt_report
-#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_currency
-msgid "Add columns for company currency?"
-msgstr "¿Agregar columnas para la moneda de la empresa?"
-
-#. module: account_debt_report
-#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__secondary_currency
-msgid "Add columns for secondary currency?"
-msgstr "Agregar columnas para moneda secundaria?"
-
-#. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
 msgid "Cancel"
 msgstr "Cancelar"
@@ -200,6 +190,26 @@ msgid ""
 msgstr ""
 "Si no selecciona una compañía se mostará la deuda de todas las compañías "
 "disponibles."
+
+#. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__secondary_currency
+msgid ""
+"Includes only the items issued in a currency other than the company one, expressed in their own currency. Exchange rate differences booked in the company currency are left out, as they do not represent debt in this one.\n"
+"\n"
+"Checking both options gives the consolidated report: every item, the ones in foreign currency converted to the company currency along with their original amount, exchange rate differences included."
+msgstr "Incluye únicamente los comprobantes emitidos en una moneda distinta a la de la compañía, expresados en su propia moneda. Las diferencias de cambio imputadas en la moneda de la compañía quedan afuera, porque no representan deuda en esta moneda.\n"
+"\n"
+"Marcando ambas opciones se obtiene el reporte consolidado: todos los comprobantes, los de moneda extranjera convertidos a moneda de la compañía junto con su importe en moneda original, incluyendo las diferencias de cambio."
+
+#. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_account_debt_report_wizard__company_currency
+msgid ""
+"Includes the items issued in the company currency; the ones issued in other currencies are left out, not converted. Exchange rate differences follow the currency they were booked in, so a reconciliation between currencies can leave one here without the foreign item that generated it. For both reasons this report may not match the general ledger of the account.\n"
+"\n"
+"Checking both options gives the consolidated report: every item, the ones in foreign currency converted to the company currency along with their original amount, exchange rate differences included."
+msgstr "Incluye los comprobantes emitidos en la moneda de la compañía; los emitidos en otras monedas quedan afuera, no convertidos. Las diferencias de cambio siguen la moneda en la que fueron imputadas, así que una conciliación entre monedas puede dejar una acá sin el comprobante en divisa que la generó. Por estos dos motivos, este reporte puede no coincidir con el mayor contable de la cuenta.\n"
+"\n"
+"Marcando ambas opciones se obtiene el reporte consolidado: todos los comprobantes, los de moneda extranjera convertidos a moneda de la compañía junto con su importe en moneda original, incluyendo las diferencias de cambio."
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__write_uid
