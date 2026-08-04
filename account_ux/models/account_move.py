@@ -47,9 +47,14 @@ class AccountMove(models.Model):
 
     def action_post(self):
         """After validate invoice will sent an email to the partner if the related journal has mail_template_id set"""
-        # Use action_post to ensure the mail is sent only when the move is posted
+        # Use action_post to ensure the mail is sent only when the move is posted. The massive
+        # confirmation wizard does not go through here, it is handled on validate.account.move
+        # The posting resets background_post, so we take note of the deferred ones beforehand. We
+        # pass them on the context because other modules extend action_send_invoice_mail and
+        # changing its signature would break them
+        deferred = self.filtered("background_post")
         res = super().action_post()
-        self.action_send_invoice_mail()
+        self.with_context(deferred_invoice_mail_ids=deferred.ids).action_send_invoice_mail()
         return res
 
     def _post(self, soft=True):
@@ -57,29 +62,67 @@ class AccountMove(models.Model):
         for move in self:
             if not move.invoice_date and move.currency_id != move.company_id.currency_id:
                 move.refresh_invoice_currency_rate()
-
         return super()._post(soft=soft)
 
     def action_send_invoice_mail(self):
-        # Backport de mejora de 19, el envío de facturas lo hacemos siempre asincrónico para no sobrecargar el proceso de posteo de factura
-        for rec in self.filtered(lambda x: x.is_invoice(include_receipts=True) and x.journal_id.mail_template_id):
-            if rec.partner_id.email:
-                # Seteamos la data para que el cron nativo lo procese luego
-                rec.sending_data = {
-                    "sending_methods": ["email"],
-                    "mail_template_id": rec._get_mail_template().id,
-                    "author_partner_id": self.env.user.partner_id.id,
-                }
-                continue
-            else:
-                # Si no hay email del partner, registramos un error en el chatter
-                rec.message_post(
-                    body=_(
-                        "<b>Error enviando la factura</b>: el partner %s no tiene una dirección de correo definida.",
-                        rec.partner_id.name,
-                    ),
-                    body_is_html=True,
-                )
+        """Envía la factura con la plantilla del diario cuando se confirma.
+
+        El envío es sincrónico para que el mail salga en el momento y la factura no quede
+        esperando al cron nativo, que corre una vez por día.
+
+        No se envían en el momento las que ya vienen diferidas (lotes grandes que se postean en
+        background, para no cargar ese cron con la generación de los documentos) ni las que
+        quedan en borrador para postearse en su fecha (soft post). A esas les dejamos la data y
+        despertamos al cron nativo para que no esperen hasta el día siguiente.
+
+        Excluimos las ya enviadas para no reenviar, por ejemplo si la factura se vuelve a
+        borrador y se confirma de nuevo.
+
+        Las diferidas llegan en el contexto (`deferred_invoice_mail_ids`) y no por parámetro
+        porque otros módulos extienden este método y cambiarle la firma los rompe.
+        """
+        candidates = self.filtered(
+            lambda x: x.is_sale_document(include_receipts=True) and x.journal_id.mail_template_id and not x.is_move_sent
+        )
+        # Si no hay email del partner, registramos un error en el chatter
+        without_email = candidates.filtered(lambda x: not x.partner_id.email)
+        for rec in without_email:
+            rec.message_post(
+                body=_(
+                    "<b>Error enviando la factura</b>: el partner %s no tiene una dirección de correo definida.",
+                    rec.partner_id.name,
+                ),
+                body_is_html=True,
+            )
+        to_send = candidates - without_email
+        # Las que quedaron en borrador para postearse en su fecha (soft post) todavía no se pueden
+        # enviar, y las diferidas las dejamos para el cron nativo así no lo hace el de background
+        deferred_ids = self.env.context.get("deferred_invoice_mail_ids") or []
+        to_defer = to_send.filtered(lambda x: x.state != "posted" or x.id in deferred_ids)
+        to_send -= to_defer
+        if to_defer:
+            to_defer.sending_data = {"author_partner_id": self.env.user.partner_id.id}
+            # El cron nativo corre una vez al día, lo despertamos para que salgan ahora
+            self.env.ref("account.ir_cron_account_move_send")._trigger()
+        if to_send:
+            # Hacemos el envío por move para que un problema de configuración de reportes en una
+            # factura no bloquee ni el envío de las demás ni la confirmación del lote completo.
+            for move in to_send:
+                try:
+                    # allow_raising=False solo cubre errores en el proceso de envío propiamente
+                    # dicho; las validaciones iniciales (_check_sending_data) pueden levantar igual.
+                    self.env["account.move.send"]._generate_and_send_invoices(
+                        move, sending_methods=["email"], allow_raising=False
+                    )
+                except UserError as error:
+                    move.message_post(
+                        body=_(
+                            "<b>Error enviando la factura</b>: no se pudo generar el documento para enviar por email. "
+                            "Detalle: %s",
+                            error,
+                        ),
+                        body_is_html=True,
+                    )
 
     def _get_mail_template(self):
         res = super()._get_mail_template()
