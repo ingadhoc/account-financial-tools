@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 13:55+0000\n"
+"POT-Creation-Date: 2026-08-05 15:13+0000\n"
 "PO-Revision-Date: 2026-04-13 22:41+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -48,6 +48,14 @@ msgid ""
 msgstr ""
 "<b>Error enviando la factura</b>: el contacto %s no tiene una dirección de "
 "correo definida."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_move.py:0
+msgid ""
+"<b>Error enviando la factura</b>: no se pudo generar el documento para "
+"enviar por email. Detalle: %s"
+msgstr ""
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_journal_form
@@ -350,6 +358,7 @@ msgstr "Importe de Descuento"
 #: model:ir.model.fields,field_description:account_ux.field_res_company__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__display_name
+#: model:ir.model.fields,field_description:account_ux.field_validate_account_move__display_name
 msgid "Display Name"
 msgstr "Nombre para mostrar"
 
@@ -426,6 +435,7 @@ msgstr "Tiene sucursales"
 #: model:ir.model.fields,field_description:account_ux.field_res_company__id
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__id
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__id
+#: model:ir.model.fields,field_description:account_ux.field_validate_account_move__id
 msgid "ID"
 msgstr "ID (identificación)"
 
@@ -857,6 +867,11 @@ msgstr "Total sin impuestos en moneda de la compañía"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Update Taxes"
 msgstr "Actualizar impuestos"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_validate_account_move
+msgid "Validate Account Move"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
