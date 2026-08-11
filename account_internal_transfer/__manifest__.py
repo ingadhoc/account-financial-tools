@@ -19,7 +19,13 @@
 ##############################################################################
 {
     "name": "Account Internal Transfer",
+<<<<<<< 308577ccd6a9fd3e63e1b4d82c5c394de7875ebb
     "version": "19.0.1.3.0",
+||||||| 53ae63ec2f7202836cf96e6ef58e417c27f49bd8
+    "version": "18.0.1.6.0",
+=======
+    "version": "18.0.1.7.0",
+>>>>>>> e39a538a0c7095a331fc8f625c70374cc191ebbb
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
