@@ -49,10 +49,10 @@ class AccountMove(models.Model):
         """After validate invoice will sent an email to the partner if the related journal has mail_template_id set"""
         # Use action_post to ensure the mail is sent only when the move is posted. The massive
         # confirmation wizard does not go through here, it is handled on validate.account.move
-        # The posting resets background_post, so we take note of the deferred ones beforehand. We
-        # pass them on the context because other modules extend action_send_invoice_mail and
+        # The posting resets background_post_date, so we take note of the deferred ones beforehand.
+        # We pass them on the context because other modules extend action_send_invoice_mail and
         # changing its signature would break them
-        deferred = self.filtered("background_post")
+        deferred = self.filtered("background_post_date")
         res = super().action_post()
         self.with_context(deferred_invoice_mail_ids=deferred.ids).action_send_invoice_mail()
         return res
