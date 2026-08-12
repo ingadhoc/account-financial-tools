@@ -41,7 +41,15 @@ class AccountJournal(models.Model):
         transitoria siga presente en las líneas, y al conciliar contra un pago cuya
         contrapartida está en esa misma cuenta, la transitoria nunca sale. El botón
         queda gris sin mensaje que lo explique. Bloqueamos la configuración de raíz.
+
+        Se puede saltear pasando ``skip_suspense_outstanding_check`` en el contexto. Es
+        para el módulo que crea un diario en su instalación y arma sus cuentas en varios
+        pasos dentro de la misma transacción: ahí un estado intermedio puede coincidir y
+        haría fallar el install entero, mientras que la configuración final es válida. La
+        edición manual del diario nunca lleva ese contexto, así que sigue validada.
         """
+        if self.env.context.get("skip_suspense_outstanding_check"):
+            return
         for journal in self:
             suspense = journal.suspense_account_id
             if not suspense:
