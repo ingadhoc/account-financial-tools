@@ -52,6 +52,7 @@
         "views/res_config_settings_views.xml",
         "views/report_payment_receipt_templates.xml",
         "views/account_tax_view.xml",
+        "views/res_company_views.xml",
         "reports/account_invoice_report_view.xml",
         "wizards/account_automatic_entry_wizard_views.xml",
     ],
