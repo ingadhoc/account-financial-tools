@@ -5,30 +5,27 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     def _post(self, soft=True):
-        """Al postear una factura, ``stock_account._post`` revaloriza los
-        movimientos de entrada/dropship (``stock.move._set_value``) contra el
-        precio facturado. Marcamos el contexto para que la override de
-        ``stock.move._set_value`` saltee esa revalorización en los movimientos
-        migrados de la v18, cuyo valor ya está contabilizado. Ver tarea 70174.
+        """On posting an invoice, ``stock_account._post`` revalues the incoming/dropship
+        moves (``stock.move._set_value``) against the invoiced price. The context flag makes
+        the ``stock.move._set_value`` override skip that revaluation on moves migrated from
+        v18, whose value is already booked. See task 70174.
         """
         return super(AccountMove, self.with_context(skip_migrated_stock_revaluation=True))._post(soft=soft)
 
     def _stock_account_prepare_realtime_out_lines_vals(self):
-        """Evitar la doble contabilización al facturar en v19 movimientos que ya
-        se valorizaron en la v18.
+        """Avoid booking the expense twice when invoicing in v19 moves already valued in
+        v18.
 
-        De fábrica, al postear la factura se generan los apuntes de COGS
-        anglosajón por cada línea de producto ``real_time`` (ver
-        ``stock_account`` ``account.move._post`` -> este método). Ese cálculo
-        parte de las líneas de factura y NO consulta ``stock.move.account_move_id``,
-        así que no sabe que el movimiento entregado en la v18 ya tiene su asiento
-        de valorización (reenganchado en el post-migration 18->19). Sin este
-        filtro, el gasto se reconocería dos veces: una en la v18 y otra en el
-        COGS de la factura v19.
+        Out of the box, posting the invoice generates the anglo-saxon COGS lines for every
+        ``real_time`` product line (see ``stock_account``'s ``account.move._post``, which
+        calls this method). That computation starts from the invoice lines and does NOT look
+        at ``stock.move.account_move_id``, so it does not know the move delivered in v18
+        already has its valuation entry, re-attached by the 18->19 post-migration. Without
+        this filter the expense would be recognised twice: once in v18 and once in the v19
+        invoice COGS.
 
-        Podamos únicamente las líneas cuyos movimientos de stock están TODOS
-        marcados como ``stock_valuation_migrated``; los albaranes normales de v19
-        siguen generando su COGS con normalidad.
+        Only the lines whose stock moves are ALL flagged ``stock_valuation_migrated`` are
+        pruned; regular v19 deliveries keep generating their COGS as usual.
         """
         vals_list = super()._stock_account_prepare_realtime_out_lines_vals()
         if not vals_list:

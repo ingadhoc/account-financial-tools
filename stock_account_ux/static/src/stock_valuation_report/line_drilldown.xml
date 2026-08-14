@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!-- Mejora 2 (tarea 64440): menú de los "3 puntitos" en la línea del reporte.
+         Se muestra solo cuando el controller dejó opciones de drill-down en los
+         datos de la línea (hoy: las líneas de cuenta de la Variación, que de
+         fábrica no ofrecen ninguna navegación).
+
+         ``t-on-click.stop`` es necesario: el <td> que contiene el menú tiene su
+         propio ``t-on-click="onClick"``, y sin detener la propagación abrir el
+         menú dispararía además la acción de la línea. -->
+    <t t-inherit="stock_account.StockValuationReport.InventoryValuationLine" t-inherit-mode="extension">
+        <xpath expr="//td[hasclass('line_name')]/div[hasclass('wrapper')]" position="inside">
+            <span t-if="props.line and props.line.drilldowns and props.line.drilldowns.length"
+                class="o_valuation_line_drilldown ms-2 d-print-none"
+                t-on-click.stop="() => {}">
+                <Dropdown items="props.line.drilldowns">
+                    <button class="btn btn-link p-0 text-muted" title="View details">
+                        <i class="fa fa-ellipsis-v"/>
+                    </button>
+                </Dropdown>
+            </span>
+        </xpath>
+    </t>
+
+</templates>

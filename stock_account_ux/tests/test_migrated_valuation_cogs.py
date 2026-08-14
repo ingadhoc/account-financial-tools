@@ -6,9 +6,9 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestMigratedValuationCogs(TestStockValuationCommon):
-    """Al facturar en v19 un movimiento cuya valorización ya se contabilizó en la
-    v18 (``stock_valuation_migrated=True``), no debe volver a generarse el COGS
-    anglosajón: eso duplicaría el impacto contable. Ver tarea 70174 / PR 990."""
+    """Invoicing in v19 a move whose valuation was already booked in v18
+    (``stock_valuation_migrated=True``) must not generate the anglo-saxon COGS again: that
+    would double the accounting impact. See task 70174 / PR 990."""
 
     @classmethod
     def setUpClass(cls):
@@ -32,9 +32,9 @@ class TestMigratedValuationCogs(TestStockValuationCommon):
         return invoice.line_ids.filtered(lambda line: line.display_type == "cogs")
 
     def _create_invoice_linked_to(self, stock_move):
-        """Crea y postea una factura de venta cuya única línea de producto queda
-        vinculada a ``stock_move`` (parcheando ``_get_stock_moves``, que es lo que
-        aporta ``sale_stock`` en producción y lo que consume la poda del COGS)."""
+        """Create and post a customer invoice whose only product line is linked to
+        ``stock_move``, patching ``_get_stock_moves``, which is what ``sale_stock``
+        provides in production and what the COGS pruning consumes."""
         move_line_cls = type(self.env["account.move.line"])
         original = move_line_cls._get_stock_moves
 

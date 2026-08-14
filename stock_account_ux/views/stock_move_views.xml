@@ -64,6 +64,13 @@
                     domain="[('related_account_move_id', '!=', False)]"/>
                 <filter string="Without Journal Entry" name="without_account_move"
                     domain="[('related_account_move_id', '=', False)]"/>
+                <!-- Mejora 4: el par de arriba mira el asiento vigente del
+                     movimiento (que ya contempla la revaluación). Este filtro es
+                     el complemento fino que ese par no puede expresar: los
+                     movimientos que TIENEN un ajuste de valor todavía sin
+                     contabilizar, o sea la diferencia pendiente de ajustar. -->
+                <filter string="Revaluation Not Booked" name="without_revaluation_account_move"
+                    domain="[('product_value_ids', 'any', [('account_move_id', '=', False)])]"/>
             </filter>
         </field>
     </record>

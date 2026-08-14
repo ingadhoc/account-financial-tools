@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_value_stock_user,product.value read stock user,stock_account.model_product_value,stock.group_stock_user,1,0,0,0
+access_product_value_account_readonly,product.value read accounting,stock_account.model_product_value,account.group_account_readonly,1,0,0,0
+access_stock_move_valuation_stock_manager,stock.move.valuation stock manager,model_stock_move_valuation,stock.group_stock_manager,1,1,1,1
+access_stock_move_valuation_account_user,stock.move.valuation accounting,model_stock_move_valuation,account.group_account_user,1,1,1,1
+access_stock_move_valuation_line_stock_manager,stock.move.valuation.line stock manager,model_stock_move_valuation_line,stock.group_stock_manager,1,1,1,1
+access_stock_move_valuation_line_account_user,stock.move.valuation.line accounting,model_stock_move_valuation_line,account.group_account_user,1,1,1,1
