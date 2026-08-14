@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form" model="ir.ui.view">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <!-- Solo tiene sentido leerlo dentro de un árbol de sucursales: en una
+                     compañía suelta el valor es siempre ella misma. -->
+                <field name="legal_entity_root_id" readonly="1" invisible="not child_ids and not parent_id"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

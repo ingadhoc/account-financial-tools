@@ -39,6 +39,25 @@ Several Improvements to accounting:
 #. Allow to disable the hash in the journal to restrict entries deletion.
 #. Add boolean shared_to_branches on account.journal to allow journals to choose if journals can be used by branches.
 #. Show a warning on sale/purchase journals when the company has no VAT number configured and the journal uses Latin American documents (``l10n_latam_use_documents``). This alert helps detect misconfigured journals that may cause issues with document sequencing.
+#. Add a single criterion for "which companies are the same legal entity" inside a
+   branch hierarchy, as the stored and indexed field ``legal_entity_root_id`` on
+   ``res.company``, plus the method ``_get_legal_entity_companies()``:
+
+   * Two companies are the same legal entity only when they **explicitly declare the
+     same VAT number** and every company in the chain between them declares it too.
+   * A company with an empty VAT number, or with ``/``, is **always its own legal
+     entity**: it never takes its parent's VAT number. This diverges on purpose from
+     the native criterion of ``account_reports``
+     (``res.company._get_branches_with_same_vat``), which considers an empty VAT
+     number to be the same as the closest parent's one and therefore includes
+     auxiliary companies in the parent's tax reports and returns.
+   * A VAT number cannot reappear below a break in the chain (parent ``123`` / branch
+     without VAT number / sub-branch ``123`` is rejected), so that "same legal entity"
+     never depends on how deep in the hierarchy you look.
+
+   The field is stored so the criterion can be used where the VAT number itself cannot:
+   record rules and report filters. ``account_accountant_ux`` is the module that
+   plugs it into the reports of ``account_reports``.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
    * Preview and allow to change the rate thats is going to be used.
