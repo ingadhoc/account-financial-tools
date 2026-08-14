@@ -8,6 +8,7 @@ from . import account_group
 from . import account_journal
 from . import account_move_line
 from . import res_company
+from . import res_partner
 from . import res_currency_rate
 from . import account_move
 from . import account_chart_template
