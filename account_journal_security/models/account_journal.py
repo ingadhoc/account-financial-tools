@@ -117,47 +117,48 @@ class AccountJournal(models.Model):
         user = self.env.user
         # Agregamos el with_user ya que por alguna razon llega con sudo y nos da un falso positivo indicando
         # que el usuario es super usuario. De esta forma nos aseguramos verdaderamente si lo es.
-        self.env.cr.execute(
-            """
-                SELECT journal_id
-                FROM journal_security_journal_modification_users
-                WHERE user_id != %s
-            """,
-            (user.id,),
-        )
-        modification_journal_ids = [r[0] for r in self.env.cr.fetchall()]
-        self.env.cr.execute(
-            """
-                SELECT journal_id
-                FROM journal_security_journal_users
-                WHERE user_id != %s
-            """,
-            (user.id,),
-        )
-        self.env.cr.execute(
-            """
-                SELECT journal_id
-                FROM journal_security_journal_users
-                WHERE user_id = %s
-            """,
-            (user.id,),
-        )
-        user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
-        restric_user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
-        journal_ids = restric_user_journal_ids + modification_journal_ids
-        if not self.with_user(user.id).env.is_superuser() and not self.env.context.get("journal_security", False):
-            domain += ["|", ("user_ids", "=", False), ("id", "in", user_journal_ids)]
-        if not self.with_user(user.id).env.is_superuser() and self.env.context.get("journal_security", False):
-            domain += ["|", ("modification_user_ids", "=", False), ("id", "not in", journal_ids)]
-        if limit == 1 and not self.with_user(user.id).env.is_superuser():
-            # Agregamos el domain de los journals donde el usuario tiene permisos
-            domain += [
-                "|",
-                "&",
-                ("user_ids", "=", False),
-                ("modification_user_ids", "=", False),
-                ("id", "not in", journal_ids),
-            ]
+        if not self.with_user(user.id).env.is_superuser():
+            # Traemos los diarios donde el usuario ESTA habilitado. Lo consultamos por SQL sobre las tablas
+            # de relacion (en vez de user.journal_ids / user.modification_journal_ids) para no depender de
+            # las ir.rules de account.journal al resolver los m2m del usuario.
+            self.env.cr.execute(
+                """
+                    SELECT journal_id
+                    FROM journal_security_journal_modification_users
+                    WHERE user_id = %s
+                """,
+                (user.id,),
+            )
+            # modification allowed journals. the other users can only see the journal items but not write or create
+            user_modification_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+            self.env.cr.execute(
+                """
+                    SELECT journal_id
+                    FROM journal_security_journal_users
+                    WHERE user_id = %s
+                """,
+                (user.id,),
+            )
+            # totally allowed journals. the other users can not see the journal items and cannot write or create
+            user_journal_ids = [r[0] for r in self.env.cr.fetchall()]
+            # journals where the user is allowed to write or create
+            journal_ids = user_journal_ids + user_modification_journal_ids
+            # Aca es para el search del compute available journals
+            if self.env.context.get("journal_security", False):
+                # Diarios sin restriccion de modificacion o donde el usuario esta habilitado a modificar
+                domain += ["|", ("modification_user_ids", "=", False), ("id", "in", user_modification_journal_ids)]
+                # Diarios sin restriccion total o donde el usuario esta habilitado
+                domain += ["|", ("user_ids", "=", False), ("id", "in", user_journal_ids)]
+            # aca es para cuando se hace el create que toma un primer diario que encuentra.
+            if limit == 1:
+                # Agregamos el domain de los journals donde el usuario tiene permisos
+                domain += [
+                    "|",
+                    "&",
+                    ("user_ids", "=", False),
+                    ("modification_user_ids", "=", False),
+                    ("id", "in", journal_ids),
+                ]
         return super()._search(domain, offset, limit, order, **kwargs)
 
     @api.onchange("journal_restriction")

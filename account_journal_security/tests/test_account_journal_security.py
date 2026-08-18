@@ -17,6 +17,60 @@ class TestAccountJournalSecurity(common.TransactionCase):
         account_user_group = self.env.ref("account.group_account_user")
         self.user_demo.write({"group_ids": [(6, 0, [account_user_group.id])]})
 
+    def _create_account_user(self, login):
+        return self.env["res.users"].create(
+            {
+                "name": login,
+                "login": login,
+                "company_id": self.first_company.id,
+                "company_ids": [(6, 0, [self.first_company.id])],
+                "group_ids": [(4, self.env.ref("account.group_account_user").id)],
+            }
+        )
+
+    def _search_journal_for_payment(self, user):
+        """Busca el diario tal como lo hace el selector de diarios de un pago/recibo."""
+        return (
+            self.env["account.journal"]
+            .with_user(user)
+            .with_company(self.first_company)
+            .with_context(journal_security=True)
+            .search([("id", "=", self.company_bank_journal.id)])
+        )
+
+    def test_journal_security_varios_usuarios_habilitados(self):
+        """Con DOS o mas usuarios habilitados a modificar un diario, cada uno de ellos
+        debe seguir viendo ese diario al crear una OP o un recibo, y el resto no.
+
+        Regresion del port a 19.0 (ticket 125244): el filtro traia los diarios donde
+        habia CUALQUIER OTRO usuario habilitado y los excluia, con lo cual sobrevivian
+        solo los diarios sin restriccion o con un unico usuario habilitado.
+        """
+        user_allowed_1 = self._create_account_user("journal_security_allowed_1")
+        user_allowed_2 = self._create_account_user("journal_security_allowed_2")
+        user_restricted = self._create_account_user("journal_security_restricted")
+
+        self.company_bank_journal.write(
+            {
+                "journal_restriction": "modification",
+                "modification_user_ids": [(6, 0, [user_allowed_1.id, user_allowed_2.id])],
+            }
+        )
+
+        for user in (user_allowed_1, user_allowed_2):
+            self.assertIn(
+                self.company_bank_journal,
+                self._search_journal_for_payment(user),
+                "Un usuario habilitado a modificar el diario no lo ve al registrar un pago "
+                "cuando hay mas de un usuario habilitado",
+            )
+
+        self.assertNotIn(
+            self.company_bank_journal,
+            self._search_journal_for_payment(user_restricted),
+            "Un usuario NO habilitado ve un diario restringido al registrar un pago",
+        )
+
     def test_journal_security_1(self):
         self.company_bank_journal.write(
             {"journal_restriction": "modification", "modification_user_ids": [(4, self.user_admin.id)]}
