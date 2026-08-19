@@ -9,7 +9,7 @@ from odoo.exceptions import ValidationError
 class AccountPaymentMethodLine(models.Model):
     _inherit = "account.payment.method.line"
 
-    shared_to_branches = fields.Boolean(
+    shared_to_branches = fields.Selection(
         related="journal_id.shared_to_branches",
         store=True,
     )
