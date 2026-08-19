@@ -55,7 +55,7 @@ class ProductValue(models.Model):
 
     @api.model
     def _get_previous_value(self, vals):
-        """Value in force before the adjustment about to be created.
+        """Value in force right before the adjustment about to be created.
 
         It has to be resolved BEFORE delegating to the standard ``create``, which triggers
         ``_set_value()`` / ``_update_standard_price()`` and leaves the new value both on the
@@ -65,12 +65,25 @@ class ProductValue(models.Model):
         "computed value" returns the NEW value and the delta would be zero.
         """
         if vals.get("move_id"):
+            # Adjustment ON a move: the previous value is the move's own, there is no
+            # earlier adjustment to read it off.
             return self.env["stock.move"].browse(vals["move_id"]).value
-        # Product or lot price change: by the time this create runs, the write on
-        # ``standard_price`` has already been applied, so the previous price comes from the
-        # previous adjustment. Creating a product with an initial price already generates a
-        # ``product.value``, so in practice there almost always is one, and the zero of the
-        # very first one is right: the variation goes from 0 to the initial price.
+        return self._get_previous_product_value(vals).value
+
+    @api.model
+    def _get_previous_product_value(self, vals):
+        """The adjustment in force right before a product or lot price change — the
+        RECORD, not just its value, so a module that extends ``product.value`` with
+        another amount reads its own field off it instead of repeating this search. A
+        secondary-currency valuation needs exactly that (task 58212,
+        ``stock_currency_valuation``: ``value_in_currency`` has no previous twin).
+
+        By the time this create runs, the write on ``standard_price`` has already been
+        applied, so the previous price comes from the previous adjustment. Creating a
+        product with an initial price already generates a ``product.value``, so in practice
+        there almost always is one, and the zero of the very first one is right: the
+        variation goes from 0 to the initial price.
+        """
         # Scoped to the COMPANY: ``standard_price`` is company-dependent, so a product
         # shared between companies has a different adjustment history in each one, and the
         # search runs in ``sudo()`` (the multi-company record rule does not scope it either),
@@ -89,5 +102,4 @@ class ProductValue(models.Model):
         # "previous" value would be taken from an adjustment that comes AFTER it.
         if vals.get("date"):
             domain.append(("date", "<=", vals["date"]))
-        previous = self.sudo().search(domain, order="date desc, id desc", limit=1)
-        return previous.value
+        return self.sudo().search(domain, order="date desc, id desc", limit=1)

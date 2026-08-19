@@ -109,8 +109,18 @@ patch(StockValuationReportController.prototype, {
      * devuelve nada y la línea no dibuja el menú: es el caso de la línea de la
      * cuenta de contrapartida, que no tiene detalle propio para abrir.
      */
-    _variationDrilldowns(line) {
-        const drilldownByType = {
+    /**
+     * Mapa de los orígenes de la Variación: etiqueta y método backend de cada
+     * uno. Getter propio para que un módulo agregue un origen extendiendo el
+     * mapa en vez de reescribir ``_variationDrilldowns``, espejo de
+     * ``_get_drilldown_checks`` en Python (tarea 58212):
+     *
+     *     get variationDrilldownByType() {
+     *         return { ...super.variationDrilldownByType, currency_revaluation: {...} };
+     *     }
+     */
+    get variationDrilldownByType() {
+        return {
             stock_move: {
                 label: _t("Unaccounted Stock Moves"),
                 method: "action_open_variation_stock_moves",
@@ -120,6 +130,10 @@ patch(StockValuationReportController.prototype, {
                 method: "action_open_variation_product_values",
             },
         };
+    },
+
+    _variationDrilldowns(line) {
+        const drilldownByType = this.variationDrilldownByType;
         return (line.drilldown_types || [])
             .filter((lineType) => lineType in drilldownByType)
             .map((lineType) => ({

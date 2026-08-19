@@ -150,13 +150,26 @@ class StockMoveValuation(models.TransientModel):
             if not counterpart:
                 continue
             value = move._get_inventory_value()
-            balances[valuation_account, counterpart, move.product_id] += value if move.is_in else -value
+            key = self._get_balance_key(move, valuation_account, counterpart)
+            balances[key] += value if move.is_in else -value
         return balances
+
+    def _get_balance_key(self, move, valuation_account, counterpart):
+        """What makes two moves collapse into the SAME journal item.
+
+        A method so a module can widen the key: two moves of one product only add up when
+        everything the entry has to state about them matches. A secondary-currency
+        valuation is the case (task 58212, ``stock_currency_valuation``) — same product at
+        two different rates cannot become one line. Whatever is added here has to be read
+        back in ``_get_account_move_line_vals``, which unpacks this tuple.
+        """
+        return (valuation_account, counterpart, move.product_id)
 
     def _get_account_move_line_vals(self):
         self.ensure_one()
         aml_vals_list = []
-        for (valuation_account, counterpart, product), balance in self._get_balances_by_accounts().items():
+        for key, balance in self._get_balances_by_accounts().items():
+            valuation_account, counterpart, product = key[0], key[1], key[2]
             if self.company_id.currency_id.is_zero(balance):
                 continue
             aml_vals = self.company_id._prepare_inventory_aml_vals(

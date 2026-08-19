@@ -201,14 +201,14 @@ class ResCompany(models.Model):
             delta = self.currency_id.round(deltas_by_product.get((account.id, product.id), 0.0))
             if self.currency_id.is_zero(delta):
                 continue
-            product_vals.append(self._get_valuation_val(vals, delta, product.id))
+            product_vals.append(self._get_valuation_val(vals, delta, product.id, net=net))
             assigned += delta
         residual = self.currency_id.round(net - assigned)
         if not self.currency_id.is_zero(residual):
-            product_vals.append(self._get_valuation_val(vals, residual, False))
+            product_vals.append(self._get_valuation_val(vals, residual, False, net=net))
         return product_vals or [vals]
 
-    def _get_valuation_val(self, vals, balance, product_id):
+    def _get_valuation_val(self, vals, balance, product_id, net=None):
         """One line of the split, with the product named in the LABEL as well.
 
         The valuation account is the category's, so in a global entry several lines
@@ -226,7 +226,29 @@ class ResCompany(models.Model):
             debit=balance if balance > 0 else 0.0,
             credit=-balance if balance < 0 else 0.0,
             product_id=product_id,
+            **self._get_valuation_val_extra_vals(vals, balance, net),
         )
+
+    def _get_valuation_val_extra_vals(self, vals, balance, net):
+        """Hook: the amounts of a line that are NOT ``debit`` / ``credit``.
+
+        Only those two are re-split here; every other key of ``vals`` is copied verbatim
+        onto EVERY line, which is right for the account, the counterpart or the label, and
+        WRONG for an amount. A module adding one has to prorate it the same way the balance
+        is, or the entry adds up in the company currency and not in the other one. The
+        ``amount_currency`` of a secondary-currency valuation is the case this exists for
+        (task 58212, ``stock_currency_valuation``):
+
+            def _get_valuation_val_extra_vals(self, vals, balance, net):
+                res = super()._get_valuation_val_extra_vals(vals, balance, net)
+                if vals.get("amount_currency") and net:
+                    res["amount_currency"] = vals["amount_currency"] * balance / net
+                return res
+
+        ``net`` is the net of the vals being split, i.e. the denominator of the share
+        (``None`` when the caller does not split).
+        """
+        return {}
 
     def _get_stock_accounting_value_by_product(self, accounts, at_date=None, products=None):
         """Booked balance per ``(valuation account, product)``. Journal items with no

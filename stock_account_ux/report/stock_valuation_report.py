@@ -69,6 +69,12 @@ class StockValuationReport(models.AbstractModel):
         ``stock_account/report/stock_valuation_report.py::_get_report_data`` (v19.0) and
         has to be re-synced on Odoo upgrades. ``test_no_filters_matches_filter_all``
         covers that drift.
+
+        Being a copy, it does NOT go through the standard ``_get_report_data``: a module
+        that extends the report by overriding that method would be silently skipped
+        whenever a filter is active. Hook the HELPERS instead — ``_get_filtered_valued_products``,
+        ``_get_report_accounting_data``, ``_get_variation_balances_by_account``,
+        ``_get_variation_aml_vals`` — which both paths do share.
         """
         line_types = self._normalize_line_types(line_types)
         if not any([product_ids, categ_ids, cost_methods, valuations, line_types]):
@@ -370,15 +376,21 @@ class StockValuationReport(models.AbstractModel):
         if not products:
             return []
         available = []
-        checks = (
-            (LINE_TYPE_STOCK_MOVE, "stock.move", self._get_variation_stock_moves_domain),
-            (LINE_TYPE_PRODUCT_VALUE, "product.value", self._get_variation_product_values_domain),
-        )
-        for line_type, model, get_domain in checks:
+        for line_type, model, get_domain in self._get_drilldown_checks():
             domain = get_domain(company, products, date)
             if self.env[model].sudo().search_count(list(domain), limit=1):
                 available.append(line_type)
         return available
+
+    def _get_drilldown_checks(self):
+        """``(line_type, model, domain getter)`` of every origin the variation drills down
+        to. A method so a module adding an origin extends the list instead of rewriting
+        ``_get_variation_drilldown_types``; keep it aligned with ``_get_valid_line_types``
+        and with the ``_variationDrilldowns`` map on the JS side."""
+        return [
+            (LINE_TYPE_STOCK_MOVE, "stock.move", self._get_variation_stock_moves_domain),
+            (LINE_TYPE_PRODUCT_VALUE, "product.value", self._get_variation_product_values_domain),
+        ]
 
     def _get_drilldown_scope(self, account_id, date, filters):
         """Company, products and account of the drill-down. The products are the
@@ -479,10 +491,18 @@ class StockValuationReport(models.AbstractModel):
         Movement Type filter at all."""
         if not line_types:
             return []
-        selected = [lt for lt in line_types if lt in VALID_LINE_TYPES]
-        if set(selected) >= set(VALID_LINE_TYPES):
+        valid = self._get_valid_line_types()
+        selected = [lt for lt in line_types if lt in valid]
+        if set(selected) >= set(valid):
             return []
         return selected
+
+    def _get_valid_line_types(self):
+        """The origins the variation can be broken down into. A method and not the module
+        constant so a third origin can be added by inheritance — a currency revaluation,
+        for one (task 58212) — without rewriting ``_normalize_line_types``. Keep it aligned
+        with ``_get_drilldown_checks`` and with ``lineTypeOptions`` on the JS side."""
+        return VALID_LINE_TYPES
 
     def _get_filtered_valued_products(self, company, date, product_ids, categ_ids, cost_methods, valuations):
         """The standard ``valued_products`` search plus the product/category domain, and
