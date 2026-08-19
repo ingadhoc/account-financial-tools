@@ -37,7 +37,7 @@ Several Improvements to accounting:
 #. Show the "Reversal of" field always, like the origin field, not matter if the field is set or not or the type of account.move.
 #. Add filter by vat in the partners list views.
 #. Allow to disable the hash in the journal to restrict entries deletion.
-#. Add boolean shared_to_branches on account.journal to allow journals to choose if journals can be used by branches.
+#. Add ``shared_to_branches`` on ``account.journal`` to let a journal choose how far down the branch tree it can be used.
 #. Show a warning on sale/purchase journals when the company has no VAT number configured and the journal uses Latin American documents (``l10n_latam_use_documents``). This alert helps detect misconfigured journals that may cause issues with document sequencing.
 #. Add a single criterion for "which companies are the same legal entity" inside a
    branch hierarchy, as the stored and indexed field ``legal_entity_root_id`` on
@@ -58,6 +58,30 @@ Several Improvements to accounting:
    The field is stored so the criterion can be used where the VAT number itself cannot:
    record rules and report filters. ``account_accountant_ux`` is the module that
    plugs it into the reports of ``account_reports``.
+#. Turn "is this record shared to the branches?" into "how far does it reach?", as the
+   ``shared.to.branches.mixin`` abstract model, so that every model that shares records down a
+   branch tree answers it the same way. The field ``shared_to_branches`` has three values:
+
+   * **All branches**: every company below this one, whatever its VAT number. This is what
+     the mechanism did before, so it is the value every existing record is migrated to.
+   * **Same legal entity**: only the branches that are the same legal entity, resolved with
+     ``legal_entity_root_id`` above. An auxiliary company with no VAT number of its own is a
+     different legal entity and is left out.
+   * **Not shared**: only the company that owns the record.
+
+   The mixin gives the field, a Python check (``_is_shared_to_company``) and a domain
+   (``_shared_to_branches_domain``) whose terms are all indexed columns, so the scope can be
+   resolved in a record rule too. What it does **not** decide is the default per model nor
+   where the scope is applied, because neither is the same everywhere:
+
+   * On ``account.journal`` it is applied on the company domain and on the record rule
+     ``account.journal_comp_rule``, and the value follows the journal type as before
+     (miscellaneous and purchase journals are shared, the rest are not).
+   * On ``account.fiscal.position`` it is applied on the **autodetection**
+     (``_get_fpos_validation_functions``) and not on the company domain: narrowing the domain
+     would make every document that already references the parent's position fail its company
+     check. So the position stays selectable by hand and keeps working in the company that owns
+     it — only the automatic match is scoped. New positions reach all branches.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
    * Preview and allow to change the rate thats is going to be used.
