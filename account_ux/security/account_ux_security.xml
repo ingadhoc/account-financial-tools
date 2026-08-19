@@ -11,13 +11,25 @@
     <record id="account.journal_comp_rule" model="ir.rule">
         <field name="name">Journal multi-company</field>
         <field name="model_id" ref="model_account_journal"/>
+        <!-- Same scope as account.journal._check_company_domain, see
+             shared.to.branches.mixin. Two notes on why it is written like this:
+             * ``legal_entity_root_id`` is read on the journal and not through
+               ``company_id.legal_entity_root_id``: the dotted path would subquery
+               res.company, where a branch user cannot read its own parent
+               (res_company_rule_employee), and the journal would disappear.
+             * the entity heads of the active companies are resolved through ``user``,
+               the only record the rule evaluation context gives us. -->
         <field name="domain_force">
             [
                 '|',
                 ('company_id', 'in', company_ids),
                 '&amp;',
                 ('company_id', 'parent_of', company_ids),
-                ('shared_to_branches', '=', True)
+                '|',
+                ('shared_to_branches', '=', 'all'),
+                '&amp;',
+                ('shared_to_branches', '=', 'legal_entity'),
+                ('legal_entity_root_id', 'in', user.company_id.browse(company_ids).legal_entity_root_id.ids)
             ]
         </field>
     </record>

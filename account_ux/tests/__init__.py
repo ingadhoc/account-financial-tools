@@ -5,3 +5,4 @@ from . import test_payment_journal_entry
 from . import test_reconcile_on_company_currency
 from . import test_batch_payment_sequence
 from . import test_legal_entity
+from . import test_shared_to_branches

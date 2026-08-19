@@ -5,12 +5,12 @@
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import ValidationError
 from odoo.fields import Domain
-from odoo.tools.misc import unquote
 from odoo.tools.safe_eval import safe_eval
 
 
 class AccountJournal(models.Model):
-    _inherit = "account.journal"
+    _name = "account.journal"
+    _inherit = ["account.journal", "shared.to.branches.mixin"]
     _order = "branch_order,sequence, type, code"
 
     mail_template_id = fields.Many2one(
@@ -20,15 +20,13 @@ class AccountJournal(models.Model):
         help="If set an email will be sent to the customer after the invoices"
         " related to this journal has been validated.",
     )
-    shared_to_branches = fields.Boolean(
+    # Redeclared to keep the scope following the journal type, which is this model's own
+    # rule and not something the mixin can know. Selection, string and help come from it.
+    shared_to_branches = fields.Selection(
         compute="_compute_shared_to_branches",
         store=True,
         readonly=False,
-        help="If enabled, this journal will be available for use in child "
-        "companies (branches). This allows subsidiaries to use the parent "
-        "company's journals for their transactions.",
     )
-    has_child_companies = fields.Boolean(compute="_compute_has_child_companies")
     branch_order = fields.Integer(
         compute="_compute_branch_order",
         store=True,
@@ -36,11 +34,6 @@ class AccountJournal(models.Model):
     )
 
     show_warning_shared_to_branches = fields.Boolean(compute="_compute_show_warning_shared_to_branches")
-
-    @api.depends("company_id", "company_id.child_ids")
-    def _compute_has_child_companies(self):
-        for journal in self:
-            journal.has_child_companies = bool(journal.company_id.child_ids)
 
     @api.depends(
         "company_id",
@@ -75,7 +68,7 @@ class AccountJournal(models.Model):
 
     @api.onchange("shared_to_branches")
     def _onchange_shared_to_branches(self):
-        if self.type == "sale" and self.shared_to_branches:
+        if self.type == "sale" and self.shared_to_branches in ["all", "legal_entity"]:
             return {
                 "warning": {
                     "title": _("Warning!"),
@@ -85,24 +78,29 @@ class AccountJournal(models.Model):
 
     @api.depends("type")
     def _compute_shared_to_branches(self):
+        """Miscellaneous and purchase journals are shared, the rest are not.
+
+        Kept at *all branches* and not at *same legal entity* so that no live database
+        changes behaviour when the field stops being a boolean. Narrowing this default is a
+        product decision, not part of turning the flag into a scope.
+        """
         shared = self.filtered(lambda j: j.type in ["general", "purchase"])
-        shared.shared_to_branches = True
-        (self - shared).shared_to_branches = False
+        shared.shared_to_branches = "all"
+        (self - shared).shared_to_branches = "none"
 
         # In case of test environment (but not demo data loading), share all journals to branches
         if tools.config["test_enable"] and not self.env.context.get("demo"):
-            self.shared_to_branches = True
+            self.shared_to_branches = "all"
 
     def _check_company_domain(self, companies) -> Domain:
-        """TODO"""
-        if isinstance(companies, unquote):
-            companies = unquote(f"{companies}")
-        else:
-            companies = models.to_record_ids(companies)
-        domain = Domain("company_id", "in", companies) | Domain(
-            [("company_id", "parent_of", companies), ("shared_to_branches", "=", True)]
-        )
-        return domain
+        """A branch can use its ancestors' journals as far as they are shared to it.
+
+        Native ``check_company_domain_parent_of`` shares every ancestor journal with the
+        whole subtree. The scope of the sharing lives in ``shared.to.branches.mixin``,
+        together with the record rule that has to say the same thing — see
+        ``account.journal_comp_rule`` in ``account_ux_security.xml``.
+        """
+        return self._shared_to_branches_domain(companies)
 
     @api.constrains(
         "suspense_account_id",
