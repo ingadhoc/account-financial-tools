@@ -70,6 +70,33 @@ Several Improvements to accounting:
    The field is stored so the criterion can be used where the VAT number itself cannot:
    record rules and report filters. ``account_accountant_ux`` is the module that
    plugs it into the reports of ``account_reports``.
+#. Delegate the accounting policy of a legal entity to the head of that entity instead of
+   to the root company, as a second tier of the delegation core does
+   (``res.company._get_legal_entity_delegated_field_names``). The tier holds
+   ``fiscalyear_last_day``, ``fiscalyear_last_month``, ``account_storno`` and
+   ``tax_exigibility`` — the year the entity closes and files with, whether it reverses
+   with storno accounting and whether it uses cash basis, all three decided by whoever
+   signs the return. Inside a legal entity the value is still shared and still enforced,
+   with the same five mechanisms core uses —the onchange, the copy on ``create``, the
+   propagation on ``write``, a constraint and readonly in the view— but the comparison
+   stops at the boundary of the entity, so a company that heads its own one is free and
+   becomes the reference for its own subtree. Declaring the parent's VAT number on a
+   company that closes its year on another date is rejected, so an entity never disagrees
+   with itself.
+
+   ``currency_id`` is the only field left delegated to the root, and on purpose: under
+   branches the currency —and with it the chart of accounts and the stock valuation— is
+   meant to be identical across the whole tree, whatever the VAT number says.
+
+   What this does **not** do, so nobody reads more into it: it makes these *settable* per
+   legal entity, and nothing else. Two things still break with uneven fiscal years, and
+   each one is its own development — the lock dates, which core resolves by walking the
+   whole chain of parents and taking the maximum (closing at the root still blocks a
+   branch, and the hard lock admits no exception), and the general ledger's cut of the
+   year result, which uses a single date for every selected company and therefore gives a
+   wrong number with no error. ``account_accountant_ux`` carries the other half of the
+   change, the one that needs Enterprise: who may declare an explicit
+   ``account.fiscal.year`` and who reads it.
 #. Turn "is this record shared to the branches?" into "how far does it reach?", as the
    ``shared.to.branches.mixin`` abstract model, so that every model that shares records down a
    branch tree answers it the same way. The field ``shared_to_branches`` has three values:

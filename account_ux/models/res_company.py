@@ -1,3 +1,4 @@
+from lxml import etree
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -129,16 +130,186 @@ class ResCompany(models.Model):
             if clashing:
                 raise ValidationError(
                     _(
-                        "La compañía «%(company)s» declara el CUIT %(vat)s, que ya está declarado más "
-                        "arriba en el árbol por «%(ancestor)s», pero la cadena se corta en «%(parent)s». "
-                        "No puede haber un CUIT que reaparezca después de un corte: «%(company)s» tiene "
-                        "que declarar lo mismo que «%(parent)s» o algo distinto de %(vat)s.",
+                        "«%(company)s» declares the Tax ID %(vat)s, which is already declared higher up the "
+                        "tree by «%(ancestor)s», but the chain breaks at «%(parent)s». A Tax ID cannot "
+                        "reappear below a break: «%(company)s» has to declare the same as «%(parent)s» or "
+                        "something other than %(vat)s.",
                         company=company.display_name,
                         vat=own_vat,
                         ancestor=clashing[0].display_name,
                         parent=parent.display_name,
                     )
                 )
+
+    # ------------------------------------------------------------------
+    # Fields delegated to the head of the legal entity
+    # ------------------------------------------------------------------
+
+    def _get_legal_entity_delegated_field_names(self):
+        """Fields that every company of a legal entity has to share, and nothing else.
+
+        Second tier of the delegation core does to the root company
+        (``_get_company_root_delegated_field_names``), with the same mechanics and the
+        same five enforcement points —the onchange, the copy on ``create``, the
+        propagation on ``write``, the constraint and the readonly in the view— except
+        that the comparison against the parent only applies while the parent is the same
+        legal entity. A company that heads its own entity is free, and becomes the
+        reference for its own subtree.
+
+        What lands here is the accounting policy of the legal entity: the fiscal year it
+        closes and files with, whether it reverses with storno accounting and whether it
+        uses cash basis. All three are decided by whoever signs the return, so two
+        entities that happen to hang from the same branch tree have no reason to answer
+        them the same way.
+
+        ``currency_id`` is the only one left at the root, and on purpose: under branches
+        we do want the currency —and with it the chart of accounts and the stock
+        valuation— identical across the whole tree, whatever the Tax ID says.
+
+        What this does NOT fix, so nobody reads more into it than there is: it makes
+        these *settable* per legal entity, and nothing else. Two things still break with
+        uneven fiscal years, each one its own development —the lock dates, which core
+        resolves by walking the whole chain of parents and taking the maximum (so closing
+        at the root still blocks a branch, and the hard lock admits no exception), and
+        the general ledger's cut of the year result, which uses a single date for every
+        selected company and therefore gives a wrong number with no error.
+        """
+        return [
+            "fiscalyear_last_day",
+            "fiscalyear_last_month",
+            "account_storno",
+            "tax_exigibility",
+        ]
+
+    def _get_company_root_delegated_field_names(self):
+        """Move the fiscal year out of the root tier and into the legal entity tier.
+
+        Taking the names out of this list is what turns off core's five enforcement
+        points for them; the ones below put the same five back with the entity scope.
+        """
+        delegated_to_entity = set(self._get_legal_entity_delegated_field_names())
+        return [
+            fname for fname in super()._get_company_root_delegated_field_names() if fname not in delegated_to_entity
+        ]
+
+    @api.onchange("parent_id")
+    def _onchange_parent_id_legal_entity_delegated_fields(self):
+        """Show the parent's value as soon as a parent is picked, like core does.
+
+        Deliberately not conditioned on sharing the legal entity: at this point of the
+        form the Tax ID may not even be loaded yet, and the parent's calendar is a better
+        starting point than the 12/31 default in both cases. If the company turns out to
+        be its own legal entity it is free to change it afterwards; if it does not, the
+        constraint would have demanded this value anyway.
+        """
+        if self.parent_id:
+            for fname in self._get_legal_entity_delegated_field_names():
+                if self[fname] != self.parent_id[fname]:
+                    self[fname] = self.parent_id[fname]
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Keep the parent's value as the default of a new branch.
+
+        Core does this for every root-delegated field (``res_company.create``) and these
+        are no longer part of that list, so the copy has to be restored: a branch born
+        inside its parent's legal entity has to match it —
+        ``_check_legal_entity_delegated_fields`` demands it, and without the copy creating
+        a branch of a company that closes in June would fail against the 12/31 default—
+        and one born as its own legal entity is better off starting from its parent's
+        policy, which it is free to change afterwards.
+        """
+        delegated_fnames = self._get_legal_entity_delegated_field_names()
+        for vals in vals_list:
+            if parent := self.browse(vals.get("parent_id")):
+                for fname in delegated_fnames:
+                    vals.setdefault(fname, self._fields[fname].convert_to_write(parent[fname], parent))
+        return super().create(vals_list)
+
+    def write(self, vals):
+        """Propagate a change made on the head of a legal entity to the rest of it.
+
+        Core propagates from the root to every branch below it; here the value travels
+        only inside the legal entity, so the branches that are another entity keep
+        theirs. Only a head propagates, which is also what stops the recursion: the
+        companies written below are not heads, so their own ``write`` propagates nothing.
+        """
+        res = super().write(vals)
+        changed = sorted(set(vals) & set(self._get_legal_entity_delegated_field_names()))
+        if changed:
+            for company in self:
+                if company.legal_entity_root_id != company:
+                    continue
+                entity_branches = (company._get_legal_entity_companies() - company).sudo()
+                if entity_branches:
+                    entity_branches.write(
+                        {
+                            fname: self._fields[fname].convert_to_write(company[fname], entity_branches)
+                            for fname in changed
+                        }
+                    )
+        return res
+
+    @api.constrains(lambda self: self._get_legal_entity_delegated_field_names() + ["parent_id", "legal_entity_root_id"])
+    def _check_legal_entity_delegated_fields(self):
+        """Demand the parent's value, but only up to the boundary of the legal entity.
+
+        Core's constraint (``_check_root_delegated_fields``) demands it across the whole
+        branch tree; stopping at the boundary is exactly what lets two legal entities
+        under the same tree close their year on different days.
+
+        ``legal_entity_root_id`` is watched, and not ``vat``: the Tax ID is a non-stored
+        related field so it cannot be watched directly, but every change to it recomputes
+        the stored head. That way declaring the parent's Tax ID on a company that closes
+        its year on another date is rejected when it happens, instead of leaving an
+        entity whose members disagree on their own fiscal year.
+        """
+        for company in self:
+            parent = company.parent_id
+            if not parent or not company._shares_legal_entity_with(parent):
+                continue
+            for fname in company._get_legal_entity_delegated_field_names():
+                if company[fname] == parent[fname]:
+                    continue
+                description = self.env["ir.model.fields"]._get("res.company", fname).field_description
+                raise ValidationError(
+                    _(
+                        "«%(company)s» and «%(parent)s» declare the same Tax ID (%(vat)s), so they are the "
+                        "same legal entity and their «%(field)s» has to be the same. Either change it on "
+                        "«%(parent)s», which applies it to the whole legal entity, or give «%(company)s» its "
+                        "own Tax ID if it really is a different legal entity.",
+                        company=company.display_name,
+                        parent=parent.display_name,
+                        vat=company._normalized_vat(),
+                        field=description,
+                    )
+                )
+
+    @api.model
+    def _get_view(self, view_id=None, view_type="form", **options):
+        """Readonly inside a legal entity, instead of on every branch.
+
+        Core marks the root-delegated fields readonly with a flat ``parent_id != False``
+        (``res_company._get_view``), and the fiscal year left that list, so it needs its
+        own modifier. Comparing the stored head against the record covers the three
+        cases: the head of an entity stays editable, a company inside somebody else's
+        entity is readonly, and a branch being created —no ``id`` yet, head already
+        computed from the parent by the onchange— is readonly too.
+        """
+        arch, view = super()._get_view(view_id, view_type, **options)
+        delegated_fnames = set(self._get_legal_entity_delegated_field_names())
+        delegated_nodes = [node for node in arch.iter("field") if node.get("name") in delegated_fnames]
+        if delegated_nodes:
+            for node in delegated_nodes:
+                node.set("readonly", "legal_entity_root_id != id")
+            if not any(node.get("name") == "legal_entity_root_id" for node in arch.iter("field")):
+                # The modifier is evaluated client side, so the field it reads has to be
+                # in the view. Our own form view already carries it; any other view that
+                # shows a delegated field gets it added here.
+                delegated_nodes[0].addprevious(
+                    etree.Element("field", {"name": "legal_entity_root_id", "invisible": "1"})
+                )
+        return arch, view
 
     def _create_batch_payment_sequence(self):
         """Sequence used for the batch payment communication, same values as the core default."""
