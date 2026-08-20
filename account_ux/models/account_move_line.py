@@ -3,10 +3,40 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import models, fields, api
+from odoo.tools.misc import unquote
 
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
+
+    @api.model
+    def _check_company_domain(self, companies):
+        """Let an entry line be used anywhere inside its legal entity, not only in its company.
+
+        Odoo's default for this model is the strict one —only the company that owns the
+        line— and it is symmetric: a payment of a branch cannot take a line of its parent,
+        and one of the parent cannot take a line of the branch. Since the debt of a legal
+        entity is collected from whichever of its companies actually collects it (the
+        receipt lists it and reconciles it, see ``account_payment_pro``), this check has
+        to answer with the same criterion as everything else: the legal entity.
+
+        What is relaxed is the boundary between the branches of one legal entity. Lines of
+        a company of **another** legal entity stay out, which is the guarantee this keeps —
+        and the reason this is not ``check_company_domain_parent_of``, the seam Odoo uses
+        for records shared down a tree: that one accepts the ancestors of the company and
+        nothing else, so the parent could not collect the debt of its own branch.
+        """
+        if not companies or isinstance(companies, str) or isinstance(companies, unquote):
+            return super()._check_company_domain(companies)
+
+        company_ids = models.to_record_ids(companies)
+        if not company_ids:
+            return super()._check_company_domain(companies)
+
+        legal_entity = self.env["res.company"].sudo().browse(company_ids)
+        for company in list(legal_entity):
+            legal_entity |= company._get_legal_entity_companies()
+        return super()._check_company_domain(legal_entity)
 
     user_id = fields.Many2one(
         string="Contact Salesperson",
