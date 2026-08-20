@@ -39,6 +39,13 @@ Several Improvements to accounting:
 #. Allow to disable the hash in the journal to restrict entries deletion.
 #. Add ``shared_to_branches`` on ``account.journal`` to let a journal choose how far down the branch tree it can be used.
 #. Show a warning on sale/purchase journals when the company has no VAT number configured and the journal uses Latin American documents (``l10n_latam_use_documents``). This alert helps detect misconfigured journals that may cause issues with document sequencing.
+#. When registering a payment from an invoice of another company of the same branch
+   tree, book the payment in the company the user is standing on whenever the whole
+   debt is the same legal entity as that company. Odoo always takes the company out of
+   the debt (the shallowest company of the lines, or the root one for sibling
+   companies), so paying from a branch handed the payment to the parent. For a debt of
+   another legal entity nothing changes: the company of the debt travels, and the field
+   stays readonly in both cases.
 #. Add a single criterion for "which companies are the same legal entity" inside a
    branch hierarchy, as the stored and indexed field ``legal_entity_root_id`` on
    ``res.company``, plus the method ``_get_legal_entity_companies()``:
