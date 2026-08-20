@@ -46,6 +46,11 @@ Several Improvements to accounting:
    companies), so paying from a branch handed the payment to the parent. For a debt of
    another legal entity nothing changes: the company of the debt travels, and the field
    stays readonly in both cases.
+#. Let an entry line be used anywhere inside its legal entity, and not only in the
+   company that owns it (``account.move.line._check_company_domain``). Odoo's default for
+   this model is the strict one and it is symmetric, so a payment of a branch could not
+   settle a debt of its parent nor the other way round. Lines of a company of **another**
+   legal entity stay out, which is the guarantee that is kept.
 #. Add a single criterion for "which companies are the same legal entity" inside a
    branch hierarchy, as the stored and indexed field ``legal_entity_root_id`` on
    ``res.company``, plus the method ``_get_legal_entity_companies()``:

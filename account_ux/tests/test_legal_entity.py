@@ -118,3 +118,70 @@ class TestLegalEntity(TransactionCase):
         """La regla prohíbe reaparecer después de un corte, no repetir el CUIT."""
         chain = self._create_branch("Sub-sucursal mismo CUIT", self.same_vat, self.PARENT_VAT)
         self.assertEqual(chain.legal_entity_root_id, self.parent)
+
+
+@tagged("post_install", "-at_install")
+class TestLegalEntityCompanyCheck(TransactionCase):
+    """``account.move.line`` acepta ser usado dentro de toda su entidad fiscal.
+
+    El default de Odoo para este modelo es el estricto —solo la compañía dueña del
+    apunte— y es simétrico: un pago de una sucursal no puede tomar un apunte de su
+    padre, ni el de la padre uno de la sucursal. Como la deuda de una entidad fiscal
+    se cobra desde cualquiera de sus compañías, el chequeo de consistencia tiene que
+    responder con el mismo criterio que todo lo demás.
+
+    Lo que se relaja es el límite entre sucursales de una entidad; el límite entre
+    entidades distintas sigue en pie, y eso es lo que estos tests fijan.
+    """
+
+    PARENT_VAT = "30111111118"
+    OTHER_VAT = "30222222226"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        Company = cls.env["res.company"]
+        cls.parent = Company.create({"name": "Casa Matriz", "vat": cls.PARENT_VAT})
+        cls.same_entity = Company.create(
+            {"name": "Sucursal mismo CUIT", "parent_id": cls.parent.id, "vat": cls.PARENT_VAT}
+        )
+        cls.other_entity = Company.create(
+            {"name": "Sucursal otro CUIT", "parent_id": cls.parent.id, "vat": cls.OTHER_VAT}
+        )
+        cls.line = cls.env["account.move.line"]
+
+    def _accepted_company_ids(self, companies):
+        """Los ids que el dominio de consistencia deja pasar, sin el ``False``."""
+        domain = self.line._check_company_domain(companies)
+        return {
+            company_id
+            for condition in domain.iter_conditions()
+            for company_id in (condition.value if isinstance(condition.value, (list, tuple)) else [condition.value])
+            if company_id
+        }
+
+    def test_the_whole_legal_entity_is_accepted_from_a_branch(self):
+        """Es el caso que el default rechazaba: el pago de la sucursal toma deuda del padre."""
+        self.assertEqual(
+            self._accepted_company_ids(self.same_entity),
+            {self.same_entity.id, self.parent.id},
+        )
+
+    def test_the_whole_legal_entity_is_accepted_from_the_parent(self):
+        """Y al revés, que es lo que ``parent_of`` no daría: la padre cobra lo de su sucursal."""
+        self.assertEqual(
+            self._accepted_company_ids(self.parent),
+            {self.parent.id, self.same_entity.id},
+        )
+
+    def test_another_legal_entity_is_not_accepted(self):
+        """La garantía que se conserva: la sucursal con otro CUIT queda afuera."""
+        self.assertEqual(self._accepted_company_ids(self.other_entity), {self.other_entity.id})
+        self.assertNotIn(self.other_entity.id, self._accepted_company_ids(self.parent))
+
+    def test_no_company_still_means_no_company(self):
+        """Sin compañías el contrato del default no cambia."""
+        self.assertEqual(
+            repr(self.line._check_company_domain(self.env["res.company"])),
+            repr(self.line._check_company_domain(False)),
+        )
