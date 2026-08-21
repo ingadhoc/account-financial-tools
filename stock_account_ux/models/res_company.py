@@ -118,9 +118,24 @@ class ResCompany(models.Model):
         vals_list = super()._get_stock_valuation_account_vals(
             accounts_by_product, at_date=at_date, extra_aml_vals_list=extra_aml_vals_list
         )
+        vals_list = self._annotate_valuation_vals(vals_list, accounts_by_product, at_date=at_date)
         if not self.env.context.get(SPLIT_BY_PRODUCT_CTX):
             return vals_list
         return self._split_valuation_vals_by_product(vals_list, accounts_by_product, at_date)
+
+    def _annotate_valuation_vals(self, vals_list, accounts_by_product, at_date=None):
+        """Hook: add keys to the closing vals BEFORE they are split per product.
+
+        The vals are born in the standard ``_prepare_inventory_aml_vals``, which knows
+        nothing beyond account, balance and label, so a module needing another amount on
+        the line has nowhere to put it. Here it does, and ``_get_valuation_val_extra_vals``
+        then prorates whatever was added when the line is split per product — that hook
+        expects the amount to be on the vals already, which is what this one is for
+        (task 58212, ``stock_currency_valuation``: ``amount_currency``).
+
+        Returns the list, so an override may replace the vals rather than only mutate them.
+        """
+        return vals_list
 
     def _split_valuation_vals_by_product(self, vals_list, accounts_by_product, at_date=None, deltas_by_product=None):
         """Split the valuation leg of each pair of vals into one line per product.
@@ -206,7 +221,22 @@ class ResCompany(models.Model):
         residual = self.currency_id.round(net - assigned)
         if not self.currency_id.is_zero(residual):
             product_vals.append(self._get_valuation_val(vals, residual, False, net=net))
-        return product_vals or [vals]
+        return self._balance_valuation_extra_vals(vals, product_vals) or [vals]
+
+    def _balance_valuation_extra_vals(self, vals, product_vals):
+        """Hook: reconcile the amounts a child put on the split against the vals they
+        were split from, once the whole split is known.
+
+        ``_get_valuation_val_extra_vals`` shares an amount out line by line and cannot see
+        what the other lines were rounded to, so the shares can miss the total by a cent.
+        For ``debit`` / ``credit`` the residual absorbs exactly that; an amount the child
+        added has no equivalent, and nothing else would catch it: the entry still balances
+        in company currency, so it posts (task 58212, ``stock_currency_valuation``:
+        ``amount_currency``).
+
+        Returns the list, so an override may replace the vals rather than only mutate them.
+        """
+        return product_vals
 
     def _get_valuation_val(self, vals, balance, product_id, net=None):
         """One line of the split, with the product named in the LABEL as well.
@@ -389,6 +419,11 @@ class ResCompany(models.Model):
         No lower date bound on purpose: the variation the entry closes is cumulative
         (inventory value minus booked value), so an old adjustment that was never booked
         is covered as well, not only the ones from the last period.
+
+        Adjustments with NO variation are left out: they put nothing in the entry, so
+        stamping them would claim they were booked when there was nothing to book, and
+        the "no entry yet" filter —what identifies the difference still to adjust— would
+        stop meaning that (functional feedback, task 64440).
         """
         self.ensure_one()
         if isinstance(at_date, str):
@@ -411,7 +446,9 @@ class ResCompany(models.Model):
                 ("product_id", "in", closing_product_ids),
                 ("move_id.product_id", "in", closing_product_ids),
             ]
-        return self.env["product.value"].sudo().search(domain)
+        product_values = self.env["product.value"].sudo().search(domain)
+        # ``delta`` is computed, so it cannot be a domain leaf.
+        return product_values.filtered(lambda value: not self.currency_id.is_zero(value.delta))
 
     def _get_periodic_closing_stock_moves(self, at_date=None):
         """Moves covered by the closing entry, with the same scope as

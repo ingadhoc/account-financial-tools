@@ -103,19 +103,24 @@ class StockMoveValuation(models.TransientModel):
     def _compute_line_ids(self):
         for wizard in self:
             aml_vals_list = wizard._get_account_move_line_vals()
-            wizard.line_ids = [
-                fields.Command.create(
-                    {
-                        "account_id": vals["account_id"],
-                        "product_id": vals.get("product_id"),
-                        "name": vals["name"],
-                        "debit": vals["debit"],
-                        "credit": vals["credit"],
-                    }
-                )
-                for vals in aml_vals_list
-            ]
+            wizard.line_ids = [fields.Command.create(wizard._get_draft_line_vals(vals)) for vals in aml_vals_list]
             wizard.total = sum(vals["debit"] for vals in aml_vals_list)
+
+    def _get_draft_line_vals(self, aml_vals):
+        """One line of the draft shown before posting, out of the journal item vals.
+
+        Its own method so a module adding a column to ``stock.move.valuation.line`` fills
+        it here instead of rewriting ``_compute_line_ids``. A secondary-currency valuation
+        is the case (task 58212, ``stock_currency_valuation``: the amount in the other
+        currency has to be visible in the draft too).
+        """
+        return {
+            "account_id": aml_vals["account_id"],
+            "product_id": aml_vals.get("product_id"),
+            "name": aml_vals["name"],
+            "debit": aml_vals["debit"],
+            "credit": aml_vals["credit"],
+        }
 
     def _get_balances_by_accounts(self):
         """Balance to book per ``(valuation account, counterpart, product)``.
@@ -169,29 +174,38 @@ class StockMoveValuation(models.TransientModel):
         self.ensure_one()
         aml_vals_list = []
         for key, balance in self._get_balances_by_accounts().items():
-            valuation_account, counterpart, product = key[0], key[1], key[2]
             if self.company_id.currency_id.is_zero(balance):
                 continue
-            aml_vals = self.company_id._prepare_inventory_aml_vals(
-                valuation_account,
-                counterpart,
-                balance,
-                self.env._("Stock Valuation - [%(account)s]", account=valuation_account.display_name),
-                product_id=product.id,
-            )
-            # The valuation account is the category's, so an entry over moves of several
-            # products has several lines on it. Naming the product in the LABEL is what
-            # tells the user which line is whose; the counterpart keeps the generic label
-            # (functional feedback, task 64440). ``_prepare_inventory_aml_vals`` swaps the
-            # legs when the balance is negative, hence matching by account instead of by
-            # position.
-            for vals in aml_vals:
-                if vals["account_id"] == valuation_account.id:
-                    vals["name"] = self.env._(
-                        "%(label)s - %(product)s", label=vals["name"], product=product.display_name
-                    )
-            aml_vals_list += aml_vals
+            aml_vals_list += self._get_aml_vals_for_key(key, balance)
         return aml_vals_list
+
+    def _get_aml_vals_for_key(self, key, balance):
+        """The journal items of ONE grouped balance, key included.
+
+        Its own method so a module that widened the key in ``_get_balance_key`` can add to
+        the line what that widening states — an amount in another currency, for one (task
+        58212, ``stock_currency_valuation``). Doing it from
+        ``_get_account_move_line_vals`` is not possible: there the lines arrive already
+        flattened and there is no way back to the key each one came from.
+        """
+        valuation_account, counterpart, product = key[0], key[1], key[2]
+        aml_vals = self.company_id._prepare_inventory_aml_vals(
+            valuation_account,
+            counterpart,
+            balance,
+            self.env._("Stock Valuation - [%(account)s]", account=valuation_account.display_name),
+            product_id=product.id,
+        )
+        # The valuation account is the category's, so an entry over moves of several
+        # products has several lines on it. Naming the product in the LABEL is what
+        # tells the user which line is whose; the counterpart keeps the generic label
+        # (functional feedback, task 64440). ``_prepare_inventory_aml_vals`` swaps the
+        # legs when the balance is negative, hence matching by account instead of by
+        # position.
+        for vals in aml_vals:
+            if vals["account_id"] == valuation_account.id:
+                vals["name"] = self.env._("%(label)s - %(product)s", label=vals["name"], product=product.display_name)
+        return aml_vals
 
     def action_post(self):
         self.ensure_one()

@@ -65,10 +65,21 @@ class ProductValue(models.Model):
         "computed value" returns the NEW value and the delta would be zero.
         """
         if vals.get("move_id"):
-            # Adjustment ON a move: the previous value is the move's own, there is no
-            # earlier adjustment to read it off.
-            return self.env["stock.move"].browse(vals["move_id"]).value
+            return self._get_previous_move_value(vals)
         return self._get_previous_product_value(vals).value
+
+    @api.model
+    def _get_previous_move_value(self, vals):
+        """Value in force right before an adjustment ON A MOVE: the move's own, as there
+        is no earlier adjustment to read it off.
+
+        Its own method, symmetrical to ``_get_previous_product_value`` below, so a module
+        extending ``product.value`` with another amount resolves ITS previous value here
+        instead of overriding ``create``. A secondary-currency valuation needs exactly
+        that (task 58212, ``stock_currency_valuation``: the previous twin of
+        ``value_in_currency`` is the move's ``value_in_currency``).
+        """
+        return self.env["stock.move"].browse(vals["move_id"]).value
 
     @api.model
     def _get_previous_product_value(self, vals):

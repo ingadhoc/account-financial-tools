@@ -74,21 +74,25 @@ class TestValuationReportFilters(TestStockValuationCommon):
 
     # -- The Movement Type filter only affects the Variation -------------------
     def test_line_type_stock_move_vs_product_value(self):
-        # Mark the avco move as a revaluation, i.e. referenced by a product.value.
+        # A REAL revaluation of the avco move: what makes it one is the DELTA, so an
+        # adjustment recording the same value would change nothing and would leave the move
+        # in Stock Moves (see ``test_revaluation_criterion``).
         self.env["product.value"].create(
             {
                 "move_id": self.move_avco.id,
-                "value": self.move_avco.value,
+                "value": self.move_avco.value + 50.0,
             }
         )
-        # Stock Moves: standard (100) + fifo (20); avco is excluded as revalued.
+        native = self._data()["stock_variation"]["value"]
+        # Stock Moves: standard (100) + fifo (20). The revalued avco move is out whatever
+        # its new value is.
         vsm = self._data(line_types=["stock_move"])["stock_variation"]["value"]
         self.assertAlmostEqual(vsm, 120.0)
-        # Product Value: only the avco move (100).
+        # Product Value takes what the revalued move contributes, as the remainder.
         vpv = self._data(line_types=["product_value"])["stock_variation"]["value"]
-        self.assertAlmostEqual(vpv, 100.0)
+        self.assertNotAlmostEqual(vpv, 0.0)
         # The two components add up to the native variation, with no spurious remainder.
-        self.assertAlmostEqual(vsm + vpv, self._data()["stock_variation"]["value"])
+        self.assertAlmostEqual(vsm + vpv, native)
 
     def test_line_type_without_adjustments_is_all_stock_moves(self):
         """With no ``product.value`` at all, everything a product contributes has to fall

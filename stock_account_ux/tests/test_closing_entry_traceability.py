@@ -118,3 +118,53 @@ class TestClosingEntryTraceability(TestStockValuationCommon):
         counterpart_lines = entry.line_ids - valuation_lines
         for line in counterpart_lines:
             self.assertNotIn(self.product_avco.display_name, line.name)
+
+    # -- Only a POSTED entry counts as the move's entry -------------------------
+    def test_unposted_closing_is_not_shown_on_the_move(self):
+        """A closing sent back to draft or cancelled booked nothing, so the move must not
+        show it as its journal entry. The stored ``account_move_id`` keeps the reference,
+        so posting it again brings the link back (functional feedback, task 64440)."""
+        entry = self._close()
+        self.assertEqual(self.move_avco.related_account_move_id, entry)
+
+        entry.button_draft()
+        self.assertEqual(self.move_avco.account_move_id, entry, "The stored reference is untouched")
+        self.assertFalse(self.move_avco.related_account_move_id, "A draft entry values nothing")
+
+        entry.button_cancel()
+        self.assertFalse(self.move_avco.related_account_move_id)
+
+        entry.button_draft()
+        entry.action_post()
+        self.assertEqual(self.move_avco.related_account_move_id, entry)
+
+    def test_unposted_revaluation_entry_is_not_shown_on_the_move(self):
+        """Same for the entry that booked a value adjustment, the one that wins over the
+        move's own."""
+        adjustment = self.env["product.value"].create(
+            {"move_id": self.move_avco.id, "value": self.move_avco.value + 30.0}
+        )
+        entry = self._close()
+        self.assertEqual(adjustment.account_move_id, entry)
+        self.assertEqual(self.move_avco.related_account_move_id, entry)
+
+        entry.button_draft()
+        self.assertFalse(self.move_avco.related_account_move_id)
+
+    # -- An adjustment with no variation is not marked as booked ---------------
+    def test_closing_skips_adjustments_with_no_variation(self):
+        """An adjustment that left the value where it was puts nothing in the entry, so it
+        must not come out marked as booked: "no entry yet" is what identifies the
+        difference still to adjust (functional feedback, task 64440)."""
+        unchanged = self.env["product.value"].create({"move_id": self.move_fifo.id, "value": self.move_fifo.value})
+        self.product_standard.standard_price = 13.0
+        changed = self.env["product.value"].search(
+            [("product_id", "=", self.product_standard.id)], order="id desc", limit=1
+        )
+        self.assertAlmostEqual(unchanged.delta, 0.0)
+        self.assertNotAlmostEqual(changed.delta, 0.0)
+
+        entry = self._close()
+
+        self.assertEqual(changed.account_move_id, entry)
+        self.assertFalse(unchanged.account_move_id, "Nothing to book, nothing to mark")

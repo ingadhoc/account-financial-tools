@@ -9,3 +9,4 @@ from . import test_initial_balance_attribution
 from . import test_manual_move_valuation
 from . import test_valuation_filters_tour
 from . import test_valuation_drilldown_tour
+from . import test_revaluation_criterion

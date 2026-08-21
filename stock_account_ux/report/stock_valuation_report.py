@@ -667,15 +667,33 @@ class StockValuationReport(models.AbstractModel):
             grouped = Move._read_group(
                 base_domain & direction_domain,
                 ["product_id"],
-                ["value:sum"],
+                self._get_unaccounted_move_aggregates(),
             )
-            for product, value in grouped:
+            for product, *aggregates in grouped:
                 account = account_by_product_id.get(product.id)
                 if account:
-                    account_balance[account] += sign * value
-                    if by_product is not None:
-                        by_product[account.id, product.id] += sign * value
+                    self._accumulate_move_balance(account, product, sign, aggregates, account_balance, by_product)
         return account_balance
+
+    def _get_unaccounted_move_aggregates(self):
+        """Aggregate specs read per product to build the variation.
+
+        The FIRST one is what a move contributes to the balance in company currency (see
+        ``stock.move._get_inventory_value``). A module needing another amount —the same
+        moves valued in a second currency, task 58212— appends its spec here and reads it
+        back in ``_accumulate_move_balance``, instead of running the ``_read_group`` a
+        second time over the same domain.
+        """
+        return ["value:sum"]
+
+    def _accumulate_move_balance(self, account, product, sign, aggregates, account_balance, by_product):
+        """Add one grouped row to the accumulators. ``aggregates`` arrives in the order of
+        ``_get_unaccounted_move_aggregates``; ``sign`` is +1 for incoming moves and -1 for
+        outgoing ones."""
+        value = aggregates[0]
+        account_balance[account] += sign * value
+        if by_product is not None:
+            by_product[account.id, product.id] += sign * value
 
     def _get_unaccounted_move_balances_by_product(self, company, products, accounts_by_product, at_date, line_types):
         """``_get_unaccounted_move_balances`` broken down per ``(account, product)``."""
@@ -730,12 +748,20 @@ class StockValuationReport(models.AbstractModel):
 
     def _get_line_type_move_domain(self, products, line_types):
         """Narrow the Stock Moves component down to the NON revalued physical moves: a
-        ``stock.move`` referenced by a ``product.value`` is a value revaluation and stays
-        out, taken by the Product Value remainder. Only called with ``[stock_move]``; any
-        other case restricts nothing."""
+        revalued ``stock.move`` stays out, taken by the Product Value remainder. Only
+        called with ``[stock_move]``; any other case restricts nothing."""
         if line_types != [LINE_TYPE_STOCK_MOVE]:
             return Domain.TRUE
-        reval_move_ids = (
+        reval_move_ids = self._get_revalued_move_ids(products)
+        # With no revaluations, every move is a Stock Move.
+        return Domain([("id", "not in", reval_move_ids)]) if reval_move_ids else Domain.TRUE
+
+    def _get_revalued_move_ids(self, products):
+        """Moves of those products carrying an adjustment that CHANGED their value.
+
+        Split from the domain so the criterion —``_is_revaluation``— can be refined
+        without touching the query, and so a module can widen the search."""
+        product_values = (
             self.env["product.value"]
             .sudo()
             .search(
@@ -744,7 +770,23 @@ class StockValuationReport(models.AbstractModel):
                     ("move_id.product_id", "in", products.ids),
                 ]
             )
-            .move_id.ids
         )
-        # With no revaluations, every move is a Stock Move.
-        return Domain([("id", "not in", reval_move_ids)]) if reval_move_ids else Domain.TRUE
+        return product_values.filtered(self._is_revaluation).move_id.ids
+
+    def _is_revaluation(self, product_value):
+        """Does this adjustment take its move out of the Stock Moves component?
+
+        Only if it moved the value IN COMPANY CURRENCY. Merely pointing at a move is not
+        enough: a module can record an adjustment that leaves ``value`` untouched —a
+        secondary-currency correction, task 58212— and excluding that move would hand its
+        whole value to the Product Value remainder without anything having changed. The
+        total still adds up, because that remainder is a residue, so the breakdown would
+        lie in silence.
+
+        Compared with the currency's own rounding, not against ``0``. An adjustment with
+        no ``previous_value`` (recorded before that field existed) reads as a delta equal
+        to the new value, so it counts as a revaluation: the conservative side, and the
+        behaviour there has always been.
+        """
+        currency = product_value.company_id.currency_id
+        return not currency.is_zero(product_value.delta)

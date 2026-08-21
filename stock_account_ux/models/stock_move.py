@@ -10,6 +10,10 @@ class StockMove(models.Model):
     # closing one. It is left untouched. This navigable field points at the entry
     # reflecting the move's CURRENT valuation —the booked value adjustment if there is
     # one, the original otherwise— to reach it in one click from the moves report.
+    # Only POSTED entries count: a closing sent back to draft or cancelled booked
+    # nothing, so showing it here would say the move is valued when it is not
+    # (functional feedback, task 64440). The stored ``account_move_id`` keeps the
+    # reference either way, so re-posting the entry brings the link back.
     related_account_move_id = fields.Many2one(
         comodel_name="account.move",
         compute="_compute_related_account_move_id",
@@ -38,10 +42,12 @@ class StockMove(models.Model):
 
     @api.depends(
         "account_move_id",
+        "account_move_id.state",
         "picking_id",
         "state",
         "product_id.valuation",
         "product_value_ids.account_move_id",
+        "product_value_ids.account_move_id.state",
         "product_value_ids.date",
     )
     def _compute_related_account_move_id(self):
@@ -54,8 +60,9 @@ class StockMove(models.Model):
                 move.related_account_move_id = revaluation_entry
                 continue
             # The move's own valuation entry (perpetual) or the closing entry it belongs
-            # to (periodic), both in ``account_move_id``.
-            entries = move.account_move_id
+            # to (periodic), both in ``account_move_id``. Unposted ones are left out: the
+            # related invoices below are already filtered that way by the standard.
+            entries = move.account_move_id.filtered(lambda entry: entry.state == "posted")
             # The related invoice only reflects the valuation of THIS move when the
             # product is valued perpetually, i.e. on invoicing. Under periodic valuation
             # the cost is not booked in the invoice but in the global closing entry, so
@@ -82,7 +89,11 @@ class StockMove(models.Model):
             self.env["product.value"]
             .sudo()
             .search(
-                [("move_id", "in", self.ids), ("account_move_id", "!=", False)],
+                [
+                    ("move_id", "in", self.ids),
+                    ("account_move_id", "!=", False),
+                    ("account_move_id.state", "=", "posted"),
+                ],
                 order="date asc, id asc",
             )
         )
