@@ -5,18 +5,15 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     def _compute_account_id(self):
-        """Imputar la línea de factura de compra de un movimiento migrado de la
-        v18 a la contrapartida de su asiento de valorización, en vez de a la
-        cuenta de valorización de stock.
+        """Book the purchase invoice line of a move migrated from v18 to the counterpart
+        of its valuation entry, instead of to the stock valuation account.
 
-        De fábrica (``stock_account``) este compute pisa la cuenta de la línea
-        con ``accounts['stock_valuation']`` (Existencias) para productos
-        ``real_time``, contabilizando el alta del activo en la propia factura.
-        Para un movimiento cuya valorización YA quedó registrada en la v18
-        (``stock_valuation_migrated``) eso vuelve a dar de alta el activo: el
-        stock ya está valorizado. En su lugar tomamos la contrapartida del
-        asiento migrado (el crédito de aquel alta), que es la cuenta que la
-        factura de proveedor debe cancelar. Ver tarea 70174.
+        Out of the box (``stock_account``) this compute overwrites the line account with
+        ``accounts['stock_valuation']`` for ``real_time`` products, booking the asset
+        increase in the invoice itself. For a move whose valuation was ALREADY booked in
+        v18 (``stock_valuation_migrated``) that increases the asset twice: the stock is
+        already valued. The counterpart of the migrated entry is used instead —the credit of
+        that increase— which is the account the vendor bill has to settle. See task 70174.
         """
         super()._compute_account_id()
         for line in self:

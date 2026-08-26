@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_move_valuation_form_view" model="ir.ui.view">
+        <field name="name">stock.move.valuation.form</field>
+        <field name="model">stock.move.valuation</field>
+        <field name="arch" type="xml">
+            <form string="Value Stock Moves">
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert"
+                    invisible="not excluded_warning and not partial_lines_warning">
+                    <field name="excluded_warning" nolabel="1" readonly="1"
+                        invisible="not excluded_warning"/>
+                    <field name="partial_lines_warning" nolabel="1" readonly="1"
+                        invisible="not partial_lines_warning"/>
+                </div>
+                <group>
+                    <group>
+                        <field name="date"/>
+                        <field name="journal_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="move_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <separator string="Journal Entry Draft"/>
+                <field name="line_ids" readonly="1">
+                    <list create="false" delete="false" editable="bottom">
+                        <field name="name"/>
+                        <field name="account_id"/>
+                        <field name="product_id"/>
+                        <field name="debit" widget="monetary" options="{'currency_field': 'currency_id'}" sum="Total"/>
+                        <field name="credit" widget="monetary" options="{'currency_field': 'currency_id'}" sum="Total"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_post" type="object" string="Post Journal Entry" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Aparece en el menú "Acciones" de las listas de stock.move: el menú
+         Valuation (igual que la acción nativa "Adjust Valuation") y Moves
+         Analysis (Inventario > Reportes). -->
+    <record id="stock_move_action_value_moves" model="ir.actions.server">
+        <field name="name">Value Stock Moves</field>
+        <field name="model_id" ref="stock.model_stock_move"/>
+        <field name="binding_model_id" ref="stock.model_stock_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = records.action_value_moves()
+        </field>
+    </record>
+
+    <!-- Moves History (Inventario > Reportes) lista stock.move.line, no
+         stock.move, así que necesita su propio binding. Resuelve los movimientos
+         de las líneas seleccionadas y delega en la acción de stock.move. -->
+    <record id="stock_move_line_action_value_moves" model="ir.actions.server">
+        <field name="name">Value Stock Moves</field>
+        <field name="model_id" ref="stock.model_stock_move_line"/>
+        <field name="binding_model_id" ref="stock.model_stock_move_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = records.action_value_moves()
+        </field>
+    </record>
+</odoo>

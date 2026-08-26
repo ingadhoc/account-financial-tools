@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Mejora 2 (tarea 64440): de fábrica product.value solo tiene vista form
+         (el wizard "Adjust Valuation") y una acción con view_mode=form, así que
+         los ajustes de valor no son consultables. Se agrega la vista lista con el
+         detalle, la búsqueda y el menú. -->
+    <record id="product_value_view_list" model="ir.ui.view">
+        <field name="name">product.value.list</field>
+        <field name="model">product.value</field>
+        <field name="arch" type="xml">
+            <list string="Value Adjustments" create="false" default_order="date desc, id desc">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="lot_id" optional="hide"/>
+                <field name="move_id" optional="show"/>
+                <field name="previous_value" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="value" string="New Value" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="delta" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="account_move_id" optional="show"/>
+                <field name="description" optional="show"/>
+                <field name="user_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="product_value_view_search" model="ir.ui.view">
+        <field name="name">product.value.search</field>
+        <field name="model">product.value</field>
+        <field name="arch" type="xml">
+            <search string="Value Adjustments">
+                <field name="product_id"/>
+                <field name="move_id"/>
+                <field name="account_move_id"/>
+                <field name="description"/>
+                <filter string="Not Booked" name="without_account_move"
+                    domain="[('account_move_id', '=', False)]"
+                    help="Value adjustments not booked yet: they are the ones making up the difference to adjust in the valuation report."/>
+                <filter string="Booked" name="with_account_move"
+                    domain="[('account_move_id', '!=', False)]"/>
+                <separator/>
+                <filter string="Price Change" name="price_change" domain="[('move_id', '=', False)]"/>
+                <filter string="Move Adjustment" name="move_adjustment" domain="[('move_id', '!=', False)]"/>
+                <group name="groupby">
+                    <filter string="Product" name="groupby_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Journal Entry" name="groupby_account_move" domain="[]" context="{'group_by': 'account_move_id'}"/>
+                    <filter string="Date" name="groupby_date" domain="[]" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="product_value_action_list" model="ir.actions.act_window">
+        <field name="name">Value Adjustments</field>
+        <field name="res_model">product.value</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="product_value_view_list"/>
+        <field name="search_view_id" ref="product_value_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay ajustes de valor</p>
+            <p>
+                Acá se registran los cambios de costo de la ficha del producto y
+                los ajustes manuales del valor de un movimiento.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="product_value_menu"
+        action="product_value_action_list"
+        name="Value Adjustments"
+        parent="stock.menu_warehouse_report"
+        sequence="235"/>
+    <!-- Mejora 4 (tarea 64440): el ajuste de valor ahora sabe en qué asiento de
+         cierre se contabilizó, y cuánto varió respecto del valor anterior. Se
+         muestran solo cuando aplican, para no ensuciar el wizard "Adjust
+         Valuation" (que usa este mismo form al crear el ajuste). -->
+    <record id="product_value_form_view_entry_link" model="ir.ui.view">
+        <field name="name">product.value.form.entry.link</field>
+        <field name="model">product.value</field>
+        <field name="inherit_id" ref="stock_account.product_value_form_view"/>
+        <field name="arch" type="xml">
+            <field name="description" position="after">
+                <field name="delta"
+                    widget="monetary"
+                    options="{'currency_field': 'currency_id', 'field_digits': True}"
+                    invisible="not id"
+                    readonly="1"
+                />
+                <field name="account_move_id"
+                    invisible="not account_move_id"
+                    readonly="1"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>

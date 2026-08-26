@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!-- Mejora 1 (tarea 64440): agrega los 5 filtros a la barra del reporte,
+         después del filtro de fecha nativo. -->
+    <t t-inherit="stock_account.StockValuationReport.Filters" t-inherit-mode="extension">
+        <xpath expr="//t[@t-call='stock_account.StockValuationReport.FilterDate']" position="after">
+
+            <!-- Producto -->
+            <div id="filter_products" class="d-print-none d-flex align-items-center" style="min-width: 220px;">
+                <MultiRecordSelector t-props="productSelectorProps"/>
+            </div>
+
+            <!-- Categorías de producto -->
+            <div id="filter_categories" class="d-print-none d-flex align-items-center" style="min-width: 220px;">
+                <MultiRecordSelector t-props="categSelectorProps"/>
+            </div>
+
+            <!-- Método de valuación -->
+            <div id="filter_cost_methods" class="d-print-none">
+                <Dropdown>
+                    <button class="btn btn-secondary">
+                        <i class="fa fa-sliders me-1"/>Valuation Method
+                    </button>
+                    <t t-set-slot="content">
+                        <t t-foreach="costMethodOptions" t-as="opt" t-key="opt.value">
+                            <DropdownItem
+                                class="{ selected: isFilterSelected('costMethods', opt.value) }"
+                                closingMode="'none'"
+                                onSelected="() => this.onCostMethodToggle(opt.value)">
+                                <i t-if="isFilterSelected('costMethods', opt.value)" class="fa fa-check me-1"/>
+                                <t t-out="opt.label"/>
+                            </DropdownItem>
+                        </t>
+                    </t>
+                </Dropdown>
+            </div>
+
+            <!-- Tipo de valuación -->
+            <div id="filter_valuations" class="d-print-none">
+                <Dropdown>
+                    <button class="btn btn-secondary">
+                        <i class="fa fa-sliders me-1"/>Valuation Type
+                    </button>
+                    <t t-set-slot="content">
+                        <t t-foreach="valuationOptions" t-as="opt" t-key="opt.value">
+                            <DropdownItem
+                                class="{ selected: isFilterSelected('valuations', opt.value) }"
+                                closingMode="'none'"
+                                onSelected="() => this.onValuationToggle(opt.value)">
+                                <i t-if="isFilterSelected('valuations', opt.value)" class="fa fa-check me-1"/>
+                                <t t-out="opt.label"/>
+                            </DropdownItem>
+                        </t>
+                    </t>
+                </Dropdown>
+            </div>
+
+            <!-- Tipo de movimiento (solo afecta la sección de Variación) -->
+            <div id="filter_line_types" class="d-print-none"
+                 title="Solo afecta la sección Variación del inventario; muestra los movimientos sin contabilizar por origen.">
+                <Dropdown>
+                    <button class="btn btn-secondary">
+                        <i class="fa fa-filter me-1"/>Movement Type
+                    </button>
+                    <t t-set-slot="content">
+                        <t t-foreach="lineTypeOptions" t-as="opt" t-key="opt.value">
+                            <DropdownItem
+                                class="{ selected: isFilterSelected('lineTypes', opt.value) }"
+                                closingMode="'none'"
+                                onSelected="() => this.onLineTypeToggle(opt.value)">
+                                <i t-if="isFilterSelected('lineTypes', opt.value)" class="fa fa-check me-1"/>
+                                <t t-out="opt.label"/>
+                            </DropdownItem>
+                        </t>
+                    </t>
+                </Dropdown>
+            </div>
+
+        </xpath>
+    </t>
+
+</templates>

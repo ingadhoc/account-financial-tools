@@ -1,61 +1,157 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class StockMove(models.Model):
     _inherit = "stock.move"
 
-    # ``account_move_id`` (Many2one stored) ya existe en stock_account: guarda el
-    # asiento de valorización perpetua y, vía la override de res.company, el de
-    # cierre periódico. No lo tocamos. Sumamos un campo navegable que apunta al
-    # asiento que valora el movimiento, para llegar a él con un clic desde el
-    # reporte de movimientos de productos.
+    # ``account_move_id`` (stored) already exists in stock_account: it holds the
+    # perpetual valuation entry and, through the res.company override, the periodic
+    # closing one. It is left untouched. This navigable field points at the entry
+    # reflecting the move's CURRENT valuation —the booked value adjustment if there is
+    # one, the original otherwise— to reach it in one click from the moves report.
+    # Only POSTED entries count: a closing sent back to draft or cancelled booked
+    # nothing, so showing it here would say the move is valued when it is not
+    # (functional feedback, task 64440). The stored ``account_move_id`` keeps the
+    # reference either way, so re-posting the entry brings the link back.
     related_account_move_id = fields.Many2one(
         comodel_name="account.move",
         compute="_compute_related_account_move_id",
         search="_search_related_account_move_id",
         string="Journal Entry",
     )
-    # Movimientos cuya valorización ya quedó contabilizada en la v18 (el asiento
-    # se reenganchó a ``account_move_id`` en el post-migration 18->19). Como el
-    # gasto ya se reconoció en la versión anterior, al facturar en v19 no
-    # corresponde volver a generar el COGS anglosajón para ellos. Ver la override
-    # de ``_stock_account_prepare_realtime_out_lines_vals`` en account_move.py.
+    # Moves whose valuation was already booked in v18 (the 18->19 post-migration
+    # re-attached the entry to ``account_move_id``). The expense was recognised in the
+    # previous version, so invoicing them in v19 must not generate the anglo-saxon COGS
+    # again. See the ``_stock_account_prepare_realtime_out_lines_vals`` override in
+    # account_move.py.
     stock_valuation_migrated = fields.Boolean(
         string="Valuation Booked in v18",
         default=False,
         copy=False,
     )
+    # A move's value adjustments are stored as ``product.value`` records, and they are
+    # booked in the closing entry, not in the move's original entry. This inverse
+    # relation is what lets ``related_account_move_id`` reach that entry.
+    product_value_ids = fields.One2many(
+        comodel_name="product.value",
+        inverse_name="move_id",
+        string="Value Adjustments",
+        readonly=True,
+    )
 
-    @api.depends("account_move_id", "picking_id", "state", "product_id.valuation")
+    @api.depends(
+        "account_move_id",
+        "account_move_id.state",
+        "picking_id",
+        "state",
+        "product_id.valuation",
+        "product_value_ids.account_move_id",
+        "product_value_ids.account_move_id.state",
+        "product_value_ids.date",
+    )
     def _compute_related_account_move_id(self):
+        # The value adjustment entry wins, as it is the one reflecting the move's CURRENT
+        # valuation. The original entry stays in the standard ``account_move_id``.
+        revaluation_entry_by_move = self._get_booked_revaluation_entries()
         for move in self:
-            # Asiento de valorización propio del movimiento (perpetuo) o asiento
-            # de cierre asociado (periódico), ambos en ``account_move_id``.
-            entries = move.account_move_id
-            # La factura relacionada sólo refleja la valorización de ESTE
-            # movimiento cuando el producto se valoriza de forma perpetua (al
-            # facturar). Con valorización periódica (al cierre) el costo no se
-            # registra en la factura sino en el asiento global de cierre, así que
-            # no corresponde mostrar la factura como asiento relacionado hasta
-            # que ese asiento global se genere.
+            revaluation_entry = revaluation_entry_by_move.get(move.id)
+            if revaluation_entry:
+                move.related_account_move_id = revaluation_entry
+                continue
+            # The move's own valuation entry (perpetual) or the closing entry it belongs
+            # to (periodic), both in ``account_move_id``. Unposted ones are left out: the
+            # related invoices below are already filtered that way by the standard.
+            entries = move.account_move_id.filtered(lambda entry: entry.state == "posted")
+            # The related invoice only reflects the valuation of THIS move when the
+            # product is valued perpetually, i.e. on invoicing. Under periodic valuation
+            # the cost is not booked in the invoice but in the global closing entry, so
+            # the invoice must not be shown as the related entry until that closing
+            # exists.
             if move.product_id.valuation == "real_time":
                 entries |= move._get_related_invoices()
-            # El campo es Many2one: tomamos el primer asiento disponible. La unión
-            # preserva el orden, así que prioriza el de valorización (``account_move_id``)
-            # y, si no hay, cae en la primera factura relacionada.
+            # The field is a Many2one, so the first available entry wins. The union keeps
+            # the order, hence the valuation entry (``account_move_id``) first and the
+            # related invoice as a fallback.
             move.related_account_move_id = entries[:1]
 
-    def _set_value(self, correction_quantity=None):
-        """No revalorizar al facturar los movimientos ya valorizados en la v18.
+    def _get_booked_revaluation_entries(self):
+        """Last entry that booked a value adjustment, per move.
 
-        De fábrica ``account.move._post`` llama ``_set_value`` sobre los
-        movimientos de entrada/dropship de la factura para recomputar su
-        ``value`` (y de ahí el ``standard_price`` del producto) a partir del
-        precio facturado. Para un movimiento migrado ese valor ya viene de la
-        v18 (lo backfilleó el post-migration), así que recomputarlo lo pisaría
-        con una base distinta. Sólo lo salteamos en el flujo de posteo de la
-        factura, que marca el contexto ``skip_migrated_stock_revaluation``; el
-        resto de los llamados a ``_set_value`` quedan intactos. Ver tarea 70174.
+        Read in ``sudo()``: the entry column shows up in the moves lists Accounting uses,
+        and ``product.value`` is access-restricted out of the box, so the computation
+        cannot depend on the permissions of whoever is looking at the list. The read ACL
+        the module adds is for the filtering, which does run as the user.
+        """
+        if not self.ids:
+            return {}
+        product_values = (
+            self.env["product.value"]
+            .sudo()
+            .search(
+                [
+                    ("move_id", "in", self.ids),
+                    ("account_move_id", "!=", False),
+                    ("account_move_id.state", "=", "posted"),
+                ],
+                order="date asc, id asc",
+            )
+        )
+        # Ascending order: per move the last write wins, i.e. the most recent booked
+        # adjustment.
+        return {product_value.move_id.id: product_value.account_move_id.id for product_value in product_values}
+
+    def _get_inventory_value(self):
+        """What the move contributes to the inventory VALUATION: its ``value``.
+
+        This holds for the three costing methods, standard cost included: a normal receipt
+        of a standard cost product is already valued at the standard cost and not at what
+        was paid (checked on v19: 10 units at 5 with a standard of 10 leaves ``value`` =
+        100, not 50, and the price difference goes to its own account). There is no need
+        to rebuild the cost in force at the move's date.
+
+        A ``value`` differing from quantity × standard cost means there was a manual
+        adjustment, and then a ``product.value`` points at the move: that move is left out
+        of the Stock Moves component (see ``_get_line_type_move_domain``) and its value is
+        contributed by the value adjustments component, which is where it belongs.
+
+        Single home of this criterion, shared by the report's breakdown of the variation
+        (Movement Type filter) and by the manual valuation of moves, so both measure the
+        same thing.
+        """
+        self.ensure_one()
+        return self.value
+
+    def _get_valuation_labels(self):
+        """Labels to name moves in user messages. ``reference`` is empty on moves with no
+        picking (created by hand or by internal processes), so it cannot be used directly
+        in a ``join``."""
+        return [move.reference or move.display_name or f"#{move.id}" for move in self]
+
+    def action_value_moves(self):
+        """Open the wizard that builds the draft valuation entry of the selected moves."""
+        moves = self.filtered(lambda m: m.state == "done")
+        if not moves:
+            raise UserError(self.env._("Only done moves can be valued."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Value Stock Moves"),
+            "res_model": "stock.move.valuation",
+            "view_mode": "form",
+            "target": "new",
+            "context": {**self.env.context, "default_move_ids": moves.ids},
+        }
+
+    def _set_value(self, correction_quantity=None):
+        """Do not revalue on invoicing the moves already valued in v18.
+
+        Out of the box ``account.move._post`` calls ``_set_value`` on the invoice's
+        incoming/dropship moves to recompute their ``value`` —and from it the product's
+        ``standard_price``— out of the invoiced price. For a migrated move that value
+        already comes from v18 (the post-migration backfilled it), so recomputing it would
+        overwrite it on a different basis. Only skipped in the invoice posting flow, which
+        sets the ``skip_migrated_stock_revaluation`` context; every other call to
+        ``_set_value`` is left untouched. See task 70174.
         """
         moves = self
         if self.env.context.get("skip_migrated_stock_revaluation"):
@@ -63,15 +159,14 @@ class StockMove(models.Model):
         return super(StockMove, moves)._set_value(correction_quantity=correction_quantity)
 
     def _get_migrated_valuation_counterpart_account(self):
-        """Cuenta de contrapartida del asiento de valorización que la v18 dejó
-        reenganchado en ``account_move_id`` (post-migration 18->19).
+        """Counterpart account of the valuation entry v18 left attached to
+        ``account_move_id`` (18->19 post-migration).
 
-        En ese asiento el ingreso se contabilizó como alta de activo: débito a
-        la cuenta de valorización de stock (Existencias) contra esta
-        contrapartida (típicamente una cuenta de compra de mercadería). Es la
-        cuenta a la que debe imputarse la línea de factura en v19 para no
-        volver a debitar Existencias. Devuelve un recordset vacío si no hay
-        asiento o no se puede determinar la contrapartida.
+        In that entry the receipt was booked as an asset increase: debit to the stock
+        valuation account against this counterpart, typically a goods purchase account.
+        That is the account the v19 invoice line has to be booked to, so stock valuation is
+        not debited twice. Returns an empty recordset when there is no entry or the
+        counterpart cannot be determined.
         """
         self.ensure_one()
         entry = self.account_move_id
@@ -83,34 +178,43 @@ class StockMove(models.Model):
         return counterpart[:1].account_id
 
     def _search_related_account_move_id(self, operator, value):
-        """El campo es calculado y no se almacena (las facturas relacionadas se
-        resuelven al vuelo), por lo que necesitamos un search method para poder
-        filtrar por el asiento contable en los reportes de movimientos.
+        """The field is computed and not stored, as the related invoices are resolved on
+        the fly, hence this search method to be able to filter by journal entry in the
+        moves reports.
 
-        Un movimiento sólo puede tener asiento relacionado si tiene su propio
-        asiento de valorización (``account_move_id``) o un albarán
-        (``picking_id``, del que cuelgan las facturas relacionadas), así que
-        acotamos los candidatos a ese subconjunto antes de evaluar el campo
-        calculado.
+        A move can only have a related entry if it has its own valuation entry
+        (``account_move_id``), a picking (``picking_id``, which the related invoices hang
+        from) or a booked value adjustment, so the candidates are narrowed down to that
+        subset before evaluating the computed field.
 
-        Ojo: el motor de dominios de Odoo normaliza ``=``/``!=`` a ``in``/``not in``
-        y el ``False`` llega como una colección (``[False]``), así que normalizamos
-        operador y valor antes de decidir."""
-        candidates = self.search(["|", ("account_move_id", "!=", False), ("picking_id", "!=", False)])
-        # Normalizar el valor a lista (puede venir como False, escalar, lista u OrderedSet).
+        Watch out: Odoo's domain engine normalises ``=`` / ``!=`` into ``in`` / ``not in``
+        and ``False`` arrives as a collection (``[False]``), so operator and value are
+        normalised before deciding.
+        """
+        candidates = self.search(
+            [
+                "|",
+                "|",
+                ("account_move_id", "!=", False),
+                ("picking_id", "!=", False),
+                ("product_value_ids", "any", [("account_move_id", "!=", False)]),
+            ]
+        )
+        # Normalise the value into a list: it can arrive as False, a scalar, a list or an
+        # OrderedSet.
         if isinstance(value, str) or not hasattr(value, "__iter__"):
             values = [value]
         else:
             values = list(value)
-        # Filtro "establecido / no establecido": el valor es sólo False/vacío.
+        # "Set / not set" filter: the value is only False or empty.
         if operator in ("=", "!=", "in", "not in") and all(not v for v in values):
             with_entry = candidates.filtered("related_account_move_id")
-            # ``=``/``in`` contra [False] => SIN asiento; ``!=``/``not in`` => CON asiento.
+            # ``=`` / ``in`` against [False] means WITHOUT entry; ``!=`` / ``not in``, WITH.
             want_without = operator in ("=", "in")
             if want_without:
                 return [("id", "not in", with_entry.ids)]
             return [("id", "in", with_entry.ids)]
-        # Filtro por un asiento concreto (por id o por nombre del asiento).
+        # Filter on a specific entry, by id or by entry name.
         field = "display_name" if any(isinstance(v, str) for v in values) else "id"
         moves = self.env["account.move"].search([(field, operator, value)])
         matched = candidates.filtered(lambda m: m.related_account_move_id & moves)

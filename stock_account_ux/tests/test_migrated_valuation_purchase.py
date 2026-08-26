@@ -6,31 +6,29 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestMigratedValuationPurchase(TestStockValuationCommon):
-    """Al facturar en v19 una compra cuyo movimiento ya se valorizó en la v18
-    (``stock_valuation_migrated=True``), la línea de factura no debe volver a
-    debitar la cuenta de valorización de stock (alta del activo duplicada): debe
-    imputarse a la contrapartida del asiento de valorización migrado. Ver tarea
-    70174."""
+    """Invoicing in v19 a purchase whose move was already valued in v18
+    (``stock_valuation_migrated=True``), the invoice line must not debit the stock
+    valuation account again —that would increase the asset twice— but the counterpart of
+    the migrated valuation entry. See task 70174."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.product = cls.product_standard_auto
         cls.valuation_account = cls.product.product_tmpl_id.get_product_accounts()["stock_valuation"]
-        # Contrapartida del alta de activo del asiento migrado (el crédito): una
-        # cuenta distinta de la de valorización, típicamente compra de mercadería.
+        # Counterpart of the asset increase in the migrated entry (the credit): an account
+        # other than the valuation one, typically a goods purchase account.
         cls.counterpart_account = cls.env["account.account"].create(
             {
-                "name": "Compra de mercadería",
+                "name": "Goods Purchase",
                 "code": "600700",
                 "account_type": "expense",
             }
         )
 
     def _migrated_in_move(self, migrated=True, with_entry=True):
-        """Movimiento de entrada con (opcionalmente) el asiento de valorización
-        migrado reenganchado en ``account_move_id``: Dr valorización / Cr
-        contrapartida."""
+        """Incoming move with, optionally, the migrated valuation entry re-attached to
+        ``account_move_id``: Dr valuation / Cr counterpart."""
         move = self.env["stock.move"].create(
             {
                 "product_id": self.product.id,
@@ -55,9 +53,9 @@ class TestMigratedValuationPurchase(TestStockValuationCommon):
         return move
 
     def _bill_product_line(self, stock_move):
-        """Crea (sin postear) una factura de proveedor con una línea de producto
-        vinculada a ``stock_move`` (parcheando ``_get_stock_moves``, que en
-        producción aporta ``purchase_stock`` vía ``purchase_line_id``)."""
+        """Create, without posting, a vendor bill with a product line linked to
+        ``stock_move``, patching ``_get_stock_moves``, which in production comes from
+        ``purchase_stock`` through ``purchase_line_id``."""
         move_line_cls = type(self.env["account.move.line"])
         original = move_line_cls._get_stock_moves
 
@@ -73,8 +71,8 @@ class TestMigratedValuationPurchase(TestStockValuationCommon):
         self.assertEqual(
             line.account_id,
             self.counterpart_account,
-            "La factura de un movimiento valorizado en la v18 debe imputarse a la "
-            "contrapartida del asiento migrado, no a la cuenta de valorización.",
+            "The bill of a move valued in v18 has to be booked to the counterpart of the "
+            "migrated entry, not to the valuation account.",
         )
 
     def test_non_migrated_bill_line_uses_valuation_account(self):
@@ -82,8 +80,8 @@ class TestMigratedValuationPurchase(TestStockValuationCommon):
         self.assertEqual(
             line.account_id,
             self.valuation_account,
-            "Una compra normal de v19 debe seguir imputándose a la cuenta de "
-            "valorización de stock (comportamiento de fábrica de stock_account).",
+            "A regular v19 purchase keeps being booked to the stock valuation account, as "
+            "stock_account does out of the box.",
         )
 
     def test_counterpart_helper_returns_credit_account(self):
