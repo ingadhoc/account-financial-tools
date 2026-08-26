@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-27 13:27+0000\n"
-"PO-Revision-Date: 2026-07-27 13:27+0000\n"
+"POT-Creation-Date: 2026-08-26 14:13+0000\n"
+"PO-Revision-Date: 2026-08-26 14:13+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,59 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"%(count)s moves were excluded because they already have a valuation entry "
+"(valuing them again would double the product's booked value): %(references)s"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/res_company.py:0
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid "%(label)s - %(product)s"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_account_account
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__account_id
 msgid "Account"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.actions.act_window,help:stock_account_ux.product_value_action_list
+msgid ""
+"Acá se registran los cambios de costo de la ficha del producto y\n"
+"                los ajustes manuales del valor de un movimiento."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Automated / Perpetual"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Average Cost (AVCO)"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Booked"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_form_view
+msgid "Cancel"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/res_company.py:0
+msgid "Closing: Location Reclassification - [%(account)s]"
 msgstr ""
 
 #. module: stock_account_ux
@@ -26,29 +77,132 @@ msgid "Companies"
 msgstr ""
 
 #. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__company_id
+msgid "Company"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__create_uid
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__create_date
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__credit
+msgid "Credit"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__currency_id
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__date
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Date"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,help:stock_account_ux.field_stock_move_valuation__date
+msgid "Date of the valuation entry."
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__debit
+msgid "Debit"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__delta
+msgid "Delta"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_account__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_res_company__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_account_stock_valuation_report__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Ending Stock"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__excluded_warning
+msgid "Excluded Warning"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "First In First Out (FIFO)"
 msgstr ""
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_account__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move_line__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_res_company__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_account_stock_valuation_report__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__id
 msgid "ID"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Initial Balance"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Inventory Loss"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,help:stock_account_ux.field_product_value__account_move_id
+msgid ""
+"Inventory valuation closing entry that booked this value adjustment. Empty "
+"means the adjustment is not booked yet: it is part of the difference to "
+"adjust shown by the valuation report's variation."
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__journal_id
+msgid "Journal"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 #: model:ir.model,name:stock_account_ux.model_account_move
+#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__account_move_id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__related_account_move_id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__related_account_move_id
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_line_view_search_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_line_view_tree_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_view_account_link
@@ -58,8 +212,118 @@ msgid "Journal Entry"
 msgstr ""
 
 #. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_form_view
+msgid "Journal Entry Draft"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_account_move_line
 msgid "Journal Item"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__line_ids
+msgid "Journal Items"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Journal Items - %(account)s"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__name
+msgid "Label"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__write_uid
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__write_date
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Manual / Periodic"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Move Adjustment"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
+msgid "Movement Type"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_list
+msgid "New Value"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.actions.act_window,help:stock_account_ux.product_value_action_list
+msgid "No hay ajustes de valor"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "No records - %(account)s"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Not Booked"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/stock_move.py:0
+#: code:addons/stock_account_ux/models/stock_move_line.py:0
+msgid "Only done moves can be valued."
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__partial_lines_warning
+msgid "Partial Lines Warning"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_form_view
+msgid "Post Journal Entry"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__previous_value
+msgid "Previous Value"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Price Change"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__product_id
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Product"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Product Categories"
 msgstr ""
 
 #. module: stock_account_ux
@@ -68,13 +332,201 @@ msgid "Product Moves (Stock Move Line)"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+#: model:ir.model,name:stock_account_ux.model_product_value
+msgid "Product Value"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Products"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_view_search_account_link
+msgid "Revaluation Not Booked"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
+msgid ""
+"Solo afecta la sección Variación del inventario; muestra los movimientos sin"
+" contabilizar por origen."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Standard Price"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_stock_move
 msgid "Stock Move"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__move_ids
+msgid "Stock Moves"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+#: model:ir.model,name:stock_account_ux.model_stock_account_stock_valuation_report
+msgid "Stock Valuation"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid "Stock Valuation - [%(account)s]"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Stock Variation"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Stock Variation (filtered)"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "The account no longer exists."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"The selected moves are already booked. Valuing them again would double the "
+"product's booked value."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid "The selected moves have no value to book."
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__total
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_form_view
+msgid "Total"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,help:stock_account_ux.field_stock_move_valuation__total
+msgid "Total of the entry to post."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/controller_patch.js:0
+msgid "Unaccounted Stock Moves"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Unaccounted Stock Moves - %(account)s"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/controller_patch.js:0
+msgid "Unaccounted Value Adjustments"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+msgid "Unaccounted Value Adjustments - %(account)s"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__valuation_id
+msgid "Valuation"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__stock_valuation_migrated
 msgid "Valuation Booked in v18"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
+msgid "Valuation Method"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
+msgid "Valuation Type"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.actions.act_window,name:stock_account_ux.product_value_action_list
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__product_value_ids
+#: model:ir.ui.menu,name:stock_account_ux.product_value_menu
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_list
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid "Value Adjustments"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/stock_move.py:0
+#: model:ir.actions.server,name:stock_account_ux.stock_move_action_value_moves
+#: model:ir.actions.server,name:stock_account_ux.stock_move_line_action_value_moves
+#: model:ir.model,name:stock_account_ux.model_stock_move_valuation
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_form_view
+msgid "Value Stock Moves"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model,name:stock_account_ux.model_stock_move_valuation_line
+msgid "Value Stock Moves Line"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+msgid ""
+"Value adjustments not booked yet: they are the ones making up the difference"
+" to adjust in the valuation report."
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,help:stock_account_ux.field_product_value__previous_value
+msgid ""
+"Value in force right before this adjustment. Captured when it is recorded, "
+"because afterwards it can no longer be rebuilt."
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,help:stock_account_ux.field_product_value__delta
+msgid ""
+"Variation this adjustment introduced, in the SAME unit as the Value field: "
+"the move total value when the adjustment is on a move, the unit price when "
+"it is a product or lot price change."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/line_drilldown.xml:0
+msgid "View details"
 msgstr ""
 
 #. module: stock_account_ux
@@ -87,4 +539,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_line_view_search_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_view_search_account_link
 msgid "Without Journal Entry"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"You selected only some lines of %(count)s moves. Valuation goes by move, so "
+"they are valued whole: %(references)s"
 msgstr ""
