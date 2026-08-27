@@ -1,4 +1,4 @@
-from odoo import Command
+from odoo import Command, fields
 from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
@@ -45,7 +45,9 @@ class TestManualMoveValuation(TestStockValuationCommon):
     def test_draft_defaults(self):
         wizard = self._wizard(self.move_avco)
         self.assertEqual(wizard.journal_id, self.company.account_stock_journal_id)
-        self.assertEqual(wizard.date, self.env.cr.now().date())
+        # Same source the default reads: asserting against ``cr.now()`` compared the user's
+        # timezone with a UTC clock, one day apart inside the offset window (ticket 126535).
+        self.assertEqual(wizard.date, fields.Date.context_today(wizard))
 
     def test_outgoing_move_subtracts(self):
         out_move = self._make_out_move(self.product_avco, 1)
