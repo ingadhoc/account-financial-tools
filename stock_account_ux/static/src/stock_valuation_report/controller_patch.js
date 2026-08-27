@@ -26,13 +26,20 @@ patch(StockValuationReportController.prototype, {
         return state;
     },
 
+    // "Hoy = sin corte" lo decide el cliente, único lugar con un solo reloj: el server lo
+    // comparaba contra el tz del usuario y adentro del offset no coinciden (ticket 126535).
+    get reportDate() {
+        const date = serializeDate(this.state.date);
+        return date === serializeDate(DateTime.now()) ? false : date;
+    },
+
     // Reimplementación de loadReportData (copia de stock_account v19.0) para
     // sumar los filtros como kwargs del get_report_values. La preparación de
     // líneas es idéntica a la nativa.
     async loadReportData() {
         const state = this._valuationFilterState();
         const kwargs = {
-            date: this.state.date.toISODate() || false,
+            date: this.reportDate,
             product_ids: state.productIds,
             categ_ids: state.categIds,
             cost_methods: state.costMethods,
@@ -153,7 +160,7 @@ patch(StockValuationReportController.prototype, {
         const action = await this.orm.call(
             "stock_account.stock.valuation.report",
             method,
-            [accountId, this.state.date.toISODate() || false],
+            [accountId, this.reportDate],
             {
                 filters: {
                     product_ids: state.productIds,
