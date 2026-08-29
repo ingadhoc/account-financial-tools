@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_account_payment_form_fci" model="ir.ui.view">
+        <field name="name">account.payment.form.fci</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <!--
+                Inject the fci_interest_rate field into the payment form.
+                It is visible only when the journal is an FCI journal.
+                We also load the is_fci_payment computed field (invisible) to drive visibility.
+            -->
+            <field name="paired_internal_transfer_payment_id" position="after">
+                <field name="is_fci_payment" invisible="1"/>
+            </field>
+            <field name="memo" position="after">
+                <field name="fci_interest_amount"
+                       invisible="not is_fci_payment or payment_type != 'outbound'"
+                       groups="account.group_account_user"/>
+            </field>
+        </field>
+    </record>
+</odoo>
