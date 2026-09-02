@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-06 18:24+0000\n"
+"POT-Creation-Date: 2026-09-02 14:04+0000\n"
 "PO-Revision-Date: 2026-04-13 22:41+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -129,6 +129,13 @@ msgstr "Monto Total"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Amount untaxed"
 msgstr "Monto sin impuestos"
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/tests/invariants.py:0
+#: code:addons/account_ux/tests/test_invariants.py:0
+msgid "Automatic Balancing Line"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_average
