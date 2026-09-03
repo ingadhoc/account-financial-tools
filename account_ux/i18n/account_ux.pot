@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 14:04+0000\n"
-"PO-Revision-Date: 2026-09-02 14:04+0000\n"
+"POT-Creation-Date: 2026-09-03 16:08+0000\n"
+"PO-Revision-Date: 2026-09-03 16:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -103,6 +103,13 @@ msgid "Adjusting Entry"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__account_fiscal_position__shared_to_branches__all
+#: model:ir.model.fields.selection,name:account_ux.selection__account_journal__shared_to_branches__all
+#: model:ir.model.fields.selection,name:account_ux.selection__shared_to_branches_mixin__shared_to_branches__all
+msgid "All branches"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Amount total"
 msgstr ""
@@ -190,8 +197,24 @@ msgid "Company"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_res_company__legal_entity_root_id
+msgid ""
+"Company at the top of the branch chain that makes up this company's legal "
+"entity. Two companies are the same legal entity only when they explicitly "
+"declare the same Tax ID and every company between them declares it too; a "
+"company without a valid Tax ID is always its own legal entity. Stored and "
+"indexed on purpose: unlike the Tax ID itself, this can be used in record "
+"rules and in report filters."
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_res_config_settings
 msgid "Config Settings"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_partner
+msgid "Contact"
 msgstr ""
 
 #. module: account_ux
@@ -342,12 +365,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_payment_method_line__display_name
+#: model:ir.model.fields,field_description:account_ux.field_account_payment_register__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_reconcile_model__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_tax__display_name
 #: model:ir.model.fields,field_description:account_ux.field_mail_compose_message__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_company__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__display_name
+#: model:ir.model.fields,field_description:account_ux.field_res_partner__display_name
+#: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__display_name
 #: model:ir.model.fields,field_description:account_ux.field_validate_account_move__display_name
 msgid "Display Name"
 msgstr ""
@@ -399,8 +425,21 @@ msgid "Full Reconciliations"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__has_child_companies
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__has_child_companies
+#: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__has_child_companies
 msgid "Has Child Companies"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_fiscal_position__legal_entity_root_id
+#: model:ir.model.fields,help:account_ux.field_account_journal__legal_entity_root_id
+#: model:ir.model.fields,help:account_ux.field_shared_to_branches_mixin__legal_entity_root_id
+msgid ""
+"Head of the legal entity of the company that owns this record. Stored on the"
+" record so that the *same legal entity* scope can be resolved in a record "
+"rule against a column of this table, instead of reaching into res.company — "
+"which a branch user cannot always read."
 msgstr ""
 
 #. module: account_ux
@@ -416,24 +455,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__id
 #: model:ir.model.fields,field_description:account_ux.field_account_payment__id
 #: model:ir.model.fields,field_description:account_ux.field_account_payment_method_line__id
+#: model:ir.model.fields,field_description:account_ux.field_account_payment_register__id
 #: model:ir.model.fields,field_description:account_ux.field_account_reconcile_model__id
 #: model:ir.model.fields,field_description:account_ux.field_account_tax__id
 #: model:ir.model.fields,field_description:account_ux.field_mail_compose_message__id
 #: model:ir.model.fields,field_description:account_ux.field_res_company__id
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__id
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__id
+#: model:ir.model.fields,field_description:account_ux.field_res_partner__id
+#: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__id
 #: model:ir.model.fields,field_description:account_ux.field_validate_account_move__id
 msgid "ID"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_account_journal__shared_to_branches
-#: model:ir.model.fields,help:account_ux.field_account_payment_method_line__shared_to_branches
-#: model:ir.model.fields,help:account_ux.field_account_reconcile_model__shared_to_branches
-msgid ""
-"If enabled, this journal will be available for use in child companies "
-"(branches). This allows subsidiaries to use the parent company's journals "
-"for their transactions."
 msgstr ""
 
 #. module: account_ux
@@ -519,6 +551,14 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__legal_entity_root_id
+#: model:ir.model.fields,field_description:account_ux.field_account_journal__legal_entity_root_id
+#: model:ir.model.fields,field_description:account_ux.field_res_company__legal_entity_root_id
+#: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__legal_entity_root_id
+msgid "Legal Entity Head"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_margin
 msgid "Margin (CC)"
 msgstr ""
@@ -563,6 +603,13 @@ msgid "No se recomiendan compartir a sucursales los diarios de tipo 'Venta'."
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__account_fiscal_position__shared_to_branches__none
+#: model:ir.model.fields.selection,name:account_ux.selection__account_journal__shared_to_branches__none
+#: model:ir.model.fields.selection,name:account_ux.selection__shared_to_branches_mixin__shared_to_branches__none
+msgid "Not shared"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 msgid "Paid"
 msgstr ""
@@ -581,6 +628,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "Partner"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_account_payment_register
+msgid "Pay"
 msgstr ""
 
 #. module: account_ux
@@ -644,6 +696,18 @@ msgid "Salesperson of contact related to this journal item"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__account_fiscal_position__shared_to_branches__legal_entity
+#: model:ir.model.fields.selection,name:account_ux.selection__account_journal__shared_to_branches__legal_entity
+#: model:ir.model.fields.selection,name:account_ux.selection__shared_to_branches_mixin__shared_to_branches__legal_entity
+msgid "Same legal entity"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_shared_to_branches_mixin
+msgid "Scope of the branches a record is shared to"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_change_currency__currency_to_id
 msgid "Select a currency to apply on the invoice"
 msgstr ""
@@ -664,10 +728,12 @@ msgid "Sequence"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__shared_to_branches
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__shared_to_branches
 #: model:ir.model.fields,field_description:account_ux.field_account_payment_method_line__shared_to_branches
 #: model:ir.model.fields,field_description:account_ux.field_account_reconcile_model__shared_to_branches
-msgid "Shared To Branches"
+#: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__shared_to_branches
+msgid "Shared to Branches"
 msgstr ""
 
 #. module: account_ux
@@ -872,6 +938,33 @@ msgid ""
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_journal__shared_to_branches
+#: model:ir.model.fields,help:account_ux.field_account_payment_method_line__shared_to_branches
+#: model:ir.model.fields,help:account_ux.field_account_reconcile_model__shared_to_branches
+#: model:ir.model.fields,help:account_ux.field_shared_to_branches_mixin__shared_to_branches
+msgid ""
+"Which branches of this company can use this record.\n"
+"\n"
+"- All branches: every company below this one, whatever its Tax ID.\n"
+"- Same legal entity: only the branches that declare the same Tax ID as this company, with no break in the chain. An auxiliary company with no Tax ID of its own is a different legal entity and is left out.\n"
+"- Not shared: only this company."
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_account_fiscal_position__shared_to_branches
+msgid ""
+"Which branches this fiscal position is automatically detected in.\n"
+"\n"
+"- All branches: every company below this one, whatever its Tax ID.\n"
+"- Same legal entity: only the branches that declare the same Tax ID as this company, with no break in the chain. An auxiliary company with no Tax ID of its own is a different legal entity and is left out.\n"
+"- Not shared: only this company.\n"
+"\n"
+"Careful with how the automatic detection picks one, because it is not by sequence. Odoo sorts the candidates by how deep the owning company sits in the branch tree first, and only then by sequence: a position of the branch you are standing in wins over one of its parent whatever the sequences say, and the sequence only decides between positions of the same company.\n"
+"\n"
+"This scope only narrows the automatic detection. A position stays selectable by hand and keeps working in the company that owns it."
+msgstr ""
+
+#. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid ""
@@ -926,4 +1019,24 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "{amount} ({debit_credit}) from {link}"
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/res_company.py:0
+msgid ""
+"«%(company)s» and «%(parent)s» declare the same Tax ID (%(vat)s), so they "
+"are the same legal entity and their «%(field)s» has to be the same. Either "
+"change it on «%(parent)s», which applies it to the whole legal entity, or "
+"give «%(company)s» its own Tax ID if it really is a different legal entity."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/res_company.py:0
+msgid ""
+"«%(company)s» declares the Tax ID %(vat)s, which is already declared higher "
+"up the tree by «%(ancestor)s», but the chain breaks at «%(parent)s». A Tax "
+"ID cannot reappear below a break: «%(company)s» has to declare the same as "
+"«%(parent)s» or something other than %(vat)s."
 msgstr ""
