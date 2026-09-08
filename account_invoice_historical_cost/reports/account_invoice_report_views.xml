@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_invoice_report_search_historical_cost" model="ir.ui.view">
+        <field name="name">account.invoice.report.search.historical.cost</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_search"/>
+        <field name="arch" type="xml">
+            <filter name="creditnote" position="after">
+                <separator/>
+                <filter string="Historical Cost is Provisional" name="historical_cost_provisional"
+                        domain="[('historical_cost_provisional', '=', True)]"/>
+                <filter string="Historical Cost is Real" name="historical_cost_real"
+                        domain="[('historical_cost_provisional', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_report_pivot_historical_cost" model="ir.ui.view">
+        <field name="name">account.invoice.report.pivot.historical.cost</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_pivot"/>
+        <field name="arch" type="xml">
+            <pivot position="inside">
+                <field name="historical_unit_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+</odoo>
