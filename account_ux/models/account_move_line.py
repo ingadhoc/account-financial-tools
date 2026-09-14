@@ -2,7 +2,7 @@
 # © 2016 ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, fields, api
+from odoo import models, fields, api, Command
 
 
 class AccountMoveLine(models.Model):
@@ -154,6 +154,72 @@ class AccountMoveLine(models.Model):
         )
         need_amount_residual_currency_adjustment.amount_residual_currency = 0.0
         need_amount_residual_currency_adjustment.reconciled = True
+
+    def _reconcile_post_hook(self, data):
+        """Create missing full reconciles for settled components of a partial batch.
+
+        The core evaluates the whole reconciliation plan as one batch. When some
+        lines remain open, settled subcomponents may keep a partial matching number.
+        Ticket 123989.
+        """
+
+        res = super()._reconcile_post_hook(data)
+        self._create_missing_full_reconciles()
+        return res
+
+    def _create_missing_full_reconciles(self):
+        """Create full reconciles for settled components without one."""
+
+        # Primer filtro solo para no recorrer el grafo al pedo: el saldo que decide
+        # es el de la componente entera, que se chequea mas abajo.
+        candidates = self.filtered(
+            lambda line: (
+                not line.full_reconcile_id
+                and (line.matched_debit_ids or line.matched_credit_ids)
+                and line._is_fully_settled()
+            )
+        )
+        if not candidates:
+            return
+
+        full_reconcile_values_list = []
+        pending = candidates
+        while pending:
+            component = pending[0]._get_reconciled_component()
+            pending -= component
+            if any(line.full_reconcile_id for line in component):
+                # Already numbered, nothing to complete.
+                continue
+            if not all(line._is_fully_settled() for line in component):
+                continue
+            partials = component.matched_debit_ids | component.matched_credit_ids
+            full_reconcile_values_list.append(
+                {
+                    "partial_reconcile_ids": [Command.link(partial.id) for partial in partials],
+                    "reconciled_line_ids": [Command.link(line.id) for line in component],
+                }
+            )
+        if full_reconcile_values_list:
+            self.env["account.full.reconcile"].create(full_reconcile_values_list)
+
+    def _is_fully_settled(self):
+        """Return whether residuals are zero in both currencies."""
+
+        self.ensure_one()
+        return self.company_currency_id.is_zero(self.amount_residual) and self.currency_id.is_zero(
+            self.amount_residual_currency
+        )
+
+    def _get_reconciled_component(self):
+        """Return all lines reachable through partial reconciliations."""
+
+        component = self.browse()
+        to_visit = self
+        while to_visit:
+            component |= to_visit
+            partials = to_visit.matched_debit_ids | to_visit.matched_credit_ids
+            to_visit = (partials.debit_move_id | partials.credit_move_id) - component
+        return component
 
     def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None, **kwargs):
         res = super()._prepare_exchange_difference_move_vals(
