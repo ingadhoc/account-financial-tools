@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Deja el parámetro a la vista en Ajustes / Técnico / Parámetros del sistema, apagado.
+         Se siembra por método y no como registro para que sea idempotente: no choca con una
+         base donde el parámetro ya se creó a mano ni pisa una habilitación deliberada. -->
+    <function model="res.currency" name="_seed_rounding_edit_param"/>
+
+</odoo>

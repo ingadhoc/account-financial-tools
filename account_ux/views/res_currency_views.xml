@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_currency_form" model="ir.ui.view">
+        <field name="name">res.currency.form</field>
+        <field name="model">res.currency</field>
+        <field name="inherit_id" ref="base.view_currency_form"/>
+        <field name="arch" type="xml">
+            <field name="rounding" position="before">
+                <field name="rounding_edit_allowed" invisible="1"/>
+            </field>
+            <field name="rounding" position="attributes">
+                <attribute name="readonly">not rounding_edit_allowed</attribute>
+                <attribute name="help">Amounts in this currency are rounded off to the nearest multiple of the rounding factor. Changing it breaks the accounting amounts already computed with the previous value, so on client production databases it can only be edited when the system parameter 'account_ux.allow_currency_rounding_edit' is enabled.</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>
