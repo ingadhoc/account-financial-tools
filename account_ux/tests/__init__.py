@@ -10,3 +10,4 @@ from . import test_legal_entity
 from . import test_legal_entity_fiscalyear
 from . import test_shared_to_branches
 from . import test_payment_company_from_branch
+from . import test_currency_rounding
