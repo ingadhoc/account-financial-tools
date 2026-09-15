@@ -227,11 +227,14 @@ class TestDebtReportCurrencyMode(DebtReportCommon):
 
 @tagged("post_install", "-at_install")
 class TestDebtReportUnfilteredCompanies(DebtReportCommon):
-    """Companies reconciling on their own currency keep every item in the report.
+    """Companies reconciling on their own currency skip the "company currency" filter.
 
     Those book the exchange difference of a foreign document as a separate debit note in
     the company currency, so filtering would leave the note in without the document it
-    adjusts and the balance would come out wrong.
+    adjusts and the balance would come out wrong. The "secondary currency" filter is not
+    exempt: it still excludes company-currency items for these companies, since including
+    them would mix company-currency amounts into a total meant to be in one foreign
+    currency.
 
     Runs post_install because the setting belongs to account_ux, which this module does
     not depend on and therefore loads after it.
@@ -259,20 +262,26 @@ class TestDebtReportUnfilteredCompanies(DebtReportCommon):
         )
         self.company.reconcile_on_company_currency = True
 
-    def test_reconciling_on_company_currency_skips_the_filter(self):
+    def test_reconciling_on_company_currency_skips_the_company_currency_filter(self):
         self._reconcile_on_company_currency()
 
         self.assertEqual(self.partner._get_debt_report_unfiltered_companies(self.company), self.company)
         self.assertEqual(self.partner._get_debt_report_currency_domain("company", self.company), [])
-        # end to end: every item comes through whichever check is ticked
-        for flags in [
-            {"company_currency": True, "secondary_currency": False},
-            {"company_currency": False, "secondary_currency": True},
-        ]:
-            with self.subTest(**flags):
-                names = self._report_move_names(**flags)
-                self.assertIn(self.local_move.name, names)
-                self.assertIn(self.foreign_move.name, names)
+        # end to end: every item comes through when "company currency" is ticked alone
+        names = self._report_move_names(company_currency=True, secondary_currency=False)
+        self.assertIn(self.local_move.name, names)
+        self.assertIn(self.foreign_move.name, names)
+
+    def test_reconciling_on_company_currency_still_filters_the_secondary_view(self):
+        """The "divisa" view must never mix in company-currency items for these companies.
+
+        Regression test for ticket #127365: with the filter fully skipped, the secondary
+        view summed company-currency amounts together with real foreign-currency ones,
+        producing a meaningless total.
+        """
+        self._reconcile_on_company_currency()
+        names = self._report_move_names(company_currency=False, secondary_currency=True)
+        self.assertEqual(names, [self.foreign_move.name])
 
     def test_the_filter_still_applies_without_the_setting(self):
         if "reconcile_on_company_currency" not in self.env["res.company"]._fields:

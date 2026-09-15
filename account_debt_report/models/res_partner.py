@@ -113,22 +113,24 @@ class ResPartner(models.Model):
         """
         if not currency_mode:
             return []
+        in_company_currency = Domain.OR(
+            [
+                Domain("company_currency_id", "=", currency.id) & Domain("currency_id", "=", currency.id)
+                for currency in companies.mapped("currency_id")
+            ]
+        )
+        if currency_mode == "secondary":
+            # a company-currency item never belongs in a foreign-currency-only report,
+            # not even for the companies exempt below: mixing it in would add
+            # company-currency amounts into a total meant to be in a single foreign
+            # currency.
+            return list(~in_company_currency & Domain("amount_currency", "!=", 0.0))
         unfiltered = self._get_debt_report_unfiltered_companies(companies)
         filtered = companies - unfiltered
         if not filtered:
             return []
-        in_company_currency = Domain.OR(
-            [
-                Domain("company_currency_id", "=", currency.id) & Domain("currency_id", "=", currency.id)
-                for currency in filtered.mapped("currency_id")
-            ]
-        )
-        if currency_mode == "company":
-            wanted = in_company_currency
-        else:
-            wanted = ~in_company_currency & Domain("amount_currency", "!=", 0.0)
         # the filter only governs the companies it applies to
-        domain = wanted & Domain("company_id", "in", filtered.ids)
+        domain = in_company_currency & Domain("company_id", "in", filtered.ids)
         if unfiltered:
             domain |= Domain("company_id", "in", unfiltered.ids)
         return list(domain)
