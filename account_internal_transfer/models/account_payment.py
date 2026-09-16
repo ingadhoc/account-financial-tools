@@ -16,6 +16,22 @@ class AccountPayment(models.Model):
         domain="[('type', 'in', ('bank','cash','credit')), ('id', '!=', journal_id),('company_id', 'child_of', main_company_id)]",
         check_company=False,
     )
+    destination_payment_method_line_id = fields.Many2one(
+        comodel_name="account.payment.method.line",
+        string="Destination Journal Payment Method",
+        compute="_compute_destination_payment_method_line_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        # the destination journal may belong to another branch
+        check_company=False,
+        help="Payment method line used on the paired payment created in the destination journal. "
+        "It determines the outstanding account of that payment.",
+    )
+    available_destination_payment_method_line_ids = fields.Many2many(
+        comodel_name="account.payment.method.line",
+        compute="_compute_available_destination_payment_method_line_ids",
+    )
     main_company_id = fields.Many2one(
         "res.company",
         compute="_compute_main_company",
@@ -26,6 +42,31 @@ class AccountPayment(models.Model):
     def _compute_main_company(self):
         for rec in self:
             rec.main_company_id = rec.company_id.parent_id or rec.company_id
+
+    def _get_paired_payment_type(self):
+        """Payment type of the paired payment created in the destination journal."""
+        self.ensure_one()
+        return "inbound" if self.payment_type == "outbound" else "outbound"
+
+    @api.depends("destination_journal_id", "payment_type", "is_internal_transfer")
+    def _compute_available_destination_payment_method_line_ids(self):
+        for pay in self:
+            journal = pay.destination_journal_id
+            if pay.is_internal_transfer and journal:
+                pay.available_destination_payment_method_line_ids = journal._get_available_payment_method_lines(
+                    pay._get_paired_payment_type()
+                )
+            else:
+                pay.available_destination_payment_method_line_ids = False
+
+    @api.depends("available_destination_payment_method_line_ids")
+    def _compute_destination_payment_method_line_id(self):
+        for pay in self:
+            available_lines = pay.available_destination_payment_method_line_ids
+            # an explicit choice is kept as long as it is still available on the destination journal
+            if pay.destination_payment_method_line_id in available_lines:
+                continue
+            pay.destination_payment_method_line_id = available_lines[:1]
 
     # TO DO: Check in v19+ if odoo delete the paired_internal_transfer_payment_id field, restore the field in this module
     # paired_internal_transfer_payment_id = fields.Many2one('account.payment',
@@ -95,26 +136,30 @@ class AccountPayment(models.Model):
                 )
             )
         for payment in self:
-            paired_payment_type = "inbound" if payment.payment_type == "outbound" else "outbound"
+            paired_payment_type = payment._get_paired_payment_type()
+            # the line chosen by the user wins over the journal default and over the context hook
+            destination_line = payment.destination_payment_method_line_id
             paired_payment = payment.copy(
                 {
                     "journal_id": payment.destination_journal_id.id,
                     "company_id": payment.destination_journal_id.company_id.id,
                     "destination_journal_id": payment.journal_id.id,
                     "payment_type": paired_payment_type,
-                    "payment_method_line_id": payment.destination_journal_id._get_available_payment_method_lines(
-                        paired_payment_type
-                    )[:1].id,
+                    "payment_method_line_id": (
+                        destination_line
+                        or payment.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1]
+                    ).id,
                     "move_id": None,
                     "memo": payment.memo,
                     "paired_internal_transfer_payment_id": payment.id,
                     "date": payment.date,
                 }
             )
-            # The payment method line ID in 'paired_payment' needs to be computed manually,
-            # as it does not compute automatically.
-            # This ensures not to use the same payment method line ID of the original transfer payment.
-            paired_payment._compute_payment_method_line_id()
+            if not destination_line:
+                # The payment method line ID in 'paired_payment' needs to be computed manually,
+                # as it does not compute automatically.
+                # This ensures not to use the same payment method line ID of the original transfer payment.
+                paired_payment._compute_payment_method_line_id()
             if (
                 not payment.payment_method_line_id.payment_account_id
                 or not paired_payment.payment_method_line_id.payment_account_id
@@ -123,7 +168,7 @@ class AccountPayment(models.Model):
                     _("The origin or destination payment methods do not have an outstanding account.")
                 )
 
-            if self.env.context.get("default_payment_method_line_id"):
+            if not destination_line and self.env.context.get("default_payment_method_line_id"):
                 paired_payment.payment_method_line_id = self.env.context.get("default_payment_method_line_id")
             paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry()
             paired_payment.move_id._post(soft=False)
