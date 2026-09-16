@@ -25,6 +25,22 @@ class AccountPayment(models.Model):
         domain="destination_journal_domain",
         check_company=False,
     )
+    destination_payment_method_line_id = fields.Many2one(
+        comodel_name="account.payment.method.line",
+        string="Destination Journal Payment Method",
+        compute="_compute_destination_payment_method_line_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        # the destination journal may belong to another branch
+        check_company=False,
+        help="Payment method line used on the paired payment created in the destination journal. "
+        "It determines the outstanding account of that payment.",
+    )
+    available_destination_payment_method_line_ids = fields.Many2many(
+        comodel_name="account.payment.method.line",
+        compute="_compute_available_destination_payment_method_line_ids",
+    )
     main_company_id = fields.Many2one(
         "res.company",
         compute="_compute_main_company",
@@ -63,6 +79,43 @@ class AccountPayment(models.Model):
     def _compute_main_company(self):
         for rec in self:
             rec.main_company_id = rec.company_id.parent_id or rec.company_id
+
+    def _get_paired_payment_type(self):
+        """Payment type of the paired payment created in the destination journal."""
+        self.ensure_one()
+        return "inbound" if self.payment_type == "outbound" else "outbound"
+
+    @api.depends("destination_journal_id", "payment_type", "is_internal_transfer")
+    def _compute_available_destination_payment_method_line_ids(self):
+        for pay in self:
+            journal = pay.destination_journal_id
+            if pay.is_internal_transfer and journal:
+                pay.available_destination_payment_method_line_ids = journal._get_available_payment_method_lines(
+                    pay._get_paired_payment_type()
+                )
+            else:
+                pay.available_destination_payment_method_line_ids = False
+
+    @api.depends("available_destination_payment_method_line_ids")
+    def _compute_destination_payment_method_line_id(self):
+        for pay in self:
+            available_lines = pay.available_destination_payment_method_line_ids
+            # an explicit choice is kept as long as it is still available on the destination journal
+            if pay.destination_payment_method_line_id in available_lines:
+                continue
+            pay.destination_payment_method_line_id = available_lines[:1]
+
+    @api.constrains("destination_payment_method_line_id", "destination_journal_id")
+    def _check_destination_payment_method_line_id(self):
+        for pay in self.filtered("destination_payment_method_line_id"):
+            if pay.destination_payment_method_line_id not in pay.available_destination_payment_method_line_ids:
+                raise ValidationError(
+                    _(
+                        "The destination payment method %(method)s is not available on the destination journal %(journal)s.",
+                        method=pay.destination_payment_method_line_id.display_name,
+                        journal=pay.destination_journal_id.display_name,
+                    )
+                )
 
     # TO DO: Check in v19+ if odoo delete the paired_internal_transfer_payment_id field, restore the field in this module
     # paired_internal_transfer_payment_id = fields.Many2one('account.payment',
@@ -125,7 +178,8 @@ class AccountPayment(models.Model):
         Hookable: account_payment_pro lo extiende para convertir el amount entre monedas.
         """
         self.ensure_one()
-        paired_payment_type = "inbound" if self.payment_type == "outbound" else "outbound"
+        paired_payment_type = self._get_paired_payment_type()
+        destination_line = self.destination_payment_method_line_id
         return {
             "journal_id": self.destination_journal_id.id,
             "currency_id": (self.destination_journal_id.currency_id or self.company_currency_id).id,
@@ -133,9 +187,10 @@ class AccountPayment(models.Model):
             "destination_company_id": self.company_id.id,
             "destination_journal_id": self.journal_id.id,
             "payment_type": paired_payment_type,
-            "payment_method_line_id": self.destination_journal_id._get_available_payment_method_lines(
-                paired_payment_type
-            )[:1].id,
+            "payment_method_line_id": (
+                destination_line
+                or self.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1]
+            ).id,
             "move_id": None,
             "memo": self.memo,
             "paired_internal_transfer_payment_id": self.id,
@@ -154,11 +209,14 @@ class AccountPayment(models.Model):
                 )
             )
         for payment in self:
+            # the line chosen by the user wins over the journal default and over the context hook
             paired_payment = payment.copy(payment._prepare_paired_payment_values())
-            # The payment method line ID in 'paired_payment' needs to be computed manually,
-            # as it does not compute automatically.
-            # This ensures not to use the same payment method line ID of the original transfer payment.
-            paired_payment._compute_payment_method_line_id()
+            destination_line = payment.destination_payment_method_line_id
+            if not destination_line:
+                # The payment method line ID in 'paired_payment' needs to be computed manually,
+                # as it does not compute automatically.
+                # This ensures not to use the same payment method line ID of the original transfer payment.
+                paired_payment._compute_payment_method_line_id()
 
             if (
                 not payment.payment_method_line_id.payment_account_id
@@ -167,7 +225,7 @@ class AccountPayment(models.Model):
                 raise ValidationError(
                     _("The origin or destination payment methods do not have an outstanding account.")
                 )
-            if self.env.context.get("default_payment_method_line_id"):
+            if not destination_line and self.env.context.get("default_payment_method_line_id"):
                 paired_payment.payment_method_line_id = self.env.context.get("default_payment_method_line_id")
             paired_payment.filtered(lambda p: not p.move_id)._generate_journal_entry(
                 # Force the exact ARS balance from the original transfer line to avoid
