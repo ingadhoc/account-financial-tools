@@ -61,6 +61,13 @@
                        invisible="not is_internal_transfer"
                        readonly="state != 'draft'"
                        required="is_internal_transfer and state == 'draft'"/>
+                <field name="available_destination_payment_method_line_ids" invisible="1"/>
+                <field name="destination_payment_method_line_id"
+                       domain="[('id', 'in', available_destination_payment_method_line_ids)]"
+                       options="{'no_create': True, 'no_open': True}"
+                       invisible="not is_internal_transfer"
+                       readonly="state != 'draft'"
+                       required="is_internal_transfer and state == 'draft'"/>
             </xpath>
         </field>
     </record>
