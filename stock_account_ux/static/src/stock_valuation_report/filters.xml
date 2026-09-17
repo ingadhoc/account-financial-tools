@@ -56,9 +56,9 @@
                 </Dropdown>
             </div>
 
-            <!-- Tipo de movimiento (solo afecta la sección de Variación) -->
+            <!-- Movement type (only affects the Variation section) -->
             <div id="filter_line_types" class="d-print-none"
-                 title="Solo afecta la sección Variación del inventario; muestra los movimientos sin contabilizar por origen.">
+                 title="Only affects the Stock Variation section; shows unaccounted moves by origin.">
                 <Dropdown>
                     <button class="btn btn-secondary">
                         <i class="fa fa-filter me-1"/>Movement Type
