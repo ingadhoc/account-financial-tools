@@ -58,10 +58,10 @@
         <field name="view_id" ref="product_value_view_list"/>
         <field name="search_view_id" ref="product_value_view_search"/>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">No hay ajustes de valor</p>
+            <p class="o_view_nocontent_smiling_face">No value adjustments yet</p>
             <p>
-                Acá se registran los cambios de costo de la ficha del producto y
-                los ajustes manuales del valor de un movimiento.
+                This is where product cost changes and manual value
+                adjustments of a move are recorded.
             </p>
         </field>
     </record>
