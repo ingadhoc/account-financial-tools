@@ -76,12 +76,24 @@ Two consequences worth knowing:
 Each item is compared against the currency of its own company, so the filter stays exact
 when the report spans several companies with different currencies.
 
-**Companies reconciling on their own currency are left out of the filter**, and keep the
-behaviour they had before it existed: their items always come through and the checks only
-pick columns. Those companies book the exchange difference of a foreign document as a
-separate debit note in the company currency, so filtering would leave that note in without
-the document it adjusts and the balance would come out wrong. The setting lives in
-``account_ux``; without that module installed nothing is left out.
+**Companies reconciling on their own currency are left out of the company currency
+filter**, and keep the behaviour they had before it existed: every item comes through and
+the check only picks columns. Those companies book the exchange difference of a foreign
+document as a separate debit note in the company currency, so filtering would leave that
+note in without the document it adjusts and the balance would come out wrong. The
+secondary currency view is not exempt: it always excludes company currency items, which
+would otherwise be added into a total meant to be in one foreign currency. The setting
+lives in ``account_ux``; without that module installed nothing is left out.
+
+When the report is printed from a date, the secondary currency balance column normally
+starts off the initial balance, so it states the debt in foreign currency as of each row
+instead of only the movement of the requested period. **For a company reconciling on its
+own currency that carry over is dropped**: there a foreign document is cancelled with a
+payment in the company currency, which carries no amount in the foreign one, so the
+accumulated figure would only add documents and never subtract what was collected —
+growing month after month on an account that is already settled. Those reports state the
+movement of the period, and the initial row states what it starts from in the balance
+column, leaving the amount one empty: that row stands for no document.
 
 When a partner carries debt in more than one foreign currency, the secondary currency
 columns add those amounts together, since the report has a single column pair for them.
