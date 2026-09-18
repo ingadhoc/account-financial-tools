@@ -133,6 +133,23 @@ class DebtReportCommon(TransactionCase):
         """Names of the moves that made it into the report for the given flags."""
         return [line["name"] for line in self._report_lines(**currency_flags)]
 
+    def _reconcile_on_company_currency(self):
+        """Enable the setting, which account_ux only allows on Argentinian companies.
+
+        Those in turn require global rounding, so both go in the same write to avoid an
+        invalid intermediate state. Tests using it run post_install, since the setting
+        belongs to account_ux, which this module does not depend on.
+        """
+        if "reconcile_on_company_currency" not in self.env["res.company"]._fields:
+            self.skipTest("reconcile_on_company_currency needs account_ux installed")
+        self.company.write(
+            {
+                "country_id": self.env.ref("base.ar").id,
+                "tax_calculation_rounding_method": "round_globally",
+            }
+        )
+        self.company.reconcile_on_company_currency = True
+
 
 class TestDebtReportCurrencyMode(DebtReportCommon):
     """The currency checks of the wizard filter which items get into the report.
@@ -246,22 +263,6 @@ class TestDebtReportUnfilteredCompanies(DebtReportCommon):
         cls.local_move = cls._create_debt_move(100.0)
         cls.foreign_move = cls._create_debt_move(50.0, amount_currency=100.0, currency=cls.foreign_currency)
 
-    def _reconcile_on_company_currency(self):
-        """Enable the setting, which account_ux only allows on Argentinian companies.
-
-        Those in turn require global rounding, so both go in the same write to avoid an
-        invalid intermediate state.
-        """
-        if "reconcile_on_company_currency" not in self.env["res.company"]._fields:
-            self.skipTest("reconcile_on_company_currency needs account_ux installed")
-        self.company.write(
-            {
-                "country_id": self.env.ref("base.ar").id,
-                "tax_calculation_rounding_method": "round_globally",
-            }
-        )
-        self.company.reconcile_on_company_currency = True
-
     def test_reconciling_on_company_currency_skips_the_company_currency_filter(self):
         self._reconcile_on_company_currency()
 
@@ -342,6 +343,54 @@ class TestDebtReportInitialBalance(DebtReportCommon):
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
         self.assertEqual(line["amount_currency_raw"], 120.0)
         self.assertFalse(line["amount_currency"].startswith(self.foreign_currency.display_name))
+
+
+@tagged("post_install", "-at_install")
+class TestDebtReportInitialCurrencyCarryOver(DebtReportCommon):
+    """Whether the currency balance column carries the initial balance over.
+
+    It does, so the column states the debt in foreign currency as of each row. For a
+    company reconciling on its own currency it does not: there a foreign document is
+    cancelled with a payment in the company currency, which carries no amount in the
+    foreign one, so the accumulated figure would only ever add documents and never
+    subtract what was collected -growing without bound on a settled account-.
+
+    Reported on Adhoc helpdesk ticket 127365, where a supplier owing nothing showed a
+    balance of -174.649,26 USD growing month after month.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # before the report window, and its 100 foreign is what may be carried over
+        cls._create_debt_move(50.0, amount_currency=100.0, currency=cls.foreign_currency, date="2024-01-10")
+        # inside the window: the first row the column is stated on
+        cls._create_debt_move(20.0, amount_currency=40.0, currency=cls.foreign_currency, date="2024-06-15")
+
+    def _initial_and_first_row(self):
+        lines = self._report_lines(from_date="2024-06-01", company_currency=True, secondary_currency=True)
+        foreign_rows = [line for line in lines if line["amount_currency_raw"] == 40.0]
+        self.assertEqual(len(foreign_rows), 1)
+        return lines[0], foreign_rows[0]
+
+    def test_carry_over_follows_the_setting(self):
+        self.assertTrue(self.partner._carries_initial_debt_report_currency_balance(self.company))
+        self._reconcile_on_company_currency()
+        self.assertFalse(self.partner._carries_initial_debt_report_currency_balance(self.company))
+
+    def test_reconciling_on_company_currency_states_the_movement_of_the_period(self):
+        self._reconcile_on_company_currency()
+        initial_line, first_row = self._initial_and_first_row()
+        # the amount is still stated: it is what the period starts from
+        self.assertEqual(initial_line["amount_currency_raw"], 100.0)
+        # ... but the balance column starts empty and counts the period alone
+        self.assertFalse(initial_line["balance_currency_raw"])
+        self.assertEqual(first_row["balance_currency_raw"], 40.0)
+
+    def test_the_balance_is_carried_over_without_the_setting(self):
+        initial_line, first_row = self._initial_and_first_row()
+        self.assertEqual(initial_line["balance_currency_raw"], 100.0)
+        self.assertEqual(first_row["balance_currency_raw"], 140.0)
 
 
 class TestDebtReportExchangeDifference(DebtReportCommon):
