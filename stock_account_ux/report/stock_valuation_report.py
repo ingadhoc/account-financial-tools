@@ -229,21 +229,37 @@ class StockValuationReport(models.AbstractModel):
 
     # -- Drill-down ------------------------------------------------------------
     @api.model
-    def action_open_account_ledger(self, account_id, date=False):
+    def action_open_account_ledger(self, account_id, date=False, filters=None):
         """Initial Balance to the General Ledger of that account, up to the report date.
 
         The General Ledger lives in ``account_reports`` (enterprise). The module does
         not declare it in ``depends``, so it is resolved at runtime and falls back to
         the journal items list when it is not installed.
+
+        With a product filter on, it opens the journal items of the filtered products
+        instead, the ones that add up to the line: the General Ledger cannot be filtered
+        by product.
         """
         account = self.env["account.account"].browse(int(account_id)).exists()
         if not account:
             raise UserError(self.env._("The account no longer exists."))
-        general_ledger = self.env.ref("account_reports.action_account_report_general_ledger", raise_if_not_found=False)
-        if general_ledger:
-            return self._get_account_ledger_action(account, date)
-        # Fallback: journal items filtered by account and date.
+        filters = filters or {}
+        product_filters = [filters.get(key) for key in ("product_ids", "categ_ids", "cost_methods", "valuations")]
+        products = None
+        if any(product_filters):
+            products = self._get_filtered_valued_products(
+                self.env.company, self._normalize_report_date(date), *product_filters
+            )
+        else:
+            general_ledger = self.env.ref(
+                "account_reports.action_account_report_general_ledger", raise_if_not_found=False
+            )
+            if general_ledger:
+                return self._get_account_ledger_action(account, date)
+        # Journal items filtered by account and date (and by product, when filtered).
         domain = [("account_id", "=", account.id), ("parent_state", "=", "posted")]
+        if products is not None:
+            domain.append(("product_id", "in", products.ids))
         if date:
             domain.append(("date", "<=", date))
         return {
@@ -432,9 +448,10 @@ class StockValuationReport(models.AbstractModel):
     def _get_report_accounting_data(self, company, accounts_by_product, products, at_date, product_scope):
         """Booked value per valuation account: the Initial Balance the report starts from.
 
-        With a product filter on, only what is attributable to THOSE products: several
+        With a product filter on, only the journal items of THOSE products: several
         products share a valuation account, so the whole account balance would drag in
-        the value already booked for the other ones (task 64440).
+        the value already booked for the other ones (task 64440). The portion with no
+        product is left out, not estimated.
 
         Without it, the standard's account balance, portion with no product included: the
         Movement Type filter scopes no product, and dropping the no-product balance there
@@ -507,7 +524,12 @@ class StockValuationReport(models.AbstractModel):
     def _get_filtered_valued_products(self, company, date, product_ids, categ_ids, cost_methods, valuations):
         """The standard ``valued_products`` search plus the product/category domain, and
         the costing method / valuation type filtered in Python (compute fields with no
-        usable ``search``)."""
+        usable ``search``).
+
+        With any of those filters on, the products with a booked balance on their
+        valuation account are added (``_get_booked_products``), even with no stock at the
+        date or archived: the filtered Initial Balance has to bring their journal items.
+        """
         # sudo and valuation context as in the standard: ``qty_available`` expands kit
         # BoMs that an accounting user cannot read.
         valued_product_context = self.env["product.product"].sudo().with_company(company)._with_valuation_context()
@@ -520,6 +542,10 @@ class StockValuationReport(models.AbstractModel):
         ) & (Domain([("qty_available", "!=", 0)]) | Domain([("lot_valuated", "=", True)]))
         domain &= self._get_valuation_report_extra_domain(product_ids, categ_ids)
         valued_products = valued_product_context.search(domain)
+        if any([product_ids, categ_ids, cost_methods, valuations]):
+            valued_products |= self._get_booked_products(company, date, product_ids, categ_ids).with_env(
+                valued_products.env
+            )
 
         # ``cost_method`` is a compute with no search, and ``valuation.search`` only
         # takes ``=`` with a single value, hence the filtering in Python. Reading the
@@ -530,6 +556,43 @@ class StockValuationReport(models.AbstractModel):
         if valuations:
             valued_products = valued_products.filtered(lambda p: p.valuation in valuations)
         return valued_products
+
+    def _get_booked_products(self, company, date, product_ids, categ_ids):
+        """Storable products matching the Product / Category filters, archived ones
+        included, with a posted balance on their own valuation account up to the date.
+
+        Non-storable products are left out on purpose: their journal items on a
+        valuation account belong to no product line of the report, like the ones with
+        no product.
+        """
+        products = (
+            self.env["product.product"]
+            .sudo()
+            .with_company(company)
+            .with_context(active_test=False)
+            .search(
+                Domain([("is_storable", "=", True)]) & self._get_valuation_report_extra_domain(product_ids, categ_ids)
+            )
+        )
+        if not products:
+            return products
+        domain = Domain(
+            [
+                ("product_id", "in", products.ids),
+                ("company_id", "=", company.id),
+                ("parent_state", "=", "posted"),
+            ]
+        )
+        if date:
+            domain &= Domain([("date", "<=", date)])
+        groups = self.env["account.move.line"].sudo()._read_group(domain, ["account_id", "product_id"], ["balance:sum"])
+        booked = products.browse()
+        for account, product, balance in groups:
+            if company.currency_id.is_zero(balance) or product in booked:
+                continue
+            if product.with_company(company)._get_product_accounts()["stock_valuation"] == account:
+                booked |= product
+        return booked
 
     def _get_valuation_report_extra_domain(self, product_ids, categ_ids):
         """Extra ``product.product`` domain for the Product and Category filters, the
