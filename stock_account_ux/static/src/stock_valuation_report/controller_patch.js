@@ -97,10 +97,19 @@ patch(StockValuationReportController.prototype, {
 
     // -- Drill-down del Balance inicial (Mejora 2, AC2) -----------------------
     async _openAccountLedger(accountId) {
+        const state = this._valuationFilterState();
         const action = await this.orm.call(
             "stock_account.stock.valuation.report",
             "action_open_account_ledger",
-            [accountId, this.state.date.toISODate() || false]
+            [accountId, this.state.date.toISODate() || false],
+            {
+                filters: {
+                    product_ids: state.productIds,
+                    categ_ids: state.categIds,
+                    cost_methods: state.costMethods,
+                    valuations: state.valuations,
+                },
+            }
         );
         return this.actionService.doAction(action);
     },
