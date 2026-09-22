@@ -107,26 +107,19 @@ Known limitations (by design)
   comes from records that carry a product— because that entry only books a portion:
   splitting the whole pending difference there would over-attribute it.
 
-  **The balance booked with no product is shared out, not dropped.** On a database
-  closed before this version —or where an accountant posted on the valuation account
-  by hand— part of the balance carries no ``product_id``. Leaving it out made the
-  filtered report disagree with the unfiltered one: product by product it reported
-  more left to book than there actually was, by exactly that portion, and closing
-  each product in turn booked it twice. That portion is now shared out over the
-  products of the account in proportion to each one's **pending gap** (its inventory
-  value minus what is already booked for it, the same figure the closing books). It
-  is an estimate —the journal item records no product, so there is nothing exact to
-  recover— with the property that matters: the shares of any split of the account's
-  products add up to 1, so filtering by every product equals not filtering.
+  **Filtered, the Initial Balance is exactly the journal items of the filter.** It
+  brings the journal items whose product is set, storable and matching the filter
+  —including products with no stock at the date and archived ones— and nothing
+  else, so it matches the journal items grouped by product and its drill-down opens
+  those very items. The balance no product can claim (journal items with no
+  ``product_id``, as an opening entry of a migrated database or an entry an
+  accountant posts by hand, and the ones of non-storable products) is not
+  estimated: it only shows up in the unfiltered report.
 
-  The weight is the pending gap rather than the plain inventory value on purpose: a
-  product already booked at its inventory value has no gap left and claims nothing,
-  which is what keeps a product-by-product closing from re-sharing the leftover over
-  the products already closed. When the account has no pending gap at all (everything
-  booked and the leftover is a balance to write off), the weight falls back to the
-  count of products, which preserves the same property. The full closing still nets
-  the portion out, so on a database whose closings all ran through this module there
-  is nothing to share and the computation is skipped entirely.
+  Because of that, **an entry filtered by product is refused** while the valuation
+  accounts involved carry such a balance: it would be booked again on top of the
+  entry it came from. It has to be fixed on the journal items first, or the entry
+  generated with no filter.
 * **Movement Type is a breakdown, and "Product Value" is the remainder.** The
   Stock Moves component adds up the ``value`` of the unaccounted moves, which is
   what the inventory is worth for the three costing methods — including standard
@@ -154,7 +147,9 @@ adds:
 * **Initial Balance** account lines now open the **General Ledger** of *that*
   account up to the report date. The General Ledger lives in ``account_reports``
   (enterprise) and is not a dependency, so it is resolved at runtime and falls
-  back to the journal items list filtered by account and date.
+  back to the journal items list filtered by account and date. With a product filter
+  active they open the journal items of the filtered products instead, the ones that
+  add up to the line.
 * A **list view, search view and menu for ``product.value``** (Inventory >
   Reporting > Value Adjustments): date, product, lot, move, previous value, new
   value, delta, journal entry and description, with "Booked / Not Booked" and
