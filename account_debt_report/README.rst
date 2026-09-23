@@ -85,15 +85,19 @@ secondary currency view is not exempt: it always excludes company currency items
 would otherwise be added into a total meant to be in one foreign currency. The setting
 lives in ``account_ux``; without that module installed nothing is left out.
 
-When the report is printed from a date, the secondary currency balance column normally
-starts off the initial balance, so it states the debt in foreign currency as of each row
-instead of only the movement of the requested period. **For a company reconciling on its
-own currency that carry over is dropped**: there a foreign document is cancelled with a
-payment in the company currency, which carries no amount in the foreign one, so the
-accumulated figure would only add documents and never subtract what was collected —
-growing month after month on an account that is already settled. Those reports state the
-movement of the period, and the initial row states what it starts from in the balance
-column, leaving the amount one empty: that row stands for no document.
+When the report is printed from a date, the secondary currency balance column starts off
+the initial balance, so it states the debt in foreign currency as of each row instead of
+only the movement of the requested period. **The initial row states what the period
+starts from in the balance column alone, and its amount column is left empty**: that row
+stands for no document, so the figure belongs to the running balance and stating it
+twice read as an amount of its own.
+
+Reading that column on a company reconciling on its own currency asks for care: there a
+foreign document is cancelled with a payment in the company currency, which carries no
+amount in the foreign one, so the accumulated figure only adds documents and never
+subtracts what was collected. It states what was issued in that currency, not what is
+owed — for the debt itself, print the report without the full history, which states the
+residual of each open document.
 
 When a partner carries debt in more than one foreign currency, the secondary currency
 columns add those amounts together, since the report has a single column pair for them.

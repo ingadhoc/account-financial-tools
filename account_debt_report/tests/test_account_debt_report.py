@@ -311,17 +311,22 @@ class TestDebtReportInitialBalance(DebtReportCommon):
     def test_initial_balance_both_currencies(self):
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
         self.assertEqual(line["balance_raw"], 150.0)
-        self.assertEqual(line["amount_currency_raw"], 100.0)
+        self.assertEqual(line["balance_currency_raw"], 100.0)
 
     def test_initial_balance_only_company_currency(self):
         line = self._initial_balance_line(company_currency=True, secondary_currency=False)
         self.assertEqual(line["balance_raw"], 100.0)
-        self.assertEqual(line["amount_currency_raw"], 0.0)
+        self.assertEqual(line["balance_currency_raw"], 0.0)
 
     def test_initial_balance_only_secondary_currency(self):
         line = self._initial_balance_line(company_currency=False, secondary_currency=True)
         self.assertEqual(line["balance_raw"], 50.0)
-        self.assertEqual(line["amount_currency_raw"], 100.0)
+        self.assertEqual(line["balance_currency_raw"], 100.0)
+
+    def test_initial_balance_states_no_amount_in_currency(self):
+        """The row stands for no document, so the period starts from a balance alone."""
+        line = self._initial_balance_line(company_currency=True, secondary_currency=True)
+        self.assertFalse(line["amount_currency_raw"])
 
     def test_balance_in_currency_continues_from_the_initial_one(self):
         """The currency balance column has to carry over what happened before from_date."""
@@ -333,7 +338,7 @@ class TestDebtReportInitialBalance(DebtReportCommon):
 
     def test_initial_balance_in_currency_carries_its_label(self):
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
-        self.assertTrue(line["amount_currency"].startswith(self.foreign_currency.display_name))
+        self.assertTrue(line["balance_currency"].startswith(self.foreign_currency.display_name))
 
     def test_initial_balance_mixing_currencies_carries_no_label(self):
         """A sum of several foreign currencies cannot be attributed to any single one."""
@@ -341,28 +346,29 @@ class TestDebtReportInitialBalance(DebtReportCommon):
         third_currency.active = True
         self._create_debt_move(10.0, amount_currency=20.0, currency=third_currency, date="2024-01-10")
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
-        self.assertEqual(line["amount_currency_raw"], 120.0)
-        self.assertFalse(line["amount_currency"].startswith(self.foreign_currency.display_name))
+        self.assertEqual(line["balance_currency_raw"], 120.0)
+        self.assertFalse(line["balance_currency"].startswith(self.foreign_currency.display_name))
 
 
 @tagged("post_install", "-at_install")
 class TestDebtReportInitialCurrencyCarryOver(DebtReportCommon):
-    """Whether the currency balance column carries the initial balance over.
+    """The currency balance column carries the initial balance over for every company.
 
-    It does, so the column states the debt in foreign currency as of each row. For a
-    company reconciling on its own currency it does not: there a foreign document is
-    cancelled with a payment in the company currency, which carries no amount in the
-    foreign one, so the accumulated figure would only ever add documents and never
-    subtract what was collected -growing without bound on a settled account-.
+    So the column states the debt in foreign currency as of each row instead of only
+    the movement of the requested period, and the initial row states what it starts
+    from in the balance column alone, leaving the amount one empty: that row stands for
+    no document. A company reconciling on its own currency is no exception, even though
+    there a foreign document is cancelled with a payment in the company currency, which
+    carries no amount in the foreign one -so the figure only ever adds documents-.
 
-    Reported on Adhoc helpdesk ticket 127365, where a supplier owing nothing showed a
-    balance of -174.649,26 USD growing month after month.
+    Reported on Adhoc helpdesk ticket 127365, where the initial row of a supplier stated
+    that carried over amount twice, once in each column.
     """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # before the report window, and its 100 foreign is what may be carried over
+        # before the report window, and its 100 foreign is what is carried over
         cls._create_debt_move(50.0, amount_currency=100.0, currency=cls.foreign_currency, date="2024-01-10")
         # inside the window: the first row the column is stated on
         cls._create_debt_move(20.0, amount_currency=40.0, currency=cls.foreign_currency, date="2024-06-15")
@@ -373,26 +379,18 @@ class TestDebtReportInitialCurrencyCarryOver(DebtReportCommon):
         self.assertEqual(len(foreign_rows), 1)
         return lines[0], foreign_rows[0]
 
-    def test_carry_over_follows_the_setting(self):
-        self.assertTrue(self.partner._carries_initial_debt_report_currency_balance(self.company))
-        self._reconcile_on_company_currency()
-        self.assertFalse(self.partner._carries_initial_debt_report_currency_balance(self.company))
-
-    def test_reconciling_on_company_currency_states_the_movement_of_the_period(self):
-        self._reconcile_on_company_currency()
+    def _assert_initial_row_seeds_the_column(self):
         initial_line, first_row = self._initial_and_first_row()
-        # the row stands for no document, so what the period starts from is stated as
-        # a balance and the amount column is left empty
         self.assertFalse(initial_line["amount_currency_raw"])
         self.assertEqual(initial_line["balance_currency_raw"], 100.0)
-        # ... and the column counts the period alone from there on
-        self.assertEqual(first_row["balance_currency_raw"], 40.0)
-
-    def test_the_balance_is_carried_over_without_the_setting(self):
-        initial_line, first_row = self._initial_and_first_row()
-        self.assertEqual(initial_line["amount_currency_raw"], 100.0)
-        self.assertEqual(initial_line["balance_currency_raw"], 100.0)
         self.assertEqual(first_row["balance_currency_raw"], 140.0)
+
+    def test_the_balance_is_carried_over(self):
+        self._assert_initial_row_seeds_the_column()
+
+    def test_the_balance_is_carried_over_reconciling_on_company_currency(self):
+        self._reconcile_on_company_currency()
+        self._assert_initial_row_seeds_the_column()
 
 
 class TestDebtReportExchangeDifference(DebtReportCommon):
