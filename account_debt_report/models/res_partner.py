@@ -90,16 +90,6 @@ class ResPartner(models.Model):
             return False
         return "company" if company_currency else "secondary"
 
-    def _get_debt_report_company_currency_reconcilers(self, companies):
-        """Companies cancelling foreign documents with company-currency payments.
-
-        The setting belongs to account_ux, which this module does not depend on, hence
-        checking that the field is there at all.
-        """
-        if "reconcile_on_company_currency" not in companies._fields:
-            return companies.browse()
-        return companies.filtered("reconcile_on_company_currency")
-
     def _get_debt_report_unfiltered_companies(self, companies):
         """Companies whose items are never narrowed down by currency.
 
@@ -107,25 +97,12 @@ class ResPartner(models.Model):
         foreign document as a separate debit note in the company currency. Filtering
         would leave that note in without the document it adjusts, and the balance would
         come out wrong, so those companies keep the behaviour they had before the filter
-        existed.
+        existed. The setting belongs to account_ux, which this module does not depend on,
+        hence checking that the field is there at all.
         """
-        return self._get_debt_report_company_currency_reconcilers(companies)
-
-    def _carries_initial_debt_report_currency_balance(self, companies):
-        """Whether the currency balance column starts off the initial balance.
-
-        It normally does, so that the column states the debt in foreign currency as of
-        each row rather than only the movement of the requested period. That reading
-        holds while payments discharge the same currency they were issued in.
-
-        A company reconciling on its own currency cancels a foreign document with a
-        payment in the company currency, which carries no amount in the foreign one. The
-        accumulated figure then only ever adds the documents and never subtracts what
-        was collected, so it grows without bound even once the partner owes nothing.
-        There the column is left to the movement of the period, as it was before the
-        carry over existed.
-        """
-        return not self._get_debt_report_company_currency_reconcilers(companies)
+        if "reconcile_on_company_currency" not in companies._fields:
+            return companies.browse()
+        return companies.filtered("reconcile_on_company_currency")
 
     def _get_debt_report_currency_domain(self, currency_mode, companies):
         """Domain restricting the items to the currency requested for the report.
@@ -244,17 +221,15 @@ class ResPartner(models.Model):
             if currency_mode != "company":
                 balance_in_currency, balance_in_currency_name = self._get_currency_balance(initial_domain, companies)
             # the running balance in currency has to start off the initial one too,
-            # otherwise its column ignores everything before from_date -unless carrying
-            # it over turns the column into a figure that only grows, see the helper-
-            carries_initial_currency = self._carries_initial_debt_report_currency_balance(companies)
-            balance_currency = balance_in_currency if carries_initial_currency else 0.0
+            # otherwise its column ignores everything before from_date
+            balance_currency = balance_in_currency
 
             initial_line = get_line_vals(
                 name=_("INITIAL BALANCE"),
                 balance=balance,
                 # the row stands for no document, so what the period starts from is
                 # stated as a balance and the amount column is left empty
-                amount_currency=balance_in_currency if carries_initial_currency else False,
+                amount_currency=False,
                 balance_currency=balance_in_currency,
             )
             initial_line["currency_name"] = balance_in_currency_name
