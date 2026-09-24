@@ -141,6 +141,12 @@ Several Improvements to accounting:
    * When all invoices being paid are of a second currency and the same currency, hide a column that doesn´t add value
    * Not yet improved, if you paid invoices of different currencies the report is not so good. This is not improved yet as it is not a common use case
 #. Add tracking to fiscal position field on invoices so changes are logged in the chatter
+#. Block the manual edition of the currency rounding factor (``res.currency.rounding``), which breaks the
+   accounting amounts already computed with the previous value. The block only applies on client production
+   databases and can be lifted with the system parameter ``account_ux.allow_currency_rounding_edit``, which the
+   module creates set to ``False`` so it is visible on the system parameters list. While the parameter is
+   disabled the field is shown read-only on the currency form, and the block is also enforced on write.
+   Creating currencies and the rounding coming from the modules data (install / update) are not affected.
 
 Installation
 ============
