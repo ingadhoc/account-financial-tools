@@ -58,9 +58,11 @@ class AccountPayment(models.Model):
     @api.depends("destination_company_id", "journal_id")
     def _compute_destination_journal_domain(self):
         for rec in self:
-            rec.destination_journal_domain = Domain(
-                rec.env["account.journal"]._check_company_domain(rec.destination_company_id)
-            ) & Domain([("type", "in", ("bank", "cash", "credit"))])
+            rec.destination_journal_domain = (
+                Domain(rec.env["account.journal"]._check_company_domain(rec.destination_company_id))
+                & Domain([("type", "in", ("bank", "cash", "credit"))])
+                & Domain([("active", "=", True)])
+            )
 
     @api.constrains("destination_company_id", "destination_journal_id")
     def _check_journal_company(self):
