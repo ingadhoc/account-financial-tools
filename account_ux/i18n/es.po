@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 16:08+0000\n"
+"POT-Creation-Date: 2026-09-29 13:52+0000\n"
 "PO-Revision-Date: 2026-04-13 22:41+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -136,6 +136,15 @@ msgstr "Monto Total"
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
 msgid "Amount untaxed"
 msgstr "Monto sin impuestos"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_currency_form
+msgid ""
+"Amounts in this currency are rounded off to the nearest multiple of the "
+"rounding factor. Changing it breaks the accounting amounts already computed "
+"with the previous value, so it can only be edited when the system parameter "
+"'account_ux.allow_currency_rounding_edit' is enabled."
+msgstr ""
 
 #. module: account_ux
 #. odoo-python
@@ -275,6 +284,11 @@ msgid "Credit Jouranl Entry"
 msgstr "Entrada en el Diario de Crédito"
 
 #. module: account_ux
+#: model:ir.model,name:account_ux.model_res_currency
+msgid "Currency"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_from_id
 msgid "Currency From"
 msgstr "Moneda Origen"
@@ -394,6 +408,7 @@ msgstr "Importe de Descuento"
 #: model:ir.model.fields,field_description:account_ux.field_mail_compose_message__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_company__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:account_ux.field_res_currency__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_partner__display_name
 #: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__display_name
@@ -487,6 +502,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_mail_compose_message__id
 #: model:ir.model.fields,field_description:account_ux.field_res_company__id
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__id
+#: model:ir.model.fields,field_description:account_ux.field_res_currency__id
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__id
 #: model:ir.model.fields,field_description:account_ux.field_res_partner__id
 #: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__id
@@ -724,6 +740,11 @@ msgid "Restrict Change Invoice Currency Exchange"
 msgstr "Restringir el Cambio de la Moneda de la Factura"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_res_currency__rounding_edit_allowed
+msgid "Rounding Edit Allowed"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_move_line__user_id
 msgid "Salesperson of contact related to this journal item"
 msgstr "Vendedor del contacto relacionado con este apunte contable"
@@ -800,6 +821,14 @@ msgstr "Impuesto"
 #: model:ir.model.fields,help:account_ux.field_account_invoice_report__total_cc
 msgid "Taxed Total in the company's currency where it is set"
 msgstr "Total con impuestos en la moneda de la compañía donde está configurada"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_res_currency__rounding_edit_allowed
+msgid ""
+"Technical: whether this database allows editing the rounding factor. Used to "
+"show the field read-only while the system parameter that enables it is "
+"disabled."
+msgstr ""
 
 #. module: account_ux
 #. odoo-python
@@ -1053,6 +1082,17 @@ msgstr ""
 "No puede crear una cotización sin compañía ya que ya tiene cotizaciones "
 "antes de %s con la compañía definida. La cotización que desee crear no "
 "tendrá ningún efecto, no se tendrá en cuenta."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/res_currency.py:0
+msgid ""
+"You cannot change the rounding factor of the currency %(currencies)s.\n"
+"\n"
+"Changing it breaks the accounting amounts already computed with the previous "
+"value. If you really need to change it, contact ADHOC so the system "
+"parameter '%(param)s' is enabled on this database."
+msgstr ""
 
 #. module: account_ux
 #. odoo-python
