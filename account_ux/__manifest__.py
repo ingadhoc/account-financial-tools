@@ -37,8 +37,13 @@
         "security/account_ux_security.xml",
         "security/ir.model.access.csv",
         "data/mail_template_data.xml",
+<<<<<<< d0836eabaeef71f013068eb304c5f3815923538e
         "data/ir_config_parameter_data.xml",
         "data/account_automatic_entry_actions.xml",
+||||||| a92ac0df5f9423d0b17161eb6b8689a97b120fca
+=======
+        "data/ir_config_parameter_data.xml",
+>>>>>>> eb5ef568e58d92102cb1286f5551c1cc389466c2
         "wizards/account_change_currency_views.xml",
         "wizards/res_config_settings_views.xml",
         "views/account_account_views.xml",

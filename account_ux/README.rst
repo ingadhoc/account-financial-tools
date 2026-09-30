@@ -140,6 +140,7 @@ Several Improvements to accounting:
    * Display table of debt being cancelled only if there is debt being cancelled
    * When all invoices being paid are of a second currency and the same currency, hide a column that doesn´t add value
    * Not yet improved, if you paid invoices of different currencies the report is not so good. This is not improved yet as it is not a common use case
+<<<<<<< d0836eabaeef71f013068eb304c5f3815923538e
 #. Add tracking to fiscal position field on invoices so changes are logged in the chatter
 #. Block the manual edition of the currency rounding factor (``res.currency.rounding``), which breaks the
    accounting amounts already computed with the previous value. The block can be lifted with the system
@@ -147,6 +148,15 @@ Several Improvements to accounting:
    module creates set to ``False`` so it is visible on the system parameters list. While the parameter is
    disabled the field is shown read-only on the currency form, and the block is also enforced on write.
    Creating currencies and the rounding coming from the modules data (install / update) are not affected.
+||||||| a92ac0df5f9423d0b17161eb6b8689a97b120fca
+=======
+#. Block the manual edition of the currency rounding factor (``res.currency.rounding``), which breaks the
+   accounting amounts already computed with the previous value. The block can be lifted with the system
+   parameter ``account_ux.allow_currency_rounding_edit``, which the
+   module creates set to ``False`` so it is visible on the system parameters list. While the parameter is
+   disabled the field is shown read-only on the currency form, and the block is also enforced on write.
+   Creating currencies and the rounding coming from the modules data (install / update) are not affected.
+>>>>>>> eb5ef568e58d92102cb1286f5551c1cc389466c2
 
 Installation
 ============
