@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class ProductValue(models.Model):
@@ -114,3 +115,44 @@ class ProductValue(models.Model):
         if vals.get("date"):
             domain.append(("date", "<=", vals["date"]))
         return self.sudo().search(domain, order="date desc, id desc", limit=1)
+
+    def _get_booking_value(self):
+        """Value this adjustment added to the inventory: what booking it on its own
+        posts.
+
+        A move adjustment stores the move's total value, so its ``delta`` already is that
+        value. A product or lot price change stores a UNIT price, so its ``delta`` is
+        applied to the quantity on hand when it was recorded, as the standard valuation
+        does (``product.product._run_average_batch``).
+        """
+        self.ensure_one()
+        if self.move_id:
+            return self.delta
+        if self.lot_id:
+            quantity = self.lot_id.with_context(to_date=self.date, skip_in_progress=True).product_qty
+        else:
+            product = self.product_id.with_company(self.company_id)._with_valuation_context()
+            quantity = product.with_context(to_date=self.date).qty_available
+        return self.currency_id.round(self.delta * quantity)
+
+    def _get_valuation_product(self):
+        self.ensure_one()
+        return self.product_id or self.move_id.product_id
+
+    def _get_valuation_labels(self):
+        """Labels to name adjustments in user messages: the model has no name field."""
+        return [f"{pv._get_valuation_product().display_name} ({fields.Date.to_string(pv.date.date())})" for pv in self]
+
+    def action_value_product_values(self):
+        """Open the manual valuation wizard to book the selected adjustments only."""
+        # The wizard books in the current company, with its journal and accounts.
+        if self.company_id != self.env.company:
+            raise UserError(self.env._("Select value adjustments of the current company only."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Book Value Adjustments"),
+            "res_model": "stock.move.valuation",
+            "view_mode": "form",
+            "target": "new",
+            "context": {**self.env.context, "default_product_value_ids": self.ids},
+        }

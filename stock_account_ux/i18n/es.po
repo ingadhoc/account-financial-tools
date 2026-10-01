@@ -20,6 +20,37 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
+"%(count)s adjustments were excluded because their move is not booked yet "
+"(valuing the move books its adjusted value): %(moves)s"
+msgstr ""
+"Se excluyeron %(count)s ajustes porque su movimiento todavía no está "
+"contabilizado (valorizar el movimiento contabiliza su valor ajustado): "
+"%(moves)s"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"%(count)s adjustments were excluded because they are already booked: "
+"%(adjustments)s"
+msgstr ""
+"Se excluyeron %(count)s ajustes porque ya están contabilizados: "
+"%(adjustments)s"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"%(count)s adjustments were excluded because they have no value to book: "
+"%(adjustments)s"
+msgstr ""
+"Se excluyeron %(count)s ajustes porque no tienen valor para contabilizar: "
+"%(adjustments)s"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
 "%(count)s moves were excluded because they already have a valuation entry "
 "(valuing them again would double the product's booked value): %(references)s"
 msgstr "%(count)s movimientos se excluyeron porque ya tienen un asiento de valuación (valuarlos de nuevo duplicaría el valor contabilizado del producto): %(references)s"
@@ -48,6 +79,13 @@ msgstr "Automático / Perpetuo"
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
 msgid "Average Cost (AVCO)"
 msgstr "Costo Promedio (AVCO)"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/product_value.py:0
+#: model:ir.actions.server,name:stock_account_ux.product_value_action_book
+msgid "Book Value Adjustments"
+msgstr "Contabilizar ajustes de valor"
 
 #. module: stock_account_ux
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
@@ -351,6 +389,12 @@ msgid "Revaluation Not Booked"
 msgstr "Revaluación No Contabilizada"
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/product_value.py:0
+msgid "Select value adjustments of the current company only."
+msgstr "Seleccione solo ajustes de valor de la compañía actual."
+
+#. module: stock_account_ux
 #. odoo-javascript
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
 msgid "Standard Price"
@@ -417,6 +461,16 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
+"The entry date cannot be earlier than the value adjustments it books: "
+"%(adjustments)s"
+msgstr ""
+"La fecha del asiento no puede ser anterior a los ajustes de valor que "
+"contabiliza: %(adjustments)s"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
 "The selected moves are already booked. Valuing them again would double the "
 "product's booked value."
 msgstr "Los movimientos seleccionados ya están contabilizados. Valuarlos de nuevo duplicaría el valor contabilizado del producto."
@@ -424,8 +478,14 @@ msgstr "Los movimientos seleccionados ya están contabilizados. Valuarlos de nue
 #. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
-msgid "The selected moves have no value to book."
-msgstr "Los movimientos seleccionados no tienen valor para contabilizar."
+msgid "The selected value adjustments have nothing to book."
+msgstr "Los ajustes de valor seleccionados no tienen nada para contabilizar."
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid "The selection has no value to book."
+msgstr "La selección no tiene valor para contabilizar."
 
 #. module: stock_account_ux
 #: model_terms:ir.actions.act_window,help:stock_account_ux.product_value_action_list
@@ -494,6 +554,7 @@ msgstr "Tipo de Valuación"
 #. module: stock_account_ux
 #: model:ir.actions.act_window,name:stock_account_ux.product_value_action_list
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__product_value_ids
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__product_value_ids
 #: model:ir.ui.menu,name:stock_account_ux.product_value_menu
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_list
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search

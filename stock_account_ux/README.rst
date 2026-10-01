@@ -196,6 +196,28 @@ The wizard:
 * **Moves that already have a valuation entry are left out** of the selection, to
   avoid duplicating the product's accounted value. The wizard says which ones and
   why; if none is left to value, it refuses to open.
+* A move's ``value`` already carries its value adjustments, so on post the
+  move's pending adjustments are linked to the entry too.
+
+Manual booking of selected value adjustments
+--------------------------------------------
+
+The **"Book Value Adjustments"** action on the Actions menu of **Inventory >
+Reporting > Value Adjustments** opens the same wizard to book **only the selected
+adjustments**, instead of every pending one as the closing filtered by Movement
+Type does.
+
+* Each adjustment books what it added to the inventory
+  (``product.value._get_booking_value``): a move adjustment, its ``delta`` (new
+  minus previous move value); a product or lot price change, its ``delta`` (a unit
+  price) times the quantity on hand at the adjustment's date.
+* The lines carry the product, so the booked amount is part of the filtered
+  Initial Balance and leaves the pending variation.
+* On post, the entry is linked to the selected adjustments only.
+* Left out, with a warning: adjustments already booked, adjustments with nothing
+  to book, and adjustments of a move not booked yet (valuing the move books its
+  adjusted value).
+* The entry date cannot be earlier than the adjustments it books.
 
 Revaluation entry traceability
 ------------------------------

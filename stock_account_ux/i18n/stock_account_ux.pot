@@ -6,14 +6,38 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 17:24+0000\n"
-"PO-Revision-Date: 2026-09-22 17:24+0000\n"
+"POT-Creation-Date: 2026-10-01 12:37+0000\n"
+"PO-Revision-Date: 2026-10-01 12:37+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"%(count)s adjustments were excluded because their move is not booked yet "
+"(valuing the move books its adjusted value): %(moves)s"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"%(count)s adjustments were excluded because they are already booked: "
+"%(adjustments)s"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"%(count)s adjustments were excluded because they have no value to book: "
+"%(adjustments)s"
+msgstr ""
 
 #. module: stock_account_ux
 #. odoo-python
@@ -46,6 +70,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
 msgid "Average Cost (AVCO)"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/product_value.py:0
+#: model:ir.actions.server,name:stock_account_ux.product_value_action_book
+msgid "Book Value Adjustments"
 msgstr ""
 
 #. module: stock_account_ux
@@ -350,6 +381,12 @@ msgid "Revaluation Not Booked"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/product_value.py:0
+msgid "Select value adjustments of the current company only."
+msgstr ""
+
+#. module: stock_account_ux
 #. odoo-javascript
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
 msgid "Standard Price"
@@ -412,6 +449,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
+"The entry date cannot be earlier than the value adjustments it books: "
+"%(adjustments)s"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
 "The selected moves are already booked. Valuing them again would double the "
 "product's booked value."
 msgstr ""
@@ -419,7 +464,13 @@ msgstr ""
 #. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
-msgid "The selected moves have no value to book."
+msgid "The selected value adjustments have nothing to book."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid "The selection has no value to book."
 msgstr ""
 
 #. module: stock_account_ux
@@ -489,6 +540,7 @@ msgstr ""
 #. module: stock_account_ux
 #: model:ir.actions.act_window,name:stock_account_ux.product_value_action_list
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__product_value_ids
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__product_value_ids
 #: model:ir.ui.menu,name:stock_account_ux.product_value_menu
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_list
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
