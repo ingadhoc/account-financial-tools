@@ -37,7 +37,7 @@
         "reports/account_invoice_report_views.xml",
     ],
     "demo": [],
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "application": False,
 }

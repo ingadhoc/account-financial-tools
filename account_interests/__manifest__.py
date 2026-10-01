@@ -37,6 +37,6 @@
     "demo": [
         "demo/res_company_interest_demo.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
 }

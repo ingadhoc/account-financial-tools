@@ -19,7 +19,7 @@
     "demo": [
         "demo/account_exchange_demo.xml",
     ],
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "application": False,
 }

@@ -59,7 +59,7 @@
         "wizards/account_automatic_entry_wizard_views.xml",
     ],
     "demo": [],
-    "installable": True,
+    "installable": False,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale

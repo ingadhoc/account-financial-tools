@@ -24,7 +24,7 @@
             "stock_account_ux/static/tests/**/*",
         ],
     },
-    "installable": True,
+    "installable": False,
     "auto_install": True,
     "application": False,
 }
