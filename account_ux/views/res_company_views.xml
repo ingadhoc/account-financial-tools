@@ -11,6 +11,11 @@
                      compañía suelta el valor es siempre ella misma. -->
                 <field name="legal_entity_root_id" readonly="1" invisible="not child_ids and not parent_id"/>
             </field>
+            <page name="general_info" position="inside">
+                <group name="accounting_options" string="Accounting" groups="base.group_no_one">
+                    <field name="reconcile_on_company_currency"/>
+                </group>
+            </page>
         </field>
     </record>
 

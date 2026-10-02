@@ -12,9 +12,11 @@ class ResCompany(models.Model):
     _inherit = "res.company"
 
     reconcile_on_company_currency = fields.Boolean(
-        help="When reconciling debt with secondary currency, if the account doesn't have a currency configured, then"
-        " reconcile on company currency. This will avoid all the automatic exchange rates journal entries by forcing "
-        " same rate of the original document being reconcile"
+        help="This option enables open documents in the payment report when reconciling debt with secondary currency, "
+        "if the account doesn't have a currency configured, then reconcile on company currency. This will avoid all the automatic "
+        "exchange rates journal entries by forcing same rate of the original document being reconcile. "
+        "IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, "
+        "it will be reconciled with the new mechanism"
     )
     legal_entity_root_id = fields.Many2one(
         "res.company",
@@ -206,6 +208,20 @@ class ResCompany(models.Model):
             for fname in self._get_legal_entity_delegated_field_names():
                 if self[fname] != self.parent_id[fname]:
                     self[fname] = self.parent_id[fname]
+
+    @api.onchange("reconcile_on_company_currency")
+    def _onchange_reconcile_on_company_currency(self):
+        if self._origin.reconcile_on_company_currency and not self.reconcile_on_company_currency:
+            return {
+                "warning": {
+                    "title": _("Warning for %s", self.name),
+                    "message": _(
+                        "You are deactivating 'Reconcile on company currency'. "
+                        "Future reconciliations will no longer use the company currency, "
+                        "which could reintroduce exchange rate differences."
+                    ),
+                }
+            }
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -8,7 +8,9 @@ from odoo import _, api, fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    reconcile_on_company_currency = fields.Boolean(related="company_id.reconcile_on_company_currency", readonly=False)
+    reconcile_on_company_currency = fields.Boolean(  # To be deleted in version 20
+        related="company_id.reconcile_on_company_currency", readonly=False
+    )
     sale_tax_id = fields.Many2one(
         "account.tax",
         string="Default Sale Tax",
@@ -27,7 +29,7 @@ class ResConfigSettings(models.TransientModel):
     )
 
     @api.onchange("reconcile_on_company_currency")
-    def _onchange_reconcile_on_company_currency(self):
+    def _onchange_reconcile_on_company_currency(self):  # To be deleted in version 20
         if (
             self.company_id._origin.reconcile_on_company_currency
             and self.company_id._origin.reconcile_on_company_currency != self.reconcile_on_company_currency
