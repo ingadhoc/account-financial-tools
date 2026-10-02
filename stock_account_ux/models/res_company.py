@@ -1,7 +1,9 @@
 from collections import defaultdict
 
 from odoo import fields, models
+from odoo.exceptions import UserError
 from odoo.fields import Domain
+from odoo.tools.misc import formatLang
 
 from ..report.stock_valuation_report import LINE_TYPE_PRODUCT_VALUE, LINE_TYPE_STOCK_MOVE
 
@@ -48,13 +50,11 @@ class ResCompany(models.Model):
           only the records it booked, so whatever stays open keeps showing up in the
           report's variation.
 
-        Caveat, same as the report: the portion of the account's booked balance that
-        carries NO product (closings posted before this module, the standard's location
-        reclassifications, entries an accountant posts by hand) cannot be claimed by a
-        product filter on its own, so a partial closing takes an ESTIMATED share of it —
-        its weight in the pending gap, see ``_get_unattributed_accounting_share``.
-        Closing every product of the account adds up to exactly the full closing, but
-        each partial closing on its own is an approximation of that portion.
+        Caveat, same as the report: the portion of the account's booked balance that no
+        product can claim (no product, or a non-storable one: opening entries, closings
+        posted before this module, entries an accountant posts by hand) is not part of
+        any filtered balance, so a partial closing would book it again. While it exists
+        the partial closing is refused (``_check_partial_closing_attribution``).
         """
         self.ensure_one()
         report = self.env["stock_account.stock.valuation.report"]
@@ -69,6 +69,7 @@ class ResCompany(models.Model):
             products = report._get_filtered_valued_products(
                 self, date, product_ids, categ_ids, cost_methods, valuations
             )
+            self._check_partial_closing_attribution(products, date)
             self = self.with_context(**{CLOSING_PRODUCT_CTX: products.ids})
         action = super().action_close_stock_valuation(at_date=at_date, auto_post=auto_post)
         closing_move = self.env["account.move"]
@@ -304,8 +305,10 @@ class ResCompany(models.Model):
         }
 
     def _get_attributable_accounting_value(self, accounts, products, at_date=None):
-        """Booked balance attributable to those products, per valuation account. It is
-        the Initial Balance while a product filter is active.
+        """Booked balance of those products, per valuation account: the journal items
+        carrying one of them, and nothing else. It is the Initial Balance while a product
+        filter is active, so the filtered report adds up to the journal items and can be
+        checked against them.
 
         Deliberately NOT an override of ``stock_accounting_value``: other modules
         reimplement that method without calling ``super()``
@@ -313,11 +316,10 @@ class ResCompany(models.Model):
         product filter was silently lost depending on which modules were installed.
         The report asks for this one explicitly instead of relying on the MRO.
 
-        The portion booked with ``product_id = False`` is shared out over the products
-        of the account (see ``_get_unattributed_accounting_share``) instead of being
-        dropped. Dropping it broke the report: filtering product by product reported
-        MORE left to book than the unfiltered report did, by exactly that portion, and
-        closing each product in turn would have booked it twice (task 64440).
+        The portion no product can claim (``_get_unattributed_accounting_value``) is left
+        out: estimating a share of it gave a figure the user could not trace back to the
+        journal items. It only shows up in the unfiltered report, and a closing filtered
+        by product is refused while it exists (``_check_partial_closing_attribution``).
         """
         self.ensure_one()
         account_data = defaultdict(float)
@@ -325,29 +327,18 @@ class ResCompany(models.Model):
         accounts_by_id = {account.id: account for account in accounts}
         for (account_id, _product_id), balance in by_product.items():
             account_data[accounts_by_id[account_id]] += balance
-        # Only reached while there IS an unattributed portion. On a base whose closings
-        # all ran through this module there is none, so this costs nothing.
-        unattributed = self._get_unattributed_accounting_value(accounts, at_date)
-        if unattributed:
-            products_by_account = self._get_valued_products_by_account(
-                self.env["account.account"].browse([account.id for account in unattributed])
-            )
-            for account, balance in unattributed.items():
-                share = self._get_unattributed_accounting_share(
-                    account, products_by_account.get(account), products, at_date
-                )
-                if share:
-                    account_data[account] += balance * share
         return account_data
 
     def _get_unattributed_accounting_value(self, accounts, at_date=None):
-        """Booked balance of each valuation account that carries NO product, i.e. the
-        portion no product filter can claim on its own.
+        """Booked balance of each valuation account that no product filter can claim: the
+        journal items with NO product, and the ones of non-storable products (they are
+        not part of the inventory the report values).
 
-        Where it comes from: closings posted before this module (the standard books the
-        variation aggregated per account, with ``product_id = False``), the location
-        reclassifications of the standard closing, the residual line of the per-product
-        split, and any entry an accountant posts by hand on the account.
+        Where it comes from: opening entries of a migrated base, closings posted before
+        this module (the standard books the variation aggregated per account, with
+        ``product_id = False``), the location reclassifications of the standard closing,
+        the residual line of the per-product split, and any entry an accountant posts by
+        hand on the account.
         """
         self.ensure_one()
         domain = Domain(
@@ -355,61 +346,54 @@ class ResCompany(models.Model):
                 ("account_id", "in", accounts.ids),
                 ("company_id", "=", self.id),
                 ("parent_state", "=", "posted"),
-                ("product_id", "=", False),
             ]
-        )
+        ) & (Domain([("product_id", "=", False)]) | Domain([("product_id.is_storable", "=", False)]))
         if at_date:
             domain &= Domain([("date", "<=", at_date)])
         return {
             account: balance
-            for account, balance in self.env["account.move.line"]._read_group(domain, ["account_id"], ["balance:sum"])
+            for account, balance in self.env["account.move.line"]
+            .with_context(active_test=False)
+            ._read_group(domain, ["account_id"], ["balance:sum"])
             if not self.currency_id.is_zero(balance)
         }
 
-    def _get_valued_products_by_account(self, accounts):
-        """Every valued product of the company hanging from each of those valuation
-        accounts. It is the universe the unattributed portion is shared out over, so it
-        cannot be the filtered set."""
-        self.ensure_one()
-        products_by_account = {}
-        for product, product_accounts in self._get_accounts_by_product().items():
-            account = product_accounts.get("valuation")
-            if not account or account not in accounts:
-                continue
-            products_by_account[account] = products_by_account.get(account, self.env["product.product"]) | product
-        return products_by_account
+    def _check_partial_closing_attribution(self, products, at_date=None):
+        """Refuse a closing filtered by product while the valuation accounts involved
+        carry a balance no product can claim.
 
-    def _get_unattributed_accounting_share(self, account, account_products, products, at_date=None):
-        """Share of the account's unattributed balance that the filtered products take.
-
-        Criterion: their weight in the account's PENDING GAP, each product's inventory
-        value minus what is already booked for it (``_get_pending_valuation_deltas``, the
-        very figure the closing books). It is an estimate —the journal item records no
-        product, so there is nothing exact to recover— but it is the rule that keeps the
-        report coherent, and the weight has to be the gap rather than the plain inventory
-        value: a product already booked at its inventory value has no gap left and must
-        claim nothing, otherwise closing the products one by one re-shares the leftover
-        over the ones already closed and books more than the full closing does.
-
-        Filtering by every product of the account adds up to 1, so the filtered report
-        matches the unfiltered one whatever the split.
-
-        When the account has no pending gap at all (everything booked, and the leftover is
-        a balance to be written off) the weight falls back to the count of products, which
-        preserves that same property.
+        The filtered closing books each product's inventory value minus its own journal
+        items, so that balance would stay on the account and be booked again on top of
+        the entry it came from. It has to be fixed on the journal items first (or the
+        entry generated with no filter).
         """
         self.ensure_one()
-        if not account or not account_products:
-            return 0.0
-        in_scope = account_products & products
-        if not in_scope:
-            return 0.0
-        deltas = self._get_pending_valuation_deltas({account: account_products}, at_date)
-        total = sum(deltas.get((account.id, product.id), 0.0) for product in account_products)
-        if self.currency_id.is_zero(total):
-            return len(in_scope) / len(account_products)
-        in_scope_gap = sum(deltas.get((account.id, product.id), 0.0) for product in in_scope)
-        return in_scope_gap / total
+        # An empty recordset would make ``_get_accounts_by_product`` fall back to every product.
+        if not products:
+            return
+        accounts = self.env["account.account"].browse(
+            {
+                accounts["valuation"].id
+                for accounts in self._get_accounts_by_product(products=products).values()
+                if accounts.get("valuation")
+            }
+        )
+        unattributed = self._get_unattributed_accounting_value(accounts, at_date) if accounts else {}
+        if not unattributed:
+            return
+        detail = "\n".join(
+            f"- {account.display_name}: {formatLang(self.env, balance, currency_obj=self.currency_id)}"
+            for account, balance in unattributed.items()
+        )
+        raise UserError(
+            self.env._(
+                "The entry cannot be generated with product filters: these valuation accounts "
+                "carry a balance with no product, or of non-storable products, that no filter "
+                "can attribute.\n%(detail)s\n\nAssign a storable product to those journal items, "
+                "or generate the entry without filters.",
+                detail=detail,
+            )
+        )
 
     def _get_periodic_closing_product_values(self, at_date=None):
         """Value adjustments the closing entry books: the ones with no entry yet, or
