@@ -13,7 +13,7 @@ registry.category("web_tour.tours").add("stock_account_ux_valuation_drilldown", 
         },
         {
             content: "La línea de cuenta de la Variación ofrece el menú de drill-down",
-            trigger: "tr.line_level_2 .o_valuation_line_drilldown button",
+            trigger: "tr.line_level_2:contains('Test Drilldown Stock Valuation') .o_valuation_line_drilldown button",
             run: "click",
         },
         {
@@ -57,7 +57,7 @@ registry.category("web_tour.tours").add("stock_account_ux_valuation_filters_kept
         },
         {
             content: "Ir al detalle de una cuenta de la Variación",
-            trigger: "tr.line_level_2 .o_valuation_line_drilldown button",
+            trigger: "tr.line_level_2:contains('Test Drilldown Stock Valuation') .o_valuation_line_drilldown button",
             run: "click",
         },
         {
