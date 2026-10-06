@@ -11,3 +11,4 @@ from . import test_valuation_filters_tour
 from . import test_valuation_drilldown_tour
 from . import test_revaluation_criterion
 from . import test_product_value_booking
+from . import test_related_entry_search
