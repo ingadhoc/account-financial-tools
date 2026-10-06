@@ -1,5 +1,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.fields import Domain
+from odoo.tools import SQL
 
 
 class StockMove(models.Model):
@@ -180,26 +182,17 @@ class StockMove(models.Model):
     def _search_related_account_move_id(self, operator, value):
         """The field is computed and not stored, as the related invoices are resolved on
         the fly, hence this search method to be able to filter by journal entry in the
-        moves reports.
+        moves reports and in the valuation report.
 
-        A move can only have a related entry if it has its own valuation entry
-        (``account_move_id``), a picking (``picking_id``, which the related invoices hang
-        from) or a booked value adjustment, so the candidates are narrowed down to that
-        subset before evaluating the computed field.
+        "Set / not set" is answered in SQL with ``_get_related_entry_domain``: computing
+        the field move by move loaded every move of the company and searched the purchase
+        orders of each one, which ran a big base out of memory (task 75652). A specific
+        entry narrows the candidates in SQL and only evaluates the field on those.
 
         Watch out: Odoo's domain engine normalises ``=`` / ``!=`` into ``in`` / ``not in``
         and ``False`` arrives as a collection (``[False]``), so operator and value are
         normalised before deciding.
         """
-        candidates = self.search(
-            [
-                "|",
-                "|",
-                ("account_move_id", "!=", False),
-                ("picking_id", "!=", False),
-                ("product_value_ids", "any", [("account_move_id", "!=", False)]),
-            ]
-        )
         # Normalise the value into a list: it can arrive as False, a scalar, a list or an
         # OrderedSet.
         if isinstance(value, str) or not hasattr(value, "__iter__"):
@@ -208,14 +201,56 @@ class StockMove(models.Model):
             values = list(value)
         # "Set / not set" filter: the value is only False or empty.
         if operator in ("=", "!=", "in", "not in") and all(not v for v in values):
-            with_entry = candidates.filtered("related_account_move_id")
+            with_entry = self._get_related_entry_domain(Domain.TRUE)
             # ``=`` / ``in`` against [False] means WITHOUT entry; ``!=`` / ``not in``, WITH.
-            want_without = operator in ("=", "in")
-            if want_without:
-                return [("id", "not in", with_entry.ids)]
-            return [("id", "in", with_entry.ids)]
+            return ~with_entry if operator in ("=", "in") else with_entry
         # Filter on a specific entry, by id or by entry name.
         field = "display_name" if any(isinstance(v, str) for v in values) else "id"
         moves = self.env["account.move"].search([(field, operator, value)])
+        candidates = self.search(self._get_related_entry_domain(Domain("id", "in", moves.ids)))
         matched = candidates.filtered(lambda m: m.related_account_move_id & moves)
         return [("id", "in", matched.ids)]
+
+    def _get_related_entry_domain(self, entry_domain):
+        """Moves whose ``related_account_move_id`` can be a posted entry matching
+        ``entry_domain`` (on ``account.move``). With ``Domain.TRUE`` it is exactly
+        ``related_account_move_id != False``.
+
+        Keep it aligned with ``_compute_related_account_move_id``. ``any!`` skips the
+        access rules, as the compute reads in ``sudo()``.
+        """
+        entry_domain = Domain(entry_domain) & Domain("state", "=", "posted")
+        domain = Domain("account_move_id", "any!", entry_domain) | Domain(
+            "product_value_ids", "any!", Domain("account_move_id", "any!", entry_domain)
+        )
+        invoice_domain = self._get_related_invoices_domain(entry_domain)
+        if not invoice_domain.is_false():
+            domain |= Domain("product_id", "any!", [("valuation", "=", "real_time")]) & invoice_domain
+        return domain
+
+    def _get_related_invoices_domain(self, invoice_domain):
+        """Moves whose ``_get_related_invoices`` returns an invoice matching
+        ``invoice_domain``: the overrides of ``sale_stock`` and ``purchase_stock`` as a
+        domain, for the ones installed. A module adding related invoices extends both
+        methods."""
+        domain = Domain.FALSE
+        if "sale_id" in self.env["stock.picking"]._fields:
+            sale_invoice_domain = Domain(invoice_domain) & Domain("move_type", "in", ("out_invoice", "out_refund"))
+            sale_line_domain = Domain("invoice_lines", "any!", Domain("move_id", "any!", sale_invoice_domain))
+            sale_domain = Domain("sale_id", "any!", Domain("order_line", "any!", sale_line_domain))
+            domain |= Domain("picking_id", "any!", sale_domain)
+        PurchaseOrder = self.env.get("purchase.order")
+        if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
+            # ``purchase.order.picking_ids`` is stored but has no inverse on the picking, so
+            # the pickings are read straight from its relation table.
+            orders = PurchaseOrder._search(Domain("invoice_ids", "any!", invoice_domain), bypass_access=True)
+            picking_ids = PurchaseOrder._fields["picking_ids"]
+            pickings = SQL(
+                "SELECT %s FROM %s WHERE %s IN %s",
+                SQL.identifier(picking_ids.column2),
+                SQL.identifier(picking_ids.relation),
+                SQL.identifier(picking_ids.column1),
+                orders.subselect(),
+            )
+            domain |= Domain("picking_id", "any!", pickings)
+        return domain
