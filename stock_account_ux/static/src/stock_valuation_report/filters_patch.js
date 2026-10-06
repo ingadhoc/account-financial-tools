@@ -41,6 +41,8 @@ patch(StockValuationReportFilters.prototype, {
             resIds: this.controller.state.productIds || [],
             update: (resIds) => this.controller.setProductIds(resIds),
             placeholder: _t("Products"),
+            // Archived products can still carry a booked balance, and the filter brings it.
+            context: { active_test: false },
         };
     },
 

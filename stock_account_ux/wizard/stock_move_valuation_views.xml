@@ -20,7 +20,10 @@
                         <field name="journal_id" options="{'no_create': True}"/>
                     </group>
                     <group>
-                        <field name="move_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="move_ids" widget="many2many_tags" options="{'no_create': True}"
+                            invisible="not move_ids"/>
+                        <field name="product_value_ids" widget="many2many_tags" options="{'no_create': True}"
+                            invisible="not product_value_ids"/>
                     </group>
                 </group>
                 <separator string="Journal Entry Draft"/>
