@@ -141,6 +141,14 @@ class TestManualMoveValuation(TestStockValuationCommon):
         entries = self.env["account.move"].search([("journal_id", "=", self.company.account_stock_journal_id.id)])
         self.assertEqual(entries, first, "There should be no second entry")
 
+    def test_second_wizard_on_the_same_moves_cannot_post(self):
+        first = self._wizard(self.move_avco)
+        second = self._wizard(self.move_avco)
+        entry = self.env["account.move"].browse(first.action_post()["res_id"])
+        with self.assertRaises(UserError):
+            second.action_post()
+        self.assertEqual(self.move_avco.account_move_id, entry)
+
     # -- Action entry point ----------------------------------------------------
     def test_action_value_moves_opens_the_wizard(self):
         action = (self.move_avco + self.move_fifo).action_value_moves()
