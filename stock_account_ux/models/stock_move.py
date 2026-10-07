@@ -1,7 +1,7 @@
+from collections import defaultdict
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError
-from odoo.fields import Domain
-from odoo.tools import SQL
 
 
 class StockMove(models.Model):
@@ -16,10 +16,15 @@ class StockMove(models.Model):
     # nothing, so showing it here would say the move is valued when it is not
     # (functional feedback, task 64440). The stored ``account_move_id`` keeps the
     # reference either way, so re-posting the entry brings the link back.
+    # Stored: the valuation report and the closing filter every move of the company by
+    # it, and answering "is there an entry" on the fly materialised the posted entries
+    # and the invoiced pickings of the whole base on each call (task 75652). The
+    # dependencies below keep it up to date, related invoices included.
     related_account_move_id = fields.Many2one(
         comodel_name="account.move",
         compute="_compute_related_account_move_id",
-        search="_search_related_account_move_id",
+        store=True,
+        index="btree_not_null",
         string="Journal Entry",
     )
     # Moves whose valuation was already booked in v18 (the 18->19 post-migration
@@ -42,40 +47,81 @@ class StockMove(models.Model):
         readonly=True,
     )
 
-    @api.depends(
-        "account_move_id",
-        "account_move_id.state",
-        "picking_id",
-        "state",
-        "product_id.valuation",
-        "product_value_ids.account_move_id",
-        "product_value_ids.account_move_id.state",
-        "product_value_ids.date",
-    )
+    def _related_account_move_depends(self):
+        """Dependencies of ``related_account_move_id``. The related invoices are reached
+        the way ``_get_related_invoices`` reaches them in ``sale_stock`` and
+        ``purchase_stock`` —the sale order of the picking, the purchase order of the
+        move's line— only when those modules are installed."""
+        depends = [
+            "account_move_id",
+            "account_move_id.state",
+            "picking_id",
+            "state",
+            "product_id.valuation",
+            "product_value_ids.account_move_id",
+            "product_value_ids.account_move_id.state",
+            "product_value_ids.date",
+        ]
+        if "sale_id" in self.env["stock.picking"]._fields:
+            depends.append("picking_id.sale_id.order_line.invoice_lines.move_id.state")
+        if "purchase_line_id" in self._fields:
+            depends.append("purchase_line_id.order_id.order_line.invoice_lines.move_id.state")
+        return depends
+
+    @api.depends(lambda self: self._related_account_move_depends())
     def _compute_related_account_move_id(self):
         # The value adjustment entry wins, as it is the one reflecting the move's CURRENT
         # valuation. The original entry stays in the standard ``account_move_id``.
         revaluation_entry_by_move = self._get_booked_revaluation_entries()
+        # The related invoice only reflects the valuation of THIS move when the product is
+        # valued perpetually, i.e. on invoicing. Under periodic valuation the cost is not
+        # booked in the invoice but in the global closing entry, so the invoice must not
+        # be shown as the related entry until that closing exists.
+        perpetual_moves = self.filtered(lambda move: move.product_id.valuation == "real_time")
+        invoices_by_picking = perpetual_moves._get_related_invoices_by_picking()
         for move in self:
             revaluation_entry = revaluation_entry_by_move.get(move.id)
             if revaluation_entry:
                 move.related_account_move_id = revaluation_entry
                 continue
             # The move's own valuation entry (perpetual) or the closing entry it belongs
-            # to (periodic), both in ``account_move_id``. Unposted ones are left out: the
-            # related invoices below are already filtered that way by the standard.
+            # to (periodic), both in ``account_move_id``. Unposted ones are left out.
             entries = move.account_move_id.filtered(lambda entry: entry.state == "posted")
-            # The related invoice only reflects the valuation of THIS move when the
-            # product is valued perpetually, i.e. on invoicing. Under periodic valuation
-            # the cost is not booked in the invoice but in the global closing entry, so
-            # the invoice must not be shown as the related entry until that closing
-            # exists.
-            if move.product_id.valuation == "real_time":
-                entries |= move._get_related_invoices()
+            if move in perpetual_moves:
+                entries |= invoices_by_picking.get(move.picking_id.id, self.env["account.move"])
             # The field is a Many2one, so the first available entry wins. The union keeps
             # the order, hence the valuation entry (``account_move_id``) first and the
             # related invoice as a fallback.
             move.related_account_move_id = entries[:1]
+
+    def _get_related_invoices_by_picking(self):
+        """Posted related invoices of these moves, per picking: ``{picking id: invoices}``.
+
+        The batch version of ``_get_related_invoices`` (``sale_stock`` and
+        ``purchase_stock``), which resolves them one move at a time with a search each.
+        Both overrides read them off the picking —the customer invoices through its sale
+        order, the vendor bills through the purchase orders it receives for—, so they are
+        resolved once per picking here. Keep it aligned with those overrides.
+        """
+        invoices_by_picking = defaultdict(lambda: self.env["account.move"])
+        pickings = self.picking_id
+        if not pickings:
+            return invoices_by_picking
+        if "sale_id" in pickings._fields:
+            for picking in pickings:
+                invoices = picking.sale_id.invoice_ids.filtered(lambda entry: entry.state == "posted")
+                if invoices:
+                    invoices_by_picking[picking.id] |= invoices
+        PurchaseOrder = self.env.get("purchase.order")
+        if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
+            picking_ids = set(pickings.ids)
+            for order in PurchaseOrder.search([("picking_ids", "in", pickings.ids)]):
+                bills = order.invoice_ids.filtered(lambda entry: entry.state == "posted")
+                if not bills:
+                    continue
+                for picking_id in set(order.picking_ids.ids) & picking_ids:
+                    invoices_by_picking[picking_id] |= bills
+        return invoices_by_picking
 
     def _get_booked_revaluation_entries(self):
         """Last entry that booked a value adjustment, per move.
@@ -178,79 +224,3 @@ class StockMove(models.Model):
         valuation_account = accounts.get("stock_valuation")
         counterpart = entry.line_ids.filtered(lambda line: line.account_id and line.account_id != valuation_account)
         return counterpart[:1].account_id
-
-    def _search_related_account_move_id(self, operator, value):
-        """The field is computed and not stored, as the related invoices are resolved on
-        the fly, hence this search method to be able to filter by journal entry in the
-        moves reports and in the valuation report.
-
-        "Set / not set" is answered in SQL with ``_get_related_entry_domain``: computing
-        the field move by move loaded every move of the company and searched the purchase
-        orders of each one, which ran a big base out of memory (task 75652). A specific
-        entry narrows the candidates in SQL and only evaluates the field on those.
-
-        Watch out: Odoo's domain engine normalises ``=`` / ``!=`` into ``in`` / ``not in``
-        and ``False`` arrives as a collection (``[False]``), so operator and value are
-        normalised before deciding.
-        """
-        # Normalise the value into a list: it can arrive as False, a scalar, a list or an
-        # OrderedSet.
-        if isinstance(value, str) or not hasattr(value, "__iter__"):
-            values = [value]
-        else:
-            values = list(value)
-        # "Set / not set" filter: the value is only False or empty.
-        if operator in ("=", "!=", "in", "not in") and all(not v for v in values):
-            with_entry = self._get_related_entry_domain(Domain.TRUE)
-            # ``=`` / ``in`` against [False] means WITHOUT entry; ``!=`` / ``not in``, WITH.
-            return ~with_entry if operator in ("=", "in") else with_entry
-        # Filter on a specific entry, by id or by entry name.
-        field = "display_name" if any(isinstance(v, str) for v in values) else "id"
-        moves = self.env["account.move"].search([(field, operator, value)])
-        candidates = self.search(self._get_related_entry_domain(Domain("id", "in", moves.ids)))
-        matched = candidates.filtered(lambda m: m.related_account_move_id & moves)
-        return [("id", "in", matched.ids)]
-
-    def _get_related_entry_domain(self, entry_domain):
-        """Moves whose ``related_account_move_id`` can be a posted entry matching
-        ``entry_domain`` (on ``account.move``). With ``Domain.TRUE`` it is exactly
-        ``related_account_move_id != False``.
-
-        Keep it aligned with ``_compute_related_account_move_id``. ``any!`` skips the
-        access rules, as the compute reads in ``sudo()``.
-        """
-        entry_domain = Domain(entry_domain) & Domain("state", "=", "posted")
-        domain = Domain("account_move_id", "any!", entry_domain) | Domain(
-            "product_value_ids", "any!", Domain("account_move_id", "any!", entry_domain)
-        )
-        invoice_domain = self._get_related_invoices_domain(entry_domain)
-        if not invoice_domain.is_false():
-            domain |= Domain("product_id", "any!", [("valuation", "=", "real_time")]) & invoice_domain
-        return domain
-
-    def _get_related_invoices_domain(self, invoice_domain):
-        """Moves whose ``_get_related_invoices`` returns an invoice matching
-        ``invoice_domain``: the overrides of ``sale_stock`` and ``purchase_stock`` as a
-        domain, for the ones installed. A module adding related invoices extends both
-        methods."""
-        domain = Domain.FALSE
-        if "sale_id" in self.env["stock.picking"]._fields:
-            sale_invoice_domain = Domain(invoice_domain) & Domain("move_type", "in", ("out_invoice", "out_refund"))
-            sale_line_domain = Domain("invoice_lines", "any!", Domain("move_id", "any!", sale_invoice_domain))
-            sale_domain = Domain("sale_id", "any!", Domain("order_line", "any!", sale_line_domain))
-            domain |= Domain("picking_id", "any!", sale_domain)
-        PurchaseOrder = self.env.get("purchase.order")
-        if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
-            # ``purchase.order.picking_ids`` is stored but has no inverse on the picking, so
-            # the pickings are read straight from its relation table.
-            orders = PurchaseOrder._search(Domain("invoice_ids", "any!", invoice_domain), bypass_access=True)
-            picking_ids = PurchaseOrder._fields["picking_ids"]
-            pickings = SQL(
-                "SELECT %s FROM %s WHERE %s IN %s",
-                SQL.identifier(picking_ids.column2),
-                SQL.identifier(picking_ids.relation),
-                SQL.identifier(picking_ids.column1),
-                orders.subselect(),
-            )
-            domain |= Domain("picking_id", "any!", pickings)
-        return domain
