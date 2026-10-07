@@ -7,13 +7,14 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestRelatedEntrySearch(TestStockValuationCommon):
-    """``related_account_move_id`` set / not set is answered in SQL
-    (``_get_related_entry_domain``) and has to give the same moves as the computed field,
-    which the valuation report and the closing use to find the unaccounted moves."""
+    """``related_account_move_id`` is stored: searching it set / not set reads the column,
+    which has to agree with what the compute gives, as the valuation report and the
+    closing use it to find the unaccounted moves. The compute runs on the dependencies,
+    the related invoices included, so a posted invoice has to show up without any
+    recompute from the test."""
 
     def _assert_search_matches_field(self, moves):
         Move = self.env["stock.move"]
-        # The field is not stored and its dependencies miss the related invoices.
         self.env.invalidate_all()
         with_entry = Move.search([("id", "in", moves.ids), ("related_account_move_id", "!=", False)])
         without_entry = Move.search([("id", "in", moves.ids), ("related_account_move_id", "=", False)])
@@ -113,8 +114,8 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self.assertEqual(self.env["stock.move"].search([("related_account_move_id", "=", bill.id)]), receipt)
 
     def test_set_not_set_search_does_not_compute_the_field(self):
-        """Computing the field resolves the related invoices move by move, which ran a big
-        base out of memory: the set / not set search must not touch it."""
+        """Resolving the related invoices move by move ran a big base out of memory: the
+        set / not set search reads the stored column and must not compute anything."""
         self._make_in_move(self.product_standard_auto, 1, 10)
         move_class = type(self.env["stock.move"])
         with patch.object(move_class, "_get_related_invoices", side_effect=AssertionError("computed")):
