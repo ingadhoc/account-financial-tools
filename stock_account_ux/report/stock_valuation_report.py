@@ -4,6 +4,7 @@ from collections import defaultdict
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Domain
+from odoo.tools import SQL
 
 # Valid values of the Movement Type filter.
 LINE_TYPE_STOCK_MOVE = "stock_move"
@@ -354,6 +355,16 @@ class StockValuationReport(models.AbstractModel):
         Adjustments with no variation are left out, as in the closing
         (``res.company._get_periodic_closing_product_values``): they have nothing
         pending, so a product with only those gets no drill-down."""
+        domain = self._get_unaccounted_product_values_base_domain(company, products, date)
+        # ``delta`` is computed, so it cannot be a domain leaf. In ``sudo()``, as the
+        # drill-down runs for accounting users.
+        product_values = self.env["product.value"].sudo().search(domain)
+        product_values = product_values.filtered(lambda value: not company.currency_id.is_zero(value.delta))
+        return Domain([("id", "in", product_values.ids)])
+
+    def _get_unaccounted_product_values_base_domain(self, company, products, date):
+        """Unaccounted value adjustments of those products up to the report date, before
+        leaving out the ones with no variation."""
         domain = Domain(
             [
                 ("account_move_id", "=", False),
@@ -362,11 +373,7 @@ class StockValuationReport(models.AbstractModel):
         ) & (Domain([("product_id", "in", products.ids)]) | Domain([("move_id.product_id", "in", products.ids)]))
         if date:
             domain &= Domain([("date", "<=", date)])
-        # ``delta`` is computed, so it cannot be a domain leaf. In ``sudo()``, as the count
-        # of the three-dots menu, which runs as an accounting user.
-        product_values = self.env["product.value"].sudo().search(domain)
-        product_values = product_values.filtered(lambda value: not company.currency_id.is_zero(value.delta))
-        return Domain([("id", "in", product_values.ids)])
+        return domain
 
     def _add_variation_drilldown_types(self, data, date, filters):
         """Flag on each variation line which drill-downs have records to show, under the
@@ -384,37 +391,69 @@ class StockValuationReport(models.AbstractModel):
         company = self.env.company
         date = self._normalize_report_date(date)
         products_by_account = self._get_products_by_valuation_account(company, date, filters)
-        no_products = self.env["product.product"]
+        all_products = self.env["product.product"].union(*products_by_account.values())
+        product_ids_by_type = self._get_variation_drilldown_product_ids(company, all_products, date)
         for line in lines:
             account = self.env["account.account"].browse(line["account_id"])
-            products = products_by_account.get(account, no_products)
-            line["drilldown_types"] = self._get_variation_drilldown_types(company, products, date)
+            account_product_ids = set(products_by_account.get(account, self.env["product.product"]).ids)
+            line["drilldown_types"] = [
+                line_type for line_type, product_ids in product_ids_by_type.items() if product_ids & account_product_ids
+            ]
 
-    def _get_variation_drilldown_types(self, company, products, date):
-        """Drill-down types with at least one record for that account.
+    def _get_variation_drilldown_product_ids(self, company, products, date):
+        """``{line_type: product ids}``: for each drill-down type, the products with at
+        least one record to show. Resolved once for the products of every line, instead
+        of one search per line and type.
 
-        The count runs in ``sudo``: the report is read by accounting users, who may have
-        no read access on ``stock.move``, and an ``AccessError`` here would break the
-        whole report. Access is evaluated as usual when the action is opened.
+        It runs in ``sudo``: the report is read by accounting users, who may have no read
+        access on ``stock.move``, and an ``AccessError`` here would break the whole
+        report. Access is evaluated as usual when the action is opened.
         """
         if not products:
-            return []
-        available = []
-        for line_type, model, get_domain in self._get_drilldown_checks():
-            domain = get_domain(company, products, date)
-            if self.env[model].sudo().search_count(list(domain), limit=1):
-                available.append(line_type)
-        return available
+            return {}
+        return {
+            line_type: get_product_ids(company, products, date)
+            for line_type, get_product_ids in self._get_drilldown_checks()
+        }
 
     def _get_drilldown_checks(self):
-        """``(line_type, model, domain getter)`` of every origin the variation drills down
+        """``(line_type, product ids getter)`` of every origin the variation drills down
         to. A method so a module adding an origin extends the list instead of rewriting
-        ``_get_variation_drilldown_types``; keep it aligned with ``_get_valid_line_types``
-        and with the ``_variationDrilldowns`` map on the JS side."""
+        ``_get_variation_drilldown_product_ids``; keep it aligned with
+        ``_get_valid_line_types`` and with the ``_variationDrilldowns`` map on the JS side."""
         return [
-            (LINE_TYPE_STOCK_MOVE, "stock.move", self._get_variation_stock_moves_domain),
-            (LINE_TYPE_PRODUCT_VALUE, "product.value", self._get_variation_product_values_domain),
+            (LINE_TYPE_STOCK_MOVE, self._get_variation_stock_moves_product_ids),
+            (LINE_TYPE_PRODUCT_VALUE, self._get_variation_product_values_product_ids),
         ]
+
+    def _get_variation_stock_moves_product_ids(self, company, products, date):
+        """Products with unaccounted moves, same scope as
+        ``_get_variation_stock_moves_domain``."""
+        domain = self._get_variation_stock_moves_domain(company, products, date)
+        groups = self.env["stock.move"].sudo()._read_group(list(domain), ["product_id"])
+        return {product.id for (product,) in groups}
+
+    def _get_variation_product_values_product_ids(self, company, products, date):
+        """Products with unaccounted value adjustments, same scope as
+        ``_get_variation_product_values_domain``. The ``delta`` filter goes to SQL: it is
+        ``value - previous_value``, both stored, and ``is_zero`` means below half the
+        currency rounding. A missing ``previous_value`` reads as zero, as in the ORM."""
+        ProductValue = self.env["product.value"].sudo()
+        query = ProductValue._search(self._get_unaccounted_product_values_base_domain(company, products, date))
+        table = query.table
+        query.add_where(
+            SQL(
+                "ABS(%s - COALESCE(%s, 0)) >= %s",
+                SQL.identifier(table, "value"),
+                SQL.identifier(table, "previous_value"),
+                company.currency_id.rounding / 2,
+            )
+        )
+        move_alias = query.left_join(table, "move_id", "stock_move", "id", "move_id")
+        rows = self.env.execute_query(
+            query.select(SQL.identifier(table, "product_id"), SQL.identifier(move_alias, "product_id"))
+        )
+        return {product_id for row in rows for product_id in row if product_id} & set(products.ids)
 
     def _get_drilldown_scope(self, account_id, date, filters):
         """Company, products and account of the drill-down. The products are the
