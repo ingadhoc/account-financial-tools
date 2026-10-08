@@ -92,18 +92,19 @@ class ResCompany(models.Model):
         books_moves = LINE_TYPE_PRODUCT_VALUE not in booked_line_types
         books_product_values = LINE_TYPE_STOCK_MOVE not in booked_line_types
         if books_moves:
+            # Moves with a posted entry (perpetual ones, or a valid previous closing) are
+            # left out by the search; the ones whose entry was left unposted, e.g. a
+            # cancelled and regenerated closing, are re-linked.
             moves = self._get_periodic_closing_stock_moves(at_date)
-            # Leave alone moves that already have a posted entry (perpetual ones, or a
-            # valid previous closing); do re-link the ones whose entry was left
-            # unposted, e.g. a cancelled and regenerated closing.
-            moves = moves.filtered(lambda m: not m.account_move_id or m.account_move_id.state != "posted")
             if booked_line_types:
                 # The Stock Moves component leaves revalued moves out (the other origin
                 # takes their value), so they are not linked either.
                 revalued = self.env["product.value"].sudo().search([("move_id", "in", moves.ids)]).move_id
                 moves -= revalued
             if moves:
-                moves.account_move_id = closing_move.id
+                # The write reads the previous entry of every move to trigger the
+                # dependencies; with prefetching it loads the whole move instead.
+                moves.with_context(prefetch_fields=False).account_move_id = closing_move.id
         # Value adjustments (``product.value``) are booked by this closing too. Out of
         # the box they keep no reference to the entry, so a cost change was booked
         # leaving no trace on the adjustment nor on the revalued move, which still
@@ -221,6 +222,9 @@ class ResCompany(models.Model):
         net = self.currency_id.round(vals["debit"] - vals["credit"])
         assigned = 0.0
         product_vals = []
+        # Named on each line by ``_get_valuation_val``: computed in batch here, as it
+        # browses each product on its own.
+        products.mapped("display_name")
         for product in products:
             delta = self.currency_id.round(deltas_by_product.get((account.id, product.id), 0.0))
             if self.currency_id.is_zero(delta):

@@ -1,7 +1,6 @@
-from collections import defaultdict
-
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import SQL
 
 
 class StockMove(models.Model):
@@ -70,58 +69,102 @@ class StockMove(models.Model):
 
     @api.depends(lambda self: self._related_account_move_depends())
     def _compute_related_account_move_id(self):
+        # A closing links, and later posts, every unaccounted move of the company at once:
+        # fetch only what is read here, or the whole move gets prefetched for each of them.
+        self.fetch(["account_move_id", "picking_id", "product_id"])
         # The value adjustment entry wins, as it is the one reflecting the move's CURRENT
         # valuation. The original entry stays in the standard ``account_move_id``.
         revaluation_entry_by_move = self._get_booked_revaluation_entries()
+        # The move's own valuation entry (perpetual) or the closing entry it belongs to
+        # (periodic), both in ``account_move_id``. Unposted ones are left out.
+        posted_entries = self.account_move_id.filtered(lambda entry: entry.state == "posted")
         # The related invoice only reflects the valuation of THIS move when the product is
         # valued perpetually, i.e. on invoicing. Under periodic valuation the cost is not
         # booked in the invoice but in the global closing entry, so the invoice must not
-        # be shown as the related entry until that closing exists.
-        perpetual_moves = self.filtered(lambda move: move.product_id.valuation == "real_time")
-        invoices_by_picking = perpetual_moves._get_related_invoices_by_picking()
+        # be shown as the related entry until that closing exists. It is only a fallback,
+        # so it is resolved just for the moves with no entry of their own.
+        invoice_moves = self.filtered(
+            lambda move: move.id not in revaluation_entry_by_move
+            and move.account_move_id not in posted_entries
+            and move.product_id.valuation == "real_time"
+        )
+        invoice_by_picking = invoice_moves._get_related_invoice_by_picking()
         for move in self:
-            revaluation_entry = revaluation_entry_by_move.get(move.id)
-            if revaluation_entry:
-                move.related_account_move_id = revaluation_entry
-                continue
-            # The move's own valuation entry (perpetual) or the closing entry it belongs
-            # to (periodic), both in ``account_move_id``. Unposted ones are left out.
-            entries = move.account_move_id.filtered(lambda entry: entry.state == "posted")
-            if move in perpetual_moves:
-                entries |= invoices_by_picking.get(move.picking_id.id, self.env["account.move"])
-            # The field is a Many2one, so the first available entry wins. The union keeps
-            # the order, hence the valuation entry (``account_move_id``) first and the
-            # related invoice as a fallback.
-            move.related_account_move_id = entries[:1]
+            if move.id in revaluation_entry_by_move:
+                move.related_account_move_id = revaluation_entry_by_move[move.id]
+            elif move.account_move_id in posted_entries:
+                move.related_account_move_id = move.account_move_id
+            elif move in invoice_moves:
+                move.related_account_move_id = invoice_by_picking.get(move.picking_id.id, False)
+            else:
+                move.related_account_move_id = False
 
-    def _get_related_invoices_by_picking(self):
-        """Posted related invoices of these moves, per picking: ``{picking id: invoices}``.
+    def _get_related_invoice_by_picking(self):
+        """Posted related invoice of these moves, per picking: ``{picking id: invoice id}``.
 
         The batch version of ``_get_related_invoices`` (``sale_stock`` and
         ``purchase_stock``), which resolves them one move at a time with a search each.
         Both overrides read them off the picking —the customer invoices through its sale
         order, the vendor bills through the purchase orders it receives for—, so they are
-        resolved once per picking here. Keep it aligned with those overrides.
+        resolved once per picking, in SQL: through the ORM, ``invoice_ids`` loads every
+        line of every order and invoice. When there are several, the first one in the
+        entries order (the most recent) wins. Keep it aligned with those overrides.
         """
-        invoices_by_picking = defaultdict(lambda: self.env["account.move"])
-        pickings = self.picking_id
-        if not pickings:
-            return invoices_by_picking
-        if "sale_id" in pickings._fields:
-            for picking in pickings:
-                invoices = picking.sale_id.invoice_ids.filtered(lambda entry: entry.state == "posted")
-                if invoices:
-                    invoices_by_picking[picking.id] |= invoices
+        picking_ids = list(set(self.picking_id.ids))
+        if not picking_ids:
+            return {}
+        queries = []
+        if "sale_id" in self.env["stock.picking"]._fields:
+            queries.append(
+                SQL(
+                    """
+                    SELECT picking.id AS picking_id, line.move_id
+                      FROM stock_picking picking
+                      JOIN sale_order_line order_line ON order_line.order_id = picking.sale_id
+                      JOIN sale_order_line_invoice_rel rel ON rel.order_line_id = order_line.id
+                      JOIN account_move_line line ON line.id = rel.invoice_line_id
+                      JOIN account_move invoice ON invoice.id = line.move_id
+                     WHERE picking.id = ANY(%s)
+                       AND invoice.move_type IN ('out_invoice', 'out_refund')
+                    """,
+                    picking_ids,
+                )
+            )
         PurchaseOrder = self.env.get("purchase.order")
         if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
-            picking_ids = set(pickings.ids)
-            for order in PurchaseOrder.search([("picking_ids", "in", pickings.ids)]):
-                bills = order.invoice_ids.filtered(lambda entry: entry.state == "posted")
-                if not bills:
-                    continue
-                for picking_id in set(order.picking_ids.ids) & picking_ids:
-                    invoices_by_picking[picking_id] |= bills
-        return invoices_by_picking
+            # ``purchase.order.picking_ids`` is stored but has no inverse on the picking, so
+            # the pickings are read straight from its relation table.
+            picking_ids_field = PurchaseOrder._fields["picking_ids"]
+            queries.append(
+                SQL(
+                    """
+                    SELECT rel.%(picking)s AS picking_id, line.move_id
+                      FROM %(relation)s rel
+                      JOIN purchase_order_line order_line ON order_line.order_id = rel.%(order)s
+                      JOIN account_move_line line ON line.purchase_line_id = order_line.id
+                     WHERE rel.%(picking)s = ANY(%(picking_ids)s)
+                    """,
+                    picking=SQL.identifier(picking_ids_field.column2),
+                    order=SQL.identifier(picking_ids_field.column1),
+                    relation=SQL.identifier(picking_ids_field.relation),
+                    picking_ids=picking_ids,
+                )
+            )
+        if not queries:
+            return {}
+        rows = self.env.execute_query(
+            SQL(
+                """
+                SELECT DISTINCT ON (related.picking_id) related.picking_id, entry.id
+                  FROM (%s) related
+                  JOIN account_move entry ON entry.id = related.move_id
+                 WHERE entry.state = 'posted'
+                 ORDER BY related.picking_id, entry.date DESC, entry.name DESC, entry.id DESC
+                """,
+                SQL(" UNION ALL ").join(queries),
+            )
+        )
+        return dict(rows)
 
     def _get_booked_revaluation_entries(self):
         """Last entry that booked a value adjustment, per move.
