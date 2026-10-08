@@ -49,7 +49,6 @@
         <field name="model">account.payment</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">account_internal_transfer.report_account_transfer</field>
-        <field name="report_file">account_internal_transfer.report_account_transfer</field>
         <field name="print_report_name">'Reporte de transferencia'</field>
     </record>
 

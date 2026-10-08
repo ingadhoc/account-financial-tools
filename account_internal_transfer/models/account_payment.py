@@ -18,7 +18,7 @@ class AccountPayment(models.Model):
         store=True,
         readonly=False,
     )
-    destination_journal_domain = fields.Binary(compute="_compute_destination_journal_domain")
+    destination_journal_domain = fields.Json(compute="_compute_destination_journal_domain")
     destination_journal_id = fields.Many2one(
         comodel_name="account.journal",
         string="Destination Journal",
@@ -46,6 +46,8 @@ class AccountPayment(models.Model):
         compute="_compute_main_company",
     )
     available_partner_bank_ids = fields.Many2many(compute_sudo=True)
+    # 20.0 computes both fields with the same method; a mismatched compute_sudo makes the group non-deterministic
+    available_return_partner_bank_ids = fields.Many2many(compute_sudo=True)
 
     @api.depends("company_id", "is_internal_transfer")
     def _compute_destination_company_id(self):
@@ -58,7 +60,7 @@ class AccountPayment(models.Model):
     @api.depends("destination_company_id", "journal_id")
     def _compute_destination_journal_domain(self):
         for rec in self:
-            rec.destination_journal_domain = (
+            rec.destination_journal_domain = list(
                 Domain(rec.env["account.journal"]._check_company_domain(rec.destination_company_id))
                 & Domain([("type", "in", ("bank", "cash", "credit"))])
                 & Domain([("active", "=", True)])
@@ -181,7 +183,10 @@ class AccountPayment(models.Model):
         """
         self.ensure_one()
         paired_payment_type = self._get_paired_payment_type()
-        destination_line = self.destination_payment_method_line_id
+        paired_line = (
+            self.destination_payment_method_line_id
+            or self.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1]
+        )
         return {
             "journal_id": self.destination_journal_id.id,
             "currency_id": (self.destination_journal_id.currency_id or self.company_currency_id).id,
@@ -189,10 +194,11 @@ class AccountPayment(models.Model):
             "destination_company_id": self.company_id.id,
             "destination_journal_id": self.journal_id.id,
             "payment_type": paired_payment_type,
-            "payment_method_line_id": (
-                destination_line
-                or self.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1]
-            ).id,
+            "payment_method_line_id": paired_line.id,
+            # set explicitly: a module that makes this stored field writable (l10n_account_withholding_tax,
+            # a dependency of l10n_ar_withholding since 20.0) turns on copy(), and the source value would
+            # win over the compute
+            "outstanding_account_id": paired_line.payment_account_id.id,
             "move_id": None,
             "memo": self.memo,
             "paired_internal_transfer_payment_id": self.id,
