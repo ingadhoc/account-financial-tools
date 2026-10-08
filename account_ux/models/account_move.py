@@ -144,8 +144,11 @@ class AccountMove(models.Model):
         res._onchange_partner_commercial()
         return res
 
-    # Sobrescribe el método de odoo en el PR https://github.com/odoo/odoo/pull/234605
-    def get_amount_diff_foreign_currencies(self, line, move):
+    # Sobrescribe el método de odoo en el PR https://github.com/odoo/odoo/pull/292530
+    def _get_outstanding_amount_in_move_currency(self, line):
+        self.ensure_one()
+        move = self
+
         def get_accounting_rate(company_currency, amount, amount_currency, currency):
             if company_currency.is_zero(amount) or currency.is_zero(amount_currency):
                 return 0.0
