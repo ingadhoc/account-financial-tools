@@ -121,3 +121,40 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         with patch.object(move_class, "_get_related_invoices", side_effect=AssertionError("computed")):
             self.env["stock.move"].search([("related_account_move_id", "=", False)])
             self.env["stock.move"].search([("related_account_move_id", "!=", False)])
+
+    def test_valuation_is_read_in_the_move_company(self):
+        """The product valuation depends on the company: the compute must read it in the
+        move's company, not in the one of whoever triggers it."""
+        self.category_standard_auto.with_company(self.other_company).property_valuation = "periodic"
+        self.category_standard.with_company(self.other_company).property_valuation = "real_time"
+        order_auto, delivery_auto = self._sale_delivery(self.product_standard_auto)
+        order_periodic, delivery_periodic = self._sale_delivery(self.product_standard)
+        invoice = self._invoice_order(order_auto)
+        self._invoice_order(order_periodic)
+        moves = delivery_auto | delivery_periodic
+
+        moves.with_company(self.other_company)._recompute_related_account_move()
+        self._assert_search_matches_field(moves)
+        self.assertEqual(delivery_auto.related_account_move_id, invoice)
+        self.assertFalse(delivery_periodic.related_account_move_id)
+
+    def test_company_default_valuation_change(self):
+        """A category with no valuation of its own takes the company's: changing it has to
+        recompute the related entry of the moves already invoiced."""
+        self.company.inventory_valuation = "periodic"
+        category = self.env["product.category"].create({"name": "Company Default", "property_cost_method": "standard"})
+        product = self.env["product.product"].create(
+            {**self.product_common_vals, "name": "Company Default Product", "categ_id": category.id}
+        )
+        order, delivery = self._sale_delivery(product)
+        invoice = self._invoice_order(order)
+        self.assertFalse(delivery.related_account_move_id)
+
+        self.company.inventory_valuation = "real_time"
+        self.assertEqual(product.valuation, "real_time")
+        self._assert_search_matches_field(delivery)
+        self.assertEqual(delivery.related_account_move_id, invoice)
+
+        self.company.inventory_valuation = "periodic"
+        self._assert_search_matches_field(delivery)
+        self.assertFalse(delivery.related_account_move_id)
