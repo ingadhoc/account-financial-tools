@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 13:52+0000\n"
+"POT-Creation-Date: 2026-10-09 13:18+0000\n"
 "PO-Revision-Date: 2026-04-13 22:41+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
@@ -103,6 +103,11 @@ msgstr "Plantilla de plan contable"
 #: model:ir.model,name:account_ux.model_account_group
 msgid "Account Group"
 msgstr "Grupo de cuenta"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_company_form
+msgid "Accounting"
+msgstr ""
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_automatic_entry_wizard__action
@@ -715,7 +720,6 @@ msgstr "Recalcular todos los impuestos en función de la posición fiscal"
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_company__reconcile_on_company_currency
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__reconcile_on_company_currency
-#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
 msgid "Reconcile On Company Currency"
 msgstr "Conciliar en moneda de la compañía"
 
@@ -852,7 +856,8 @@ msgid "This entry transfers the following amounts to %(destination)s"
 msgstr "Este asiento transferirá los siguientes importes a %(destination)s"
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
+#: model:ir.model.fields,help:account_ux.field_res_company__reconcile_on_company_currency
+#: model:ir.model.fields,help:account_ux.field_res_config_settings__reconcile_on_company_currency
 msgid ""
 "This option enables open documents in the payment report when reconciling "
 "debt with secondary currency, if the account doesn't have a currency "
@@ -986,6 +991,7 @@ msgstr "Mayor de Proveedores"
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/models/res_company.py:0
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid "Warning for %s"
 msgstr "Advertencia para %s"
@@ -1008,20 +1014,6 @@ msgstr ""
 "eliminar esta factura u obtener un nuevo número si lo revalida. Si esta "
 "factura representa una factura anulada, entonces no debe limpiarla. ¿Quieres "
 "continuar?"
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_company__reconcile_on_company_currency
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__reconcile_on_company_currency
-msgid ""
-"When reconciling debt with secondary currency, if the account doesn't have a "
-"currency configured, then reconcile on company currency. This will avoid all "
-"the automatic exchange rates journal entries by forcing  same rate of the "
-"original document being reconcile"
-msgstr ""
-"Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene una "
-"moneda configurada, conciliará en la moneda de la compañía. Esto evitará el "
-"registro automático de diferencias de cambio al forzar el tipo de cambio a "
-"la del documento original conciliado"
 
 #. module: account_ux
 #: model:ir.model.fields,help:account_ux.field_account_journal__shared_to_branches
@@ -1061,6 +1053,7 @@ msgstr ""
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/models/res_company.py:0
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid ""
 "You are deactivating 'Reconcile on company currency'. Future reconciliations "
@@ -1157,6 +1150,17 @@ msgid ""
 "ID cannot reappear below a break: «%(company)s» has to declare the same as "
 "«%(parent)s» or something other than %(vat)s."
 msgstr ""
+
+#~ msgid ""
+#~ "When reconciling debt with secondary currency, if the account doesn't "
+#~ "have a currency configured, then reconcile on company currency. This will "
+#~ "avoid all the automatic exchange rates journal entries by forcing  same "
+#~ "rate of the original document being reconcile"
+#~ msgstr ""
+#~ "Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene "
+#~ "una moneda configurada, conciliará en la moneda de la compañía. Esto "
+#~ "evitará el registro automático de diferencias de cambio al forzar el tipo "
+#~ "de cambio a la del documento original conciliado"
 
 #~ msgid ""
 #~ "If enabled, this journal will be available for use in child companies "
