@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 13:52+0000\n"
-"PO-Revision-Date: 2026-09-29 13:52+0000\n"
+"POT-Creation-Date: 2026-10-09 13:18+0000\n"
+"PO-Revision-Date: 2026-10-09 13:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -84,6 +84,11 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_group
 msgid "Account Group"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.view_company_form
+msgid "Accounting"
 msgstr ""
 
 #. module: account_ux
@@ -682,7 +687,6 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_res_company__reconcile_on_company_currency
 #: model:ir.model.fields,field_description:account_ux.field_res_config_settings__reconcile_on_company_currency
-#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
 msgid "Reconcile On Company Currency"
 msgstr ""
 
@@ -815,7 +819,8 @@ msgid "This entry transfers the following amounts to %(destination)s"
 msgstr ""
 
 #. module: account_ux
-#: model_terms:ir.ui.view,arch_db:account_ux.view_res_config_settings
+#: model:ir.model.fields,help:account_ux.field_res_company__reconcile_on_company_currency
+#: model:ir.model.fields,help:account_ux.field_res_config_settings__reconcile_on_company_currency
 msgid ""
 "This option enables open documents in the payment report when reconciling "
 "debt with secondary currency, if the account doesn't have a currency "
@@ -937,6 +942,7 @@ msgstr ""
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/models/res_company.py:0
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid "Warning for %s"
 msgstr ""
@@ -954,16 +960,6 @@ msgid ""
 "this invoice or to get a new number if you re-validate it. If this invoice "
 "represents a voided invoice, then you should not clean it. Do you want to "
 "continue?"
-msgstr ""
-
-#. module: account_ux
-#: model:ir.model.fields,help:account_ux.field_res_company__reconcile_on_company_currency
-#: model:ir.model.fields,help:account_ux.field_res_config_settings__reconcile_on_company_currency
-msgid ""
-"When reconciling debt with secondary currency, if the account doesn't have a"
-" currency configured, then reconcile on company currency. This will avoid "
-"all the automatic exchange rates journal entries by forcing  same rate of "
-"the original document being reconcile"
 msgstr ""
 
 #. module: account_ux
@@ -995,6 +991,7 @@ msgstr ""
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/models/res_company.py:0
 #: code:addons/account_ux/wizards/res_config_settings.py:0
 msgid ""
 "You are deactivating 'Reconcile on company currency'. Future reconciliations"
