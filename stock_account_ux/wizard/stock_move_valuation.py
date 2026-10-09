@@ -7,11 +7,12 @@ from ..models.stock_move_line import PARTIAL_LINES_CTX
 
 
 class StockMoveValuation(models.TransientModel):
-    """Book selected stock moves without waiting for the global closing.
+    """Book selected stock moves, or selected value adjustments, without waiting for the
+    global closing.
 
     The entry is grouped by the valuation accounts the product categories define (the
     same account resolution the three report sections use) and by product, and it is
-    linked to the moves so they cannot be valued twice.
+    linked to the moves and adjustments so they cannot be valued twice.
     """
 
     _name = "stock.move.valuation"
@@ -41,6 +42,11 @@ class StockMoveValuation(models.TransientModel):
         string="Stock Moves",
         readonly=True,
     )
+    product_value_ids = fields.Many2many(
+        comodel_name="product.value",
+        string="Value Adjustments",
+        readonly=True,
+    )
     line_ids = fields.One2many(
         comodel_name="stock.move.valuation.line",
         inverse_name="valuation_id",
@@ -62,6 +68,9 @@ class StockMoveValuation(models.TransientModel):
         bulk selection some already valued moves are bound to slip in, and stopping
         everything would force the user to build the selection again."""
         defaults = super().default_get(fields_list)
+        product_value_ids = self.env.context.get("default_product_value_ids") or []
+        if product_value_ids:
+            return self._get_product_value_defaults(defaults, product_value_ids)
         move_ids = self.env.context.get("default_move_ids") or defaults.get("move_ids") or []
         if isinstance(move_ids, int):
             move_ids = [move_ids]
@@ -99,7 +108,59 @@ class StockMoveValuation(models.TransientModel):
             )
         return defaults
 
-    @api.depends("move_ids", "company_id")
+    @api.model
+    def _get_product_value_defaults(self, defaults, product_value_ids):
+        """Same as with moves: what cannot be booked is left out and reported, and only
+        an empty selection raises.
+
+        Left out: the adjustments already booked, the ones with nothing to book, and the
+        adjustments of a move not booked yet, as valuing that move books its value
+        adjustments included.
+        """
+        if isinstance(product_value_ids, int):
+            product_value_ids = [product_value_ids]
+        product_values = self.env["product.value"].browse(product_value_ids).exists()
+        currency = self.env.company.currency_id
+        booked = product_values.filtered(lambda pv: pv.account_move_id.state == "posted")
+        pending = product_values - booked
+        unbooked_move = pending.filtered(lambda pv: pv.move_id and not pv.move_id.related_account_move_id)
+        pending -= unbooked_move
+        no_value = pending.filtered(lambda pv: currency.is_zero(pv._get_booking_value()))
+        valuable = pending - no_value
+        if not valuable:
+            raise UserError(self.env._("The selected value adjustments have nothing to book."))
+        defaults["product_value_ids"] = [fields.Command.set(valuable.ids)]
+        warnings = []
+        if booked:
+            warnings.append(
+                self.env._(
+                    "%(count)s adjustments were excluded because they are already booked: %(adjustments)s",
+                    count=len(booked),
+                    adjustments=", ".join(booked[:10]._get_valuation_labels()),
+                )
+            )
+        if unbooked_move:
+            warnings.append(
+                self.env._(
+                    "%(count)s adjustments were excluded because their move is not booked yet "
+                    "(valuing the move books its adjusted value): %(moves)s",
+                    count=len(unbooked_move),
+                    moves=", ".join(unbooked_move[:10].move_id._get_valuation_labels()),
+                )
+            )
+        if no_value:
+            warnings.append(
+                self.env._(
+                    "%(count)s adjustments were excluded because they have no value to book: %(adjustments)s",
+                    count=len(no_value),
+                    adjustments=", ".join(no_value[:10]._get_valuation_labels()),
+                )
+            )
+        if warnings:
+            defaults["excluded_warning"] = "\n".join(warnings)
+        return defaults
+
+    @api.depends("move_ids", "product_value_ids", "company_id")
     def _compute_line_ids(self):
         for wizard in self:
             aml_vals_list = wizard._get_account_move_line_vals()
@@ -157,6 +218,18 @@ class StockMoveValuation(models.TransientModel):
             value = move._get_inventory_value()
             key = self._get_balance_key(move, valuation_account, counterpart)
             balances[key] += value if move.is_in else -value
+        for product_value in self.product_value_ids:
+            product = product_value._get_valuation_product()
+            if product.id not in accounts_by_product:
+                accounts_by_product[product.id] = product.with_company(self.company_id)._get_product_accounts()
+            valuation_account = accounts_by_product[product.id].get("stock_valuation")
+            if not valuation_account:
+                continue
+            counterpart = valuation_account.account_stock_variation_id or self.company_id.expense_account_id
+            if not counterpart:
+                continue
+            key = self._get_product_value_balance_key(product_value, valuation_account, counterpart)
+            balances[key] += product_value._get_booking_value()
         return balances
 
     def _get_balance_key(self, move, valuation_account, counterpart):
@@ -169,6 +242,11 @@ class StockMoveValuation(models.TransientModel):
         back in ``_get_account_move_line_vals``, which unpacks this tuple.
         """
         return (valuation_account, counterpart, move.product_id)
+
+    def _get_product_value_balance_key(self, product_value, valuation_account, counterpart):
+        """``_get_balance_key`` for a value adjustment, with the same tuple: a module that
+        widens one has to widen this one too."""
+        return (valuation_account, counterpart, product_value._get_valuation_product())
 
     def _get_account_move_line_vals(self):
         self.ensure_one()
@@ -211,7 +289,25 @@ class StockMoveValuation(models.TransientModel):
         self.ensure_one()
         aml_vals_list = self._get_account_move_line_vals()
         if not aml_vals_list:
-            raise UserError(self.env._("The selected moves have no value to book."))
+            raise UserError(self.env._("The selection has no value to book."))
+        # ``value`` already carries the move's adjustments, so the entry books them too:
+        # left pending they would be booked again on their own.
+        # Adjustments with no variation are left out, as in the closing
+        # (``res.company._get_periodic_closing_product_values``).
+        pending_move_values = self.move_ids.product_value_ids.filtered(
+            lambda pv: pv.account_move_id.state != "posted" and not self.currency_id.is_zero(pv.delta)
+        )
+        self._check_bookable()
+        late_values = (self.product_value_ids | pending_move_values).filtered(
+            lambda pv: fields.Datetime.context_timestamp(self, pv.date).date() > self.date
+        )
+        if late_values:
+            raise UserError(
+                self.env._(
+                    "The entry date cannot be earlier than the value adjustments it books: %(adjustments)s",
+                    adjustments=", ".join(late_values[:10]._get_valuation_labels()),
+                )
+            )
         account_move = self.env["account.move"].create(
             {
                 "journal_id": self.journal_id.id,
@@ -226,6 +322,8 @@ class StockMoveValuation(models.TransientModel):
         # what takes them out of the report's pending variation, and out of the scope of
         # the periodic closing.
         self.move_ids.account_move_id = account_move.id
+        # In ``sudo()``, as the module only grants read access on ``product.value``.
+        (self.product_value_ids | pending_move_values).sudo().account_move_id = account_move.id
         return {
             "type": "ir.actions.act_window",
             "name": self.env._("Journal Entry"),
@@ -234,6 +332,30 @@ class StockMoveValuation(models.TransientModel):
             "view_mode": "form",
             "views": [(False, "form")],
         }
+
+    def _check_bookable(self):
+        """What ``default_get`` filtered, checked again on posting: the wizard can be
+        created without it, and another one may have booked the same records since it was
+        opened. Two postings at the same time write the same rows, so one of them is
+        retried and stops here."""
+        other_companies = (self.move_ids.company_id | self.product_value_ids.company_id) - self.company_id
+        if other_companies:
+            raise UserError(
+                self.env._(
+                    "Only moves and value adjustments of %(company)s can be booked in this entry.",
+                    company=self.company_id.display_name,
+                )
+            )
+        booked_moves = self.move_ids.filtered("related_account_move_id")
+        booked_values = self.product_value_ids.filtered(lambda pv: pv.account_move_id.state == "posted")
+        if booked_moves or booked_values:
+            labels = booked_moves._get_valuation_labels() + booked_values._get_valuation_labels()
+            raise UserError(
+                self.env._(
+                    "These records were booked after the wizard was opened. Open it again: %(records)s",
+                    records=", ".join(labels[:10]),
+                )
+            )
 
 
 class StockMoveValuationLine(models.TransientModel):

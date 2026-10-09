@@ -138,6 +138,23 @@ class TestValuationReportDrilldown(TestStockValuationCommon):
             ["stock_move", "product_value"],
         )
 
+    def test_no_value_adjustments_drilldown_with_only_zero_deltas(self):
+        """Adjustments with no variation have nothing pending: a product with only those
+        gets no Value Adjustments drill-down, as the closing does not book them either."""
+        self.env["product.value"].search(
+            ["|", ("product_id", "=", self.product_standard.id), ("move_id", "=", self.move_standard.id)]
+        ).unlink()
+        zero_delta = self.env["product.value"].create(
+            {"move_id": self.move_standard.id, "value": self.move_standard.value}
+        )
+        self.assertFalse(zero_delta.delta)
+        filters = {"product_ids": [self.product_standard.id]}
+        lines = self.report.get_report_values(**filters)["data"]["stock_variation"]["lines"]
+        types_by_account = {line["account_id"]: line["drilldown_types"] for line in lines}
+        self.assertEqual(types_by_account[self.account.id], ["stock_move"])
+        action = self.report.action_open_variation_product_values(self.account.id, filters=filters)
+        self.assertNotIn(zero_delta, self._records(action))
+
     def test_no_drilldown_once_everything_is_booked(self):
         """Once the difference is booked there is no pending detail left and the menu goes
         away."""
