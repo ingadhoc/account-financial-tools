@@ -138,3 +138,27 @@ class TestDestinationPaymentMethod(AccountTestInvoicingCommon):
         self.assertTrue(outbound_line)
         with self.assertRaises(ValidationError):
             self._create_transfer(destination_line=outbound_line)
+
+    def test_the_paired_values_carry_the_outstanding_account(self):
+        """The outstanding account travels in the values, it is not left to the compute.
+
+        outstanding_account_id is stored, and a module that makes it writable turns on copy(),
+        so the source account would win over the compute and the paired entry would land on the
+        wrong account. Since 20.0 that is the case whenever l10n_ar_withholding is installed,
+        because it depends on l10n_account_withholding_tax.
+        """
+        payment = self._create_transfer(destination_line=self.second_destination_line)
+
+        values = payment._prepare_paired_payment_values()
+
+        self.assertEqual(values["payment_method_line_id"], self.second_destination_line.id)
+        self.assertEqual(values["outstanding_account_id"], self.second_outstanding_account.id)
+
+    def test_the_paired_values_fall_back_to_the_default_line(self):
+        payment = self._create_transfer()
+        default_line = self.destination_journal._get_available_payment_method_lines("inbound")[:1]
+
+        values = payment._prepare_paired_payment_values()
+
+        self.assertEqual(values["payment_method_line_id"], default_line.id)
+        self.assertEqual(values["outstanding_account_id"], default_line.payment_account_id.id)

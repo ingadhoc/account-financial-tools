@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account Internal Transfer",
-    "version": "19.0.1.5.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -35,7 +35,7 @@
         "views/report_account_transfer.xml",
     ],
     "demo": [],
-    "installable": False,
+    "installable": True,
     "auto_install": True,
     "application": False,
 }

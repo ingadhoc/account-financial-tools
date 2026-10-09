@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 20:56+0000\n"
-"PO-Revision-Date: 2026-01-21 14:11+0000\n"
+"POT-Creation-Date: 2026-10-08 19:14+0000\n"
+"PO-Revision-Date: 2026-10-08 19:14+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
 "financial-tools-19-0/account-financial-tools-19-0-account_internal_transfer/"
@@ -27,7 +27,88 @@ msgstr ""
 #. module: account_internal_transfer
 #: model:ir.actions.report,print_report_name:account_internal_transfer.action_report_account_transfer
 msgid "'Reporte de transferencia'"
-msgstr "'Reporte de transferencia'"
+msgstr ""
+
+#. module: account_internal_transfer
+#: model:ir.module.module,description:base.module_account_internal_transfer
+msgid ""
+".. |company| replace:: ADHOC SA\n"
+"\n"
+".. |company_logo| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-logo.png\n"
+"   :alt: ADHOC SA\n"
+"   :target: https://www.adhoc.com.ar\n"
+"\n"
+".. |icon| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-icon.png\n"
+"\n"
+".. image:: https://img.shields.io/badge/license-AGPL--3-blue.png\n"
+"   :target: https://www.gnu.org/licenses/agpl\n"
+"   :alt: License: AGPL-3\n"
+"\n"
+"=========================\n"
+"Account Internal Transfer\n"
+"=========================\n"
+"\n"
+"This module adds internal transfers between journals as a payment option:\n"
+"\n"
+"* Internal transfer payments: a payment marked as internal transfer moves money from its journal to a destination journal, which can belong to another branch of the same company. When it is posted, a paired payment is created in the destination journal and both payments are reconciled through the transfer account of the company.\n"
+"* Destination payment method: the user can choose the payment method of the destination journal. It sets the outstanding account of the paired payment, so a destination journal with several payment methods can reach any of them. By default it uses the first available payment method of the destination journal.\n"
+"* Transfer receipt: internal transfers print their own receipt report.\n"
+"\n"
+"Installation\n"
+"============\n"
+"\n"
+"To install this module, you need to:\n"
+"\n"
+"#. Nothing to do\n"
+"\n"
+"Configuration\n"
+"=============\n"
+"\n"
+"To configure this module, you need to:\n"
+"\n"
+"#. Configure an outstanding account on the payment methods of the origin and destination journals.\n"
+"\n"
+"Usage\n"
+"=====\n"
+"\n"
+"To use this module, you need to:\n"
+"\n"
+"#. Create a payment, mark it as internal transfer and select the destination journal.\n"
+"#. Optionally, choose the destination journal payment method.\n"
+"#. Confirm the payment.\n"
+"\n"
+".. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas\n"
+"   :alt: Try me on Runbot\n"
+"   :target: http://runbot.adhoc.com.ar/\n"
+"\n"
+"Bug Tracker\n"
+"===========\n"
+"\n"
+"Bugs are tracked on `GitHub Issues\n"
+"<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please\n"
+"check there if your issue has already been reported. If you spotted it first,\n"
+"help us smashing it by providing a detailed and welcomed feedback.\n"
+"\n"
+"Credits\n"
+"=======\n"
+"\n"
+"Images\n"
+"------\n"
+"\n"
+"* |company| |icon|\n"
+"\n"
+"Contributors\n"
+"------------\n"
+"\n"
+"Maintainer\n"
+"----------\n"
+"\n"
+"|company_logo|\n"
+"\n"
+"This module is maintained by the |company|.\n"
+"\n"
+"To contribute to this module, please visit https://www.adhoc.com.ar.\n"
+msgstr ""
 
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.report_account_transfer_document
@@ -36,9 +117,6 @@ msgid ""
 "                <br/>\n"
 "                <strong>Cuenta de Origen:</strong>"
 msgstr ""
-"<br/>\n"
-"                <br/>\n"
-"                <strong>Cuenta de Origen:</strong>"
 
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.report_account_transfer_document
@@ -46,8 +124,6 @@ msgid ""
 "<br/>\n"
 "                <strong>Concepto:</strong>"
 msgstr ""
-"<br/>\n"
-"                <strong>Concepto:</strong>"
 
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.report_account_transfer_document
@@ -55,8 +131,6 @@ msgid ""
 "<br/>\n"
 "                <strong>Cuenta de Destino:</strong>"
 msgstr ""
-"<br/>\n"
-"                <strong>Cuenta de Destino:</strong>"
 
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.report_account_transfer_document
@@ -64,8 +138,6 @@ msgid ""
 "<br/>\n"
 "                <strong>Total Transacción:</strong>"
 msgstr ""
-"<br/>\n"
-"                <strong>Total Transacción:</strong>"
 
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.view_account_payment_form
@@ -84,7 +156,7 @@ msgstr ""
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.report_account_transfer_document
 msgid "<strong>Creado por:</strong>"
-msgstr "<strong>Creado por:</strong>"
+msgstr ""
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -93,14 +165,24 @@ msgid "A second payment has been created:"
 msgstr "Se ha creado un segundo pago:"
 
 #. module: account_internal_transfer
+#: model:ir.module.module,shortdesc:base.module_account_internal_transfer
+msgid "Account Internal Transfer"
+msgstr "Transferencia interna de cuentas"
+
+#. module: account_internal_transfer
 #: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__available_destination_payment_method_line_ids
 msgid "Available Destination Payment Method Line"
-msgstr ""
+msgstr "Línea de método de pago de destino disponible"
 
 #. module: account_internal_transfer
 #: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__available_partner_bank_ids
 msgid "Available Partner Bank"
 msgstr "Banco del contacto disponible"
+
+#. module: account_internal_transfer
+#: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__available_return_partner_bank_ids
+msgid "Available Return Partner Bank"
+msgstr "Banco de devolución disponible"
 
 #. module: account_internal_transfer
 #: model:ir.ui.menu,name:account_internal_transfer.menu_finance_bank_and_cash
@@ -135,7 +217,7 @@ msgstr "Dominio Diario Destino"
 #. module: account_internal_transfer
 #: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__destination_payment_method_line_id
 msgid "Destination Journal Payment Method"
-msgstr ""
+msgstr "Método de pago del diario de destino"
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -146,17 +228,17 @@ msgstr "Diario Destino"
 #. module: account_internal_transfer
 #: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__display_name
 msgid "Display Name"
-msgstr "Nombre para mostrar"
+msgstr "Nombre a mostrar"
 
 #. module: account_internal_transfer
 #: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__id
 msgid "ID"
-msgstr "ID (identificación)"
+msgstr ""
 
 #. module: account_internal_transfer
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.report_account_transfer_document
 msgid "INV0001"
-msgstr "INV0001"
+msgstr ""
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -183,27 +265,29 @@ msgid "Paired Payment"
 msgstr "Pago Emparejado"
 
 #. module: account_internal_transfer
+#: model:ir.model,name:account_internal_transfer.model_account_payment
+msgid "Payment"
+msgstr "Pago"
+
+#. module: account_internal_transfer
 #: model:ir.model.fields,help:account_internal_transfer.field_account_payment__destination_payment_method_line_id
 msgid ""
 "Payment method line used on the paired payment created in the destination "
 "journal. It determines the outstanding account of that payment."
 msgstr ""
-
-#. module: account_internal_transfer
-#: model:ir.model,name:account_internal_transfer.model_account_payment
-msgid "Payments"
-msgstr "Pagos"
+"Línea de método de pago usada en el pago emparejado que se crea en el diario "
+"de destino. Determina la cuenta pendiente de ese pago."
 
 #. module: account_internal_transfer
 #: model:ir.actions.report,name:account_internal_transfer.action_report_account_transfer
 msgid "Reporte de Transferencia"
-msgstr "Reporte de Transferencia"
+msgstr ""
 
 #. module: account_internal_transfer
 #. odoo-python
 #: code:addons/account_internal_transfer/models/account_payment.py:0
 msgid "The destination journal must be different from the source journal."
-msgstr ""
+msgstr "El diario de destino debe ser distinto del diario de origen."
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -212,6 +296,8 @@ msgid ""
 "The destination payment method %(method)s is not available on the "
 "destination journal %(journal)s."
 msgstr ""
+"El método de pago de destino %(method)s no está disponible en el diario de "
+"destino %(journal)s."
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -228,6 +314,8 @@ msgid ""
 "The selected 'Destination Journal' does not belong to the selected "
 "destination company."
 msgstr ""
+"El 'Diario de destino' seleccionado no pertenece a la compañía de destino "
+"seleccionada."
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -267,21 +355,3 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_internal_transfer.view_account_payment_form
 msgid "e.g. Cash"
 msgstr "ej. Caja"
-
-#~ msgid ""
-#~ "<div class=\"alert alert-warning\" role=\"alert\"><i class=\"fa fa-"
-#~ "exclamation-triangle\"></i> This payment is in <strong>%s</strong> state "
-#~ "but the paired one is in <strong>%s</strong> state. Ensure both are in "
-#~ "the same state when finished making changes. <a href=\"%s\" class=\"btn "
-#~ "btn-sm btn-warning\" style=\"margin-left: 10px;\"><i class=\"fa fa-"
-#~ "external-link\"></i> Go to Paired Payment</a></div>"
-#~ msgstr ""
-#~ "<div class=\"alert alert-warning\" role=\"alert\"><i class=\"fa fa-"
-#~ "exclamation-triangle\"></i> Este pago está en estado <strong>%s</strong> "
-#~ "pero el pago relacionado está en estado <strong>%s</strong>. Asegúrese de "
-#~ "que ambos estén en el mismo estado cuando termine de hacer cambios. <a "
-#~ "href=\"%s\" class=\"btn btn-sm btn-warning\" style=\"margin-left: 10px;"
-#~ "\"><i class=\"fa fa-external-link\"></i> Ir al Pago Emparejado</a></div>"
-
-#~ msgid "Show Warning"
-#~ msgstr "Mostrar Advertencia"
