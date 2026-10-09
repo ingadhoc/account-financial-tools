@@ -60,3 +60,36 @@ class TestPaymentCompanyFromBranch(AccountTestInvoicingCommon):
 
     def test_standing_on_the_company_of_the_debt_changes_nothing(self):
         self.assertEqual(self._wizard_standing_on(self.parent).company_id, self.parent)
+
+    def _unshare_parent_bank_and_give_the_branch_its_own(self):
+        """Lo que trae una base real: el banco de la padre no se comparte, y la sucursal tiene el suyo.
+
+        En modo test todo diario nace compartido a todas las sucursales, así que el escenario se
+        arma a mano.
+        """
+        parent_bank = self.company_data["default_journal_bank"]
+        parent_bank.shared_to_branches = "none"
+        branch_bank = self.env["account.journal"].create(
+            {"name": "Banco sucursal", "code": "BSUC", "type": "bank", "company_id": self.same_entity.id}
+        )
+        return parent_bank, branch_bank
+
+    def test_the_branch_is_offered_only_the_journals_it_can_use(self):
+        parent_bank, branch_bank = self._unshare_parent_bank_and_give_the_branch_its_own()
+
+        wizard = self._wizard_standing_on(self.same_entity)
+
+        self.assertEqual(wizard.journal_id, branch_bank)
+        self.assertIn(branch_bank, wizard.available_journal_ids)
+        self.assertNotIn(parent_bank, wizard.available_journal_ids)
+        payment = wizard._create_payments()
+        self.assertEqual(payment.company_id, self.same_entity)
+        self.assertEqual(self.invoice.payment_state, self.env["account.move"]._get_invoice_in_payment_state())
+
+    def test_another_legal_entity_keeps_the_journals_of_the_debt(self):
+        parent_bank, _branch_bank = self._unshare_parent_bank_and_give_the_branch_its_own()
+
+        wizard = self._wizard_standing_on(self.other_entity)
+
+        self.assertEqual(wizard.company_id, self.parent)
+        self.assertIn(parent_bank, wizard.available_journal_ids)

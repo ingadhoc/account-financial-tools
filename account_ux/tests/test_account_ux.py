@@ -63,13 +63,14 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
         # Asegurar que la moneda ARS está activa
         self.currency_ars.write({"active": True})
 
-        # Crear tasa de cambio inicial para ARS (por ejemplo, 1000 ARS = 1 USD)
+        # Crear tasa de cambio inicial para ARS (por ejemplo, 1000 ARS = 1 USD). Va con fecha de ayer
+        # porque una cotización rige desde el día siguiente a su fecha.
         CurrencyRate = self.env["res.currency.rate"]
         rate_initial = CurrencyRate.create(
             {
                 "currency_id": self.currency_ars.id,
                 "company_id": self.company_usd.id,
-                "name": self.today,
+                "name": fields.Date.subtract(self.today, days=1),
                 "rate": 1000.0,  # 1000 ARS por 1 USD
             }
         )

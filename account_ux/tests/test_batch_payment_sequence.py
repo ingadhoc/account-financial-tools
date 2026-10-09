@@ -11,12 +11,13 @@ class TestBatchPaymentSequence(common.TransactionCase):
         communication = company.get_next_batch_payment_communication()
 
         self.assertTrue(company.batch_payment_sequence_id, "the sequence should have been created")
-        self.assertTrue(communication.startswith("BATCH/"), "got %s" % communication)
+        self.assertTrue(communication.startswith("GROUP/"), "got %s" % communication)
 
     def test_communication_keeps_existing_sequence(self):
         company = self.env.company.sudo()
-        sequence = company._create_batch_payment_sequence()
-        company.batch_payment_sequence_id = sequence
+        company.batch_payment_sequence_id = False
+        company._create_batch_payment_sequence()
+        sequence = company.batch_payment_sequence_id
 
         company.get_next_batch_payment_communication()
 

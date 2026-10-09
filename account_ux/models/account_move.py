@@ -240,7 +240,7 @@ class AccountMove(models.Model):
         # The _render_qweb_pdf_prepare_streams method does not correctly generate individual PDF streams when the PDF outlines are missing or invalid.
         # so we set the limit into 1 in order to ensure that each PDF is generated separately.
         # mention here https://github.com/odoo/odoo/pull/230813
-        # TODO v20: Check if we still need this workaround.
+        # TODO v21: Check if we still need this workaround.
         job_count = 1
         super()._cron_account_move_send(job_count=job_count)
 

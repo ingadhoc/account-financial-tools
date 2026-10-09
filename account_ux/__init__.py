@@ -6,6 +6,7 @@ from . import reports
 from . import models
 from . import wizards
 from .hooks import uninstall_hook
+from odoo import api
 from odoo.fields import Domain
 from odoo.addons.account.models.account_payment import AccountPayment
 from odoo.addons.account.models.account_move import AccountMove
@@ -19,6 +20,7 @@ def _change_receipt_name(env):
 
 
 def monkey_patches():
+    @api.depends("payment_type", "company_id")
     def _compute_available_journal_ids_patch(self):
         """
         Volvemos a usar _check_company_domain que odoo lo abandonó en 19
@@ -39,7 +41,7 @@ def monkey_patches():
         resulting method.
         """
         if method1:
-            for attr in ("_returns",):
+            for attr in ("_returns", "_depends", "_depends_context"):
                 if hasattr(method1, attr) and not hasattr(method2, attr):
                     setattr(method2, attr, getattr(method1, attr))
         return method2

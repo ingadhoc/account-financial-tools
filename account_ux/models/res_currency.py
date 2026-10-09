@@ -31,14 +31,14 @@ class ResCurrency(models.Model):
         el valor de una habilitación deliberada.
         """
         params = self.env["ir.config_parameter"].sudo()
-        if not params.get_param(ALLOW_ROUNDING_EDIT_PARAM):
-            params.set_param(ALLOW_ROUNDING_EDIT_PARAM, "False")
+        if not params.get_str(ALLOW_ROUNDING_EDIT_PARAM):
+            params.set_bool(ALLOW_ROUNDING_EDIT_PARAM, False)
 
     def _is_rounding_edit_allowed(self):
         """Whether the rounding factor can be changed, set by the system parameter
         ``account_ux.allow_currency_rounding_edit`` (False by default)."""
         params = self.env["ir.config_parameter"].sudo()
-        return params.get_param(ALLOW_ROUNDING_EDIT_PARAM, "False").strip().lower() in ("true", "1")
+        return params.get_bool(ALLOW_ROUNDING_EDIT_PARAM)
 
     @api.model
     def _skip_rounding_guard(self):
