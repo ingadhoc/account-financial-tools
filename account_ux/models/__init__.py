@@ -5,7 +5,6 @@
 
 from . import shared_to_branches_mixin
 from . import account_account
-from . import account_group
 from . import account_journal
 from . import account_move_line
 from . import res_company

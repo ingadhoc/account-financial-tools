@@ -15,7 +15,7 @@ class TestLegalEntity(TransactionCase):
     ancestro más cercano y por eso mete a la auxiliar sin CUIT adentro del grupo
     fiscal de la padre.
 
-    Las compañías se crean sin país a propósito: ``base_vat`` solo valida el formato
+    Las compañías se crean sin país a propósito: ``base`` solo valida el formato
     del CUIT cuando puede determinar un país (``_run_vat_checks``), así que sin país
     los valores de prueba pasan tal cual y el test no depende de la localización.
     """

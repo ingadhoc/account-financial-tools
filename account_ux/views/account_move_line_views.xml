@@ -50,14 +50,14 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_payment_tree"/>
         <field name="arch" type="xml">
-            <field name="amount_residual" position="before">
+            <field name="residual_at_date" position="before">
                 <field name="balance" sum="Total Balance" optional="hide" readonly="1"/>
             </field>
             <field name="discount_amount_currency" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
             <!-- hacemos siempre visible este campo porque a partir de 16 odoo lo calcula siempre (moneda igual o distinta a la cia). Luego, en las agrupaciones confundia porque sumaba todo pero en realidad el usuario solo veia los que eran en moneda distinta -->
-            <field name="amount_residual_currency" position="attributes">
+            <field name="residual_currency_at_date" position="attributes">
                 <attribute name="invisible">not is_account_reconcile</attribute>
             </field>
         </field>

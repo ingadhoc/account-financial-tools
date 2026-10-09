@@ -152,8 +152,12 @@ class AccountJournal(models.Model):
 
     def _compute_show_warning_shared_to_branches(self):
         for journal in self:
+            # l10n_latam_use_documents comes from l10n_latam_invoice_document, which is not a dependency
             journal.show_warning_shared_to_branches = (
-                journal.type in ["sale", "purchase"] and not journal.company_id.vat and journal.l10n_latam_use_documents
+                journal.type in ["sale", "purchase"]
+                and not journal.company_id.vat
+                and "l10n_latam_use_documents" in journal._fields
+                and journal.l10n_latam_use_documents
             )
 
     @api.model

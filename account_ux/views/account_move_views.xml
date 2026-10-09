@@ -32,7 +32,7 @@
                     <button name="action_update_fpos_values" type="object"
                         string=" Update Taxes"
                         help="Recompute all taxes based on this fiscal position"
-                        class="btn-link mb-1 px-0" icon="fa-refresh"
+                        class="btn-link mb-1 px-0" icon="refresh"
                         confirm="This will update all taxes based on the currently selected fiscal position."
                         invisible="state in ['cancel', 'posted']"/>
                 </div>
@@ -44,7 +44,7 @@
                     <button name="action_update_fpos_values" type="object"
                         string=" Update Taxes"
                         help="Recompute all taxes based on this fiscal position"
-                        class="btn-link mb-1 px-0" icon="fa-refresh"
+                        class="btn-link mb-1 px-0" icon="refresh"
                         confirm="This will update all taxes based on the currently selected fiscal position."
                         invisible="state in ['cancel', 'posted']"/>
                 </div>
@@ -119,7 +119,7 @@
 
             <!-- Reemplazar el widget del calendario por el botón de cambio de moneda en línea -->
             <xpath expr="//widget[@name='account_pick_currency_date']" position="replace">
-                <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="fa-exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
+                <button name="%(action_account_change_currency)d" type="action" invisible="state != 'draft'" icon="currency_exchange" class="btn-link" title="Change Currency and Rate" groups="base.group_multi_currency"/>
             </xpath>
 
 

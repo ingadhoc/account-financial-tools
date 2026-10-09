@@ -19,7 +19,6 @@
                 <field name="price_subtotal" position="move"/>
                 <field name="total_cc"  optional="hide" sum="Total"/>
                 <field name="currency_id" optional="hide"/>
-                <field name="current_currency_id" optional="hide" column_invisible="True"/>
                 <field name="company_currency_id" optional="hide" column_invisible="True"/>
             </field>
             </field>

@@ -2,8 +2,8 @@ from lxml import etree
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-# ``base_vat`` already uses the slash as the canonical "no valid Tax ID" value
-# (``res_partner._fix_vat_number``). Here it also carries an intent: a company
+# Core already reads the slash as "no Tax ID" (``res.partner.has_vat``). Here it
+# also carries an intent: a company
 # with ``/`` is explicitly declaring that it is NOT the parent's legal entity.
 VAT_NOT_APPLICABLE = "/"
 
@@ -234,8 +234,12 @@ class ResCompany(models.Model):
         theirs. Only a head propagates, which is also what stops the recursion: the
         companies written below are not heads, so their own ``write`` propagates nothing.
         """
-        res = super().write(vals)
         changed = sorted(set(vals) & set(self._get_legal_entity_delegated_field_names()))
+        if changed:
+            # Recomputing a stored field validates its constraints, so a pending entity head
+            # must be settled before the head's value changes and not halfway the propagation.
+            self.env["res.company"].sudo().flush_model(["legal_entity_root_id"])
+        res = super().write(vals)
         if changed:
             for company in self:
                 if company.legal_entity_root_id != company:
@@ -311,41 +315,18 @@ class ResCompany(models.Model):
                 )
         return arch, view
 
-    def _create_batch_payment_sequence(self):
-        """Sequence used for the batch payment communication, same values as the core default."""
-        self.ensure_one()
-        return (
-            self.env["ir.sequence"]
-            .sudo()
-            .create(
-                {
-                    "name": _("Batch Payment Number Sequence"),
-                    "implementation": "no_gap",
-                    "padding": 5,
-                    "use_date_range": True,
-                    "company_id": self.id,
-                    "prefix": "BATCH/%(year)s/",
-                }
-            )
-        )
-
     def get_next_batch_payment_communication(self):
         """Create the batch payment sequence when the company has none.
 
-        Core only creates it on the `batch_payment_sequence_id` default, so it is only there for
-        companies created after `account` was installed. A company that predates the field (any
-        database migrated from a version where it did not exist), the main company of a fresh
-        database (created by `base`, before `account` adds the field) and any duplicated company
-        (the field is `copy=False`) all end up with an empty value. Then this method calls
-        `next_by_id()` on an empty recordset, and since `use_date_range` reads False the no-gap
-        branch queries `ir_sequence` with `id=false`, crashing with
-        "operator does not exist: integer = boolean".
+        Core creates it on company creation and on ``account`` install, but not for a company
+        that reaches an update without it (e.g. a database migrated from a version where the
+        field did not exist). Then ``next_by_id()`` runs on an empty recordset, and since
+        ``use_date_range`` reads False the no-gap branch queries ``ir_sequence`` with
+        ``id=false``, crashing with "operator does not exist: integer = boolean".
 
         Only paying several customer invoices at once reaches this code: outbound payments build
         the communication from the moves references instead.
         """
         self.ensure_one()
-        company_sudo = self.sudo()
-        if not company_sudo.batch_payment_sequence_id:
-            company_sudo.batch_payment_sequence_id = company_sudo._create_batch_payment_sequence()
+        self.sudo()._create_batch_payment_sequence()
         return super().get_next_batch_payment_communication()

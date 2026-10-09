@@ -14,7 +14,7 @@ class TestSharedToBranches(TransactionCase):
     declares the same Tax ID, and an auxiliary company with none of its own, which is
     therefore a different legal entity.
 
-    Companies are created without a country on purpose: ``base_vat`` only validates the Tax
+    Companies are created without a country on purpose: ``base`` only validates the Tax
     ID format when it can tell the country, so the test values pass as they are and the test
     does not depend on any localization.
     """
