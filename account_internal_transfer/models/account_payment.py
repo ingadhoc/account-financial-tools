@@ -189,17 +189,38 @@ class AccountPayment(models.Model):
             paired_payment.message_post(body=body)
             body = _("A second payment has been created:") + paired_payment._get_html_link()
             payment.message_post(body=body)
+            payment._reconcile_paired_transfer_lines()
 
+    def _reconcile_paired_transfer_lines(self):
+        """Reconcile the transfer account lines of each payment with the ones of its paired payment.
+
+        Resetting a leg to draft unreconciles those lines, so this runs on every confirmation and
+        not only when the pair is created. Nothing happens while the other leg is not posted: the
+        last leg confirmed reconciles the pair.
+        """
+        for payment in self:
+            paired_payment = payment.paired_internal_transfer_payment_id
+            # Both legs may be posted in the same batch: the first one posted finds the other
+            # still in draft and skips, the second one reconciles the pair.
+            if payment.move_id.state != "posted" or paired_payment.move_id.state != "posted":
+                continue
             lines = (payment.move_id.line_ids + paired_payment.move_id.line_ids).filtered(
                 lambda l: (l.account_id == payment.destination_account_id and not l.reconciled)
             )
-            lines.reconcile()
+            # A single open line has no counterpart here: the other one was reconciled by hand
+            # with something else while this leg was in draft, and reconcile() would run for nothing.
+            if len(lines) > 1:
+                lines.reconcile()
 
     def action_post(self):
         super().action_post()
-        self.filtered(
-            lambda pay: (pay.is_internal_transfer and not pay.paired_internal_transfer_payment_id)
+        transfers = self.filtered("is_internal_transfer")
+        transfers.filtered(
+            lambda pay: not pay.paired_internal_transfer_payment_id
         )._create_paired_internal_transfer_payment()
+        # A leg reset to draft and confirmed again already has its pair: only the reconciliation
+        # of the transfer lines is missing, since the reset to draft removed it.
+        transfers.filtered("paired_internal_transfer_payment_id")._reconcile_paired_transfer_lines()
 
     def action_open_destination_journal(self):
         """Redirect the user to this destination journal.
