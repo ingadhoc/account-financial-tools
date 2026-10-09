@@ -16,7 +16,7 @@ class TestLegalEntityFiscalYear(TransactionCase):
     and a company that heads its own entity is free and becomes the reference for its own
     subtree.
 
-    Companies are created without a country on purpose: ``base_vat`` only validates the
+    Companies are created without a country on purpose: ``base`` only validates the
     format of a Tax ID when it can determine a country, so the test values pass as they
     are and the test does not depend on a localization.
     """

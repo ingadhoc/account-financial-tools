@@ -13,15 +13,12 @@ class TestPaymentMissingJournalEntry(AccountTestInvoicingCommon):
 
     Odoo genera el asiento del pago sólo como efecto colateral del write del
     ``state`` (``account.payment.write``). Si el pago quedó sin asiento y su
-    ``state`` ya no es ``draft``/``in_process``, ``action_post`` no escribe nada
+    ``state`` ya no es ``draft``/``paid``, ``action_post`` no escribe nada
     y el asiento no se regenera nunca: el pago queda confirmado sin asiento y no
     hay forma de recuperarlo desde la interfaz.
 
-    Se da con diarios que liquidan contra cuentas ``outstanding`` (las que no son
-    ``asset_cash``): sin asiento el pago no tiene residual, ``_compute_state`` lo
-    marca ``paid``, y entonces ninguno de los dos ``filtered()`` de
-    ``action_post`` lo alcanza. Con cuenta de banco/efectivo no pasa, porque el
-    primer ``filtered()`` escribe ``paid`` y ese write sí genera el asiento.
+    Sin asiento el pago no tiene residual, ``_compute_state`` lo marca
+    ``reconciled``, y entonces el ``filtered()`` de ``action_post`` no lo alcanza.
     """
 
     @classmethod
@@ -77,27 +74,27 @@ class TestPaymentMissingJournalEntry(AccountTestInvoicingCommon):
         payment.invalidate_recordset(["state"])
         self.assertEqual(payment.state, state)
 
-    def test_action_post_regenerates_journal_entry_on_paid_payment(self):
+    def test_action_post_regenerates_journal_entry_on_reconciled_payment(self):
         payment = self._create_posted_payment()
-        self._orphan_payment(payment, "paid")
+        self._orphan_payment(payment, "reconciled")
 
         payment.action_post()
 
-        self.assertTrue(payment.move_id, "action_post debe regenerar el asiento del pago en paid.")
+        self.assertTrue(payment.move_id, "action_post debe regenerar el asiento del pago en reconciled.")
         self.assertEqual(payment.move_id.state, "posted")
         self.assertEqual(
             payment.move_id.line_ids.filtered(lambda line: line.account_id == payment.outstanding_account_id).balance,
             100.0,
         )
 
-    def test_action_post_regenerates_journal_entry_on_in_process_payment(self):
-        """El pago en ``in_process`` lo cubre el write de core, pero el resultado debe ser el mismo."""
+    def test_action_post_regenerates_journal_entry_on_paid_payment(self):
+        """El pago en ``paid`` lo cubre el write de core, pero el resultado debe ser el mismo."""
         payment = self._create_posted_payment()
-        self._orphan_payment(payment, "in_process")
+        self._orphan_payment(payment, "paid")
 
         payment.action_post()
 
-        self.assertTrue(payment.move_id, "action_post debe regenerar el asiento del pago en in_process.")
+        self.assertTrue(payment.move_id, "action_post debe regenerar el asiento del pago en paid.")
         self.assertEqual(payment.move_id.state, "posted")
 
     def test_journal_entry_is_regenerated_before_the_rest_of_action_post(self):
@@ -107,10 +104,9 @@ class TestPaymentMissingJournalEntry(AccountTestInvoicingCommon):
         ``account_payment_pro._reconcile_after_post`` lo reconcilia contra la deuda leyendo
         ``move_id.line_ids``. Si el asiento se regenerara al final, ese paso no encuentra
         nada y el pago queda con asiento nuevo pero desconciliado de la factura que saldaba
-        (con cuenta de efectivo no se ve, porque ahí el asiento se genera dentro del core).
         """
         payment = self._create_posted_payment()
-        self._orphan_payment(payment, "paid")
+        self._orphan_payment(payment, "reconciled")
         moves_seen = []
         core_action_post = AccountPayment.action_post
 
@@ -132,7 +128,7 @@ class TestPaymentMissingJournalEntry(AccountTestInvoicingCommon):
         """El asiento regenerado se fecha como el pago, no el día en que se repostea."""
         payment = self._create_posted_payment()
         payment.date = "2026-07-01"
-        self._orphan_payment(payment, "paid")
+        self._orphan_payment(payment, "reconciled")
 
         payment.action_post()
 

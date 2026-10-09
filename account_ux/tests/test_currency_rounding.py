@@ -24,7 +24,7 @@ class TestCurrencyRounding(TransactionCase):
         with self.assertRaisesRegex(UserError, "rounding factor"):
             self.currency.rounding = 0.0001
 
-        self.params.set_param(ALLOW_ROUNDING_EDIT_PARAM, "True")
+        self.params.set_bool(ALLOW_ROUNDING_EDIT_PARAM, True)
         self.currency.invalidate_recordset(["rounding_edit_allowed"])
         self.assertTrue(self.currency.rounding_edit_allowed)
         self.currency.rounding = 0.0001
@@ -57,8 +57,8 @@ class TestCurrencyRounding(TransactionCase):
         """The module data creates it disabled, without overriding an enabled one."""
         self.params.search([("key", "=", ALLOW_ROUNDING_EDIT_PARAM)]).unlink()
         self.env["res.currency"]._seed_rounding_edit_param()
-        self.assertEqual(self.params.get_param(ALLOW_ROUNDING_EDIT_PARAM), "False")
+        self.assertEqual(self.params.get_str(ALLOW_ROUNDING_EDIT_PARAM), "False")
 
-        self.params.set_param(ALLOW_ROUNDING_EDIT_PARAM, "True")
+        self.params.set_bool(ALLOW_ROUNDING_EDIT_PARAM, True)
         self.env["res.currency"]._seed_rounding_edit_param()
-        self.assertEqual(self.params.get_param(ALLOW_ROUNDING_EDIT_PARAM), "True")
+        self.assertEqual(self.params.get_str(ALLOW_ROUNDING_EDIT_PARAM), "True")

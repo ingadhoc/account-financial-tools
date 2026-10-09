@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Account UX",
-    "version": "19.0.1.29.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -30,12 +30,11 @@
     "depends": [
         "account_background_post",
         "sale",
-        "base_vat",
         "account_debit_note",
     ],
     "data": [
         "security/account_ux_security.xml",
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "data/mail_template_data.xml",
         "data/ir_config_parameter_data.xml",
         "data/account_automatic_entry_actions.xml",
@@ -59,7 +58,7 @@
         "wizards/account_automatic_entry_wizard_views.xml",
     ],
     "demo": [],
-    "installable": False,
+    "installable": True,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
     # por build de travis (ej sipreco) y queremos que para runbot se auto
     # instale
