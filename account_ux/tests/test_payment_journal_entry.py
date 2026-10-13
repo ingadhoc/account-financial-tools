@@ -1,9 +1,11 @@
 # © ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from contextlib import suppress
 from unittest.mock import patch
 
 from odoo.addons.account.models.account_payment import AccountPayment
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 
@@ -139,6 +141,9 @@ class TestPaymentMissingJournalEntry(AccountTestInvoicingCommon):
         payment = self._create_posted_payment()
         self._orphan_payment(payment, "canceled")
 
-        payment.action_post()
+        # With account_payment_pro installed, posting a canceled payment raises instead of doing
+        # nothing; either way it must not get a new entry.
+        with suppress(UserError):
+            payment.action_post()
 
         self.assertFalse(payment.move_id, "Un pago cancelado no debe generar un asiento nuevo.")
