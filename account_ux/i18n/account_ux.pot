@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0+e\n"
+"Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 13:52+0000\n"
-"PO-Revision-Date: 2026-09-29 13:52+0000\n"
+"POT-Creation-Date: 2026-10-13 12:05+0000\n"
+"PO-Revision-Date: 2026-10-13 12:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,6 +27,235 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/wizards/account_automatic_entry_wizard.py:0
 msgid "%d moves"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.module.module,description:base.module_account_ux
+msgid ""
+".. |company| replace:: ADHOC SA\n"
+"\n"
+".. |company_logo| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-logo.png\n"
+"   :alt: ADHOC SA\n"
+"   :target: https://www.adhoc.com.ar\n"
+"\n"
+".. |icon| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-icon.png\n"
+"\n"
+".. image:: https://img.shields.io/badge/license-AGPL--3-blue.png\n"
+"   :target: https://www.gnu.org/licenses/agpl\n"
+"   :alt: License: AGPL-3\n"
+"\n"
+"==========\n"
+"Account UX\n"
+"==========\n"
+"\n"
+"Several Improvements to accounting:\n"
+"\n"
+"#. Add an option per company on accounting settings to force reconciliation on company currency (more info on tooltip/help of that setting)\n"
+"#. On taxes menu allow when searching by name search also by description\n"
+"#. Make subtotal included / excluded optional and not related to tax b2b/b2c\n"
+"#. Add reconciliations menu on accounting (only with debug mode)\n"
+"#. Add on journal items availability to search by analytic distribution\n"
+"#. By default, when creating invoices manually, actual partner is choose, with this module the partner salesperson will be choosen. The same applies when an invoice is duplicated.\n"
+"#. Make origin always visible on invoices. We also think is a good idea to make it editable in case you want to link a manual invoice to, for eg, a sale order\n"
+"#. Adds possibility of filtering and grouping by company on invoices.\n"
+"#. Add button \"Delete Number\" in cancelled customer invoices\n"
+"#. Add maturity date on manual journal entries\n"
+"#. Add internal notes on invoices (account.move) to be used later by sales / pickings\n"
+"#. Add wizard to transfer accounting entries between partners. Adds the action\n"
+"   \"Transfer Accounting Entries\" on invoices to move amounts from the\n"
+"   original partner to a destination partner. Supports multiple selected\n"
+"   invoices, previews the resulting journal entries and creates balanced\n"
+"   transfer moves.\n"
+"#. Show the \"Reversal of\" field always, like the origin field, not matter if the field is set or not or the type of account.move.\n"
+"#. Add filter by vat in the partners list views.\n"
+"#. Add ``shared_to_branches`` on ``account.journal`` to let a journal choose how far down the branch tree it can be used.\n"
+"#. Show a warning on sale/purchase journals when the company has no VAT number configured and the journal uses Latin American documents (``l10n_latam_use_documents``). This alert helps detect misconfigured journals that may cause issues with document sequencing.\n"
+"#. When registering a payment from an invoice of another company of the same branch\n"
+"   tree, book the payment in the company the user is standing on whenever the whole\n"
+"   debt is the same legal entity as that company. Odoo always takes the company out of\n"
+"   the debt (the shallowest company of the lines, or the root one for sibling\n"
+"   companies), so paying from a branch handed the payment to the parent. In that case\n"
+"   the wizard offers, and picks by default, the journals the paying company can use (its\n"
+"   own first), so a parent journal not shared to the branch is never proposed. For a debt\n"
+"   of another legal entity nothing changes: the company of the debt travels, and the\n"
+"   field stays readonly in both cases.\n"
+"#. Let an entry line be used anywhere inside its legal entity, and not only in the\n"
+"   company that owns it (``account.move.line._check_company_domain``). Odoo's default for\n"
+"   this model is the strict one and it is symmetric, so a payment of a branch could not\n"
+"   settle a debt of its parent nor the other way round. Lines of a company of **another**\n"
+"   legal entity stay out, which is the guarantee that is kept.\n"
+"#. Add a single criterion for \"which companies are the same legal entity\" inside a\n"
+"   branch hierarchy, as the stored and indexed field ``legal_entity_root_id`` on\n"
+"   ``res.company``, plus the method ``_get_legal_entity_companies()``:\n"
+"\n"
+"   * Two companies are the same legal entity only when they **explicitly declare the\n"
+"     same VAT number** and every company in the chain between them declares it too.\n"
+"   * A company with an empty VAT number, or with ``/``, is **always its own legal\n"
+"     entity**: it never takes its parent's VAT number. This diverges on purpose from\n"
+"     the native criterion of ``account_reports``\n"
+"     (``res.company._get_branches_with_same_vat``), which considers an empty VAT\n"
+"     number to be the same as the closest parent's one and therefore includes\n"
+"     auxiliary companies in the parent's tax reports and returns.\n"
+"   * A VAT number cannot reappear below a break in the chain (parent ``123`` / branch\n"
+"     without VAT number / sub-branch ``123`` is rejected), so that \"same legal entity\"\n"
+"     never depends on how deep in the hierarchy you look.\n"
+"\n"
+"   The field is stored so the criterion can be used where the VAT number itself cannot:\n"
+"   record rules and report filters. ``account_accountant_ux`` is the module that\n"
+"   plugs it into the reports of ``account_reports``.\n"
+"#. Delegate the accounting policy of a legal entity to the head of that entity instead of\n"
+"   to the root company, as a second tier of the delegation core does\n"
+"   (``res.company._get_legal_entity_delegated_field_names``). The tier holds\n"
+"   ``fiscalyear_last_day``, ``fiscalyear_last_month``, ``account_storno`` and\n"
+"   ``tax_exigibility`` — the year the entity closes and files with, whether it reverses\n"
+"   with storno accounting and whether it uses cash basis, all three decided by whoever\n"
+"   signs the return. Inside a legal entity the value is still shared and still enforced,\n"
+"   with the same five mechanisms core uses —the onchange, the copy on ``create``, the\n"
+"   propagation on ``write``, a constraint and readonly in the view— but the comparison\n"
+"   stops at the boundary of the entity, so a company that heads its own one is free and\n"
+"   becomes the reference for its own subtree. Declaring the parent's VAT number on a\n"
+"   company that closes its year on another date is rejected, so an entity never disagrees\n"
+"   with itself.\n"
+"\n"
+"   ``currency_id`` is the only field left delegated to the root, and on purpose: under\n"
+"   branches the currency —and with it the chart of accounts and the stock valuation— is\n"
+"   meant to be identical across the whole tree, whatever the VAT number says.\n"
+"\n"
+"   What this does **not** do, so nobody reads more into it: it makes these *settable* per\n"
+"   legal entity, and nothing else. Two things still break with uneven fiscal years, and\n"
+"   each one is its own development — the lock dates, which core resolves by walking the\n"
+"   whole chain of parents and taking the maximum (closing at the root still blocks a\n"
+"   branch, and the hard lock admits no exception), and the general ledger's cut of the\n"
+"   year result, which uses a single date for every selected company and therefore gives a\n"
+"   wrong number with no error. ``account_accountant_ux`` carries the other half of the\n"
+"   change, the one that needs Enterprise: who may declare an explicit\n"
+"   ``account.fiscal.year`` and who reads it.\n"
+"#. Turn \"is this record shared to the branches?\" into \"how far does it reach?\", as the\n"
+"   ``shared.to.branches.mixin`` abstract model, so that every model that shares records down a\n"
+"   branch tree answers it the same way. The field ``shared_to_branches`` has three values:\n"
+"\n"
+"   * **All branches**: every company below this one, whatever its VAT number. This is what\n"
+"     the mechanism did before, so it is the value every existing record is migrated to.\n"
+"   * **Same legal entity**: only the branches that are the same legal entity, resolved with\n"
+"     ``legal_entity_root_id`` above. An auxiliary company with no VAT number of its own is a\n"
+"     different legal entity and is left out.\n"
+"   * **Not shared**: only the company that owns the record.\n"
+"\n"
+"   The mixin gives the field, a Python check (``_is_shared_to_company``) and a domain\n"
+"   (``_shared_to_branches_domain``) whose terms are all indexed columns, so the scope can be\n"
+"   resolved in a record rule too. What it does **not** decide is the default per model nor\n"
+"   where the scope is applied, because neither is the same everywhere:\n"
+"\n"
+"   * On ``account.journal`` it is applied on the company domain and on the access rule\n"
+"     ``account.journal_comp_rule`` (``ir.access``), and the value follows the journal type as before\n"
+"     (miscellaneous and purchase journals are shared, the rest are not).\n"
+"   * On ``account.fiscal.position`` it is applied on the **autodetection**\n"
+"     (``_get_fpos_validation_functions``) and not on the company domain: narrowing the domain\n"
+"     would make every document that already references the parent's position fail its company\n"
+"     check. So the position stays selectable by hand and keeps working in the company that owns\n"
+"     it — only the automatic match is scoped. New positions reach all branches.\n"
+"#. This replace original odoo wizard for changing currency on an invoice with serveral improvements:\n"
+"\n"
+"   * Preview and allow to change the rate thats is going to be used.\n"
+"   * Log the currency change on the chatter.\n"
+"   * Add this functionality to supplier invoices.\n"
+"   * Change currency wizard only works when multi currency is activated\n"
+"   * The change button is shown on draft invoices to users of the multi currency group\n"
+"   * We can restrict the change of the currency for a group of users by adding them to \"Restrict Change Invoice Currency Exchange\" group\n"
+"\n"
+"#. Add amount_total and amount_untaxed in the invoice tree view as optional and hide fields\n"
+"#. Make Debit Note Origin field visible and editable by the user in the account.move form view. This will help to link new debit notes with the original invoice when this ones were not created from invoices \"Add Debit Note\" action button directly.\n"
+"#. Add field 'memo' in view_account_payment_tree.\n"
+"#. On payments, fix the use case where a journal is only suitable for one kind of operation (lets said inbound) and it is selected but then the user selects \"outbound\" type. Without this fix, the journals remains selected\n"
+"#. Upgraded Invoice Analysis report, tree view added and new fields\n"
+"#. Hide the chart template reload button and the Sale Receipts setting in accounting settings\n"
+"#. Add several imrpovements on payment report:\n"
+"   * Display table of debt being cancelled only if there is debt being cancelled\n"
+"   * When all invoices being paid are of a second currency and the same currency, hide a column that doesn´t add value\n"
+"   * Not yet improved, if you paid invoices of different currencies the report is not so good. This is not improved yet as it is not a common use case\n"
+"#. Add tracking to fiscal position field on invoices so changes are logged in the chatter\n"
+"#. Changing the fiscal position of an invoice recomputes the taxes of its lines.\n"
+"#. Send the customer invoice by email when it is posted, if its journal has an email template\n"
+"   (also from the mass confirmation and from background posting, where the sending is left to\n"
+"   the native sending cron). A partner without email, or an error rendering the document, is\n"
+"   logged on the chatter instead of blocking the posting. The invoice and credit note email\n"
+"   templates attach the invoice report.\n"
+"#. Show the invoice currency rate as \"1 currency = X company currency\", editable while the\n"
+"   invoice is a draft with a date; every change is logged on the chatter and a zero rate is\n"
+"   rejected. Invoices without date show an alert, and their rate is refreshed when posted.\n"
+"#. When an invoice has no payment term, its due date cannot be earlier than the invoice date.\n"
+"#. On customer invoices the accounting date must be the same as the invoice date.\n"
+"#. Check the company consistency of the lines (taxes and accounts included) when posting.\n"
+"#. Duplicating an invoice drops the archived taxes of its lines.\n"
+"#. Payments: a posted payment cannot be deleted (it has to be reset to draft first), and\n"
+"   confirming a payment whose journal entry was deleted regenerates it.\n"
+"#. Journals: the suspense account cannot be one of the outstanding accounts of the journal\n"
+"   payment methods (checked from both sides), credit card journals get their own default\n"
+"   account, the payment sequence is disabled by default, and journals of the branch the user\n"
+"   is standing on are listed first.\n"
+"#. The computation fields of a tax (amount, type, price included, base) cannot be changed once\n"
+"   it has journal items.\n"
+"#. A currency rate without company is rejected when there are already rates with company for\n"
+"   that currency.\n"
+"#. Add ``is_monetary`` on accounts, computed from the account type and editable.\n"
+"#. Add Customers Ledger and Vendors Ledger menus with the open receivable and payable items.\n"
+"#. The exchange difference entry of a payment is dated as the payment.\n"
+"#. Create the batch payment sequence of a company when it has none (using the core method).\n"
+"#. Block the manual edition of the currency rounding factor (``res.currency.rounding``), which breaks the\n"
+"   accounting amounts already computed with the previous value. The block can be lifted with the system\n"
+"   parameter ``account_ux.allow_currency_rounding_edit``, which the\n"
+"   module creates set to ``False`` so it is visible on the system parameters list. While the parameter is\n"
+"   disabled the field is shown read-only on the currency form, and the block is also enforced on write.\n"
+"   Creating currencies and the rounding coming from the modules data (install / update) are not affected.\n"
+"\n"
+"Installation\n"
+"============\n"
+"\n"
+"To install this module, you need to:\n"
+"\n"
+"#. Just install this module.\n"
+"\n"
+"Configuration\n"
+"=============\n"
+"\n"
+"To configure this module, you need to:\n"
+"\n"
+"#. To ensure the 'reconcile on company currency' option previews the outstanding payments with the invoice rate, you will need to apply this FIX from https://github.com/odoo/odoo/pull/292530.\n"
+"\n"
+"Usage\n"
+"=====\n"
+"\n"
+".. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas\n"
+"   :alt: Try me on Runbot\n"
+"   :target: http://runbot.adhoc.com.ar/\n"
+"\n"
+"Bug Tracker\n"
+"===========\n"
+"\n"
+"Bugs are tracked on `GitHub Issues\n"
+"<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please\n"
+"check there if your issue has already been reported. If you spotted it first,\n"
+"help us smashing it by providing a detailed and welcomed feedback.\n"
+"\n"
+"Credits\n"
+"=======\n"
+"\n"
+"Images\n"
+"------\n"
+"\n"
+"* |company| |icon|\n"
+"\n"
+"Contributors\n"
+"------------\n"
+"\n"
+"Maintainer\n"
+"----------\n"
+"\n"
+"|company_logo|\n"
+"\n"
+"This module is maintained by the |company|.\n"
+"\n"
+"To contribute to this module, please visit https://www.adhoc.com.ar.\n"
 msgstr ""
 
 #. module: account_ux
@@ -82,8 +311,8 @@ msgid "Account Chart Template"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model,name:account_ux.model_account_group
-msgid "Account Group"
+#: model:ir.module.module,shortdesc:base.module_account_ux
+msgid "Account UX"
 msgstr ""
 
 #. module: account_ux
@@ -146,12 +375,6 @@ msgid "Average Price in the company's currency where it is set"
 msgstr ""
 
 #. module: account_ux
-#. odoo-python
-#: code:addons/account_ux/models/res_company.py:0
-msgid "Batch Payment Number Sequence"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__branch_order
 msgid "Branch Order"
 msgstr ""
@@ -195,10 +418,6 @@ msgstr ""
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_company
-msgid "Companies"
-msgstr ""
-
-#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_partial_reconcile_search
@@ -301,11 +520,6 @@ msgid "Currency to"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__current_currency_id
-msgid "Current Company Currency"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_customers_ledger
 #: model:ir.ui.menu,name:account_ux.menu_customer_ledger
 msgid "Customers Ledger"
@@ -372,7 +586,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_chart_template__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__display_name
-#: model:ir.model.fields,field_description:account_ux.field_account_group__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__display_name
 #: model:ir.model.fields,field_description:account_ux.field_account_move__display_name
@@ -463,7 +676,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__id
 #: model:ir.model.fields,field_description:account_ux.field_account_chart_template__id
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__id
-#: model:ir.model.fields,field_description:account_ux.field_account_group__id
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__id
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__id
 #: model:ir.model.fields,field_description:account_ux.field_account_move__id
@@ -652,13 +864,13 @@ msgid "Pay"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model,name:account_ux.model_account_payment_method_line
-msgid "Payment Methods"
+#: model:ir.model,name:account_ux.model_account_payment
+msgid "Payment"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model,name:account_ux.model_account_payment
-msgid "Payments"
+#: model:ir.model,name:account_ux.model_account_payment_method_line
+msgid "Payment Method Line"
 msgstr ""
 
 #. module: account_ux
@@ -846,7 +1058,6 @@ msgid "To Partner"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_total
 #: model:ir.ui.menu,name:account_ux.menu_full_reconciliations
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_line_report_tree
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_tree
@@ -905,11 +1116,6 @@ msgid "Unit Price"
 msgstr ""
 
 #. module: account_ux
-#: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_subtotal_currency
-msgid "Untaxed Amount in Currency"
-msgstr ""
-
-#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_invoice_report__price_subtotal
 msgid "Untaxed Total (CC)"
 msgstr ""
@@ -926,7 +1132,7 @@ msgstr ""
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_validate_account_move
-msgid "Validate Account Move"
+msgid "Validate Journal Entry"
 msgstr ""
 
 #. module: account_ux
