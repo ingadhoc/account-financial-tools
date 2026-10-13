@@ -1,6 +1,6 @@
 {
     "name": "Account Analytic UX",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting",
     "summary": "Automatic segmentation of project costs into Hours and Materials",
     "author": "ADHOC SA",
@@ -13,7 +13,7 @@
     "data": [
         "views/project_project_views.xml",
     ],
-    "installable": False,
+    "installable": True,
     "auto_install": False,
     "application": False,
 }
