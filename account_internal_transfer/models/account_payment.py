@@ -271,7 +271,22 @@ class AccountPayment(models.Model):
                 lines.reconcile()
 
     def action_post(self):
+        # Draft is synced to the paired payment (see action_draft), so posting has to be synced too
+        paired_to_post = self.env["account.payment"]
+        if not self.env.context.get("skip_paired_sync"):
+            paired_to_post = (
+                self.filtered(
+                    lambda p: (
+                        p.is_internal_transfer
+                        and p.paired_internal_transfer_payment_id
+                        and p.paired_internal_transfer_payment_id.state == "draft"
+                    )
+                ).mapped("paired_internal_transfer_payment_id")
+                - self
+            )
         super().action_post()
+        if paired_to_post:
+            paired_to_post.with_context(skip_paired_sync=True).action_post()
         transfers = self.filtered("is_internal_transfer")
         transfers.filtered(
             lambda pay: not pay.paired_internal_transfer_payment_id
