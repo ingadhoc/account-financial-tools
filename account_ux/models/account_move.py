@@ -138,9 +138,7 @@ class AccountMove(models.Model):
     def copy(self, default=None):
         res = super().copy(default=default)
         for line_to_clean in res.mapped("line_ids").filtered(lambda x: False in x.mapped("tax_ids.active")):
-            line_to_clean.tax_ids = [
-                Command.unlink(x.id) for x in line_to_clean.tax_ids.filtered(lambda x: not x.active)
-            ]
+            line_to_clean.tax_ids = [Command.set(line_to_clean.tax_ids._get_active_equivalent().ids)]
         res._onchange_partner_commercial()
         return res
 
