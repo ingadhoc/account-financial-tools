@@ -164,6 +164,7 @@ Several Improvements to accounting:
 #. A currency rate without company is rejected when there are already rates with company for
    that currency.
 #. Add ``is_monetary`` on accounts, computed from the account type and editable.
+#. Parent accounts only group other accounts, as the account groups migrated by Odoo: an account becomes archived when it gets a child account, it cannot be unarchived while it has children, and an account with journal items cannot be used as parent.
 #. Add Customers Ledger and Vendors Ledger menus with the open receivable and payable items.
 #. The exchange difference entry of a payment is dated as the payment.
 #. Create the batch payment sequence of a company when it has none (using the core method).
