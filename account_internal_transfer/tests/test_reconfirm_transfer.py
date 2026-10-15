@@ -6,10 +6,9 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestReconfirmTransfer(AccountTestInvoicingCommon):
-    """A transfer reset to draft and confirmed again has to reconcile its transfer lines again.
+    """A transfer reset to draft and confirmed again has to end with both legs posted and reconciled.
 
-    Resetting a leg to draft unreconciles the two transfer account lines. The pair already
-    exists on the second confirmation, so nothing created it and nothing reconciled it either.
+    Resetting a leg to draft also resets its paired payment, so confirming one leg has to confirm both.
     """
 
     @classmethod
@@ -53,28 +52,36 @@ class TestReconfirmTransfer(AccountTestInvoicingCommon):
     def test_first_confirmation_reconciles_the_pair(self):
         self.assertPairReconciled("The first confirmation has to reconcile the pair, as before.")
 
+    def assertBothPosted(self, msg):
+        self.assertEqual((self.payment + self.paired_payment).move_id.mapped("state"), ["posted", "posted"], msg)
+        self.assertNotIn("draft", (self.payment + self.paired_payment).mapped("state"), msg)
+
     def test_reconfirming_one_leg_reconciles_the_pair_again(self):
         self.payment.action_draft()
-        self.assertFalse(any(self._transfer_lines().mapped("reconciled")), "Draft unreconciles the pair.")
+        self.assertEqual(self.paired_payment.state, "draft", "Draft is applied to both legs.")
 
         self.payment.action_post()
 
         self.assertEqual(self.payment.paired_internal_transfer_payment_id, self.paired_payment, "No new pair.")
+        self.assertBothPosted("Confirming one leg has to confirm the paired one too.")
         self.assertPairReconciled("The second confirmation has to reconcile the pair again.")
 
     def test_reconfirming_the_paired_leg_reconciles_the_pair_again(self):
         self.paired_payment.action_draft()
+        self.assertEqual(self.payment.state, "draft", "Draft is applied to both legs.")
 
         self.paired_payment.action_post()
 
+        self.assertBothPosted("Confirming the paired leg has to confirm the original one too.")
         self.assertPairReconciled("Confirming the paired leg again has to reconcile the pair too.")
 
     def test_confirming_both_legs_together_reconciles_the_pair(self):
         """From the list, both legs reset to draft and posted in one call."""
         both = self.payment + self.paired_payment
         both.action_draft()
-        self.assertFalse(any(self._transfer_lines().mapped("reconciled")))
 
         both.action_post()
+
+        self.assertBothPosted("Posting both legs in one batch has to confirm both.")
 
         self.assertPairReconciled("Posting both legs in one batch has to reconcile the pair.")
