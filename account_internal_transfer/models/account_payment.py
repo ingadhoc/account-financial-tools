@@ -80,7 +80,7 @@ class AccountPayment(models.Model):
     @api.depends("company_id")
     def _compute_main_company(self):
         for rec in self:
-            rec.main_company_id = rec.company_id.parent_id or rec.company_id
+            rec.main_company_id = rec.company_id.root_id
 
     def _get_paired_payment_type(self):
         """Payment type of the paired payment created in the destination journal."""
