@@ -2,14 +2,16 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.addons.stock_account.tests.common import TestStockValuationCommon
-from odoo.tests import Form, new_test_user, tagged
+from odoo.tests import new_test_user, tagged
 
 
 @tagged("post_install", "-at_install")
 class TestHistoricalCostDelivery(TestStockValuationCommon):
     """Requires `sale`/`sale_stock` installed: they're what makes
-    `account.move.line._get_stock_moves()` resolve `sale_line_ids.move_ids`,
+    `account.move.line.cogs_move_ids` resolve `sale_line_ids.move_ids`,
     which is what our hook and the congelamiento formula rely on."""
+
+    _test_user_groups = None
 
     def _confirm_sale_order(self, order):
         # `ignore_exception` only exists if the optional OCA `sale_exception`
@@ -154,13 +156,11 @@ class TestHistoricalCostDelivery(TestStockValuationCommon):
         self.assertFalse(line.historical_cost_provisional)
         self.assertAlmostEqual(line.historical_cost, 1000.0)
 
-        # The journal's COGS line is never corrected retroactively (core
-        # behavior, §3) — the report now diverges from the already-posted
-        # entry. This divergence is the accepted trade-off of D1 (option c),
-        # documented in AC3, not a bug.
+        # Since 20.0 the core corrects the posted COGS line when the delivery
+        # is valued (stock_account _set_cogs), so the report and the entry agree.
         cogs_amount_after = abs(cogs_lines[0].balance)
-        self.assertAlmostEqual(cogs_amount_after, cogs_amount_before)
-        self.assertNotAlmostEqual(line.historical_cost, cogs_amount_after)
+        self.assertAlmostEqual(cogs_amount_after, 1000.0)
+        self.assertAlmostEqual(line.historical_cost, cogs_amount_after)
 
     def test_ac16_immutable_after_later_valuation_adjustment(self):
         product = self.product_fifo
@@ -178,7 +178,40 @@ class TestHistoricalCostDelivery(TestStockValuationCommon):
         # it, the invoice would need to go back to draft and be reposted.
         in_move.value_manual = 200 * 10
 
+        # Periodic valuation: there is no COGS entry for the frozen cost to follow.
         self.assertEqual(line.historical_cost, historical_cost_before)
+
+    def test_follows_cogs_after_valuation_adjustment_real_time(self):
+        product = self.product_fifo_auto
+        in_move = self._make_in_move(product, 10, unit_cost=100)
+
+        order = self._confirm_and_deliver(product, 6)
+        invoice = self._invoice_order(order)
+        line = self._product_line(invoice)
+        self.assertAlmostEqual(line.historical_cost, 600.0)
+        cogs_lines = invoice.line_ids.filtered(lambda l: l.display_type == "cogs" and l.cogs_origin_id == line)
+        self.assertTrue(cogs_lines)
+
+        in_move.value_manual = 200 * 10
+
+        self.assertAlmostEqual(abs(cogs_lines[0].balance), 1200.0)
+        self.assertAlmostEqual(line.historical_cost, 1200.0)
+        self.assertFalse(line.historical_cost_provisional)
+
+    def test_unfrozen_line_stays_unfrozen_after_valuation_adjustment(self):
+        product = self.product_fifo_auto
+        in_move = self._make_in_move(product, 10, unit_cost=100)
+
+        order = self._confirm_and_deliver(product, 6)
+        invoice = self._invoice_order(order)
+        line = self._product_line(invoice)
+        # Same as a line posted before the module was installed.
+        line._clear_historical_cost()
+
+        in_move.value_manual = 200 * 10
+
+        report = self.env["account.invoice.report"].search([("move_id", "=", invoice.id)])
+        self.assertFalse(report.historical_cost_frozen)
 
     def test_ac4_no_double_counting_across_partial_invoices(self):
         product = self.product_standard
@@ -280,17 +313,8 @@ class TestHistoricalCostDelivery(TestStockValuationCommon):
 
         product.standard_price = 70000.0
 
-        return_form = Form(
-            self.env["stock.return.picking"].with_context(
-                active_ids=order.picking_ids.ids,
-                active_id=order.picking_ids.id,
-                active_model="stock.picking",
-            )
-        )
-        return_picking = return_form.save()
-        return_picking.product_return_moves.quantity = 1.0
-        return_action = return_picking.action_create_returns()
-        return_pick = self.env["stock.picking"].browse(return_action["res_id"])
+        return_pick = order.picking_ids._create_return()
+        return_pick.move_ids.product_uom_qty = 1.0
         return_pick.move_ids.quantity = 1
         return_pick.move_ids.picked = True
         return_pick.button_validate()

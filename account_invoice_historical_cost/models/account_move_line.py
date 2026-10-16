@@ -21,12 +21,12 @@ class AccountMoveLine(models.Model):
         groups="base.group_user",
     )
 
-    def _get_frozen_historical_cost_vals(self, anglo_saxon_price_ctx):
+    def _get_frozen_historical_cost_vals(self):
         """Values to freeze on this line; the caller writes them grouped."""
         self.ensure_one()
         # Signed as line.quantity, NOT flipped by move_type: that flip (core's
         # `-1 if move_type == 'out_refund'`) is for the COGS journal amount,
-        # applied later by the report's _select(). _get_cogs_value() already
+        # applied later by the report's _select_list(). _get_cogs_value() already
         # returns an abs() unit price (stock_account), so quantity carries the
         # only sign here — including the negative-quantity-line-inside-an-
         # out_invoice edge case (AC17).
@@ -37,14 +37,13 @@ class AccountMoveLine(models.Model):
             }
         valuation_moves = self._get_historical_cost_moves()
         if valuation_moves:
-            # Reads stock.move.value directly: _get_cogs_value() nets a
-            # return's qty to zero and falls back to standard_price.
+            # Values only these moves: _get_cogs_value() nets a return's qty to
+            # zero and then returns a zero unit price.
             return self._get_historical_cost_vals_from_moves(valuation_moves)
         cogs_qty = self.product_uom_id._compute_quantity(self.quantity, self.product_id.uom_id)
-        # Mirrors stock_account's own call (account_move.py,
-        # _stock_account_prepare_realtime_out_lines_vals): replaces the
-        # context on purpose, doesn't merge it.
-        price_unit = self.with_context(anglo_saxon_price_ctx)._get_cogs_value()  # pylint: disable=context-overridden
+        # Mirrors the core's own call (account/models/account_move.py,
+        # _get_cogs_lines_vals).
+        price_unit = self._get_cogs_value()
         return {
             "historical_cost": cogs_qty * price_unit,
             "historical_cost_provisional": True,
@@ -52,7 +51,7 @@ class AccountMoveLine(models.Model):
 
     def _get_historical_cost_moves(self):
         self.ensure_one()
-        moves = self._get_stock_moves().filtered(lambda m: m.state == "done")
+        moves = self.cogs_move_ids.filtered(lambda m: m.state == "done")
         if self.move_id.move_type == "out_refund":
             return_moves = moves.filtered(lambda m: m.is_in and m.origin_returned_move_id)
             return return_moves or moves.filtered(lambda m: not m.is_in)
@@ -95,9 +94,7 @@ class AccountMoveLine(models.Model):
 
     def _get_historical_cost_vals_from_moves(self, moves):
         self.ensure_one()
-        total_qty = sum(
-            moves.mapped(lambda move: move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id))
-        )
+        total_qty = sum(moves.mapped(lambda move: move.uom_id._compute_quantity(move.quantity, move.product_id.uom_id)))
         if not total_qty:
             return {}
         cogs_qty = self.product_uom_id._compute_quantity(self.quantity, self.product_id.uom_id)
@@ -109,11 +106,49 @@ class AccountMoveLine(models.Model):
             # the branch cost and diverge from the COGS the core posts.
             unit_value = moves.with_context(branch_company=branch_company.id)._get_cogs_price_unit(cogs_qty)
         else:
-            unit_value = sum(moves.mapped("value")) / total_qty
+            # stock.move.value is signed (negative for outgoing moves).
+            unit_value = moves._get_price_unit(include_consigned=True, product=self.product_id)
         return {
             "historical_cost": cogs_qty * unit_value,
             "historical_cost_provisional": False,
         }
+
+    def _set_cogs(self):
+        res = super()._set_cogs()
+        self.sudo()._follow_cogs_historical_cost()
+        return res
+
+    def _follow_cogs_historical_cost(self):
+        """When the core corrects a posted COGS entry, the frozen cost of its
+        invoice line follows it. Lines never frozen keep the dynamic report."""
+        invoice_lines = self.cogs_origin_id.filtered(
+            lambda line: line.move_id.state == "posted" and line.move_id.is_sale_document(include_receipts=True)
+        )
+        if not invoice_lines:
+            return
+        # NULL means "not frozen", and the ORM reads it as 0.0.
+        invoice_lines.flush_recordset(["historical_cost"])
+        self.env.cr.execute(
+            "SELECT id FROM account_move_line WHERE id IN %s AND historical_cost IS NOT NULL",
+            [tuple(invoice_lines.ids)],
+        )
+        frozen_ids = {row[0] for row in self.env.cr.fetchall()}
+        cogs_by_origin_account = {}
+        for line in self:
+            cogs_by_origin_account.setdefault((line.cogs_origin_id.id, line.account_id.id), line)
+        for invoice_line in invoice_lines.filtered(lambda line: line.id in frozen_ids):
+            move = invoice_line.move_id
+            invoice_line = invoice_line.with_company(move.company_id)
+            accounts = invoice_line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=move.fiscal_position_id)
+            cogs_line = cogs_by_origin_account.get((invoice_line.id, accounts["stock_valuation"].id))
+            if not cogs_line:
+                continue
+            cogs_qty = invoice_line.product_uom_id._compute_quantity(
+                invoice_line.quantity, invoice_line.product_id.uom_id
+            )
+            invoice_line._write_historical_cost(
+                {"historical_cost": cogs_qty * cogs_line.price_unit, "historical_cost_provisional": False}
+            )
 
     def _get_historical_cost_branch_company(self):
         """Invoice company when it is a branch selling a product whose valuation
