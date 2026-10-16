@@ -22,6 +22,25 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self.assertEqual(with_entry, moves.filtered("related_account_move_id"))
         self.assertEqual(without_entry, moves - with_entry)
 
+    def _related_entry_state(self, move):
+        """What the compute sees for ``move``, to tell why an assertion failed on a base
+        with more modules installed."""
+        self.env.flush_all()
+        self.env.cr.execute(
+            "SELECT category.property_valuation FROM product_category category WHERE category.id = %s",
+            [move.product_id.categ_id.id],
+        )
+        category_column = self.env.cr.fetchone()[0]
+        return (
+            f"company={move.company_id.id} env_company={self.env.company.id}"
+            f" product_company={move.product_id.company_id.id}"
+            f" valuation={move.product_id.with_company(move.company_id).valuation}"
+            f" category_column={category_column}"
+            f" real_time={bool(move._filter_real_time_valuation())}"
+            f" invoice_by_picking={move._get_related_invoice_by_picking()}"
+            f" account_move={move.account_move_id.id} picking={move.picking_id.id}"
+        )
+
     def _deliver(self, picking):
         picking.move_ids.write({"quantity": 1.0, "picked": True})
         picking._action_done()
@@ -135,7 +154,7 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
 
         moves.with_company(self.other_company)._recompute_related_account_move()
         self._assert_search_matches_field(moves)
-        self.assertEqual(delivery_auto.related_account_move_id, invoice)
+        self.assertEqual(delivery_auto.related_account_move_id, invoice, self._related_entry_state(delivery_auto))
         self.assertFalse(delivery_periodic.related_account_move_id)
 
     def test_company_default_valuation_change(self):
@@ -153,7 +172,7 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self.company.inventory_valuation = "real_time"
         self.assertEqual(product.valuation, "real_time")
         self._assert_search_matches_field(delivery)
-        self.assertEqual(delivery.related_account_move_id, invoice)
+        self.assertEqual(delivery.related_account_move_id, invoice, self._related_entry_state(delivery))
 
         self.company.inventory_valuation = "periodic"
         self._assert_search_matches_field(delivery)
