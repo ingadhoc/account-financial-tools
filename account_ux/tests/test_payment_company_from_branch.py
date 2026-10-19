@@ -84,7 +84,8 @@ class TestPaymentCompanyFromBranch(AccountTestInvoicingCommon):
         self.assertNotIn(parent_bank, wizard.available_journal_ids)
         payment = wizard._create_payments()
         self.assertEqual(payment.company_id, self.same_entity)
-        self.assertEqual(self.invoice.payment_state, self.env["account.move"]._get_invoice_in_payment_state())
+        # Without its own outstanding account the journal is used directly, so the payment is matched
+        self.assertEqual(self.invoice.payment_state, "paid")
 
     def test_another_legal_entity_keeps_the_journals_of_the_debt(self):
         parent_bank, _branch_bank = self._unshare_parent_bank_and_give_the_branch_its_own()
