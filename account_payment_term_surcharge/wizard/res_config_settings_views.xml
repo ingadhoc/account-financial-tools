@@ -11,7 +11,7 @@
                     <div class="o_setting_left_pane"/>
                     <div class="o_setting_right_pane">
                         <span class="o_form_label">Default payment term surcharge product</span>
-                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                        <span class="oi oi-lg" data-icon="business" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
                         <div class="text-muted">
                             Producto por defecto para realizar recargos
                         </div>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="o_setting_right_pane">
                         <label for="payment_term_surcharge_invoice_auto_post" string="Validar automaticamente facturas de recargo"/>
-                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                        <span class="oi oi-lg" data-icon="business" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
                         <div class="text-muted">
                             Validar automaticamente facturas de recargo
                         </div>
