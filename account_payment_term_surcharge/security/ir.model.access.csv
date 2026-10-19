@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_account_payment_term_surcharge,account.payment.term.surcharge,model_account_payment_term_surcharge,account.group_account_user,1,0,0,0
-access_account_payment_term_surcharge_manager,account.payment.term.surcharge,model_account_payment_term_surcharge,account.group_account_manager,1,1,1,1
