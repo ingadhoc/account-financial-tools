@@ -72,6 +72,8 @@ class TestPaymentCompanyFromBranch(AccountTestInvoicingCommon):
         branch_bank = self.env["account.journal"].create(
             {"name": "Banco sucursal", "code": "BSUC", "type": "bank", "company_id": self.same_entity.id}
         )
+        # Pin the payment account: other modules may set it on create, and it decides the payment state
+        branch_bank.inbound_payment_method_line_ids.payment_account_id = branch_bank.default_account_id
         return parent_bank, branch_bank
 
     def test_the_branch_is_offered_only_the_journals_it_can_use(self):
@@ -84,7 +86,8 @@ class TestPaymentCompanyFromBranch(AccountTestInvoicingCommon):
         self.assertNotIn(parent_bank, wizard.available_journal_ids)
         payment = wizard._create_payments()
         self.assertEqual(payment.company_id, self.same_entity)
-        self.assertEqual(self.invoice.payment_state, self.env["account.move"]._get_invoice_in_payment_state())
+        # The payment goes straight to the bank account, so it is matched and the invoice is paid
+        self.assertEqual(self.invoice.payment_state, "paid")
 
     def test_another_legal_entity_keeps_the_journals_of_the_debt(self):
         parent_bank, _branch_bank = self._unshare_parent_bank_and_give_the_branch_its_own()
