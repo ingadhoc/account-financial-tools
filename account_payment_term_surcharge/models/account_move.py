@@ -103,7 +103,7 @@ class AccountMove(models.Model):
                 {
                     "product_id": product.id,
                     "price_unit": (surcharge / 100) * debt,
-                    "name": product.name + ".\n" + comment,
+                    "name": comment,
                 }
             )
         ]

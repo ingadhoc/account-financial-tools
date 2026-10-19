@@ -58,8 +58,14 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
 
         invoice._cron_recurring_surcharges_invoices()
         self.assertFalse(invoice.next_surcharge_date, "La proxima fecha de recargo no es la correspondiente ")
+        debit_line = invoice.debit_note_ids[0].invoice_line_ids
         self.assertEqual(
-            abs(invoice.debit_note_ids[0].invoice_line_ids.balance),
+            abs(debit_line.balance),
             invoice.amount_total / self.surcharge.surcharge,
             "Fallo el monto de la ND por el recargo",
+        )
+        self.assertEqual(
+            debit_line.label.count(self.product_surcharge.name),
+            1,
+            "El nombre del producto no debe repetirse en la descripción de la línea",
         )
