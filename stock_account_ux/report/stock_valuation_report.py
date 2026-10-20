@@ -257,8 +257,13 @@ class StockValuationReport(models.AbstractModel):
             )
             if general_ledger:
                 return self._get_account_ledger_action(account, date)
-        # Journal items filtered by account and date (and by product, when filtered).
-        domain = [("account_id", "=", account.id), ("parent_state", "=", "posted")]
+        # Journal items filtered by account and date (and by product, when filtered). An
+        # account can be shared by several companies, the report is built for one.
+        domain = [
+            ("account_id", "=", account.id),
+            ("company_id", "=", self.env.company.id),
+            ("parent_state", "=", "posted"),
+        ]
         if products is not None:
             domain.append(("product_id", "in", products.ids))
         if date:

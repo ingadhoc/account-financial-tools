@@ -30,29 +30,34 @@ class TestInitialBalanceAttribution(TestStockValuationCommon):
             [("move_id", "in", (self.move_standard + self.move_avco + self.move_fifo).ids)]
         ).unlink()
 
-    def _book_on_valuation(self, amount=60.0, product=None, date=None):
+    def _book_on_valuation(self, amount=60.0, product=None, date=None, company=None):
         """Entry on the valuation account, with no product by default: that is how the
         standard closing books, how a migrated base brings its opening balance and how an
         accountant posts by hand."""
         counterpart = self.account_stock_valuation.account_stock_variation_id or self.company.expense_account_id
-        entry = self.env["account.move"].create(
-            {
-                "journal_id": self.company.account_stock_journal_id.id,
-                "date": date or self.env.cr.now().date(),
-                "ref": "Booked by hand",
-                "company_id": self.company.id,
-                "line_ids": [
-                    Command.create(
-                        {
-                            "account_id": self.account_stock_valuation.id,
-                            "debit": amount,
-                            "credit": 0.0,
-                            "product_id": product.id if product else False,
-                        }
-                    ),
-                    Command.create({"account_id": counterpart.id, "debit": 0.0, "credit": amount}),
-                ],
-            }
+        company = company or self.company
+        entry = (
+            self.env["account.move"]
+            .with_company(company)
+            .create(
+                {
+                    "journal_id": self.company.account_stock_journal_id.id,
+                    "date": date or self.env.cr.now().date(),
+                    "ref": "Booked by hand",
+                    "company_id": company.id,
+                    "line_ids": [
+                        Command.create(
+                            {
+                                "account_id": self.account_stock_valuation.id,
+                                "debit": amount,
+                                "credit": 0.0,
+                                "product_id": product.id if product else False,
+                            }
+                        ),
+                        Command.create({"account_id": counterpart.id, "debit": 0.0, "credit": amount}),
+                    ],
+                }
+            )
         )
         entry._post()
         return entry
@@ -184,6 +189,21 @@ class TestInitialBalanceAttribution(TestStockValuationCommon):
         self.assertEqual(action["res_model"], "account.move.line")
         lines = self.env["account.move.line"].search(action["domain"])
         self.assertEqual(lines.product_id, self.product_avco)
+        self.assertAlmostEqual(
+            sum(lines.mapped("balance")), self._initial(product_ids=self.product_avco.ids), msg="Same as the line"
+        )
+
+    def test_ledger_drilldown_leaves_out_other_companies_sharing_the_account(self):
+        """The branch shares the valuation account, the report is built for one company."""
+        self._close()
+        branch_entry = self._book_on_valuation(40.0, product=self.product_avco, company=self.branch)
+        report = self.report.with_context(allowed_company_ids=[self.company.id, self.branch.id])
+        action = report.action_open_account_ledger(
+            self.account_stock_valuation.id, filters={"product_ids": self.product_avco.ids}
+        )
+        lines = self.env["account.move.line"].search(action["domain"])
+        self.assertTrue(lines)
+        self.assertNotIn(branch_entry, lines.move_id)
         self.assertAlmostEqual(
             sum(lines.mapped("balance")), self._initial(product_ids=self.product_avco.ids), msg="Same as the line"
         )
