@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 12:37+0000\n"
+"POT-Creation-Date: 2026-10-20 17:16+0000\n"
 "PO-Revision-Date: 2026-09-22 17:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -343,6 +343,13 @@ msgid "Only done moves can be valued."
 msgstr "Solo se pueden valuar movimientos hechos."
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"Only moves and value adjustments of %(company)s can be booked in this entry."
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__partial_lines_warning
 msgid "Partial Lines Warning"
 msgstr "Advertencia de Líneas Parciales"
@@ -503,6 +510,14 @@ msgstr "Los ajustes de valor seleccionados no tienen nada para contabilizar."
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid "The selection has no value to book."
 msgstr "La selección no tiene valor para contabilizar."
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"These records were booked after the wizard was opened. Open it again: "
+"%(records)s"
+msgstr ""
 
 #. module: stock_account_ux
 #: model_terms:ir.actions.act_window,help:stock_account_ux.product_value_action_list
