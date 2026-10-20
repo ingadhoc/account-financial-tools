@@ -78,6 +78,17 @@ patch(StockValuationReportFilters.prototype, {
         ];
     },
 
+    get stockMoveTypeOptions() {
+        return [
+            { value: "purchase", label: _t("Purchases") },
+            { value: "sale", label: _t("Sales") },
+            { value: "inventory", label: _t("Inventory Adjustments") },
+            { value: "scrap", label: _t("Scrap") },
+            { value: "production", label: _t("Manufacturing") },
+            { value: "intercompany_transit", label: _t("Inter-company Transit") },
+        ];
+    },
+
     // -- Estado / handlers ----------------------------------------------------
     isFilterSelected(key, value) {
         return (this.controller.state[key] || []).includes(value);
@@ -93,5 +104,9 @@ patch(StockValuationReportFilters.prototype, {
 
     onLineTypeToggle(value) {
         return this.controller.toggleLineType(value);
+    },
+
+    onStockMoveTypeToggle(value) {
+        return this.controller.toggleStockMoveType(value);
     },
 });
