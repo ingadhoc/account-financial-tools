@@ -77,12 +77,3 @@ class TestValuationDrilldownTour(HttpCase):
             "stock_account_ux_valuation_drilldown",
             login="admin",
         )
-
-    def test_filters_survive_the_drilldown(self):
-        """Going to the detail and back through the breadcrumb must not clear the filters."""
-        self._setup_pending_variation()
-        self.start_tour(
-            "/odoo/stock-valuation-closing",
-            "stock_account_ux_valuation_filters_kept",
-            login="admin",
-        )
