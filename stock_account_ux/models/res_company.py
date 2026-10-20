@@ -6,7 +6,7 @@ from odoo.fields import Domain
 from odoo.tools import SQL
 from odoo.tools.misc import formatLang
 
-from ..report.stock_valuation_report import LINE_TYPE_PRODUCT_VALUE, LINE_TYPE_STOCK_MOVE
+from ..report.stock_valuation_report import LINE_TYPE_PRODUCT_VALUE, LINE_TYPE_STOCK_MOVE, STOCK_MOVE_TYPES_CTX
 
 # Context key scoping the closing to a set of products (partial closing).
 CLOSING_PRODUCT_CTX = "stock_valuation_closing_product_ids"
@@ -79,6 +79,7 @@ class ResCompany(models.Model):
         cost_methods=None,
         valuations=None,
         line_types=None,
+        stock_move_types=None,
     ):
         """Link the periodic closing entry to the ``stock.move`` records it values,
         and honour the report filters.
@@ -98,6 +99,8 @@ class ResCompany(models.Model):
           everything. The two origins add up to the full closing, and each entry links
           only the records it booked, so whatever stays open keeps showing up in the
           report's variation.
+        - Stock Move Types (``stock_move_types``): narrows the Stock Moves origin to
+          those types, so it closes only stock moves, and only the ones of those types.
 
         Caveat, same as the report: the portion of the account's booked balance that no
         product can claim (no product, or a non-storable one: opening entries, closings
@@ -108,6 +111,10 @@ class ResCompany(models.Model):
         self.ensure_one()
         report = self.env["stock_account.stock.valuation.report"]
         line_types = report._normalize_line_types(line_types)
+        stock_move_types = report._normalize_stock_move_types(stock_move_types)
+        if stock_move_types:
+            line_types = [LINE_TYPE_STOCK_MOVE]
+            self = self.with_context(**{STOCK_MOVE_TYPES_CTX: stock_move_types})
         if line_types:
             self = self.with_context(**{CLOSING_LINE_TYPES_CTX: line_types})
         # Partial closing: scope it to the products matching the filters.
@@ -531,6 +538,7 @@ class ResCompany(models.Model):
             domain.append(("product_id", "in", closing_product_ids))
         if at_date:
             domain.append(("date", "<=", at_date))
+        domain = Domain(domain) & self.env["stock_account.stock.valuation.report"]._get_stock_move_types_domain()
         return self.env["stock.move"].search(domain)
 
     def _action_close_stock_valuation(self, at_date=None):
