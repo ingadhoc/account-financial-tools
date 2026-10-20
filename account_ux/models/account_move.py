@@ -132,7 +132,8 @@ class AccountMove(models.Model):
 
     @api.onchange("partner_id")
     def _onchange_partner_commercial(self):
-        if self.partner_id.user_id:
+        # Keep the salesperson inherited from the source document (sale order, reversed invoice)
+        if self.partner_id.user_id and not self.invoice_origin:
             self.invoice_user_id = self.partner_id.user_id.id
 
     def copy(self, default=None):
