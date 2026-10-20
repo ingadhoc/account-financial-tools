@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 17:24+0000\n"
+"POT-Creation-Date: 2026-10-01 12:37+0000\n"
 "PO-Revision-Date: 2026-09-22 17:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -53,7 +53,10 @@ msgstr ""
 msgid ""
 "%(count)s moves were excluded because they already have a valuation entry "
 "(valuing them again would double the product's booked value): %(references)s"
-msgstr "%(count)s movimientos se excluyeron porque ya tienen un asiento de valuación (valuarlos de nuevo duplicaría el valor contabilizado del producto): %(references)s"
+msgstr ""
+"%(count)s movimientos se excluyeron porque ya tienen un asiento de valuación "
+"(valuarlos de nuevo duplicaría el valor contabilizado del producto): "
+"%(references)s"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -220,7 +223,11 @@ msgid ""
 "Inventory valuation closing entry that booked this value adjustment. Empty "
 "means the adjustment is not booked yet: it is part of the difference to "
 "adjust shown by the valuation report's variation."
-msgstr "Asiento de cierre de valuación de inventario que contabilizó este ajuste de valor. Vacío significa que el ajuste todavía no está contabilizado: forma parte de la diferencia a ajustar que muestra la variación del reporte de valuación."
+msgstr ""
+"Asiento de cierre de valuación de inventario que contabilizó este ajuste de "
+"valor. Vacío significa que el ajuste todavía no está contabilizado: forma "
+"parte de la diferencia a ajustar que muestra la variación del reporte de "
+"valuación."
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__journal_id
@@ -324,7 +331,9 @@ msgstr "No Contabilizado"
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
 msgid ""
 "Only affects the Stock Variation section; shows unaccounted moves by origin."
-msgstr "Solo afecta la sección Variación del Inventario; muestra los movimientos sin contabilizar por origen."
+msgstr ""
+"Solo afecta la sección Variación del Inventario; muestra los movimientos sin "
+"contabilizar por origen."
 
 #. module: stock_account_ux
 #. odoo-python
@@ -447,15 +456,21 @@ msgstr "La cuenta ya no existe."
 #. odoo-python
 #: code:addons/stock_account_ux/models/res_company.py:0
 msgid ""
-"The entry cannot be generated with product filters: these valuation accounts carry a balance with no product, or of non-storable products, that no filter can attribute.\n"
+"The entry cannot be generated with product filters: these valuation accounts "
+"carry a balance with no product, or of non-storable products, that no filter "
+"can attribute.\n"
 "%(detail)s\n"
 "\n"
-"Assign a storable product to those journal items, or generate the entry without filters."
+"Assign a storable product to those journal items, or generate the entry "
+"without filters."
 msgstr ""
-"No se puede generar el asiento con filtros de producto: estas cuentas de valuación tienen un saldo sin producto, o de productos no almacenables, que ningún filtro puede atribuir.\n"
+"No se puede generar el asiento con filtros de producto: estas cuentas de "
+"valuación tienen un saldo sin producto, o de productos no almacenables, que "
+"ningún filtro puede atribuir.\n"
 "%(detail)s\n"
 "\n"
-"Asigne un producto almacenable a esos apuntes, o genere el asiento sin filtros."
+"Asigne un producto almacenable a esos apuntes, o genere el asiento sin "
+"filtros."
 
 #. module: stock_account_ux
 #. odoo-python
@@ -473,7 +488,9 @@ msgstr ""
 msgid ""
 "The selected moves are already booked. Valuing them again would double the "
 "product's booked value."
-msgstr "Los movimientos seleccionados ya están contabilizados. Valuarlos de nuevo duplicaría el valor contabilizado del producto."
+msgstr ""
+"Los movimientos seleccionados ya están contabilizados. Valuarlos de nuevo "
+"duplicaría el valor contabilizado del producto."
 
 #. module: stock_account_ux
 #. odoo-python
@@ -492,7 +509,9 @@ msgstr "La selección no tiene valor para contabilizar."
 msgid ""
 "This is where product cost changes and manual value\n"
 "                adjustments of a move are recorded."
-msgstr "Acá se registran los cambios de costo de la ficha del producto y\n                los ajustes manuales del valor de un movimiento."
+msgstr ""
+"Acá se registran los cambios de costo de la ficha del producto y\n"
+"                los ajustes manuales del valor de un movimiento."
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__total
@@ -579,16 +598,20 @@ msgstr "Línea de Valuación de Movimientos de Stock"
 #. module: stock_account_ux
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
 msgid ""
-"Value adjustments not booked yet: they are the ones making up the difference"
-" to adjust in the valuation report."
-msgstr "Ajustes de valor todavía no contabilizados: son los que forman la diferencia a ajustar en el reporte de valuación."
+"Value adjustments not booked yet: they are the ones making up the difference "
+"to adjust in the valuation report."
+msgstr ""
+"Ajustes de valor todavía no contabilizados: son los que forman la diferencia "
+"a ajustar en el reporte de valuación."
 
 #. module: stock_account_ux
 #: model:ir.model.fields,help:stock_account_ux.field_product_value__previous_value
 msgid ""
 "Value in force right before this adjustment. Captured when it is recorded, "
 "because afterwards it can no longer be rebuilt."
-msgstr "Valor vigente justo antes de este ajuste. Se captura al registrarlo, porque después ya no se puede reconstruir."
+msgstr ""
+"Valor vigente justo antes de este ajuste. Se captura al registrarlo, porque "
+"después ya no se puede reconstruir."
 
 #. module: stock_account_ux
 #: model:ir.model.fields,help:stock_account_ux.field_product_value__delta
@@ -596,7 +619,10 @@ msgid ""
 "Variation this adjustment introduced, in the SAME unit as the Value field: "
 "the move total value when the adjustment is on a move, the unit price when "
 "it is a product or lot price change."
-msgstr "Variación que introdujo este ajuste, en la MISMA unidad que el campo Valor: el valor total del movimiento cuando el ajuste es sobre un movimiento, el precio unitario cuando es un cambio de precio de producto o lote."
+msgstr ""
+"Variación que introdujo este ajuste, en la MISMA unidad que el campo Valor: "
+"el valor total del movimiento cuando el ajuste es sobre un movimiento, el "
+"precio unitario cuando es un cambio de precio de producto o lote."
 
 #. module: stock_account_ux
 #. odoo-javascript
@@ -622,4 +648,6 @@ msgstr "Sin Asiento Contable"
 msgid ""
 "You selected only some lines of %(count)s moves. Valuation goes by move, so "
 "they are valued whole: %(references)s"
-msgstr "Seleccionaste solo algunas líneas de %(count)s movimientos. La valuación es por movimiento, así que se valúan enteros: %(references)s"
+msgstr ""
+"Seleccionaste solo algunas líneas de %(count)s movimientos. La valuación es "
+"por movimiento, así que se valúan enteros: %(references)s"
