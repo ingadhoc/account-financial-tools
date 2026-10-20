@@ -35,6 +35,7 @@ patch(StockValuationReport.prototype, {
             costMethods: [...(state.costMethods || [])],
             valuations: [...(state.valuations || [])],
             lineTypes: [...(state.lineTypes || [])],
+            stockMoveTypes: [...(state.stockMoveTypes || [])],
         };
     },
 
