@@ -8,3 +8,4 @@ from . import mail_compose_message
 from . import account_automatic_entry_wizard
 from . import validate_account_move
 from . import account_payment_register
+from . import account_move_reversal
