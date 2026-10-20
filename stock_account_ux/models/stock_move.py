@@ -48,9 +48,9 @@ class StockMove(models.Model):
 
     def _related_account_move_depends(self):
         """Dependencies of ``related_account_move_id``. The related invoices are reached
-        the way ``_get_related_invoices`` reaches them in ``sale_stock`` and
-        ``purchase_stock`` —the sale order of the picking, the purchase order of the
-        move's line— only when those modules are installed."""
+        the way ``_get_related_invoice_by_picking`` reaches them, through the picking —its
+        sale order, the purchase orders of its moves—, only when those modules are
+        installed: a move with no order line of its own also takes the picking's invoice."""
         depends = [
             "account_move_id",
             "account_move_id.state",
@@ -64,7 +64,7 @@ class StockMove(models.Model):
         if "sale_id" in self.env["stock.picking"]._fields:
             depends.append("picking_id.sale_id.order_line.invoice_lines.move_id.state")
         if "purchase_line_id" in self._fields:
-            depends.append("purchase_line_id.order_id.order_line.invoice_lines.move_id.state")
+            depends.append("picking_id.move_ids.purchase_line_id.order_id.order_line.invoice_lines.move_id.state")
         return depends
 
     @api.depends(lambda self: self._related_account_move_depends())

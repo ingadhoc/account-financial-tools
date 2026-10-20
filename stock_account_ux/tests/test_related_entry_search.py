@@ -72,7 +72,7 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         invoice.action_post()
         return invoice
 
-    def _purchase_receipt(self, product):
+    def _purchase_receipt(self, product, validate=True):
         PurchaseOrder = self.env.get("purchase.order")
         if PurchaseOrder is None or "picking_ids" not in PurchaseOrder._fields:
             self.skipTest("purchase_stock is not installed")
@@ -83,6 +83,8 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
             }
         )
         order.button_confirm()
+        if not validate:
+            return order, order.picking_ids
         return order, self._deliver(order.picking_ids)
 
     def test_closing_entry_and_revaluation(self):
@@ -120,6 +122,29 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self._assert_search_matches_field(receipt)
         self.assertEqual(receipt.related_account_move_id, bill)
         self.assertEqual(self.env["stock.move"].search([("related_account_move_id", "=", bill.id)]), receipt)
+
+    def test_purchase_bill_books_moves_of_other_orders_in_the_receipt(self):
+        """A receipt can gather moves of several orders, and the bill is reached through
+        the picking: posting the bill of one order also recomputes the moves of the
+        others."""
+        order, receipt = self._purchase_receipt(self.product_standard_auto, validate=False)
+        other_order, other_receipt = self._purchase_receipt(self.product_fifo_auto, validate=False)
+        other_move = other_receipt.move_ids
+        other_move.picking_id = receipt
+        moves = self._deliver(receipt)
+        self.assertEqual(moves, receipt.move_ids)
+        self.assertEqual(other_order.picking_ids, receipt)
+
+        order.action_create_invoice()
+        bill = order.invoice_ids
+        bill.invoice_date = fields.Date.today()
+        bill.action_post()
+        self._assert_search_matches_field(moves)
+        self.assertEqual(other_move.related_account_move_id, bill, self._related_entry_state(other_move))
+
+        bill.button_draft()
+        self._assert_search_matches_field(moves)
+        self.assertFalse(other_move.related_account_move_id, "A bill back to draft books nothing")
 
     def test_set_not_set_search_does_not_compute_the_field(self):
         """Resolving the related invoices move by move ran a big base out of memory: the
