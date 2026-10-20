@@ -77,6 +77,27 @@
                 </Dropdown>
             </div>
 
+            <!-- Stock move types (only applies to stock moves) -->
+            <div id="filter_stock_move_types" class="d-print-none"
+                 title="Only applies to Stock Moves; selecting a type sets Movement Type to Stock Moves.">
+                <Dropdown>
+                    <button class="btn btn-secondary">
+                        <i class="fa fa-filter me-1"/>Stock Move Types
+                    </button>
+                    <t t-set-slot="content">
+                        <t t-foreach="stockMoveTypeOptions" t-as="opt" t-key="opt.value">
+                            <DropdownItem
+                                class="{ selected: isFilterSelected('stockMoveTypes', opt.value) }"
+                                closingMode="'none'"
+                                onSelected="() => this.onStockMoveTypeToggle(opt.value)">
+                                <i t-if="isFilterSelected('stockMoveTypes', opt.value)" class="fa fa-check me-1"/>
+                                <t t-out="opt.label"/>
+                            </DropdownItem>
+                        </t>
+                    </t>
+                </Dropdown>
+            </div>
+
         </xpath>
     </t>
 

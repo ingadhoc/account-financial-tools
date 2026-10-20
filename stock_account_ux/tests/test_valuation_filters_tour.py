@@ -12,3 +12,10 @@ class TestValuationFiltersTour(HttpCase):
             "stock_account_ux_valuation_filters",
             login="admin",
         )
+
+    def test_stock_move_types_sets_the_movement_type(self):
+        self.start_tour(
+            "/odoo/stock-valuation-closing",
+            "stock_account_ux_valuation_stock_move_types",
+            login="admin",
+        )
