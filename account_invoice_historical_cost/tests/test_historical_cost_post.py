@@ -8,6 +8,8 @@ from odoo.tests import Form, tagged
 
 @tagged("post_install", "-at_install")
 class TestHistoricalCostPost(TestStockValuationCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

@@ -10,11 +10,9 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     def _post(self, soft=True):
-        # Must run before super(), which is where stock_account creates the
-        # COGS lines (_stock_account_prepare_realtime_out_lines_vals). This
-        # way _get_posted_cogs_value() never sees this invoice's own COGS
-        # lines, so the frozen value is bit-identical to the one the core
-        # uses to build them.
+        # Must run before super(), which is where account creates the COGS
+        # lines (_create_cogs_lines), so the frozen value is the same one the
+        # core uses to build them.
         self._freeze_historical_cost()
         return super()._post(soft)
 
@@ -28,11 +26,10 @@ class AccountMove(models.Model):
             # its cost frozen, otherwise the net margin of invoice + reversal
             # wouldn't be zero.
             move = move.with_company(move.company_id)
-            anglo_saxon_price_ctx = move._get_anglo_saxon_price_ctx()
             for line in move.invoice_line_ids:
                 if line.display_type != "product" or not line.product_id:
                     continue
-                vals = line._get_frozen_historical_cost_vals(anglo_saxon_price_ctx)
+                vals = line._get_frozen_historical_cost_vals()
                 if vals:
                     lines_by_vals[tuple(sorted(vals.items()))] |= line
         for vals_items, lines in lines_by_vals.items():
