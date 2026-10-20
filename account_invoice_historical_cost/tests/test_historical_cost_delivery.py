@@ -13,6 +13,12 @@ class TestHistoricalCostDelivery(TestStockValuationCommon):
 
     _test_user_groups = None
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        if not cls.env["ir.module.module"].search([("name", "=", "sale_stock"), ("state", "=", "installed")]):
+            raise cls.skipTest(cls, "sale_stock must be installed")
+
     def _confirm_sale_order(self, order):
         # `ignore_exception` only exists if the optional OCA `sale_exception`
         # module is installed (it isn't in every build); bypass its
@@ -178,7 +184,40 @@ class TestHistoricalCostDelivery(TestStockValuationCommon):
         # it, the invoice would need to go back to draft and be reposted.
         in_move.value_manual = 200 * 10
 
+        # Periodic valuation: there is no COGS entry for the frozen cost to follow.
         self.assertEqual(line.historical_cost, historical_cost_before)
+
+    def test_follows_cogs_after_valuation_adjustment_real_time(self):
+        product = self.product_fifo_auto
+        in_move = self._make_in_move(product, 10, unit_cost=100)
+
+        order = self._confirm_and_deliver(product, 6)
+        invoice = self._invoice_order(order)
+        line = self._product_line(invoice)
+        self.assertAlmostEqual(line.historical_cost, 600.0)
+        cogs_lines = invoice.line_ids.filtered(lambda l: l.display_type == "cogs" and l.cogs_origin_id == line)
+        self.assertTrue(cogs_lines)
+
+        in_move.value_manual = 200 * 10
+
+        self.assertAlmostEqual(abs(cogs_lines[0].balance), 1200.0)
+        self.assertAlmostEqual(line.historical_cost, 1200.0)
+        self.assertFalse(line.historical_cost_provisional)
+
+    def test_unfrozen_line_stays_unfrozen_after_valuation_adjustment(self):
+        product = self.product_fifo_auto
+        in_move = self._make_in_move(product, 10, unit_cost=100)
+
+        order = self._confirm_and_deliver(product, 6)
+        invoice = self._invoice_order(order)
+        line = self._product_line(invoice)
+        # Same as a line posted before the module was installed.
+        line._clear_historical_cost()
+
+        in_move.value_manual = 200 * 10
+
+        report = self.env["account.invoice.report"].search([("move_id", "=", invoice.id)])
+        self.assertFalse(report.historical_cost_frozen)
 
     def test_ac4_no_double_counting_across_partial_invoices(self):
         product = self.product_standard
