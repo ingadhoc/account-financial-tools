@@ -31,6 +31,10 @@ What it does
    formula the core uses to build the invoice's COGS journal items. Lines
    without a valuated delivery yet are marked ``historical_cost_provisional``
    and completed automatically once the related stock move is done.
+#. With ``real_time`` valuation, the frozen cost follows the posted COGS
+   journal item: when the core corrects it (the delivery is valued, or a
+   valuation adjustment is made later), the line gets the same cost, so the
+   report always matches the accounting.
 #. Overrides ``account.invoice.report`` so ``price_margin`` and
    ``inventory_value`` read the frozen cost when present, falling back to the
    current dynamic computation via ``COALESCE`` when it is not — so invoices
@@ -59,13 +63,12 @@ Known limitations
   following FIFO consumption invoice by invoice. The total always
   reconciles; a single invoice's allocation may not match its exact layer
   consumption.
-- A valuation adjustment made after posting does not propagate to an
-  already posted invoice — same behavior as the core's COGS lines. To
-  reflect it, reset the invoice to draft and post it again.
-- In companies with ``real_time`` valuation, completing a provisional line
-  on delivery can leave the report diverging from the already posted COGS
-  journal item (which the core never corrects retroactively). This is a
-  known and accepted trade-off, not a bug.
+- With periodic (non ``real_time``) valuation there is no COGS journal item
+  to follow: a valuation adjustment made after posting does not propagate to
+  an already posted invoice. To reflect it, reset the invoice to draft and
+  post it again.
+- Following the COGS journal item means the margin of an old invoice can
+  change after a valuation adjustment.
 
 Operational note
 =================

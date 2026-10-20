@@ -113,6 +113,43 @@ class AccountMoveLine(models.Model):
             "historical_cost_provisional": False,
         }
 
+    def _set_cogs(self):
+        res = super()._set_cogs()
+        self.sudo()._follow_cogs_historical_cost()
+        return res
+
+    def _follow_cogs_historical_cost(self):
+        """When the core corrects a posted COGS entry, the frozen cost of its
+        invoice line follows it. Lines never frozen keep the dynamic report."""
+        invoice_lines = self.cogs_origin_id.filtered(
+            lambda line: line.move_id.state == "posted" and line.move_id.is_sale_document(include_receipts=True)
+        )
+        if not invoice_lines:
+            return
+        # NULL means "not frozen", and the ORM reads it as 0.0.
+        invoice_lines.flush_recordset(["historical_cost"])
+        self.env.cr.execute(
+            "SELECT id FROM account_move_line WHERE id IN %s AND historical_cost IS NOT NULL",
+            [tuple(invoice_lines.ids)],
+        )
+        frozen_ids = {row[0] for row in self.env.cr.fetchall()}
+        cogs_by_origin_account = {}
+        for line in self:
+            cogs_by_origin_account.setdefault((line.cogs_origin_id.id, line.account_id.id), line)
+        for invoice_line in invoice_lines.filtered(lambda line: line.id in frozen_ids):
+            move = invoice_line.move_id
+            invoice_line = invoice_line.with_company(move.company_id)
+            accounts = invoice_line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=move.fiscal_position_id)
+            cogs_line = cogs_by_origin_account.get((invoice_line.id, accounts["stock_valuation"].id))
+            if not cogs_line:
+                continue
+            cogs_qty = invoice_line.product_uom_id._compute_quantity(
+                invoice_line.quantity, invoice_line.product_id.uom_id
+            )
+            invoice_line._write_historical_cost(
+                {"historical_cost": cogs_qty * cogs_line.price_unit, "historical_cost_provisional": False}
+            )
+
     def _get_historical_cost_branch_company(self):
         """Invoice company when it is a branch selling a product whose valuation
         lives in its parent; empty recordset otherwise."""
