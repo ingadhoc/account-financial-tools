@@ -7,6 +7,8 @@ from odoo.tests import Form, tagged
 
 @tagged("post_install", "-at_install")
 class TestHistoricalCostReport(TestStockValuationCommon):
+    _test_user_groups = None
+
     def _create_customer_invoice(self, product, quantity, price_unit=1000):
         move_form = Form(self.env["account.move"].with_context(default_move_type="out_invoice"))
         move_form.partner_id = self.partner
@@ -109,7 +111,7 @@ class TestHistoricalCostReport(TestStockValuationCommon):
         groups = self.env["account.invoice.report"]._read_group(
             [("move_id", "in", (invoice_1 | invoice_2).ids)],
             groupby=["product_id"],
-            aggregates=["historical_unit_cost:avg"],
+            aggregates=["historical_unit_cost:avg_currency"],
         )
         self.assertEqual(len(groups), 1)
         _, weighted_unit_cost = groups[0]

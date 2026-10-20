@@ -1,0 +1,183 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_invoice_historical_cost
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 20.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-14 18:07+0000\n"
+"PO-Revision-Date: 2026-10-14 18:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_invoice_historical_cost
+#: model:ir.module.module,description:base.module_account_invoice_historical_cost
+msgid ""
+".. |company| replace:: ADHOC SA\n"
+"\n"
+".. |company_logo| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-logo.png\n"
+"   :alt: ADHOC SA\n"
+"   :target: https://www.adhoc.com.ar\n"
+"\n"
+".. |icon| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-icon.png\n"
+"\n"
+".. image:: https://img.shields.io/badge/license-AGPL--3-blue.png\n"
+"   :target: https://www.gnu.org/licenses/agpl\n"
+"   :alt: License: AGPL-3\n"
+"\n"
+"===============================\n"
+"Account Invoice Historical Cost\n"
+"===============================\n"
+"\n"
+"``account.invoice.report`` is a SQL view: its columns are recomputed on every\n"
+"query. ``price_margin`` and ``inventory_value`` are computed against the\n"
+"product's *current* cost (``standard_price``), so changing a product's cost\n"
+"today silently changes the margin of old, already posted invoices. This\n"
+"module freezes the real cost on the invoice line so historical margin\n"
+"analysis stays stable.\n"
+"\n"
+"What it does\n"
+"============\n"
+"\n"
+"#. Adds ``historical_cost`` and ``historical_cost_provisional`` on\n"
+"   ``account.move.line``. On posting a customer invoice (``out_invoice``,\n"
+"   ``out_refund``, ``out_receipt``), the real cost of the delivered goods\n"
+"   (COGS, FIFO/average/standard aware) is frozen on the line, using the same\n"
+"   formula the core uses to build the invoice's COGS journal items. Lines\n"
+"   without a valuated delivery yet are marked ``historical_cost_provisional``\n"
+"   and completed automatically once the related stock move is done.\n"
+"#. Overrides ``account.invoice.report`` so ``price_margin`` and\n"
+"   ``inventory_value`` read the frozen cost when present, falling back to the\n"
+"   current dynamic computation via ``COALESCE`` when it is not — so invoices\n"
+"   posted before installing this module keep showing exactly the same\n"
+"   numbers as before. Adds a derived measure ``historical_unit_cost``\n"
+"   (quantity-weighted) and search filters for the lines already frozen with a\n"
+"   real cost and for the ones still provisional.\n"
+"#. Both fields are exposed as optional (hidden by default) columns on\n"
+"   invoice lines / journal items lists, for auditing a specific line.\n"
+"#. With ``stock_account_multicompany_ux`` installed, a branch selling a\n"
+"   product of a ``shared_to_branches`` category freezes the parent company's\n"
+"   cost, the same one the core posts as COGS.\n"
+"\n"
+"Known limitations\n"
+"==================\n"
+"\n"
+"- **Opt-in module** (not ``auto_install``): each client decides when to\n"
+"  adopt this change of semantics. Without a backfill (deliberately not\n"
+"  implemented), the report will show a step in the numbers at the\n"
+"  installation date — old invoices keep the dynamic calculation, new ones\n"
+"  get the frozen cost.\n"
+"- Only sale documents are covered. ``inventory_value`` on vendor bills keeps\n"
+"  moving with the product's current cost, as before.\n"
+"- With periodic (non ``real_time``) valuation and partial invoicing, cost is\n"
+"  allocated by weighted average of the linked deliveries rather than\n"
+"  following FIFO consumption invoice by invoice. The total always\n"
+"  reconciles; a single invoice's allocation may not match its exact layer\n"
+"  consumption.\n"
+"- A valuation adjustment made after posting does not propagate to an\n"
+"  already posted invoice — same behavior as the core's COGS lines. To\n"
+"  reflect it, reset the invoice to draft and post it again.\n"
+"- In companies with ``real_time`` valuation, completing a provisional line\n"
+"  on delivery can leave the report diverging from the already posted COGS\n"
+"  journal item (which the core never corrects retroactively). This is a\n"
+"  known and accepted trade-off, not a bug.\n"
+"\n"
+"Operational note\n"
+"=================\n"
+"\n"
+"This module needs to be added by hand to runbot's \"with tests\" build module\n"
+"whitelist before its tests can run in CI.\n"
+"\n"
+"|company_logo|\n"
+"\n"
+"This module is maintained by |company|.\n"
+"\n"
+"|icon| |company|\n"
+msgstr ""
+
+#. module: account_invoice_historical_cost
+#: model:ir.module.module,shortdesc:base.module_account_invoice_historical_cost
+msgid "Account Invoice Historical Cost"
+msgstr "Costo histórico en facturas"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_invoice_report__display_name
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_stock_move__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: account_invoice_historical_cost
+#: model:ir.module.module,summary:base.module_account_invoice_historical_cost
+msgid ""
+"Freeze the real cost (COGS) on the invoice line so historical margin is not "
+"recomputed retroactively"
+msgstr ""
+"Congela el costo real (costo de venta) en la línea de factura para que el "
+"margen histórico no se recalcule de forma retroactiva"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_invoice_report__historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move_line__historical_cost
+msgid "Historical Cost"
+msgstr "Costo histórico"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_invoice_report__historical_cost_frozen
+msgid "Historical Cost Frozen"
+msgstr "Costo histórico congelado"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_invoice_report__historical_cost_provisional
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move_line__historical_cost_provisional
+msgid "Historical Cost Provisional"
+msgstr "Costo histórico provisional"
+
+#. module: account_invoice_historical_cost
+#: model_terms:ir.ui.view,arch_db:account_invoice_historical_cost.view_account_invoice_report_search_historical_cost
+msgid "Historical Cost is Provisional"
+msgstr "Costo histórico provisional"
+
+#. module: account_invoice_historical_cost
+#: model_terms:ir.ui.view,arch_db:account_invoice_historical_cost.view_account_invoice_report_search_historical_cost
+msgid "Historical Cost is Real"
+msgstr "Costo histórico real"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_invoice_report__historical_unit_cost
+msgid "Historical Unit Cost"
+msgstr "Costo unitario histórico"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_invoice_report__id
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move__id
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move_line__id
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_stock_move__id
+msgid "ID"
+msgstr ""
+
+#. module: account_invoice_historical_cost
+#: model:ir.model,name:account_invoice_historical_cost.model_account_invoice_report
+msgid "Invoices Statistics"
+msgstr "Estadísticas de facturas"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model,name:account_invoice_historical_cost.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model,name:account_invoice_historical_cost.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model,name:account_invoice_historical_cost.model_stock_move
+msgid "Stock Move"
+msgstr "Movimiento de stock"

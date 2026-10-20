@@ -13,11 +13,8 @@ class StockMove(models.Model):
         return moves
 
     def _complete_provisional_historical_cost(self):
-        # Reads stock.move.value directly, never _get_cogs_value(): calling
-        # _get_cogs_value() here would make the line count itself, since
-        # sale_stock's _get_posted_cogs_value() sums COGS lines of the whole
-        # order without filtering state, and this invoice's own COGS line
-        # already exists by the time delivery happens.
+        # Values the line from the moves just done, never _get_cogs_value(),
+        # so only the deliveries of this sale line count.
         # sudo(): _action_done runs as the inventory user, who has no read
         # access to account.move.line (account/security/ir.model.access.csv).
         candidate_lines = self._get_historical_cost_candidate_lines().filtered(
@@ -29,11 +26,10 @@ class StockMove(models.Model):
                 line._complete_historical_cost_from_moves(related_moves)
 
     def _get_historical_cost_candidate_lines(self):
-        # Inverse of account.move.line._get_stock_moves() (sale_stock's
-        # sale_line_ids.move_ids), walked backwards on purpose: searching
-        # account_move_line by product would scan the whole table, keep
-        # never-delivered lines as candidates forever, and need one
-        # _get_stock_moves() per candidate.
+        # Inverse of sale_stock's sale_line_ids.move_ids, walked backwards on
+        # purpose: searching account_move_line by product would scan the whole
+        # table, keep never-delivered lines as candidates forever, and need one
+        # cogs_move_ids per candidate.
         if "sale_line_id" not in self._fields:
             return self.env["account.move.line"]
         return self.sudo().sale_line_id.invoice_lines
