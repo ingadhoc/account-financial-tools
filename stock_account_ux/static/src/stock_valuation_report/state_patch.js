@@ -1,6 +1,6 @@
 import { patch } from "@web/core/utils/patch";
 import { useSetupAction } from "@web/search/action_hook";
-import { StockValuationReport } from "@stock_account/stock_valuation/stock_valuation_report";
+import { StockValuationReport } from "@account/components/stock_valuation/stock_valuation_report";
 
 /**
  * Mantiene los filtros del reporte al ir y volver del detalle (tarea 64440).

@@ -4,7 +4,7 @@ import { patch } from "@web/core/utils/patch";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { MultiRecordSelector } from "@web/core/record_selectors/multi_record_selector";
-import { StockValuationReportFilters } from "@stock_account/stock_valuation/filters/filters";
+import { StockValuationReportFilters } from "@account/components/stock_valuation/filters/filters";
 
 // Sumar los componentes usados por los nuevos dropdowns de filtros.
 StockValuationReportFilters.components = {

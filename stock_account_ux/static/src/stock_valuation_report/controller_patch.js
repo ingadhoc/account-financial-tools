@@ -1,7 +1,7 @@
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { serializeDate } from "@web/core/l10n/dates";
-import { StockValuationReportController } from "@stock_account/stock_valuation/controller";
+import { StockValuationReportController } from "@account/components/stock_valuation/controller";
 
 const { DateTime } = luxon;
 
