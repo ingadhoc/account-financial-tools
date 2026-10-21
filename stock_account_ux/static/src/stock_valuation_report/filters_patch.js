@@ -1,4 +1,4 @@
-import { useState } from "@odoo/owl";
+import { proxy } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
 import { Dropdown } from "@web/core/dropdown/dropdown";
@@ -27,7 +27,7 @@ patch(StockValuationReportFilters.prototype, {
         // useState: env.controller viene atado al render del padre, así que sin
         // esto los cambios de filtro no re-renderizan la barra (la selección no
         // "prevalecía"). Con useState propio, tocar un filtro re-renderiza acá.
-        this._controller = useState(this.env.controller);
+        this._controller = proxy(this.env.controller);
     },
 
     get controller() {
