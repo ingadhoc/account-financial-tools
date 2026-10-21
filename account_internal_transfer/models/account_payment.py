@@ -151,16 +151,19 @@ class AccountPayment(models.Model):
             paired_payment_type = payment._get_paired_payment_type()
             # the line chosen by the user wins over the journal default and over the context hook
             destination_line = payment.destination_payment_method_line_id
+            paired_method_line = (
+                destination_line
+                or payment.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1]
+            )
             paired_payment = payment.copy(
                 {
                     "journal_id": payment.destination_journal_id.id,
                     "company_id": payment.destination_journal_id.company_id.id,
                     "destination_journal_id": payment.journal_id.id,
                     "payment_type": paired_payment_type,
-                    "payment_method_line_id": (
-                        destination_line
-                        or payment.destination_journal_id._get_available_payment_method_lines(paired_payment_type)[:1]
-                    ).id,
+                    "payment_method_line_id": paired_method_line.id,
+                    # copy() carries the origin account when the field is editable (l10n_account_withholding_tax)
+                    "outstanding_account_id": paired_method_line.payment_account_id.id,
                     "move_id": None,
                     "memo": payment.memo,
                     "paired_internal_transfer_payment_id": payment.id,
