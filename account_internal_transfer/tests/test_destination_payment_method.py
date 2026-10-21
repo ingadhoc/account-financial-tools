@@ -94,6 +94,35 @@ class TestDestinationPaymentMethod(AccountTestInvoicingCommon):
 
         self.assertEqual(payment.paired_internal_transfer_payment_id.payment_method_line_id, default_line)
 
+    def test_paired_payment_outstanding_account_is_the_one_of_its_own_line(self):
+        """The account of the origin payment must not leak into the paired one."""
+        payment = self._create_transfer()
+        origin_account = payment.payment_method_line_id.payment_account_id
+        self.assertNotEqual(
+            origin_account,
+            payment.destination_payment_method_line_id.payment_account_id,
+            "The test needs different outstanding accounts on both sides.",
+        )
+
+        payment.action_post()
+
+        paired_payment = payment.paired_internal_transfer_payment_id
+        self.assertEqual(
+            paired_payment.outstanding_account_id,
+            paired_payment.payment_method_line_id.payment_account_id,
+        )
+        self.assertNotIn(origin_account, paired_payment.move_id.line_ids.account_id)
+
+    def test_paired_payment_outstanding_account_follows_the_chosen_line(self):
+        payment = self._create_transfer(destination_line=self.second_destination_line)
+
+        payment.action_post()
+
+        self.assertEqual(
+            payment.paired_internal_transfer_payment_id.outstanding_account_id,
+            self.second_outstanding_account,
+        )
+
     def test_changing_the_destination_journal_recomputes_the_line(self):
         payment = self._create_transfer(destination_line=self.second_destination_line)
         other_journal = self.env["account.journal"].create(
