@@ -9,14 +9,14 @@
          ``t-on-click.stop`` es necesario: el <td> que contiene el menú tiene su
          propio ``t-on-click="onClick"``, y sin detener la propagación abrir el
          menú dispararía además la acción de la línea. -->
-    <t t-inherit="stock_account.StockValuationReport.InventoryValuationLine" t-inherit-mode="extension">
+    <t t-inherit="account.StockValuationReport.InventoryValuationLine" t-inherit-mode="extension">
         <xpath expr="//td[hasclass('line_name')]/div[hasclass('wrapper')]" position="inside">
-            <span t-if="props.line and props.line.drilldowns and props.line.drilldowns.length"
+            <span t-if="this.props.line and this.props.line.drilldowns and this.props.line.drilldowns.length"
                 class="o_valuation_line_drilldown ms-2 d-print-none"
                 t-on-click.stop="() => {}">
-                <Dropdown items="props.line.drilldowns">
+                <Dropdown items="this.props.line.drilldowns">
                     <button class="btn btn-link p-0 text-muted" title="View details">
-                        <i class="fa fa-ellipsis-v"/>
+                        <i class="oi" data-icon="more_vert"/>
                     </button>
                 </Dropdown>
             </span>

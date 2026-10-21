@@ -1,9 +1,11 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from ..models.res_company import VALUATION_PRODUCT_CTX
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestValuationReportFilters(TestStockValuationCommon):
+class TestValuationReportFilters(TestStockValuationUXCommon):
     """Filters of the Inventory Valuation report. Data is created with .create() and the
     common helpers, no demo data. Every product used is periodic, so the moves stay
     unaccounted (``related_account_move_id = False``) until the closing, which is what the
@@ -11,7 +13,7 @@ class TestValuationReportFilters(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         # Receipts (periodic). The move value is unit_cost * qty.
         # Watch out with the standard cost product: it is received AT ITS STANDARD COST
         # (10). Receiving it at another price and then deleting the ``product.value`` the
@@ -289,3 +291,19 @@ class TestValuationReportFilters(TestStockValuationCommon):
         # only the fifo move (20).
         data = self._data(categ_ids=[self.category_fifo.id], line_types=["stock_move"])
         self.assertAlmostEqual(data["stock_variation"]["value"], 20.0)
+
+    def test_valuation_search_ignores_the_product_scope(self):
+        """The scope lists ``product.product`` ids, and ``valuation`` is searched on templates."""
+        products = self.env["product.product"].with_context(**{VALUATION_PRODUCT_CTX: self.product_standard.ids})
+        found = products.search([("id", "=", self.product_standard.id), ("valuation", "=", "periodic")])
+        self.assertEqual(found, self.product_standard)
+
+    def test_line_type_keeps_a_product_that_ran_out_of_stock(self):
+        """The standard values every storable product, with stock or not: the filtered
+        report must not drop the one whose stock was delivered after being booked."""
+        self._book(self.move_standard)
+        self._make_out_move(self.product_standard, 10)
+        data = self._data()
+        filtered = self._data(line_types=["stock_move"])
+        self.assertAlmostEqual(filtered["initial_balance"]["value"], data["initial_balance"]["value"])
+        self.assertAlmostEqual(filtered["stock_variation"]["value"], data["stock_variation"]["value"])

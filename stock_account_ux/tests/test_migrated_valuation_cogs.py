@@ -1,11 +1,12 @@
 from unittest.mock import patch
 
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestMigratedValuationCogs(TestStockValuationCommon):
+class TestMigratedValuationCogs(TestStockValuationUXCommon):
     """Invoicing in v19 a move whose valuation was already booked in v18
     (``stock_valuation_migrated=True``) must not generate the anglo-saxon COGS again: that
     would double the accounting impact. See task 70174 / PR 990."""
@@ -16,15 +17,9 @@ class TestMigratedValuationCogs(TestStockValuationCommon):
         cls.product = cls.product_standard_auto
 
     def _stock_move(self, migrated):
-        move = self.env["stock.move"].create(
-            {
-                "product_id": self.product.id,
-                "product_uom_qty": 1.0,
-                "product_uom": self.uom.id,
-                "location_id": self.stock_location.id,
-                "location_dest_id": self.customer_location.id,
-            }
-        )
+        # The COGS is valued from the delivery, so it has to be done and with stock behind it.
+        self._make_in_move(self.product, 2.0, 10.0)
+        move = self._make_out_move(self.product, 1.0)
         move.stock_valuation_migrated = migrated
         return move
 
@@ -33,15 +28,17 @@ class TestMigratedValuationCogs(TestStockValuationCommon):
 
     def _create_invoice_linked_to(self, stock_move):
         """Create and post a customer invoice whose only product line is linked to
-        ``stock_move``, patching ``_get_stock_moves``, which is what ``sale_stock``
+        ``stock_move``, patching ``_compute_cogs_move_ids``, which is what ``sale_stock``
         provides in production and what the COGS pruning consumes."""
         move_line_cls = type(self.env["account.move.line"])
-        original = move_line_cls._get_stock_moves
+        original = move_line_cls._compute_cogs_move_ids
 
         def _patched(records):
-            return original(records) | stock_move
+            original(records)
+            for line in records:
+                line.cogs_move_ids |= stock_move
 
-        with patch.object(move_line_cls, "_get_stock_moves", _patched):
+        with patch.object(move_line_cls, "_compute_cogs_move_ids", _patched):
             return self._create_invoice(product=self.product, quantity=1.0, price_unit=20.0)
 
     def test_migrated_move_does_not_generate_cogs(self):

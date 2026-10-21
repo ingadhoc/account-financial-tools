@@ -257,7 +257,7 @@ class StockMove(models.Model):
             "context": {**self.env.context, "default_move_ids": moves.ids},
         }
 
-    def _set_value(self, correction_quantity=None):
+    def _set_value(self, recompute_date=None, skip_check=False):
         """Do not revalue on invoicing the moves already valued in v18.
 
         Out of the box ``account.move._post`` calls ``_set_value`` on the invoice's
@@ -271,7 +271,7 @@ class StockMove(models.Model):
         moves = self
         if self.env.context.get("skip_migrated_stock_revaluation"):
             moves = self.filtered(lambda m: not (m.stock_valuation_migrated and (m.is_in or m.is_dropship)))
-        return super(StockMove, moves)._set_value(correction_quantity=correction_quantity)
+        return super(StockMove, moves)._set_value(recompute_date=recompute_date, skip_check=skip_check)
 
     def _get_migrated_valuation_counterpart_account(self):
         """Counterpart account of the valuation entry v18 left attached to

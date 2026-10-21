@@ -1,15 +1,16 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestValuationReportDrilldown(TestStockValuationCommon):
+class TestValuationReportDrilldown(TestStockValuationUXCommon):
     """Drill-down from the valuation report to the detail behind each section. The main
     gap was the Variation, which offers no navigation at all out of the box."""
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move_standard = self._make_in_move(self.product_standard, 10, 10)
         self.move_avco = self._make_in_move(self.product_avco, 4, 25)
         self.env["product.value"].search([("move_id", "in", (self.move_standard + self.move_avco).ids)]).unlink()
@@ -147,7 +148,7 @@ class TestValuationReportDrilldown(TestStockValuationCommon):
         zero_delta = self.env["product.value"].create(
             {"move_id": self.move_standard.id, "value": self.move_standard.value}
         )
-        self.assertFalse(zero_delta.delta)
+        self.assertFalse(zero_delta.adjustment)
         filters = {"product_ids": [self.product_standard.id]}
         lines = self.report.get_report_values(**filters)["data"]["stock_variation"]["lines"]
         types_by_account = {line["account_id"]: line["drilldown_types"] for line in lines}

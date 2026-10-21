@@ -1,12 +1,13 @@
 from unittest.mock import patch
 
 from odoo import Command, fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestRelatedEntrySearch(TestStockValuationCommon):
+class TestRelatedEntrySearch(TestStockValuationUXCommon):
     """``related_account_move_id`` is stored: searching it set / not set reads the column,
     which has to agree with what the compute gives, as the valuation report and the
     closing use it to find the unaccounted moves. The compute runs on the dependencies,
@@ -151,6 +152,11 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         set / not set search reads the stored column and must not compute anything."""
         self._make_in_move(self.product_standard_auto, 1, 10)
         move_class = type(self.env["stock.move"])
-        with patch.object(move_class, "_get_related_invoices", side_effect=AssertionError("computed")):
+        self.env.flush_all()
+
+        def _forbidden(moves):
+            raise AssertionError("computed")
+
+        with patch.object(move_class, "_compute_related_account_move_id", _forbidden):
             self.env["stock.move"].search([("related_account_move_id", "=", False)])
             self.env["stock.move"].search([("related_account_move_id", "!=", False)])
