@@ -69,6 +69,24 @@ class TestReconfirmTransfer(AccountTestInvoicingCommon):
 
         self.assertPairReconciled("Confirming the paired leg again has to reconcile the pair too.")
 
+    def test_reconfirming_a_transfer_without_pair_does_not_create_one(self):
+        """Older data: the destination entry exists but has no payment linked to the transfer."""
+        self.payment.paired_internal_transfer_payment_id = False
+        self.paired_payment.paired_internal_transfer_payment_id = False
+        destination_payments = self.env["account.payment"].search_count(
+            [("journal_id", "=", self.destination_journal.id)]
+        )
+
+        self.payment.action_draft()
+        self.payment.action_post()
+
+        self.assertFalse(self.payment.paired_internal_transfer_payment_id, "No pair is created on re-confirmation.")
+        self.assertEqual(
+            self.env["account.payment"].search_count([("journal_id", "=", self.destination_journal.id)]),
+            destination_payments,
+            "The destination journal must not get a second entry for the same transfer.",
+        )
+
     def test_confirming_both_legs_together_reconciles_the_pair(self):
         """From the list, both legs reset to draft and posted in one call."""
         both = self.payment + self.paired_payment
