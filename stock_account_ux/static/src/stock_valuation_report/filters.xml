@@ -20,7 +20,7 @@
             <div id="filter_cost_methods" class="d-print-none">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-sliders me-1"/>Valuation Method
+                        <i class="oi me-1" data-icon="tune"/>Valuation Method
                     </button>
                     <t t-set-slot="content">
                         <t t-foreach="costMethodOptions" t-as="opt" t-key="opt.value">
@@ -28,7 +28,7 @@
                                 class="{ selected: isFilterSelected('costMethods', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onCostMethodToggle(opt.value)">
-                                <i t-if="isFilterSelected('costMethods', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="isFilterSelected('costMethods', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>
@@ -40,7 +40,7 @@
             <div id="filter_valuations" class="d-print-none">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-sliders me-1"/>Valuation Type
+                        <i class="oi me-1" data-icon="tune"/>Valuation Type
                     </button>
                     <t t-set-slot="content">
                         <t t-foreach="valuationOptions" t-as="opt" t-key="opt.value">
@@ -48,7 +48,7 @@
                                 class="{ selected: isFilterSelected('valuations', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onValuationToggle(opt.value)">
-                                <i t-if="isFilterSelected('valuations', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="isFilterSelected('valuations', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>
@@ -61,7 +61,7 @@
                  title="Only affects the Stock Variation section; shows unaccounted moves by origin.">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-filter me-1"/>Movement Type
+                        <i class="oi oi-filled me-1" data-icon="filter_alt"/>Movement Type
                     </button>
                     <t t-set-slot="content">
                         <t t-foreach="lineTypeOptions" t-as="opt" t-key="opt.value">
@@ -69,7 +69,7 @@
                                 class="{ selected: isFilterSelected('lineTypes', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onLineTypeToggle(opt.value)">
-                                <i t-if="isFilterSelected('lineTypes', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="isFilterSelected('lineTypes', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>

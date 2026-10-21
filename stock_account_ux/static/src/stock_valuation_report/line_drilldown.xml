@@ -16,7 +16,7 @@
                 t-on-click.stop="() => {}">
                 <Dropdown items="props.line.drilldowns">
                     <button class="btn btn-link p-0 text-muted" title="View details">
-                        <i class="fa fa-ellipsis-v"/>
+                        <i class="oi" data-icon="more_vert"/>
                     </button>
                 </Dropdown>
             </span>
