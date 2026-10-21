@@ -10,7 +10,7 @@
         "stock_account",
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "views/product_value_views.xml",
         "views/stock_move_views.xml",
         "wizard/stock_move_valuation_views.xml",
