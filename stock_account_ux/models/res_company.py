@@ -122,7 +122,8 @@ class ResCompany(models.Model):
             date = fields.Date.from_string(at_date) if isinstance(at_date, str) else at_date
             if date == fields.Date.context_today(self):
                 date = False
-            products = report._get_filtered_valued_products(
+            # From ``self.env``: it carries the Stock Move Types, which widen the products.
+            products = self.env["stock_account.stock.valuation.report"]._get_filtered_valued_products(
                 self, date, product_ids, categ_ids, cost_methods, valuations
             )
             self._check_partial_closing_attribution(products, date)
