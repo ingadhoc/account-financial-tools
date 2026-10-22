@@ -42,11 +42,11 @@ registry.category("web_tour.tours").add("stock_account_ux_valuation_stock_move_t
             run: "click",
         },
         {
-            trigger: ".o-dropdown--menu .dropdown-item:contains('Scrap')",
+            trigger: ".o-dropdown--menu .dropdown-item:contains('Scraps')",
             run: "click",
         },
         {
-            trigger: ".o-dropdown--menu .dropdown-item.selected:contains('Scrap')",
+            trigger: ".o-dropdown--menu .dropdown-item.selected:contains('Scraps')",
         },
         {
             trigger: "#filter_line_types button",
@@ -64,7 +64,7 @@ registry.category("web_tour.tours").add("stock_account_ux_valuation_stock_move_t
             run: "click",
         },
         {
-            trigger: ".o-dropdown--menu .dropdown-item:not(.selected):contains('Scrap')",
+            trigger: ".o-dropdown--menu .dropdown-item:not(.selected):contains('Scraps')",
         },
     ],
 });
