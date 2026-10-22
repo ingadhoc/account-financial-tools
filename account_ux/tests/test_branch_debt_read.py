@@ -17,6 +17,7 @@ class TestBranchDebtRead(AccountTestInvoicingCommon):
         cls.root_company = cls.company_data["company"]
         cls.root_company.write(
             {
+                "block_intercompany_conciliation": "none",
                 "child_ids": [
                     Command.create({"name": "Branch A"}),
                     Command.create({"name": "Branch B"}),
