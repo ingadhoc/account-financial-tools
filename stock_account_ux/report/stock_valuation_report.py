@@ -598,7 +598,9 @@ class StockValuationReport(models.AbstractModel):
             & (Domain("location_usage", "=", "supplier") | Domain("location_dest_usage", "=", "supplier")),
             "sale": Domain("is_dropship", "=", False)
             & (Domain("location_usage", "=", "customer") | Domain("location_dest_usage", "=", "customer")),
-            "inventory": Domain("is_inventory", "=", True),
+            # Any move against an adjustment or loss location; scraps have their own type.
+            "inventory": Domain("scrap_id", "=", False)
+            & (Domain("location_usage", "=", "inventory") | Domain("location_dest_usage", "=", "inventory")),
             "scrap": Domain("scrap_id", "!=", False),
             "production": Domain("location_usage", "=", "production")
             | Domain("location_dest_usage", "=", "production"),

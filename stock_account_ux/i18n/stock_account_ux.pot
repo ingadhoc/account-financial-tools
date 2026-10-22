@@ -201,6 +201,18 @@ msgid "Initial Balance"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Inter-company Transit"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Inventory Adjustments"
+msgstr ""
+
+#. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/report/stock_valuation_report.py:0
 msgid "Inventory Loss"
@@ -280,6 +292,12 @@ msgid "Manual / Periodic"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Manufacturing"
+msgstr ""
+
+#. module: stock_account_ux
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
 msgid "Move Adjustment"
 msgstr ""
@@ -316,6 +334,14 @@ msgstr ""
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
 msgid ""
 "Only affects the Stock Variation section; shows unaccounted moves by origin."
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
+msgid ""
+"Only applies to Stock Moves; selecting a type sets Movement Type to Stock "
+"Moves."
 msgstr ""
 
 #. module: stock_account_ux
@@ -383,8 +409,26 @@ msgid "Products"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Purchases"
+msgstr ""
+
+#. module: stock_account_ux
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_view_search_account_link
 msgid "Revaluation Not Booked"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Sales"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
+msgid "Scraps"
 msgstr ""
 
 #. module: stock_account_ux
@@ -402,6 +446,12 @@ msgstr ""
 #. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_stock_move
 msgid "Stock Move"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
+msgid "Stock Move Types"
 msgstr ""
 
 #. module: stock_account_ux
