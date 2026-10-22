@@ -25,7 +25,7 @@ class ResCompany(models.Model):
             ("other_legal_entity", "Block between different legal entities"),
         ],
         string="Block Inter-Company Reconciliation",
-        default="none",
+        default="all",
         required=True,
         help="Set on the root of a branch tree. It decides which journal items of different companies can be "
         "reconciled together, and whose debt a branch can read and collect, even from companies its users have "
