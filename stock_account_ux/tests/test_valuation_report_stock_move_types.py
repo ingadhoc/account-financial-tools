@@ -76,3 +76,26 @@ class TestValuationReportStockMoveTypes(TestStockValuationCommon):
         self.assertTrue(self.adjustment.account_move_id)
         self.assertFalse(self.receipt.account_move_id)
         self.assertAlmostEqual(self._variation(), 100.0, msg="The receipt stays pending")
+
+    def test_drilldown_leaves_out_revalued_moves(self):
+        """The section leaves revalued moves out, so the drill-down does too."""
+        self.env["product.value"].create({"move_id": self.receipt.id, "value": 120.0, "company_id": self.company.id})
+        action = self.report.action_open_variation_stock_moves(
+            self.account_stock_valuation.id, filters={"stock_move_types": ["purchase"]}
+        )
+        self.assertNotIn(self.receipt, self.env["stock.move"].search(action["domain"]))
+
+    def test_product_with_no_stock_left(self):
+        """Selling the rest leaves the product at zero, but its pending receipt still
+        counts when filtering by Purchases: in the report, the drill-down and the
+        closing."""
+        self._make_out_move(self.product_standard, 8)
+        self.assertEqual(self.product_standard.qty_available, 0)
+        self.assertAlmostEqual(self._variation(stock_move_types=["purchase"]), 100.0)
+        action = self.report.action_open_variation_stock_moves(
+            self.account_stock_valuation.id, filters={"stock_move_types": ["purchase"]}
+        )
+        self.assertEqual(self.env["stock.move"].search(action["domain"]), self.receipt)
+        self.company.action_close_stock_valuation(auto_post=True, stock_move_types=["purchase"])
+        self.assertTrue(self.receipt.account_move_id)
+        self.assertAlmostEqual(self._variation(stock_move_types=["purchase"]), 0.0, msg="The receipt is booked")

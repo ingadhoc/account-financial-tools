@@ -366,7 +366,11 @@ class StockValuationReport(models.AbstractModel):
         """Unaccounted moves of those products, inside the valued perimeter and up to
         the report date."""
         domain = self._get_unaccounted_moves_base_domain(company, products, date)
-        return domain & self._get_valued_directions_domain() & self._get_stock_move_types_domain()
+        domain &= self._get_valued_directions_domain()
+        if self.env.context.get(STOCK_MOVE_TYPES_CTX):
+            # Same scope as the Stock Moves component: the selected types, no revalued moves.
+            domain &= self._get_line_type_move_domain(products, [LINE_TYPE_STOCK_MOVE])
+        return domain
 
     def _get_variation_product_values_domain(self, company, products, date):
         """Unaccounted value adjustments of those products, up to the report date. An
@@ -634,6 +638,9 @@ class StockValuationReport(models.AbstractModel):
         With any of those filters on, the products with a booked balance on their
         valuation account are added (``_get_booked_products``), even with no stock at the
         date or archived: the filtered Initial Balance has to bring their journal items.
+
+        With the Stock Move Types filter on, the products with pending moves of those
+        types are added too (``_get_pending_move_products``).
         """
         # sudo and valuation context as in the standard: ``qty_available`` expands kit
         # BoMs that an accounting user cannot read.
@@ -647,6 +654,10 @@ class StockValuationReport(models.AbstractModel):
         valued_products = valued_product_context.search(domain)
         if any([product_ids, categ_ids, cost_methods, valuations]):
             valued_products |= self._get_booked_products(company, date, product_ids, categ_ids).with_env(
+                valued_products.env
+            )
+        if self.env.context.get(STOCK_MOVE_TYPES_CTX):
+            valued_products |= self._get_pending_move_products(company, date, product_ids, categ_ids).with_env(
                 valued_products.env
             )
 
@@ -703,6 +714,28 @@ class StockValuationReport(models.AbstractModel):
             if product.with_company(company)._get_product_accounts()["stock_valuation"] == account:
                 booked |= product
         return booked
+
+    def _get_pending_move_products(self, company, date, product_ids, categ_ids):
+        """Valued products matching the Product / Category filters, archived ones
+        included, with unaccounted moves of the selected Stock Move Types up to the date.
+
+        They may have no stock at the date: a receipt and a sale of the same quantity
+        leave the product at zero and net out, but filtered by type they no longer do.
+        """
+        product_domain = Domain(company._get_valuation_product_domain())
+        product_domain &= self._get_valuation_report_extra_domain(product_ids, categ_ids)
+        domain = Domain(
+            [
+                ("related_account_move_id", "=", False),
+                ("company_id", "=", company.id),
+                ("state", "=", "done"),
+            ]
+        ) & Domain("product_id", "any", product_domain)
+        if date:
+            domain &= Domain([("date", "<=", date)])
+        domain &= self._get_valued_directions_domain() & self._get_stock_move_types_domain()
+        groups = self.env["stock.move"].sudo()._read_group(domain, ["product_id"])
+        return self.env["product.product"].sudo().with_company(company).browse([product.id for (product,) in groups])
 
     def _get_valuation_report_extra_domain(self, product_ids, categ_ids):
         """Extra ``product.product`` domain for the Product and Category filters, the
