@@ -83,7 +83,7 @@ patch(StockValuationReportFilters.prototype, {
             { value: "purchase", label: _t("Purchases") },
             { value: "sale", label: _t("Sales") },
             { value: "inventory", label: _t("Inventory Adjustments") },
-            { value: "scrap", label: _t("Scrap") },
+            { value: "scrap", label: _t("Scraps") },
             { value: "production", label: _t("Manufacturing") },
             { value: "intercompany_transit", label: _t("Inter-company Transit") },
         ];

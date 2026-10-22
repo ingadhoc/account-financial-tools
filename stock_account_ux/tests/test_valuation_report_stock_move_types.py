@@ -6,8 +6,9 @@ from odoo.tests import tagged
 class TestValuationReportStockMoveTypes(TestStockValuationCommon):
     """The Stock Move Types filter narrows the Stock Moves origin of the variation.
 
-    Scenario: an unaccounted receipt (purchase, +100) and an unaccounted inventory
-    adjustment (-20), both of the periodic standard cost product.
+    Scenario: an unaccounted receipt (purchase, +100) and an unaccounted outflow to a
+    loss location made with an operation, not from Physical Inventory (-20), both of
+    the periodic standard cost product.
     """
 
     def setUp(self):
@@ -17,7 +18,6 @@ class TestValuationReportStockMoveTypes(TestStockValuationCommon):
         # A real receipt carries no manual adjustment; the helper uses it to value.
         self.env["product.value"].search([("move_id", "=", self.receipt.id)]).unlink()
         self.adjustment = self._make_out_move(self.product_standard, 2, location_dest_id=self.inventory_location.id)
-        self.adjustment.is_inventory = True
 
     def _data(self, **kwargs):
         return self.report.get_report_values(**kwargs)["data"]
@@ -55,6 +55,21 @@ class TestValuationReportStockMoveTypes(TestStockValuationCommon):
             self.account_stock_valuation.id, filters={"stock_move_types": ["inventory"]}
         )
         self.assertEqual(self.env["stock.move"].search(action["domain"]), self.adjustment)
+
+    def test_scrap_is_not_an_inventory_adjustment(self):
+        """Scrap locations are adjustment locations too, but a scrap only shows up in
+        its own type."""
+        scrap = self.env["stock.scrap"].create({"product_id": self.product_standard.id, "scrap_qty": 1})
+        scrap.action_validate()
+        account = self.account_stock_valuation.id
+        open_moves = self.report.action_open_variation_stock_moves
+        moves = self.env["stock.move"]
+        self.assertEqual(
+            moves.search(open_moves(account, filters={"stock_move_types": ["scrap"]})["domain"]), scrap.move_ids
+        )
+        self.assertEqual(
+            moves.search(open_moves(account, filters={"stock_move_types": ["inventory"]})["domain"]), self.adjustment
+        )
 
     def test_closing_books_and_links_only_the_filtered_moves(self):
         self.company.action_close_stock_valuation(auto_post=True, stock_move_types=["inventory"])
