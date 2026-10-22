@@ -24,28 +24,28 @@ msgid ""
 "(valuing the move books its adjusted value): %(moves)s"
 msgstr ""
 "Se excluyeron %(count)s ajustes porque su movimiento todavía no está "
-"contabilizado (valorizar el movimiento contabiliza su valor ajustado): "
-"%(moves)s"
+"contabilizado (valorizar el movimiento contabiliza su valor ajustado): %"
+"(moves)s"
 
 #. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
-"%(count)s adjustments were excluded because they are already booked: "
-"%(adjustments)s"
+"%(count)s adjustments were excluded because they are already booked: %"
+"(adjustments)s"
 msgstr ""
-"Se excluyeron %(count)s ajustes porque ya están contabilizados: "
-"%(adjustments)s"
+"Se excluyeron %(count)s ajustes porque ya están contabilizados: %"
+"(adjustments)s"
 
 #. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
-"%(count)s adjustments were excluded because they have no value to book: "
-"%(adjustments)s"
+"%(count)s adjustments were excluded because they have no value to book: %"
+"(adjustments)s"
 msgstr ""
-"Se excluyeron %(count)s ajustes porque no tienen valor para contabilizar: "
-"%(adjustments)s"
+"Se excluyeron %(count)s ajustes porque no tienen valor para contabilizar: %"
+"(adjustments)s"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -55,8 +55,8 @@ msgid ""
 "(valuing them again would double the product's booked value): %(references)s"
 msgstr ""
 "%(count)s movimientos se excluyeron porque ya tienen un asiento de valuación "
-"(valuarlos de nuevo duplicaría el valor contabilizado del producto): "
-"%(references)s"
+"(valuarlos de nuevo duplicaría el valor contabilizado del producto): %"
+"(references)s"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -535,8 +535,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
-"The entry date cannot be earlier than the value adjustments it books: "
-"%(adjustments)s"
+"The entry date cannot be earlier than the value adjustments it books: %"
+"(adjustments)s"
 msgstr ""
 "La fecha del asiento no puede ser anterior a los ajustes de valor que "
 "contabiliza: %(adjustments)s"
@@ -567,8 +567,8 @@ msgstr "La selección no tiene valor para contabilizar."
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
-"These records were booked after the wizard was opened. Open it again: "
-"%(records)s"
+"These records were booked after the wizard was opened. Open it again: %"
+"(records)s"
 msgstr ""
 
 #. module: stock_account_ux
