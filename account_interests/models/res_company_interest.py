@@ -531,7 +531,7 @@ class ResCompanyInterest(models.Model):
                         "quantity": 1.0,
                         "price_unit": value,
                         "partner_id": partner.id,
-                        "name": self.interest_product_id.name + ".\n" + key,
+                        "name": key,
                         "analytic_distribution": {self.analytic_account_id.id: 100.0}
                         if self.analytic_account_id.id
                         else False,
