@@ -32,7 +32,7 @@
     "data": [
         "views/res_company_interest_views.xml",
         "data/ir_cron_data.xml",
-        'security/ir.access.csv',
+        "security/ir.access.csv",
     ],
     "demo": [
         "demo/res_company_interest_demo.xml",
