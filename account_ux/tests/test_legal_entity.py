@@ -148,6 +148,9 @@ class TestLegalEntityCompanyCheck(TransactionCase):
         cls.other_entity = Company.create(
             {"name": "Sucursal otro CUIT", "parent_id": cls.parent.id, "vat": cls.OTHER_VAT}
         )
+        # The legal entity is the boundary when the tree blocks reconciliation between
+        # legal entities (or always); without the block the whole tree is accepted.
+        cls.parent.block_intercompany_conciliation = "other_legal_entity"
         cls.line = cls.env["account.move.line"]
 
     def _accepted_company_ids(self, companies):
@@ -178,6 +181,22 @@ class TestLegalEntityCompanyCheck(TransactionCase):
         """La garantía que se conserva: la sucursal con otro CUIT queda afuera."""
         self.assertEqual(self._accepted_company_ids(self.other_entity), {self.other_entity.id})
         self.assertNotIn(self.other_entity.id, self._accepted_company_ids(self.parent))
+
+    def test_the_whole_tree_is_accepted_without_the_block(self):
+        """Sin bloqueo de conciliación entre compañías, entra también la sucursal con otro CUIT."""
+        self.parent.block_intercompany_conciliation = "none"
+        tree = {self.parent.id, self.same_entity.id, self.other_entity.id}
+        self.assertEqual(self._accepted_company_ids(self.other_entity), tree)
+        self.assertEqual(self._accepted_company_ids(self.same_entity), tree)
+
+    def test_blocking_always_keeps_the_legal_entity(self):
+        """Bloquear siempre no achica el chequeo: sigue aceptando la entidad fiscal, como antes."""
+        self.parent.block_intercompany_conciliation = "all"
+        self.assertEqual(
+            self._accepted_company_ids(self.same_entity),
+            {self.same_entity.id, self.parent.id},
+        )
+        self.assertEqual(self._accepted_company_ids(self.other_entity), {self.other_entity.id})
 
     def test_no_company_still_means_no_company(self):
         """Sin compañías el contrato del default no cambia."""

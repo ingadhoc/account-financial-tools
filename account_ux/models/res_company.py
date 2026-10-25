@@ -18,6 +18,22 @@ class ResCompany(models.Model):
         "IMPORTANT: If you change this setting if you reconcile any previous item and re-reconcile it, "
         "it will be reconciled with the new mechanism"
     )
+    block_intercompany_conciliation = fields.Selection(
+        [
+            ("none", "Don't block"),
+            ("all", "Block always"),
+            ("other_legal_entity", "Block between different legal entities"),
+        ],
+        string="Block Inter-Company Reconciliation",
+        default="all",
+        required=True,
+        help="Set on the root of a branch tree. It decides which journal items of different companies can be "
+        "reconciled together, and whose debt a branch can read and collect, even from companies its users have "
+        "no access to:\n"
+        "* Don't block: every company of the tree.\n"
+        "* Block always: none, each company only reconciles its own journal items.\n"
+        "* Block between different legal entities: only the companies of the same legal entity.",
+    )
     legal_entity_root_id = fields.Many2one(
         "res.company",
         string="Legal Entity Head",
@@ -80,6 +96,28 @@ class ResCompany(models.Model):
                 company.legal_entity_root_id = parent.legal_entity_root_id
             else:
                 company.legal_entity_root_id = company
+
+    def cache_invalidation_fields(self):
+        # Both decide the read rules on journal entries (the Tax ID through the legal entity), and those are cached.
+        return super().cache_invalidation_fields() | {"block_intercompany_conciliation", "vat"}
+
+    def _get_branch_debt_companies(self):
+        """The companies whose debt can be read, collected and reconciled from ``self``.
+
+        It follows ``block_intercompany_conciliation`` of the root of the tree: if documents
+        of different companies can be reconciled together, whoever does it has to see and
+        reach both sides, whether or not they have access to the other company. The whole
+        tree when nothing is blocked, the legal entity of ``self`` when only different legal
+        entities are, and nothing when everything is or there is no tree; callers fall back
+        to their own scope.
+        """
+        self.ensure_one()
+        root = self.sudo().root_id
+        if not root.child_ids or root.block_intercompany_conciliation == "all":
+            return self.env["res.company"]
+        if root.block_intercompany_conciliation == "other_legal_entity":
+            return self._get_legal_entity_companies()
+        return self.env["res.company"].sudo().search([("id", "child_of", root.id)]).with_env(self.env)
 
     def _get_legal_entity_companies(self, accessible_only=False):
         """The companies that make up the same legal entity as ``self``.

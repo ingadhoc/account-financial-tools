@@ -25,6 +25,10 @@ class AccountMoveLine(models.Model):
         and the reason this is not ``check_company_domain_parent_of``, the seam Odoo uses
         for records shared down a tree: that one accepts the ancestors of the company and
         nothing else, so the parent could not collect the debt of its own branch.
+
+        When the root of the tree does not block inter-company reconciliation, the whole
+        tree is accepted, other legal entities included
+        (``res.company._get_branch_debt_companies``).
         """
         if not companies or isinstance(companies, str) or isinstance(companies, unquote):
             return super()._check_company_domain(companies)
@@ -33,10 +37,10 @@ class AccountMoveLine(models.Model):
         if not company_ids:
             return super()._check_company_domain(companies)
 
-        legal_entity = self.env["res.company"].sudo().browse(company_ids)
-        for company in list(legal_entity):
-            legal_entity |= company._get_legal_entity_companies()
-        return super()._check_company_domain(legal_entity)
+        accepted = self.env["res.company"].sudo().browse(company_ids)
+        for company in list(accepted):
+            accepted |= company._get_legal_entity_companies() | company._get_branch_debt_companies()
+        return super()._check_company_domain(accepted)
 
     user_id = fields.Many2one(
         string="Contact Salesperson",
