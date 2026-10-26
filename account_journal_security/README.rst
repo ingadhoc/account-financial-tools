@@ -14,14 +14,16 @@
 Journal Security
 ================
 
-Users can be assigned many Account Journals and then they can be restricted to
-see only this Journals.
+Restrict the use of certain journals to certain users. Each journal can have one of these restrictions:
 
-You can specify for each day that users can write, this module it creates a many2many field between journals and users. If you set users to journal, then this journals and the related moves, will be only seen by selected users. This i usually used for payroll journals.
+* **Total**: only the selected users can see the journal and its journal entries, journal items and payments.
+* **Modification**: every user can see the journal data, but only the selected users can create, modify or delete journal entries and payments of the journal. Other users can still write journal items, so that reconciliations keep working.
+
+The restrictions are access domains (``security/ir.access.csv``) without group, so they apply to every user except the superuser. A user cannot restrict a journal without including themselves.
 
 This fields are only seen by users with 'access right management'::
 
-    *NOTE:* We add auto_joinr to journal_id fields in order to avoid performance issues.
+    *NOTE:* We set bypass_search_access on account.move journal_id field in order to avoid performance issues.
 
 Installation
 ============
@@ -42,7 +44,8 @@ Usage
 
 To use this module, you need to:
 
-#. When posting a journal entry, minimun balance constrains are going to be checked
+#. Users without access to a restricted journal do not get it as an option when registering a payment or a batch payment.
+#. Users without access to a totally restricted journal do not see its entries, journal items or payments.
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
@@ -52,7 +55,7 @@ Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues
-<https://github.com/ingadhoc/account_financial_tools/issues>`_. In case of trouble, please
+<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed feedback.
 
