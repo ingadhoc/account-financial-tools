@@ -78,6 +78,26 @@ class TestLegalEntity(TransactionCase):
         self.assertEqual(group[0], self.parent)
         self.assertEqual(self.same_vat._get_legal_entity_companies()[0], self.same_vat)
 
+    def test_get_filing_company(self):
+        sister = self._create_branch("Sucursal hermana", self.parent, self.PARENT_VAT)
+
+        self.assertEqual((self.parent | self.same_vat | sister)._get_filing_company(), self.parent)
+        self.assertEqual((self.same_vat | self.parent)._get_filing_company(), self.parent)
+        self.assertEqual(self.same_vat._get_filing_company(), self.same_vat)
+        # Dos hermanas sin la padre: ninguna alcanza las cuentas de la otra.
+        self.assertFalse((self.same_vat | sister)._get_filing_company())
+        # Nunca se mezclan CUITs, aunque la padre esté seleccionada.
+        self.assertFalse((self.parent | self.other_vat)._get_filing_company())
+
+    def test_get_legal_entity_companies_left_out(self):
+        sister = self._create_branch("Sucursal hermana", self.parent, self.PARENT_VAT)
+        selected = (self.parent | self.same_vat).with_company(self.parent)
+
+        self.assertEqual(selected._get_legal_entity_companies_left_out(), sister)
+        # Sin acceso a la hermana, no se le sugiere tildarla.
+        self.env.user.company_ids -= sister
+        self.assertFalse(selected._get_legal_entity_companies_left_out(selectable_only=True))
+
     def test_get_legal_entity_companies_excludes_other_entities(self):
         for company in (self.no_vat, self.slash_vat, self.other_vat):
             self.assertEqual(company._get_legal_entity_companies(), company)
