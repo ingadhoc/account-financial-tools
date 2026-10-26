@@ -16,6 +16,11 @@ class TestAccountJournalSecurity(common.TransactionCase):
 
         account_user_group = self.env.ref("account.group_account_user")
         self.user_demo.write({"group_ids": [(6, 0, [account_user_group.id])]})
+        # The restricted user needs another journal to pick; with none left,
+        # account_ux raises while computing available_journal_ids.
+        self.env["account.journal"].create(
+            {"name": "Unrestricted Bank", "code": "UBNK", "type": "bank", "company_id": self.first_company.id}
+        )
 
     def _create_account_user(self, login):
         return self.env["res.users"].create(
