@@ -70,7 +70,7 @@ class AccountJournal(models.Model):
         # esto es porque las ir rules tienen un cache que no permite
         # que el cambio aplique en el momento
         self.env.flush_all()
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
 
         # FIXME: Con el onchange de journal_restriction esto
         # ya no debería ocurrir.
@@ -102,7 +102,7 @@ class AccountJournal(models.Model):
                 )
         # necesitamos limpiar este cache para que no deje de verlo
         self.env.flush_all()
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
 
     @api.model
     def _search(self, domain, offset=0, limit=None, order=None, **kwargs):
