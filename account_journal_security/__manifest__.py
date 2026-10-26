@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Journal Security",
-    "version": "19.0.1.1.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "Restrict the use of certain journals to certain users",
@@ -32,11 +32,11 @@
     ],
     "data": [
         "views/account_journal_views.xml",
-        "security/journal_security_security.xml",
+        "security/ir.access.csv",
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "auto_install": False,
     "application": False,
 }
