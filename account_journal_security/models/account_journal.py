@@ -5,7 +5,6 @@
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.fields import Domain
-from odoo.tools import SQL
 
 
 class AccountJournal(models.Model):
@@ -71,6 +70,7 @@ class AccountJournal(models.Model):
         # que el cambio aplique en el momento
         self.env.flush_all()
         self.env.transaction.invalidate_ormcache()
+        self.env.transaction.invalidate_access_cache()
 
         # FIXME: Con el onchange de journal_restriction esto
         # ya no debería ocurrir.
@@ -103,6 +103,7 @@ class AccountJournal(models.Model):
         # necesitamos limpiar este cache para que no deje de verlo
         self.env.flush_all()
         self.env.transaction.invalidate_ormcache()
+        self.env.transaction.invalidate_access_cache()
 
     @api.model
     def _search(self, domain, offset=0, limit=None, order=None, **kwargs):
@@ -178,15 +179,3 @@ class AccountJournal(models.Model):
             # "Ninguna", sino no se guardan los cambios.
             self.user_ids = None
             self.modification_user_ids = None
-
-    def _get_to_check_payment_query(self):
-        query, selects = super()._get_to_check_payment_query()
-        new_selects = []
-        for select in selects:
-            if select.code in ("company_id"):
-                new_selects.append(SQL.identifier(query.table, select.code))
-            elif select.code in ("currency_id AS currency"):
-                new_selects.append(SQL("%s AS currency" % SQL.identifier(query.table, "currency_id").code))
-            else:
-                new_selects.append(select)
-        return query, new_selects
