@@ -1234,6 +1234,18 @@ msgstr ""
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot unarchive an account that has child accounts."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot use an account with journal items as parent account."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid ""
 "You don't have the necessary permissions to transfer accounting entries. "
