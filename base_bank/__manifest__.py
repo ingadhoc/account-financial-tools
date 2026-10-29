@@ -1,0 +1,25 @@
+{
+    "name": "Banks",
+    "version": "20.0.1.0.0",
+    "category": "Accounting",
+    "sequence": 14,
+    "summary": "",
+    "author": "ADHOC SA",
+    "website": "www.adhoc.com.ar",
+    "license": "AGPL-3",
+    "images": [],
+    "depends": [
+        "account",
+    ],
+    "data": [
+        "security/ir.access.csv",
+        "views/res_bank_views.xml",
+        "views/res_partner_bank_views.xml",
+        "views/account_journal_views.xml",
+        "views/setup_wizards_views.xml",
+    ],
+    "demo": [],
+    "installable": True,
+    "auto_install": False,
+    "application": False,
+}

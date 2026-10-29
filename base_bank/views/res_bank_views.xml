@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_bank_form" model="ir.ui.view">
+        <field name="name">res.bank.form</field>
+        <field name="model">res.bank</field>
+        <field name="arch" type="xml">
+            <form string="Bank">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group name="bank_details" col="4">
+                        <field name="name"/>
+                        <field name="bic"/>
+                    </group>
+                    <group>
+                        <group name="address_details">
+                            <label for="street" string="Bank Address"/>
+                            <div class="o_address_format">
+                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="city" placeholder="City" class="o_address_city"/>
+                                <field name="state" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
+                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                <field name="country" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                            </div>
+                        </group>
+                        <group name="communication_details">
+                            <field name="phone" class="o_force_ltr"/>
+                            <field name="email" widget="email"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_res_bank_tree" model="ir.ui.view">
+        <field name="name">res.bank.list</field>
+        <field name="model">res.bank</field>
+        <field name="arch" type="xml">
+            <list string="Banks">
+                <field name="name"/>
+                <field name="bic"/>
+                <field name="country"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="res_bank_view_search" model="ir.ui.view">
+        <field name="name">res.bank.view.search</field>
+        <field name="model">res.bank</field>
+        <field name="arch" type="xml">
+            <search string="Search Bank">
+                <field name="name"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_res_bank_form" model="ir.actions.act_window">
+        <field name="name">Banks</field>
+        <field name="res_model">res.bank</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="menu_action_res_bank_form"
+        action="action_res_bank_form"
+        parent="account.menu_finance_configuration"
+        sequence="100"
+    />
+</odoo>
