@@ -57,6 +57,11 @@
         "reports/account_invoice_report_view.xml",
         "wizards/account_automatic_entry_wizard_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "account_ux/static/src/**/*",
+        ],
+    },
     "demo": [],
     "installable": True,
     # lo hacemos auto install porque este repo no lo podemos agregar en otros
