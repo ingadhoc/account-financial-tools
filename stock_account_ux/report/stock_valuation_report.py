@@ -645,13 +645,17 @@ class StockValuationReport(models.AbstractModel):
         types are added too (``_get_pending_move_products``).
         """
         # sudo and valuation context as in the standard: ``qty_available`` expands kit
-        # BoMs that an accounting user cannot read.
-        valued_product_context = self.env["product.product"].sudo().with_company(company)._with_valuation_context()
+        # BoMs that an accounting user cannot read, and kits are never valued on their own.
+        valued_product_context = (
+            self.env["product.product"]
+            .sudo()
+            .with_company(company)
+            .with_context(skip_kit_qty_available=True)
+            ._with_valuation_context()
+        )
         if date:
             valued_product_context = valued_product_context.with_context(at_date=date, to_date=date)
-        domain = Domain(company._get_inventory_valuation_products_domain()) & (
-            Domain([("qty_available", "!=", 0)]) | Domain([("lot_valuated", "=", True)])
-        )
+        domain = Domain(company._get_inventory_valuation_products_domain())
         domain &= self._get_valuation_report_extra_domain(product_ids, categ_ids)
         valued_products = valued_product_context.search(domain)
         if any([product_ids, categ_ids, cost_methods, valuations]):
