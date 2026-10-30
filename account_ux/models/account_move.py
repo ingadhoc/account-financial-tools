@@ -77,12 +77,16 @@ class AccountMove(models.Model):
 
     def copy(self, default=None):
         res = super().copy(default=default)
-        for line_to_clean in res.mapped("line_ids").filtered(lambda x: False in x.mapped("tax_ids.active")):
-            line_to_clean.tax_ids = [
-                Command.unlink(x.id) for x in line_to_clean.tax_ids.filtered(lambda x: not x.active)
-            ]
+        for line in res.line_ids:
+            if to_remove := line.move_id._get_archived_taxes_to_remove_on_copy(line.tax_ids):
+                line.tax_ids = [Command.unlink(x.id) for x in to_remove]
         res._onchange_partner_commercial()
         return res
+
+    def _get_archived_taxes_to_remove_on_copy(self, taxes):
+        """Hook to let other modules keep some archived taxes on copied moves. Called on the copied move"""
+        self.ensure_one()
+        return taxes.filtered(lambda x: not x.active)
 
     # Sobrescribe el método de odoo en el PR https://github.com/odoo/odoo/pull/170066/files
     def get_amount_diff_foreign_currencies(self, line, move):
