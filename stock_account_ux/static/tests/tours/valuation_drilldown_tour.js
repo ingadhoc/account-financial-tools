@@ -87,3 +87,37 @@ registry.category("web_tour.tours").add("stock_account_ux_valuation_filters_kept
         },
     ],
 });
+
+// "Generate Entries" tiene que cerrar lo que los filtros dejan en pantalla.
+registry.category("web_tour.tours").add("stock_account_ux_valuation_generate_entries", {
+    url: "/odoo/stock-valuation-closing",
+    steps: () => [
+        {
+            content: "Filtrar por método de valuación",
+            trigger: "#filter_cost_methods button",
+            run: "click",
+        },
+        {
+            trigger: ".o-dropdown--menu .dropdown-item:contains('Average')",
+            run: "click",
+        },
+        {
+            content: "El filtro quedó aplicado",
+            trigger: ".o-dropdown--menu .dropdown-item.selected:contains('Average')",
+        },
+        {
+            content: "Cerrar el dropdown",
+            trigger: "h1, .o_control_panel",
+            run: "click",
+        },
+        {
+            content: "Generar el asiento",
+            trigger: ".o_report_button_generate_entries",
+            run: "click",
+        },
+        {
+            content: "Se abrió la lista de asientos del cierre",
+            trigger: ".o_list_view",
+        },
+    ],
+});
