@@ -1,0 +1,278 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* base_bank
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 20.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-30 14:03+0000\n"
+"PO-Revision-Date: 2026-10-30 14:03+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: base_bank
+#: model:ir.module.module,description:base.module_base_bank
+msgid ""
+".. |company| replace:: ADHOC SA\n"
+"\n"
+".. |company_logo| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-logo.png\n"
+"   :alt: ADHOC SA\n"
+"   :target: https://www.adhoc.com.ar\n"
+"\n"
+".. |icon| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-icon.png\n"
+"\n"
+".. image:: https://img.shields.io/badge/license-AGPL--3-blue.png\n"
+"   :target: https://www.gnu.org/licenses/agpl\n"
+"   :alt: License: AGPL-3\n"
+"\n"
+"\n"
+"=====\n"
+"Banks\n"
+"=====\n"
+"\n"
+"Odoo 20 no longer provides the Banks model (res.bank). This module keeps it, as in 19.0:\n"
+"\n"
+"* **Bank catalog**: Banks with name, BIC/SWIFT code, address, phone and email, in Accounting > Configuration > Banks\n"
+"* **Bank accounts**: Adds the Bank field to bank accounts, bank journals and the bank account setup wizard; choosing a bank fills the bank name and BIC, that can still be edited and follow the changes of the bank\n"
+"\n"
+"Installation\n"
+"============\n"
+"\n"
+"#. Install it from Apps, or as a dependency of a module that needs banks (such as l10n_ar_bank or l10n_latam_check_ux)\n"
+"\n"
+"Configuration\n"
+"=============\n"
+"\n"
+"#. No additional configuration required\n"
+"\n"
+"Usage\n"
+"=====\n"
+"\n"
+"#. **Manage banks**: Go to Accounting > Configuration > Banks to see, search and edit the banks\n"
+"#. **Configure bank accounts**: When creating a bank account, select its bank; its name and BIC are filled in the account\n"
+"\n"
+"Bug Tracker\n"
+"===========\n"
+"\n"
+"Bugs are tracked on `GitHub Issues\n"
+"<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please\n"
+"check there if your issue has already been reported. If you spotted it first,\n"
+"help us smashing it by providing a detailed and welcomed feedback.\n"
+"\n"
+"Credits\n"
+"=======\n"
+"\n"
+"Images\n"
+"------\n"
+"\n"
+"* |company| |icon|\n"
+"\n"
+"Contributors\n"
+"------------\n"
+"\n"
+"Maintainer\n"
+"----------\n"
+"\n"
+"|company_logo|\n"
+"\n"
+"This module is maintained by the |company|.\n"
+"\n"
+"To contribute to this module, please visit https://www.adhoc.com.ar.\n"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__active
+msgid "Active"
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.res_bank_view_search
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "Archived"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_account_setup_bank_manual_config__bank_bic
+#: model:ir.model.fields,field_description:base_bank.field_res_partner_bank__bank_bic
+msgid "BIC/SWIFT"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model,name:base_bank.model_res_bank
+#: model:ir.model.fields,field_description:base_bank.field_account_journal__bank_id
+#: model:ir.model.fields,field_description:base_bank.field_account_setup_bank_manual_config__bank_id
+#: model:ir.model.fields,field_description:base_bank.field_res_partner_bank__bank_id
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "Bank"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model,name:base_bank.model_res_partner_bank
+msgid "Bank Account"
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "Bank Address"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__bic
+msgid "Bank Identifier Code"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,help:base_bank.field_account_setup_bank_manual_config__bank_bic
+#: model:ir.model.fields,help:base_bank.field_res_partner_bank__bank_bic
+msgid ""
+"Bank Identifier Code for international wires in the format Bank Code (4 "
+"letters) + Country Code (2 letters) + Location Code (2 letters/numbers) + "
+"Optional Branch Code (3 letters/numbers)."
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_account_setup_bank_manual_config__bank_name
+#: model:ir.model.fields,field_description:base_bank.field_res_partner_bank__bank_name
+msgid "Bank Name"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.actions.act_window,name:base_bank.action_res_bank_form
+#: model:ir.module.module,shortdesc:base.module_base_bank
+#: model:ir.ui.menu,name:base_bank.menu_action_res_bank_form
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_tree
+msgid "Banks"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__city
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "City"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__country
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "Country"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__country_code
+msgid "Country Code"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_account_journal__display_name
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__display_name
+#: model:ir.model.fields,field_description:base_bank.field_res_partner_bank__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__email
+msgid "Email"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__state
+msgid "Fed. State"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_account_journal__id
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__id
+#: model:ir.model.fields,field_description:base_bank.field_res_partner_bank__id
+msgid "ID"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model,name:base_bank.model_account_journal
+msgid "Journal"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__name
+msgid "Name"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__phone
+msgid "Phone"
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.res_bank_view_search
+msgid "Search Bank"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,help:base_bank.field_res_bank__bic
+msgid "Sometimes called BIC or Swift."
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "State"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__street
+msgid "Street"
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "Street 2..."
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "Street..."
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__street2
+msgid "Street2"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,help:base_bank.field_res_bank__country_code
+msgid ""
+"The ISO country code in two chars. \n"
+"You can use this field for quick search."
+msgstr ""
+
+#. module: base_bank
+#: model_terms:ir.ui.view,arch_db:base_bank.view_res_bank_form
+msgid "ZIP"
+msgstr ""
+
+#. module: base_bank
+#: model:ir.model.fields,field_description:base_bank.field_res_bank__zip
+msgid "Zip"
+msgstr ""
