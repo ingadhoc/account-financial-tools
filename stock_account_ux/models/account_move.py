@@ -12,6 +12,28 @@ class AccountMove(models.Model):
         """
         return super(AccountMove, self.with_context(skip_migrated_stock_revaluation=True))._post(soft=soft)
 
+    def button_draft(self):
+        """Same as ``_post``: going back to draft revalues the invoiced moves too."""
+        return super(AccountMove, self.with_context(skip_migrated_stock_revaluation=True)).button_draft()
+
+    def button_cancel(self):
+        """Same as ``_post``: cancelling revalues the invoiced moves too."""
+        return super(AccountMove, self.with_context(skip_migrated_stock_revaluation=True)).button_cancel()
+
+    def action_show_product_value(self):
+        """The closing links every value adjustment it books to one entry, and the standard
+        button opens a single record."""
+        self.ensure_one()
+        if len(self.product_value_id) <= 1:
+            return super().action_show_product_value()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Product Value"),
+            "res_model": "product.value",
+            "domain": [("id", "in", self.product_value_id.ids)],
+            "view_mode": "list,form",
+        }
+
     def _get_cogs_lines_vals(self):
         """Avoid booking the expense twice when invoicing in v20 moves already valued in
         v18.

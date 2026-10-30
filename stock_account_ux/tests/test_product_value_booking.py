@@ -96,6 +96,15 @@ class TestProductValueBooking(TestStockValuationUXCommon):
         self.assertFalse(later_change.account_move_id, "Not selected, stays pending")
         self.assertFalse(self.move.account_move_id, "The moves are not booked")
 
+    def test_entry_with_several_adjustments_opens_them_all(self):
+        """The native button of the entry opens one adjustment and fails with several."""
+        self.product_standard.standard_price = 15.0
+        later_change = self._last_price_change(self.product_standard)
+        adjustments = self.price_change | later_change
+        entry = self._post(adjustments)
+        action = entry.action_show_product_value()
+        self.assertEqual(self.env["product.value"].search(action["domain"]), adjustments)
+
     def test_booked_adjustment_leaves_the_pending_variation(self):
         self.assertAlmostEqual(self._variation(), 130.0)
         self._post(self.price_change)
