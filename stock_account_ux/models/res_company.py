@@ -13,6 +13,9 @@ CLOSING_PRODUCT_CTX = "stock_valuation_closing_product_ids"
 # Context key scoping the closing to one origin of the variation (stock moves or
 # value adjustments), as per the Movement Type filter.
 CLOSING_LINE_TYPES_CTX = "stock_valuation_closing_line_types"
+# Context key scoping the inventory valuation to a set of products: the report filters
+# and the partial closing.
+VALUATION_PRODUCT_CTX = "stock_valuation_product_ids"
 # Context key asking for the valuation lines to be split per product. Set by the
 # closing, which WRITES the entry; reading the report does not need it, as its
 # sections are aggregated per account.
@@ -22,13 +25,48 @@ SPLIT_BY_PRODUCT_CTX = "stock_valuation_split_by_product"
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    def _get_valuation_product_domain(self):
+    def _get_inventory_valuation_products_domain(self):
         """Archived products are part of the valuation too: they may still have stock or a
         booked balance. Out of the box they were left out, so the report and the closing
         dropped them (an archived product with stock vanished from the Stock Variation, and
         its booked balance went to the no-product line of the closing). Naming ``active``
-        in the domain disables the implicit ``active_test``."""
-        return super()._get_valuation_product_domain() + [("active", "in", [True, False])]
+        in the domain disables the implicit ``active_test``.
+
+        Scoped to the products of ``VALUATION_PRODUCT_CTX`` when the context carries them,
+        so the standard valuation methods follow the report filters and the partial closing.
+        """
+        domain = super()._get_inventory_valuation_products_domain() + [("active", "in", [True, False])]
+        product_ids = self.env.context.get(VALUATION_PRODUCT_CTX)
+        if product_ids is not None:
+            domain.append(("id", "in", product_ids))
+        return domain
+
+    def _with_valuation_products(self, products):
+        """The company scoped to those products. An empty set scopes to nothing, it does
+        not fall back to every product."""
+        return self.with_context(**{VALUATION_PRODUCT_CTX: products.ids})
+
+    def _get_product_inventory_value(self, product, at_date=None):
+        """Inventory value of a product at the date: the one place that values the stock,
+        for the report, the closing and its per-product split."""
+        return product.with_context(to_date=at_date).total_value
+
+    def get_inventory_value(self, at_date=None):
+        """Same as ``stock_account``, valuing each product with ``_get_product_inventory_value``.
+
+        MAINTENANCE NOTE: the body is a copy of
+        ``stock_account/models/res_company.py::get_inventory_value`` (v20.0) with a single
+        change. Re-sync on Odoo upgrades.
+        """
+        self.ensure_one()
+        value_by_account = defaultdict(float)
+        accounts_by_product = self.with_context(prefetch_fields=False)._get_accounts_by_product(at_date)
+        for product, accounts in accounts_by_product.items():
+            account = accounts["valuation"]
+            if not account:
+                continue
+            value_by_account[account] += self._get_product_inventory_value(product, at_date)
+        return value_by_account
 
     def write(self, vals):
         changed = self.browse()
@@ -80,6 +118,8 @@ class ResCompany(models.Model):
         valuations=None,
         line_types=None,
         stock_move_types=None,
+        raise_error_if_closed=True,
+        include_accruals=False,
     ):
         """Link the periodic closing entry to the ``stock.move`` records it values,
         and honour the report filters.
@@ -109,7 +149,7 @@ class ResCompany(models.Model):
         the partial closing is refused (``_check_partial_closing_attribution``).
         """
         self.ensure_one()
-        report = self.env["stock_account.stock.valuation.report"]
+        report = self.env["account.stock.valuation.report"]
         line_types = report._normalize_line_types(line_types)
         stock_move_types = report._normalize_stock_move_types(stock_move_types)
         if stock_move_types:
@@ -123,15 +163,18 @@ class ResCompany(models.Model):
             if date == fields.Date.context_today(self):
                 date = False
             # From ``self.env``: it carries the Stock Move Types, which widen the products.
-            products = self.env["stock_account.stock.valuation.report"]._get_filtered_valued_products(
+            products = self.env["account.stock.valuation.report"]._get_filtered_valued_products(
                 self, date, product_ids, categ_ids, cost_methods, valuations
             )
             self._check_partial_closing_attribution(products, date)
             self = self.with_context(**{CLOSING_PRODUCT_CTX: products.ids})
-        action = super().action_close_stock_valuation(at_date=at_date, auto_post=auto_post)
-        closing_move = self.env["account.move"]
-        if isinstance(action, dict) and action.get("res_model") == "account.move":
-            closing_move = self.env["account.move"].browse(action.get("res_id")).exists()
+        action = super().action_close_stock_valuation(
+            at_date=at_date,
+            auto_post=auto_post,
+            raise_error_if_closed=raise_error_if_closed,
+            include_accruals=include_accruals,
+        )
+        closing_move = self._get_closing_move_from_action(action)
         if not closing_move:
             return action
         # Each closing links ONLY the records it actually booked. With the Movement
@@ -164,7 +207,18 @@ class ResCompany(models.Model):
                 product_values.account_move_id = closing_move.id
         return action
 
-    def _get_stock_valuation_account_vals(self, accounts_by_product, at_date=None, extra_aml_vals_list=None):
+    def _get_closing_move_from_action(self, action):
+        """The inventory closing entry the standard action opens, among the accrual entries
+        it may open with it."""
+        if not isinstance(action, dict) or action.get("res_model") != "account.move":
+            return self.env["account.move"]
+        if action.get("res_id"):
+            moves = self.env["account.move"].browse(action["res_id"])
+        else:
+            moves = self.env["account.move"].search(action.get("domain") or [("id", "=", False)])
+        return moves.filtered("inventory_closing")[:1]
+
+    def _get_stock_valuation_account_vals(self, at_date=None, extra_aml_vals_list=None):
         """Book the valuation leg with one line per product.
 
         The standard closing aggregates per account with ``product_id = False``, so
@@ -174,9 +228,16 @@ class ResCompany(models.Model):
         ``_split_valuation_vals_by_product``), and leaves each product booked at its
         inventory value.
         """
-        vals_list = super()._get_stock_valuation_account_vals(
-            accounts_by_product, at_date=at_date, extra_aml_vals_list=extra_aml_vals_list
-        )
+        closing_product_ids = self.env.context.get(CLOSING_PRODUCT_CTX)
+        if closing_product_ids is not None:
+            vals_list = self._get_partial_stock_variation_vals(
+                self.env["product.product"].browse(closing_product_ids), at_date, extra_aml_vals_list
+            )
+        else:
+            vals_list = super()._get_stock_valuation_account_vals(
+                at_date=at_date, extra_aml_vals_list=extra_aml_vals_list
+            )
+        accounts_by_product = self._get_accounts_by_product(at_date)
         vals_list = self._annotate_valuation_vals(vals_list, accounts_by_product, at_date=at_date)
         if not self.env.context.get(SPLIT_BY_PRODUCT_CTX):
             return vals_list
@@ -251,8 +312,7 @@ class ResCompany(models.Model):
         for account, products in products_by_account.items():
             for product in products:
                 key = (account.id, product.id)
-                # Same value criterion as ``stock_value``.
-                inventory_value = product.with_context(to_date=at_date).total_value
+                inventory_value = self._get_product_inventory_value(product, at_date)
                 deltas[key] = inventory_value - accounting_by_product.get(key, 0.0)
         return deltas
 
@@ -268,7 +328,7 @@ class ResCompany(models.Model):
         half cent: a net of 72.725 against lines of 100 and -27.275 rounds to 72.73
         against 100 - 27.28 = 72.72, and ``account.move`` refuses it.
         """
-        net = self.currency_id.round(vals["debit"] - vals["credit"])
+        net = self.currency_id.round(vals["balance"])
         assigned = 0.0
         product_vals = []
         # Named on each line by ``_get_valuation_val``: computed in batch here, as it
@@ -291,7 +351,7 @@ class ResCompany(models.Model):
 
         ``_get_valuation_val_extra_vals`` shares an amount out line by line and cannot see
         what the other lines were rounded to, so the shares can miss the total by a cent.
-        For ``debit`` / ``credit`` the residual absorbs exactly that; an amount the child
+        For ``balance`` the residual absorbs exactly that; an amount the child
         added has no equivalent, and nothing else would catch it: the entry still balances
         in company currency, so it posts (task 58212, ``stock_currency_valuation``:
         ``amount_currency``).
@@ -315,16 +375,15 @@ class ResCompany(models.Model):
         return dict(
             vals,
             name=name,
-            debit=balance if balance > 0 else 0.0,
-            credit=-balance if balance < 0 else 0.0,
+            balance=balance,
             product_id=product_id,
             **self._get_valuation_val_extra_vals(vals, balance, net),
         )
 
     def _get_valuation_val_extra_vals(self, vals, balance, net):
-        """Hook: the amounts of a line that are NOT ``debit`` / ``credit``.
+        """Hook: the amounts of a line that are NOT ``balance``.
 
-        Only those two are re-split here; every other key of ``vals`` is copied verbatim
+        Only that one is re-split here; every other key of ``vals`` is copied verbatim
         onto EVERY line, which is right for the account, the counterpart or the label, and
         WRONG for an amount. A module adding one has to prorate it the same way the balance
         is, or the entry adds up in the company currency and not in the other one. The
@@ -371,11 +430,10 @@ class ResCompany(models.Model):
         filter is active, so the filtered report adds up to the journal items and can be
         checked against them.
 
-        Deliberately NOT an override of ``stock_accounting_value``: other modules
-        reimplement that method without calling ``super()``
-        (``stock_account_multicompany_ux`` rewrites it for the branches model), so the
-        product filter was silently lost depending on which modules were installed.
-        The report asks for this one explicitly instead of relying on the MRO.
+        Deliberately NOT an override of ``get_inventory_accounting_value``: other modules
+        reimplement that method without calling ``super()``, so the product filter was
+        silently lost depending on which modules were installed. The report asks for this
+        one explicitly instead of relying on the MRO.
 
         The portion no product can claim (``_get_unattributed_accounting_value``) is left
         out: estimating a share of it gave a figure the user could not trace back to the
@@ -429,13 +487,12 @@ class ResCompany(models.Model):
         entry generated with no filter).
         """
         self.ensure_one()
-        # An empty recordset would make ``_get_accounts_by_product`` fall back to every product.
         if not products:
             return
         accounts = self.env["account.account"].browse(
             {
                 accounts["valuation"].id
-                for accounts in self._get_accounts_by_product(products=products).values()
+                for accounts in self._with_valuation_products(products)._get_accounts_by_product(at_date).values()
                 if accounts.get("valuation")
             }
         )
@@ -492,8 +549,8 @@ class ResCompany(models.Model):
                 ("move_id.product_id", "in", closing_product_ids),
             ]
         product_values = self.env["product.value"].sudo().search(domain)
-        # ``delta`` is computed, so it cannot be a domain leaf.
-        return product_values.filtered(lambda value: not self.currency_id.is_zero(value.delta))
+        # ``adjustment`` is computed, so it cannot be a domain leaf.
+        return product_values.filtered(lambda value: not self.currency_id.is_zero(value.adjustment))
 
     def _get_periodic_closing_stock_moves(self, at_date=None):
         """Moves covered by the closing entry, with the same scope as
@@ -539,15 +596,15 @@ class ResCompany(models.Model):
             domain.append(("product_id", "in", closing_product_ids))
         if at_date:
             domain.append(("date", "<=", at_date))
-        domain = Domain(domain) & self.env["stock_account.stock.valuation.report"]._get_stock_move_types_domain()
+        domain = Domain(domain) & self.env["account.stock.valuation.report"]._get_stock_move_types_domain()
         return self.env["stock.move"].search(domain)
 
     def _action_close_stock_valuation(self, at_date=None):
-        """Partial closing: when the context carries the filtered products, build the
-        vals for THOSE products only, replicating the standard sequence (location
-        reclassifications + stock variation + continental perpetual variation) with
-        ``accounts_by_product`` and the moves scoped. Without the context key, delegate
-        to the standard.
+        """Partial closing: when the context carries the filtered products, the standard
+        sequence (location reclassifications + stock variation + continental perpetual
+        variation) runs scoped to THOSE products; the stock variation is built by
+        ``_get_stock_valuation_account_vals``. Without the context key, delegate to the
+        standard.
 
         This is also where the per-product split is requested
         (``SPLIT_BY_PRODUCT_CTX``): the entry is WRITTEN here, and the standard would
@@ -557,45 +614,33 @@ class ResCompany(models.Model):
         if self.env.context.get(CLOSING_LINE_TYPES_CTX):
             return self._get_line_type_closing_vals(at_date)
         closing_product_ids = self.env.context.get(CLOSING_PRODUCT_CTX)
-        if closing_product_ids is None:
-            return super()._action_close_stock_valuation(at_date=at_date)
-        products = self.env["product.product"].browse(closing_product_ids)
-        accounts_by_product = self._get_accounts_by_product(products=products)
-        aml_vals_list = []
-        vals_list = self._get_location_valuation_vals(at_date)
-        if vals_list:
-            aml_vals_list += vals_list
-        vals_list = self._get_partial_stock_variation_vals(products, accounts_by_product, at_date, aml_vals_list)
-        if vals_list:
-            aml_vals_list += vals_list
-        vals_list = self._get_continental_realtime_variation_vals(accounts_by_product, at_date, aml_vals_list)
-        if vals_list:
-            aml_vals_list += vals_list
-        return aml_vals_list
+        if closing_product_ids is not None:
+            self = self.with_context(**{VALUATION_PRODUCT_CTX: closing_product_ids})
+        return super()._action_close_stock_valuation(at_date=at_date)
 
-    def _get_partial_stock_variation_vals(self, products, accounts_by_product, at_date=None, extra_aml_vals_list=None):
-        """Stock Variation vals of a PARTIAL closing (product filter), attributed per
-        product.
+    def _get_partial_stock_variation_vals(self, products, at_date=None, extra_aml_vals_list=None):
+        """Stock Variation vals of a PARTIAL closing (product filter).
 
-        Not delegated to ``_get_stock_valuation_account_vals``: the standard reads the
-        booked value with ``stock_accounting_value``, the WHOLE balance of the valuation
-        account, so a closing filtered by product took in the value already booked for the
-        other products sharing that account and the entry came out with the wrong amount
-        —and often the wrong sign— against a report that does scope it (task 64440).
+        Not delegated to the standard: it reads the booked value with
+        ``get_inventory_accounting_value``, the WHOLE balance of the valuation account, so a
+        closing filtered by product took in the value already booked for the other products
+        sharing that account and the entry came out with the wrong amount —and often the
+        wrong sign— against a report that does scope it (task 64440).
 
         Built from the same balance the report shows, so the entry books exactly the
         variation on screen.
         """
-        report = self.env["stock_account.stock.valuation.report"]
-        inventory_data = self.stock_value(accounts_by_product, at_date)
+        report = self.env["account.stock.valuation.report"]
+        scoped = self._with_valuation_products(products)
+        accounts_by_product = scoped._get_accounts_by_product(at_date)
+        inventory_data = scoped.get_inventory_value(at_date)
         accounting_data = report._get_report_accounting_data(
-            self, accounts_by_product, products, at_date, product_scope=True
+            scoped, accounts_by_product, products, at_date, product_scope=True
         )
         balances_by_account = report._get_total_variation_balance(
             self, at_date, inventory_data, accounting_data, extra_aml_vals_list=extra_aml_vals_list
         )
-        vals_list = report._get_variation_aml_vals(self, balances_by_account)
-        return self._split_valuation_vals_by_product(vals_list, accounts_by_product, at_date)
+        return report._get_variation_aml_vals(self, balances_by_account)
 
     def _get_line_type_closing_vals(self, at_date=None):
         """Vals of a closing limited to one ORIGIN of the variation (Movement Type
@@ -610,7 +655,7 @@ class ResCompany(models.Model):
         """
         self.ensure_one()
         line_types = self.env.context.get(CLOSING_LINE_TYPES_CTX)
-        report = self.env["stock_account.stock.valuation.report"]
+        report = self.env["account.stock.valuation.report"]
         if isinstance(at_date, str):
             at_date = fields.Date.from_string(at_date)
         if at_date == fields.Date.context_today(self):
@@ -622,14 +667,15 @@ class ResCompany(models.Model):
             products = report._get_filtered_valued_products(self, at_date, None, None, None, None)
         if not products:
             return []
-        accounts_by_product = self._get_accounts_by_product(products=products)
-        inventory_data = self.stock_value(accounts_by_product, at_date)
+        scoped = self._with_valuation_products(products)
+        accounts_by_product = scoped._get_accounts_by_product(at_date)
+        inventory_data = scoped.get_inventory_value(at_date)
         # Combined with a product filter, the booked value is the one attributable to those
         # products, as in the report: the Product Value component is a REMAINDER over this
         # balance, so the whole account balance would attribute to the filtered products
         # what was already booked for the others.
         accounting_data = report._get_report_accounting_data(
-            self, accounts_by_product, products, at_date, product_scope=closing_product_ids is not None
+            scoped, accounts_by_product, products, at_date, product_scope=closing_product_ids is not None
         )
         vals_list = report._get_valuation_report_variation_components(
             self, products, accounts_by_product, at_date, line_types, inventory_data, accounting_data
@@ -650,7 +696,7 @@ class ResCompany(models.Model):
         standard.
 
         MAINTENANCE NOTE: the body is a copy of
-        ``stock_account/models/res_company.py::_get_location_valuation_vals`` (v19.0)
+        ``stock_account/models/res_company.py::_get_location_valuation_vals`` (v20.0)
         with a single change, the move domains add
         ``('product_id', 'in', closing_product_ids)``. Re-sync on Odoo upgrades.
         """

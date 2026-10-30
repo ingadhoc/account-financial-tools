@@ -17,7 +17,7 @@ STOCK_MOVE_TYPES_CTX = "stock_valuation_stock_move_types"
 
 
 class StockValuationReport(models.AbstractModel):
-    _inherit = "stock_account.stock.valuation.report"
+    _inherit = "account.stock.valuation.report"
 
     # -- Client action entry point --------------------------------------------
     @api.model
@@ -80,9 +80,9 @@ class StockValuationReport(models.AbstractModel):
         when the Movement Type filter is on.
 
         MAINTENANCE NOTE: the filtered path is a copy of
-        ``stock_account/report/stock_valuation_report.py::_get_report_data`` (v19.0) and
+        ``account/report/account_stock_valuation_report.py::_get_report_data`` (v20.0) and
         has to be re-synced on Odoo upgrades. ``test_no_filters_matches_filter_all``
-        covers that drift.
+        covers that drift. The standard Accruals section is not built here.
 
         Being a copy, it does NOT go through the standard ``_get_report_data``: a module
         that extends the report by overriding that method would be silently skipped
@@ -102,11 +102,7 @@ class StockValuationReport(models.AbstractModel):
             company, date, product_ids, categ_ids, cost_methods, valuations
         )
 
-        # A filter matching ZERO products has to stop here. Passing an empty
-        # recordset/dict to ``_get_accounts_by_product`` / ``stock_value`` /
-        # ``stock_accounting_value`` backfires: they all test ``if not products`` /
-        # ``if not accounts_by_product``, and empty is falsy, so they would fall back
-        # to ALL products and the report would show the total instead of nothing.
+        # A filter matching ZERO products has to stop here.
         if not valued_products:
             return self._empty_valuation_report_data(company)
 
@@ -115,14 +111,16 @@ class StockValuationReport(models.AbstractModel):
         # one: it scopes no product, and dropping the no-product balance there would
         # break the starting point of the breakdown per origin.
         product_scope = bool(product_ids or categ_ids or cost_methods or valuations)
-        accounts_by_product = company._get_accounts_by_product(products=valued_products)
-        inventory_data = company.stock_value(accounts_by_product, at_date=date or None)
+        scoped_company = company._with_valuation_products(valued_products)
+        accounts_by_product = scoped_company._get_accounts_by_product(date or None)
+        inventory_data = scoped_company.get_inventory_value(at_date=date or None)
         accounting_data = self._get_report_accounting_data(
-            company, accounts_by_product, valued_products, date, product_scope
+            scoped_company, accounts_by_product, valued_products, date, product_scope
         )
 
         accounts = inventory_data.keys() | accounting_data.keys()
         account_ids = {acc.id for acc in accounts}
+        valuation_account_ids = set(account_ids)
 
         initial_balance = {
             "label": _("Initial Balance"),
@@ -138,7 +136,6 @@ class StockValuationReport(models.AbstractModel):
         for account in accounts:
             opening_balance = accounting_data.get(account, 0)
             ending_balance = inventory_data.get(account, 0)
-            account_ids.add(account.id)
             if opening_balance:
                 initial_balance["value"] += opening_balance
                 initial_balance["lines_by_account_id"][account.id]["value"] += opening_balance
@@ -146,35 +143,19 @@ class StockValuationReport(models.AbstractModel):
                 ending_stock["value"] += ending_balance
                 ending_stock["lines_by_account_id"][account.id]["value"] += ending_balance
 
-        location_valuation_vals = company._get_location_valuation_vals(
-            date,
-            location_domain=[("usage", "=", "inventory")],
-        )
-
         report_data = {
             "company_id": company.id,
             "currency_id": company.currency_id.id,
+            "company_inventory_valuation": company.inventory_valuation,
             "ending_stock": ending_stock,
             "initial_balance": initial_balance,
         }
 
-        if self._must_include_inventory_loss():
-            inventory_loss = {"label": _("Inventory Loss"), "value": 0}
-            lines_by_account_id = defaultdict(lambda: {"debit": 0, "credit": 0})
-            for vals in location_valuation_vals:
-                account_ids.add(vals["account_id"])
-                inventory_loss["value"] -= vals["debit"]
-                lines_by_account_id[vals["account_id"]]["debit"] += vals["debit"]
-                lines_by_account_id[vals["account_id"]]["credit"] += vals["credit"]
-            inventory_loss["lines"] = [
-                {
-                    "account_id": account_id,
-                    "debit": vals["debit"],
-                    "credit": vals["credit"],
-                }
-                for (account_id, vals) in lines_by_account_id.items()
-            ]
+        # The Inventory Loss section is not filtered, but it has to keep showing.
+        inventory_loss = self._get_inventory_loss_section(date)
+        if inventory_loss:
             report_data["inventory_loss"] = inventory_loss
+            account_ids.update(line["account_id"] for line in inventory_loss["lines"])
 
         # -- (B) Stock Variation section ---------------------------------------
         if line_types:
@@ -202,34 +183,23 @@ class StockValuationReport(models.AbstractModel):
                 account_ids.add(account.id)
                 ending_stock["value"] += projected
                 ending_stock["lines_by_account_id"][account.id]["value"] += projected
-        elif product_scope:
+        else:
             # With a product filter the variation is built from the attributable balance
             # computed above, not by delegating to the standard: that one recomputes the
-            # balance on its own (through a method other modules reimplement), so it
-            # would bring back the whole account balance and the report would not add up.
+            # balance on its own, so it would bring back the whole account balance and the
+            # report would not add up.
             stock_valuation_account_vals = self._get_variation_aml_vals(
                 company, self._get_total_variation_balance(company, date, inventory_data, accounting_data)
             )
-        else:
-            stock_valuation_account_vals = company.with_context(
-                inventory_data=inventory_data
-            )._get_stock_valuation_account_vals(accounts_by_product, date, company._get_location_valuation_vals(date))
 
-        stock_variation = {"label": _("Stock Variation"), "value": 0}
-        lines_by_account_id = defaultdict(lambda: {"debit": 0, "credit": 0, "lines": []})
-        for vals in stock_valuation_account_vals:
-            account_ids.add(vals["account_id"])
-            stock_variation["value"] += vals["debit"]
-            lines_by_account_id[vals["account_id"]]["debit"] += vals["debit"]
-            lines_by_account_id[vals["account_id"]]["credit"] += vals["credit"]
-        stock_variation["lines"] = [
-            {
-                "account_id": account_id,
-                "debit": vals["debit"],
-                "credit": vals["credit"],
-            }
-            for (account_id, vals) in lines_by_account_id.items()
-        ]
+        account_ids.update(vals["account_id"] for vals in stock_valuation_account_vals)
+        stock_variation = {
+            "label": _("Stock Variation"),
+            "value": sum(
+                vals["balance"] for vals in stock_valuation_account_vals if vals["account_id"] in valuation_account_ids
+            ),
+            "lines": self._get_balance_lines_by_account(stock_valuation_account_vals),
+        }
 
         accounts_read_data = self.env["account.account"].search_read(
             [("id", "in", list(account_ids))],
@@ -240,6 +210,29 @@ class StockValuationReport(models.AbstractModel):
             stock_variation=stock_variation,
         )
         return report_data
+
+    def _get_inventory_loss_section(self, date):
+        """The standard Inventory Loss section, which ``stock_account`` only adds in its own
+        ``_get_report_data`` and so the filtered path does not reach. ``False`` when the
+        company has no inventory loss location with a valuation account."""
+        if not self._must_include_inventory_loss():
+            return False
+        lines_by_account_id = defaultdict(lambda: {"debit": 0, "credit": 0})
+        value = 0
+        for vals in self._get_inventory_loss_aml_vals(date):
+            debit = vals["balance"] if vals["balance"] > 0 else 0
+            credit = -vals["balance"] if vals["balance"] < 0 else 0
+            value -= debit
+            lines_by_account_id[vals["account_id"]]["debit"] += debit
+            lines_by_account_id[vals["account_id"]]["credit"] += credit
+        return {
+            "label": _("Inventory Loss"),
+            "value": value,
+            "lines": [
+                {"account_id": account_id, "debit": vals["debit"], "credit": vals["credit"]}
+                for account_id, vals in lines_by_account_id.items()
+            ],
+        }
 
     # -- Drill-down ------------------------------------------------------------
     @api.model
@@ -381,10 +374,10 @@ class StockValuationReport(models.AbstractModel):
         (``res.company._get_periodic_closing_product_values``): they have nothing
         pending, so a product with only those gets no drill-down."""
         domain = self._get_unaccounted_product_values_base_domain(company, products, date)
-        # ``delta`` is computed, so it cannot be a domain leaf. In ``sudo()``, as the
+        # ``adjustment`` is computed, so it cannot be a domain leaf. In ``sudo()``, as the
         # drill-down runs for accounting users.
         product_values = self.env["product.value"].sudo().search(domain)
-        product_values = product_values.filtered(lambda value: not company.currency_id.is_zero(value.delta))
+        product_values = product_values.filtered(lambda value: not company.currency_id.is_zero(value.adjustment))
         return Domain([("id", "in", product_values.ids)])
 
     def _get_unaccounted_product_values_base_domain(self, company, products, date):
@@ -460,24 +453,27 @@ class StockValuationReport(models.AbstractModel):
 
     def _get_variation_product_values_product_ids(self, company, products, date):
         """Products with unaccounted value adjustments, same scope as
-        ``_get_variation_product_values_domain``. The ``delta`` filter goes to SQL: it is
-        ``value - previous_value``, both stored, and ``is_zero`` means below half the
-        currency rounding. A missing ``previous_value`` reads as zero, as in the ORM."""
+        ``_get_variation_product_values_domain``. The adjustment filter goes to SQL:
+        ``adjustment`` is computed, so it is rebuilt from the stored columns the way
+        ``product.value._compute_adjustment`` does, and ``is_zero`` means below half the
+        currency rounding."""
         ProductValue = self.env["product.value"].sudo()
         query = ProductValue._search(self._get_unaccounted_product_values_base_domain(company, products, date))
         table = query.table
         query.add_where(
             SQL(
-                "ABS(%s - COALESCE(%s, 0)) >= %s",
-                SQL.identifier(table, "value"),
-                SQL.identifier(table, "previous_value"),
-                company.currency_id.rounding / 2,
+                "ABS(CASE WHEN %(move_id)s IS NULL THEN (COALESCE(%(new_cost)s, 0) - COALESCE(%(old_cost)s, 0)) "
+                "* COALESCE(%(quantity)s, 0) ELSE COALESCE(%(new_value)s, 0) - COALESCE(%(old_value)s, 0) END) >= %(half)s",
+                move_id=table["move_id"],
+                new_cost=table["new_cost"],
+                old_cost=table["old_cost"],
+                quantity=table["quantity"],
+                new_value=table["new_value"],
+                old_value=table["old_value"],
+                half=company.currency_id.rounding / 2,
             )
         )
-        move_alias = query.left_join(table, "move_id", "stock_move", "id", "move_id")
-        rows = self.env.execute_query(
-            query.select(SQL.identifier(table, "product_id"), SQL.identifier(move_alias, "product_id"))
-        )
+        rows = self.env.execute_query(query.select(table["product_id"], table["move_id"]["product_id"]))
         return {product_id for row in rows for product_id in row if product_id} & set(products.ids)
 
     def _get_drilldown_scope(self, account_id, date, filters):
@@ -508,7 +504,9 @@ class StockValuationReport(models.AbstractModel):
             filters.get("cost_methods"),
             filters.get("valuations"),
         )
-        accounts_by_product = company._get_accounts_by_product(products=products) if products else {}
+        accounts_by_product = (
+            company._with_valuation_products(products)._get_accounts_by_product(date or None) if products else {}
+        )
         products_by_account = {}
         for product, accounts in accounts_by_product.items():
             account = accounts.get("valuation")
@@ -529,6 +527,9 @@ class StockValuationReport(models.AbstractModel):
         Movement Type filter scopes no product, and dropping the no-product balance there
         would break the starting point of the breakdown per origin.
 
+        ``company`` has to be scoped to ``products`` (``_with_valuation_products``) for the
+        standard balance to cover their accounts only.
+
         Shared with the closing entry (``res.company``), which has to book exactly the
         variation the report shows.
         """
@@ -536,7 +537,7 @@ class StockValuationReport(models.AbstractModel):
             return company._get_attributable_accounting_value(
                 self._get_valuation_accounts(accounts_by_product), products, at_date=at_date or None
             )
-        return company.stock_accounting_value(accounts_by_product, at_date=at_date or None)
+        return company.get_inventory_accounting_value(at_date=at_date or None)
 
     def _get_valuation_accounts(self, accounts_by_product):
         """Valuation accounts involved in that set of products."""
@@ -569,6 +570,7 @@ class StockValuationReport(models.AbstractModel):
         return {
             "company_id": company.id,
             "currency_id": company.currency_id.id,
+            "company_inventory_valuation": company.inventory_valuation,
             "ending_stock": {"label": _("Ending Stock"), "value": 0, "lines_by_account_id": {}},
             "initial_balance": {"label": _("Initial Balance"), "value": 0, "lines_by_account_id": {}},
             "stock_variation": {"label": _("Stock Variation"), "value": 0, "lines": []},
@@ -603,9 +605,9 @@ class StockValuationReport(models.AbstractModel):
             "sale": Domain("is_dropship", "=", False)
             & (Domain("location_usage", "=", "customer") | Domain("location_dest_usage", "=", "customer")),
             # Any move against an adjustment or loss location; scraps have their own type.
-            "inventory": Domain("scrap_id", "=", False)
+            "inventory": Domain("is_scrap", "=", False)
             & (Domain("location_usage", "=", "inventory") | Domain("location_dest_usage", "=", "inventory")),
-            "scrap": Domain("scrap_id", "!=", False),
+            "scrap": Domain("is_scrap", "=", True),
             "production": Domain("location_usage", "=", "production")
             | Domain("location_dest_usage", "=", "production"),
             # Only the standard inter-company transit location, which has no company.
@@ -643,13 +645,17 @@ class StockValuationReport(models.AbstractModel):
         types are added too (``_get_pending_move_products``).
         """
         # sudo and valuation context as in the standard: ``qty_available`` expands kit
-        # BoMs that an accounting user cannot read.
-        valued_product_context = self.env["product.product"].sudo().with_company(company)._with_valuation_context()
+        # BoMs that an accounting user cannot read, and kits are never valued on their own.
+        valued_product_context = (
+            self.env["product.product"]
+            .sudo()
+            .with_company(company)
+            .with_context(skip_kit_qty_available=True)
+            ._with_valuation_context()
+        )
         if date:
             valued_product_context = valued_product_context.with_context(at_date=date, to_date=date)
-        domain = Domain(company._get_valuation_product_domain()) & (
-            Domain([("qty_available", "!=", 0)]) | Domain([("lot_valuated", "=", True)])
-        )
+        domain = Domain(company._get_inventory_valuation_products_domain())
         domain &= self._get_valuation_report_extra_domain(product_ids, categ_ids)
         valued_products = valued_product_context.search(domain)
         if any([product_ids, categ_ids, cost_methods, valuations]):
@@ -722,7 +728,7 @@ class StockValuationReport(models.AbstractModel):
         They may have no stock at the date: a receipt and a sale of the same quantity
         leave the product at zero and net out, but filtered by type they no longer do.
         """
-        product_domain = Domain(company._get_valuation_product_domain())
+        product_domain = Domain(company._get_inventory_valuation_products_domain())
         product_domain &= self._get_valuation_report_extra_domain(product_ids, categ_ids)
         domain = Domain(
             [
@@ -846,7 +852,7 @@ class StockValuationReport(models.AbstractModel):
         ``(account, product)``, which the per-origin closing needs to attribute its lines.
         """
         Move = self.env["stock.move"].sudo()
-        valued_locations = self.env["stock.location"].sudo().search([("is_valued_internal", "=", True)])
+        valued_locations = self.env["stock.location"].sudo().search([("is_valued", "=", True)])
         if not (products and valued_locations):
             return {}
 
@@ -861,9 +867,9 @@ class StockValuationReport(models.AbstractModel):
 
         account_balance = defaultdict(float)
         directions = (
-            # (sign, direction domain)
+            # (sign, direction domain): the ``value`` of an outgoing move is already negative
             (1, Domain([("is_in", "=", True), ("location_dest_id", "in", valued_locations.ids)])),
-            (-1, Domain([("is_out", "=", True), ("location_id", "in", valued_locations.ids)])),
+            (1, Domain([("is_out", "=", True), ("location_id", "in", valued_locations.ids)])),
         )
         # What a move contributes is its ``value`` (see
         # ``stock.move._get_inventory_value``), the criterion the inventory is valued
@@ -894,8 +900,8 @@ class StockValuationReport(models.AbstractModel):
 
     def _accumulate_move_balance(self, account, product, sign, aggregates, account_balance, by_product):
         """Add one grouped row to the accumulators. ``aggregates`` arrives in the order of
-        ``_get_unaccounted_move_aggregates``; ``sign`` is +1 for incoming moves and -1 for
-        outgoing ones."""
+        ``_get_unaccounted_move_aggregates``; ``sign`` is +1: an outgoing move carries
+        a negative ``value``."""
         value = aggregates[0]
         account_balance[account] += sign * value
         if by_product is not None:
@@ -947,7 +953,7 @@ class StockValuationReport(models.AbstractModel):
 
     def _get_valued_directions_domain(self):
         """Moves inside the valued perimeter, in either direction."""
-        valued_locations = self.env["stock.location"].sudo().search([("is_valued_internal", "=", True)])
+        valued_locations = self.env["stock.location"].sudo().search([("is_valued", "=", True)])
         return Domain([("is_in", "=", True), ("location_dest_id", "in", valued_locations.ids)]) | Domain(
             [("is_out", "=", True), ("location_id", "in", valued_locations.ids)]
         )
@@ -991,10 +997,7 @@ class StockValuationReport(models.AbstractModel):
         total still adds up, because that remainder is a residue, so the breakdown would
         lie in silence.
 
-        Compared with the currency's own rounding, not against ``0``. An adjustment with
-        no ``previous_value`` (recorded before that field existed) reads as a delta equal
-        to the new value, so it counts as a revaluation: the conservative side, and the
-        behaviour there has always been.
+        Compared with the currency's own rounding, not against ``0``.
         """
         currency = product_value.company_id.currency_id
-        return not currency.is_zero(product_value.delta)
+        return not currency.is_zero(product_value.adjustment)

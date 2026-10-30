@@ -1,9 +1,10 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestValuationReportStockMoveTypes(TestStockValuationCommon):
+class TestValuationReportStockMoveTypes(TestStockValuationUXCommon):
     """The Stock Move Types filter narrows the Stock Moves origin of the variation.
 
     Scenario: an unaccounted receipt (purchase, +100) and an unaccounted outflow to a
@@ -13,7 +14,7 @@ class TestValuationReportStockMoveTypes(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.receipt = self._make_in_move(self.product_standard, 10, 10)
         # A real receipt carries no manual adjustment; the helper uses it to value.
         self.env["product.value"].search([("move_id", "=", self.receipt.id)]).unlink()
@@ -59,14 +60,21 @@ class TestValuationReportStockMoveTypes(TestStockValuationCommon):
     def test_scrap_is_not_an_inventory_adjustment(self):
         """Scrap locations are adjustment locations too, but a scrap only shows up in
         its own type."""
-        scrap = self.env["stock.scrap"].create({"product_id": self.product_standard.id, "scrap_qty": 1})
-        scrap.action_validate()
+        scrap = self.env["stock.move"].create(
+            {
+                "product_id": self.product_standard.id,
+                "product_uom_qty": 1,
+                "quantity": 1,
+                "uom_id": self.uom.id,
+                "location_id": self.stock_location.id,
+                "location_dest_id": self.company.scrap_location_id.id,
+            }
+        )
+        scrap._action_scrap()
         account = self.account_stock_valuation.id
         open_moves = self.report.action_open_variation_stock_moves
         moves = self.env["stock.move"]
-        self.assertEqual(
-            moves.search(open_moves(account, filters={"stock_move_types": ["scrap"]})["domain"]), scrap.move_ids
-        )
+        self.assertEqual(moves.search(open_moves(account, filters={"stock_move_types": ["scrap"]})["domain"]), scrap)
         self.assertEqual(
             moves.search(open_moves(account, filters={"stock_move_types": ["inventory"]})["domain"]), self.adjustment
         )

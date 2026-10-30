@@ -1,16 +1,17 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestRevaluationCriterion(TestStockValuationCommon):
+class TestRevaluationCriterion(TestStockValuationUXCommon):
     """Which value adjustments take a move OUT of the Stock Moves component of the
     variation. The criterion is the delta in company currency, not the mere existence of
     a ``product.value`` pointing at the move (task 64440, clarification Q2)."""
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move = self._make_in_move(self.product_avco, 4, 25)  # value 100
         # ``_make_in_move`` goes through ``value_manual``, which records a
         # ``product.value``. A normal receipt carries no adjustment, so it is cleaned up

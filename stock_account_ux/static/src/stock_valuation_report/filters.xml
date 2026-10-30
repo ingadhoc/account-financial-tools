@@ -3,32 +3,32 @@
 
     <!-- Mejora 1 (tarea 64440): agrega los 5 filtros a la barra del reporte,
          después del filtro de fecha nativo. -->
-    <t t-inherit="stock_account.StockValuationReport.Filters" t-inherit-mode="extension">
-        <xpath expr="//t[@t-call='stock_account.StockValuationReport.FilterDate']" position="after">
+    <t t-inherit="account.StockValuationReport.Filters" t-inherit-mode="extension">
+        <xpath expr="//t[@t-call='account.StockValuationReport.FilterDate']" position="after">
 
             <!-- Producto -->
             <div id="filter_products" class="d-print-none d-flex align-items-center" style="min-width: 220px;">
-                <MultiRecordSelector t-props="productSelectorProps"/>
+                <MultiRecordSelector t-props="this.productSelectorProps"/>
             </div>
 
             <!-- Categorías de producto -->
             <div id="filter_categories" class="d-print-none d-flex align-items-center" style="min-width: 220px;">
-                <MultiRecordSelector t-props="categSelectorProps"/>
+                <MultiRecordSelector t-props="this.categSelectorProps"/>
             </div>
 
             <!-- Método de valuación -->
             <div id="filter_cost_methods" class="d-print-none">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-sliders me-1"/>Valuation Method
+                        <i class="oi me-1" data-icon="tune"/>Valuation Method
                     </button>
                     <t t-set-slot="content">
-                        <t t-foreach="costMethodOptions" t-as="opt" t-key="opt.value">
+                        <t t-foreach="this.costMethodOptions" t-as="opt" t-key="opt.value">
                             <DropdownItem
-                                class="{ selected: isFilterSelected('costMethods', opt.value) }"
+                                class="{ selected: this.isFilterSelected('costMethods', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onCostMethodToggle(opt.value)">
-                                <i t-if="isFilterSelected('costMethods', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="this.isFilterSelected('costMethods', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>
@@ -40,15 +40,15 @@
             <div id="filter_valuations" class="d-print-none">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-sliders me-1"/>Valuation Type
+                        <i class="oi me-1" data-icon="tune"/>Valuation Type
                     </button>
                     <t t-set-slot="content">
-                        <t t-foreach="valuationOptions" t-as="opt" t-key="opt.value">
+                        <t t-foreach="this.valuationOptions" t-as="opt" t-key="opt.value">
                             <DropdownItem
-                                class="{ selected: isFilterSelected('valuations', opt.value) }"
+                                class="{ selected: this.isFilterSelected('valuations', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onValuationToggle(opt.value)">
-                                <i t-if="isFilterSelected('valuations', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="this.isFilterSelected('valuations', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>
@@ -61,15 +61,15 @@
                  title="Only affects the Stock Variation section; shows unaccounted moves by origin.">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-filter me-1"/>Movement Type
+                        <i class="oi oi-filled me-1" data-icon="filter_alt"/>Movement Type
                     </button>
                     <t t-set-slot="content">
-                        <t t-foreach="lineTypeOptions" t-as="opt" t-key="opt.value">
+                        <t t-foreach="this.lineTypeOptions" t-as="opt" t-key="opt.value">
                             <DropdownItem
-                                class="{ selected: isFilterSelected('lineTypes', opt.value) }"
+                                class="{ selected: this.isFilterSelected('lineTypes', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onLineTypeToggle(opt.value)">
-                                <i t-if="isFilterSelected('lineTypes', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="this.isFilterSelected('lineTypes', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>
@@ -82,15 +82,15 @@
                  title="Only applies to Stock Moves; selecting a type sets Movement Type to Stock Moves.">
                 <Dropdown>
                     <button class="btn btn-secondary">
-                        <i class="fa fa-filter me-1"/>Stock Move Types
+                        <i class="oi me-1" data-icon="filter_alt"/>Stock Move Types
                     </button>
                     <t t-set-slot="content">
-                        <t t-foreach="stockMoveTypeOptions" t-as="opt" t-key="opt.value">
+                        <t t-foreach="this.stockMoveTypeOptions" t-as="opt" t-key="opt.value">
                             <DropdownItem
-                                class="{ selected: isFilterSelected('stockMoveTypes', opt.value) }"
+                                class="{ selected: this.isFilterSelected('stockMoveTypes', opt.value) }"
                                 closingMode="'none'"
                                 onSelected="() => this.onStockMoveTypeToggle(opt.value)">
-                                <i t-if="isFilterSelected('stockMoveTypes', opt.value)" class="fa fa-check me-1"/>
+                                <i t-if="this.isFilterSelected('stockMoveTypes', opt.value)" class="oi me-1" data-icon="check"/>
                                 <t t-out="opt.label"/>
                             </DropdownItem>
                         </t>
