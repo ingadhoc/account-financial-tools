@@ -1,9 +1,10 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestValuationReportFilters(TestStockValuationCommon):
+class TestValuationReportFilters(TestStockValuationUXCommon):
     """Filters of the Inventory Valuation report. Data is created with .create() and the
     common helpers, no demo data. Every product used is periodic, so the moves stay
     unaccounted (``related_account_move_id = False``) until the closing, which is what the
@@ -11,7 +12,7 @@ class TestValuationReportFilters(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         # Receipts (periodic). The move value is unit_cost * qty.
         # Watch out with the standard cost product: it is received AT ITS STANDARD COST
         # (10). Receiving it at another price and then deleting the ``product.value`` the

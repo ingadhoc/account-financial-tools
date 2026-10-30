@@ -1,13 +1,14 @@
 from datetime import timedelta
 
 from odoo import Command, fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
+from .common import TestStockValuationUXCommon
+
 
 @tagged("post_install", "-at_install")
-class TestProductValueBooking(TestStockValuationCommon):
+class TestProductValueBooking(TestStockValuationUXCommon):
     """Booking selected value adjustments from the Value Adjustments list: each one books
     exactly what it added to the inventory, and none can be booked twice.
 
@@ -17,7 +18,7 @@ class TestProductValueBooking(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move = self._make_in_move(self.product_standard, 10, 10)
         # A real receipt carries no manual adjustment; the helper uses it to value.
         self.env["product.value"].search([("move_id", "=", self.move.id)]).unlink()
@@ -79,7 +80,7 @@ class TestProductValueBooking(TestStockValuationCommon):
         out_move = self._make_out_move(self.product_standard, 1)
         self.env["product.value"].search([("move_id", "=", out_move.id)]).unlink()
         self.env["stock.move.valuation"].with_context(default_move_ids=out_move.ids).create({}).action_post()
-        adjustment = self.env["product.value"].create({"move_id": out_move.id, "value": out_move.value + 5.0})
+        adjustment = self.env["product.value"].create({"move_id": out_move.id, "value": out_move.value - 5.0})
         credit_line = self._wizard(adjustment).line_ids.filtered("credit")
         self.assertEqual(credit_line.account_id, self.account_stock_valuation)
         self.assertAlmostEqual(credit_line.credit, 5.0)

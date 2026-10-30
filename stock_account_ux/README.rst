@@ -24,7 +24,7 @@ audit inventory valuation from the same product movement view.
 
 * Adds the "Asiento Contable" column on Inventory > Reporting > Moves Analysis.
 * Adds the same column on inventory valuation moves list.
-* Uses the Odoo 19 native link between stock moves and journal entries
+* Uses the Odoo 20 native link between stock moves and journal entries
   (``stock.move.account_move_id`` from ``stock_account``) and, via a
   ``res.company.action_close_stock_valuation`` override, also links the periodic
   closing entry to the moves it values. This unifies perpetual and periodic
@@ -40,7 +40,7 @@ Filters on the Inventory Valuation report
 ------------------------------------------
 
 Adds five optional, multi-select, combinable filters to the Inventory Valuation
-report (``stock_account.stock.valuation.report``):
+report (``account.stock.valuation.report``):
 
 * **Product** and **Product Categories** (categories include their subcategories).
 * **Valuation Method** (standard / FIFO / average).
@@ -133,7 +133,7 @@ Known limitations (by design)
 Drill-down from the report to the underlying detail
 ---------------------------------------------------
 
-In v19 the report already navigates from Initial Balance, Ending Stock and
+In v20 the report already navigates from Initial Balance, Ending Stock and
 Inventory Loss, but the **Stock Variation** section — the unaccounted difference,
 i.e. exactly what has to be reviewed and posted — was not clickable at all. This
 adds:
@@ -150,11 +150,12 @@ adds:
   back to the journal items list filtered by account and date. With a product filter
   active they open the journal items of the filtered products instead, the ones that
   add up to the line.
-* A **list view, search view and menu for ``product.value``** (Inventory >
-  Reporting > Value Adjustments): date, product, lot, move, previous value, new
-  value, delta, journal entry and description, with "Booked / Not Booked" and
-  "Price Change / Move Adjustment" filters. The model previously had only the
-  "Adjust Valuation" form, so the adjustments were not consultable at all.
+* The native **Valuation Adjustments** menu (Inventory > Reporting), which Odoo
+  shows only in debug mode, is opened to Inventory users, and its list and search
+  are extended: a "Journal Entry" column, search by move, journal entry and
+  description, "Booked / Not Booked" and "Price Change / Move Adjustment" filters,
+  and grouping by journal entry or date. A row opens the adjustment form, which
+  also shows the adjustment and its journal entry.
 
 The domains live in Python (``action_open_variation_stock_moves``,
 ``action_open_variation_product_values``, ``action_open_account_ledger``), so the
@@ -203,14 +204,14 @@ Manual booking of selected value adjustments
 --------------------------------------------
 
 The **"Book Value Adjustments"** action on the Actions menu of **Inventory >
-Reporting > Value Adjustments** opens the same wizard to book **only the selected
+Reporting > Valuation Adjustments** opens the same wizard to book **only the selected
 adjustments**, instead of every pending one as the closing filtered by Movement
 Type does.
 
 * Each adjustment books what it added to the inventory
-  (``product.value._get_booking_value``): a move adjustment, its ``delta`` (new
-  minus previous move value); a product or lot price change, its ``delta`` (a unit
-  price) times the quantity on hand at the adjustment's date.
+  (``product.value._get_booking_value``): its native ``adjustment``, which is
+  already a total (new minus old value) for a move adjustment and for a price
+  change alike. An adjustment of an internal move books nothing.
 * The lines carry the product, so the booked amount is part of the filtered
   Initial Balance and leaves the pending variation.
 * On post, the entry is linked to the selected adjustments only.
@@ -223,27 +224,21 @@ Revaluation entry traceability
 ------------------------------
 
 When the inventory variation comes from a value change (``product.value``) rather
-than from a stock movement, the closing entry left no trace: ``product.value`` has
-no reference to any journal entry, and the revalued ``stock.move`` keeps pointing
-to its *original* valuation entry through ``account_move_id`` (a Many2one that is
-already taken). There was no way to tell an adjustment that had already been
-booked from one that still produces the difference shown by the report.
+than from a stock movement, the revalued ``stock.move`` keeps pointing to its
+*original* valuation entry through ``account_move_id`` (a Many2one that is already
+taken). There was no way to tell an adjustment that had already been booked from
+one that still produces the difference shown by the report.
 
 This module adds:
 
-* ``product.value.account_move_id`` — the closing entry that booked the
-  adjustment, set by the ``res.company.action_close_stock_valuation`` override.
-  Empty means *not booked yet*, i.e. the adjustment is still part of the Stock
-  Variation to be posted. Partial closings (see the filters above) only mark the
-  adjustments of the products in scope.
-* ``product.value.previous_value`` / ``product.value.delta`` — the value in force
-  right before the adjustment, captured on ``create``, and the variation it
-  introduced. The model only stores the *new* value, and ``current_value`` cannot
-  be used for this: it is ``related='move_id.value'`` and ``product.value.create``
-  already ran ``_set_value()`` on the move, so once saved
-  ``current_value == value``. Recomputing it afterwards from the move is not an
-  option either: on AVCO/FIFO the adjustment already moved the product's
-  ``standard_price``, so the "computed value" would return the new one.
+* The closing entry that booked the adjustment, written by the
+  ``res.company.action_close_stock_valuation`` override on the native
+  ``product.value.account_move_id``. Empty means *not booked yet*, i.e. the
+  adjustment is still part of the Stock Variation to be posted. Partial closings
+  (see the filters above) only mark the adjustments of the products in scope.
+* The variation an adjustment introduced is read from the native
+  ``product.value`` fields: ``old_value``, ``new_value`` and ``adjustment`` (new
+  minus old value, a total).
 * ``stock.move.related_account_move_id`` now also covers the revaluation: when the
   move has a booked value adjustment, the "Journal Entry" column (and the search)
   point to *that* entry, since it is the one reflecting the move's current
@@ -254,9 +249,9 @@ This module adds:
   value adjustment is still pending — the difference to be posted. The
   "With/Without Journal Entry" pair cannot express this, since it looks at the
   move's current entry.
-* Read access on ``product.value`` for Inventory users and Accounting (the native
-  ACL only grants it to Inventory managers, which would break the columns above
-  for the accountants that actually audit valuation).
+* Read access on ``product.value`` for Inventory users and Accounting readers (the
+  native ACL only grants it to Inventory and Accounting managers, which would break
+  the columns above for the accountants that actually audit valuation).
 
 Known limitations of the traceability (by design)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -268,13 +263,6 @@ Known limitations of the traceability (by design)
 * **One column, one entry.** A revalued move has two entries and
   ``related_account_move_id`` is a Many2one, so the column shows the revaluation
   one; use the native ``account_move_id`` to reach the original.
-* **``delta`` is expressed in the same unit as ``value``**: the move total for
-  move adjustments, the unit price for product/lot price changes. The model does
-  not store the quantity the price change applied to, so the two cannot be
-  normalized to a single unit without inventing a figure.
-* **``previous_value`` only applies going forward.** Adjustments recorded before
-  installing this version have no stored previous value (it cannot be
-  reconstructed), so their ``delta`` equals the new value.
 
 Installation
 ============

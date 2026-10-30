@@ -1,11 +1,12 @@
 from unittest.mock import patch
 
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestMigratedValuationPurchase(TestStockValuationCommon):
+class TestMigratedValuationPurchase(TestStockValuationUXCommon):
     """Invoicing in v19 a purchase whose move was already valued in v18
     (``stock_valuation_migrated=True``), the invoice line must not debit the stock
     valuation account again —that would increase the asset twice— but the counterpart of
@@ -33,7 +34,7 @@ class TestMigratedValuationPurchase(TestStockValuationCommon):
             {
                 "product_id": self.product.id,
                 "product_uom_qty": 1.0,
-                "product_uom": self.uom.id,
+                "uom_id": self.uom.id,
                 "location_id": self.supplier_location.id,
                 "location_dest_id": self.stock_location.id,
             }
@@ -54,15 +55,17 @@ class TestMigratedValuationPurchase(TestStockValuationCommon):
 
     def _bill_product_line(self, stock_move):
         """Create, without posting, a vendor bill with a product line linked to
-        ``stock_move``, patching ``_get_stock_moves``, which in production comes from
+        ``stock_move``, patching ``_compute_cogs_move_ids``, which in production comes from
         ``purchase_stock`` through ``purchase_line_id``."""
         move_line_cls = type(self.env["account.move.line"])
-        original = move_line_cls._get_stock_moves
+        original = move_line_cls._compute_cogs_move_ids
 
         def _patched(records):
-            return original(records) | stock_move
+            original(records)
+            for line in records:
+                line.cogs_move_ids |= stock_move
 
-        with patch.object(move_line_cls, "_get_stock_moves", _patched):
+        with patch.object(move_line_cls, "_compute_cogs_move_ids", _patched):
             bill = self._create_bill(product=self.product, quantity=1.0, price_unit=20.0, post=False)
         return bill.invoice_line_ids
 

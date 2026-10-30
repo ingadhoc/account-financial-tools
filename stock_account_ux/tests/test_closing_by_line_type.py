@@ -1,9 +1,10 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestClosingByLineType(TestStockValuationCommon):
+class TestClosingByLineType(TestStockValuationUXCommon):
     """The entry generated from the report has to honour the Movement Type filter: book
     only the filtered origin of the variation and leave the other one pending.
 
@@ -13,7 +14,7 @@ class TestClosingByLineType(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move = self._make_in_move(self.product_standard, 10, 10)  # 10 units at a standard cost of 10
         # A real receipt carries no manual adjustment; the helper uses it to value.
         self.env["product.value"].search([("move_id", "=", self.move.id)]).unlink()

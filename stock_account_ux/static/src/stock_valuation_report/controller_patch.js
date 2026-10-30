@@ -49,7 +49,7 @@ patch(StockValuationReportController.prototype, {
             stock_move_types: state.stockMoveTypes,
         };
         const res = await this.orm.call(
-            "stock_account.stock.valuation.report",
+            "account.stock.valuation.report",
             "get_report_values",
             [],
             kwargs
@@ -101,7 +101,7 @@ patch(StockValuationReportController.prototype, {
     async _openAccountLedger(accountId) {
         const state = this._valuationFilterState();
         const action = await this.orm.call(
-            "stock_account.stock.valuation.report",
+            "account.stock.valuation.report",
             "action_open_account_ledger",
             [accountId, this.state.date.toISODate() || false],
             {
@@ -169,7 +169,7 @@ patch(StockValuationReportController.prototype, {
     async _openVariationDetail(method, accountId) {
         const state = this._valuationFilterState();
         const action = await this.orm.call(
-            "stock_account.stock.valuation.report",
+            "account.stock.valuation.report",
             method,
             [accountId, this.reportDate],
             {

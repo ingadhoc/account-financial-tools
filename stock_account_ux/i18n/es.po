@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0+e\n"
+"Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 17:24+0000\n"
-"PO-Revision-Date: 2026-09-22 17:24+0000\n"
+"POT-Creation-Date: 2026-10-30 18:15+0000\n"
+"PO-Revision-Date: 2026-10-30 18:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -63,6 +63,336 @@ msgid "%(label)s - %(product)s"
 msgstr "%(label)s - %(product)s"
 
 #. module: stock_account_ux
+#: model:ir.module.module,description:base.module_stock_account_ux
+msgid ""
+".. |company| replace:: ADHOC SA\n"
+"\n"
+".. |company_logo| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-logo.png\n"
+"   :alt: ADHOC SA\n"
+"   :target: https://www.adhoc.com.ar\n"
+"\n"
+".. |icon| image:: https://raw.githubusercontent.com/ingadhoc/maintainer-tools/master/resources/adhoc-icon.png\n"
+"\n"
+".. image:: https://img.shields.io/badge/license-AGPL--3-blue.png\n"
+"   :target: https://www.gnu.org/licenses/agpl\n"
+"   :alt: License: AGPL-3\n"
+"\n"
+"=============\n"
+"Stock Move UX\n"
+"=============\n"
+"\n"
+"This module improves the inventory valuation UX in five areas:\n"
+"\n"
+"Journal entry link on stock moves\n"
+"---------------------------------\n"
+"\n"
+"Adds a direct link to the accounting entry on stock moves reports, so users can\n"
+"audit inventory valuation from the same product movement view.\n"
+"\n"
+"* Adds the \"Asiento Contable\" column on Inventory > Reporting > Moves Analysis.\n"
+"* Adds the same column on inventory valuation moves list.\n"
+"* Uses the Odoo 20 native link between stock moves and journal entries\n"
+"  (``stock.move.account_move_id`` from ``stock_account``) and, via a\n"
+"  ``res.company.action_close_stock_valuation`` override, also links the periodic\n"
+"  closing entry to the moves it values. This unifies perpetual and periodic\n"
+"  valuation behind the computed, searchable ``stock.move.related_account_move_id``\n"
+"  field and the \"With/Without Journal Entry\" filters.\n"
+"* The link follows what the entry actually books, with **no lower date bound**: the\n"
+"  closing books the *cumulative* difference (inventory value minus booked value), so\n"
+"  a move an earlier closing left out — because that closing was filtered by product\n"
+"  or by Movement Type — is booked by the next full closing and is linked to it,\n"
+"  however old it is. Moves already booked by a posted entry keep it.\n"
+"\n"
+"Filters on the Inventory Valuation report\n"
+"------------------------------------------\n"
+"\n"
+"Adds five optional, multi-select, combinable filters to the Inventory Valuation\n"
+"report (``account.stock.valuation.report``):\n"
+"\n"
+"* **Product** and **Product Categories** (categories include their subcategories).\n"
+"* **Valuation Method** (standard / FIFO / average).\n"
+"* **Valuation Type** (manual/periodic or automated/perpetual).\n"
+"* **Movement Type** (Stock Moves and/or Product Value), which only affects the\n"
+"  Stock Variation section and is limited to *unaccounted* records.\n"
+"\n"
+"Product, Category, Valuation Method and Valuation Type scope the three sections\n"
+"(Initial Balance, Stock Variation, Ending Stock). With no filters selected the\n"
+"report behaves exactly like the standard one.\n"
+"\n"
+"**Movement Type keeps the report balanced.** It breaks the Stock Variation down by\n"
+"origin, and Ending Stock is then projected as *Initial Balance + filtered\n"
+"variation*: with the filter on it stops being the real state of the stock and\n"
+"becomes the accounted value the stock would have if only that portion were booked\n"
+"— which is exactly what the entry generated with the filter on does book. Initial\n"
+"Balance is left untouched: it is the already-booked starting point, a balance with\n"
+"no origin (historical entries do not record which origin they came from), not a\n"
+"flow. The two projections are complementary and add up to the real state.\n"
+"\n"
+"**The journal entry respects the active filters.** Generating the entry from the\n"
+"report posts what is on screen:\n"
+"\n"
+"* Product / Category / Method / Valuation Type → a *partial closing* limited to\n"
+"  those products; the rest stays open.\n"
+"* Movement Type → a closing limited to that *origin* of the variation (only the\n"
+"  stock moves portion, or only the value adjustments one), leaving the other one\n"
+"  pending. Both origins are complementary and add up to the full closing, and each\n"
+"  entry links only the records it actually booked, so whatever stays open keeps\n"
+"  showing up in the report's variation.\n"
+"\n"
+"The valuation leg of that entry is split into **one line per product**, and each\n"
+"line **names its product in the label**. The valuation account belongs to the\n"
+"category, so a global entry has several lines on the same account and the label is\n"
+"what tells the user which line is whose. The counterpart keeps the generic label:\n"
+"it is attributed to no product.\n"
+"\n"
+"**The filters survive the drill-down.** The report is a client action, so it is\n"
+"unmounted when navigating to the detail and mounted again when coming back through\n"
+"the breadcrumb, which used to reset the filters and the date. They are now exported\n"
+"via the action service's ``getLocalState`` and restored before the first render.\n"
+"\n"
+"Known limitations (by design)\n"
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+"\n"
+"* **Shared valuation account.** With a product filter active, Initial Balance is\n"
+"  read from the journal items **attributable to those products** (``product_id``),\n"
+"  so it lines up with Ending Stock —which is exact per product— and the report adds\n"
+"  up: initial + variation = ending.\n"
+"\n"
+"  For that to hold, the closing entry books **one line per product** instead of a\n"
+"  single aggregated line per account (the standard books it with\n"
+"  ``product_id = False``, which is why its balance could not be filtered at all).\n"
+"  The split happens *inside* the valuation account: each product takes its own\n"
+"  difference (inventory value minus what is already attributed to it) and whatever\n"
+"  is left unattributed —the balance coming from previously aggregated closings— goes\n"
+"  to a no-product line that nets it out. Amount, counterpart and account balance are\n"
+"  therefore identical to the standard entry: same entry, attributed. Right after the\n"
+"  closing, each product's booked balance equals its inventory value. The manual\n"
+"  \"Value Stock Moves\" wizard groups by account **and product** for the same reason.\n"
+"\n"
+"  A closing done with the *Movement Type* filter is attributed the same way, but\n"
+"  with the contribution of **that origin** —the stock moves one is exact, since it\n"
+"  comes from records that carry a product— because that entry only books a portion:\n"
+"  splitting the whole pending difference there would over-attribute it.\n"
+"\n"
+"  **Filtered, the Initial Balance is exactly the journal items of the filter.** It\n"
+"  brings the journal items whose product is set, storable and matching the filter\n"
+"  —including products with no stock at the date and archived ones— and nothing\n"
+"  else, so it matches the journal items grouped by product and its drill-down opens\n"
+"  those very items. The balance no product can claim (journal items with no\n"
+"  ``product_id``, as an opening entry of a migrated database or an entry an\n"
+"  accountant posts by hand, and the ones of non-storable products) is not\n"
+"  estimated: it only shows up in the unfiltered report.\n"
+"\n"
+"  Because of that, **an entry filtered by product is refused** while the valuation\n"
+"  accounts involved carry such a balance: it would be booked again on top of the\n"
+"  entry it came from. It has to be fixed on the journal items first, or the entry\n"
+"  generated with no filter.\n"
+"* **Movement Type is a breakdown, and \"Product Value\" is the remainder.** The\n"
+"  Stock Moves component adds up the ``value`` of the unaccounted moves, which is\n"
+"  what the inventory is worth for the three costing methods — including standard\n"
+"  cost, where a normal receipt is already valued at the standard cost and not at\n"
+"  what was paid. Moves that carry a manual adjustment are left out (a\n"
+"  ``product.value`` points at them) and their contribution is taken by the other\n"
+"  component. \"Product Value\" is then the remainder, so besides the value\n"
+"  adjustments it also absorbs location reclassifications and FIFO/AVCO rounding.\n"
+"  Both components always add up to the native variation.\n"
+"\n"
+"Drill-down from the report to the underlying detail\n"
+"---------------------------------------------------\n"
+"\n"
+"In v20 the report already navigates from Initial Balance, Ending Stock and\n"
+"Inventory Loss, but the **Stock Variation** section — the unaccounted difference,\n"
+"i.e. exactly what has to be reviewed and posted — was not clickable at all. This\n"
+"adds:\n"
+"\n"
+"* A **\"three dots\" menu** on each account line of Stock Variation, with the two\n"
+"  origins of the difference: **Unaccounted Stock Moves** (same scope as the Stock\n"
+"  Moves component: done moves inside the valued perimeter, with no entry, up to\n"
+"  the report date) and **Unaccounted Value Adjustments** (the ``product.value``\n"
+"  records with no entry). Both are scoped to the account of the line and honour\n"
+"  the report's active filters.\n"
+"* **Initial Balance** account lines now open the **General Ledger** of *that*\n"
+"  account up to the report date. The General Ledger lives in ``account_reports``\n"
+"  (enterprise) and is not a dependency, so it is resolved at runtime and falls\n"
+"  back to the journal items list filtered by account and date. With a product filter\n"
+"  active they open the journal items of the filtered products instead, the ones that\n"
+"  add up to the line.\n"
+"* The native **Valuation Adjustments** menu (Inventory > Reporting), which Odoo\n"
+"  shows only in debug mode, is opened to Inventory users, and its list and search\n"
+"  are extended: a \"Journal Entry\" column, search by move, journal entry and\n"
+"  description, \"Booked / Not Booked\" and \"Price Change / Move Adjustment\" filters,\n"
+"  and grouping by journal entry or date. A row opens the adjustment form, which\n"
+"  also shows the adjustment and its journal entry.\n"
+"\n"
+"The domains live in Python (``action_open_variation_stock_moves``,\n"
+"``action_open_variation_product_values``, ``action_open_account_ledger``), so the\n"
+"drill-down is covered by regular tests instead of only through the UI.\n"
+"\n"
+"Manual valuation of selected stock moves\n"
+"----------------------------------------\n"
+"\n"
+"Periodic valuation only reaches accounting through the global closing entry: there\n"
+"is no way to book *some* moves. This adds a **\"Value Stock Moves\"** action to the\n"
+"Actions menu of the moves lists, which opens a wizard with the **draft of the\n"
+"journal entry** before posting it. It is available on:\n"
+"\n"
+"* **Valuation** (next to the native \"Adjust Valuation\") and **Inventory >\n"
+"  Reporting > Moves Analysis** — both list ``stock.move``.\n"
+"* **Inventory > Reporting > Moves History**, which lists ``stock.move.line``: the\n"
+"  action resolves the moves of the selected lines (deduplicated). Since the\n"
+"  valuation unit is the *move*, a move with only some of its lines selected is\n"
+"  still valued in full, and the wizard says so.\n"
+"\n"
+"The wizard:\n"
+"\n"
+"* Journal and date are selectable (journal defaults to the company's Stock\n"
+"  Journal).\n"
+"* The draft is grouped by the valuation accounts defined on the products'\n"
+"  categories, with the counterpart taken from the account itself\n"
+"  (``account_stock_variation_id``, falling back to the company expense account) —\n"
+"  the same account resolution the native closing uses.\n"
+"* Each move contributes what it adds to the *valuation*\n"
+"  (``stock.move._get_inventory_value``, shared with the Movement Type filter):\n"
+"  incoming moves add, outgoing moves subtract.\n"
+"* On post, the entry is linked to the moves, which both blocks a second valuation\n"
+"  and takes them out of the report's pending variation and of the periodic\n"
+"  closing's scope.\n"
+"* Every line of the valuation account **names its product in the label**. The\n"
+"  account belongs to the category, so an entry over moves of several products has\n"
+"  several lines on it and the label is what tells them apart. The counterpart keeps\n"
+"  the generic label: it is attributed to no product.\n"
+"* **Moves that already have a valuation entry are left out** of the selection, to\n"
+"  avoid duplicating the product's accounted value. The wizard says which ones and\n"
+"  why; if none is left to value, it refuses to open.\n"
+"* A move's ``value`` already carries its value adjustments, so on post the\n"
+"  move's pending adjustments are linked to the entry too.\n"
+"\n"
+"Manual booking of selected value adjustments\n"
+"--------------------------------------------\n"
+"\n"
+"The **\"Book Value Adjustments\"** action on the Actions menu of **Inventory >\n"
+"Reporting > Valuation Adjustments** opens the same wizard to book **only the selected\n"
+"adjustments**, instead of every pending one as the closing filtered by Movement\n"
+"Type does.\n"
+"\n"
+"* Each adjustment books what it added to the inventory\n"
+"  (``product.value._get_booking_value``): its native ``adjustment``, which is\n"
+"  already a total (new minus old value) for a move adjustment and for a price\n"
+"  change alike. An adjustment of an internal move books nothing.\n"
+"* The lines carry the product, so the booked amount is part of the filtered\n"
+"  Initial Balance and leaves the pending variation.\n"
+"* On post, the entry is linked to the selected adjustments only.\n"
+"* Left out, with a warning: adjustments already booked, adjustments with nothing\n"
+"  to book, and adjustments of a move not booked yet (valuing the move books its\n"
+"  adjusted value).\n"
+"* The entry date cannot be earlier than the adjustments it books.\n"
+"\n"
+"Revaluation entry traceability\n"
+"------------------------------\n"
+"\n"
+"When the inventory variation comes from a value change (``product.value``) rather\n"
+"than from a stock movement, the revalued ``stock.move`` keeps pointing to its\n"
+"*original* valuation entry through ``account_move_id`` (a Many2one that is already\n"
+"taken). There was no way to tell an adjustment that had already been booked from\n"
+"one that still produces the difference shown by the report.\n"
+"\n"
+"This module adds:\n"
+"\n"
+"* The closing entry that booked the adjustment, written by the\n"
+"  ``res.company.action_close_stock_valuation`` override on the native\n"
+"  ``product.value.account_move_id``. Empty means *not booked yet*, i.e. the\n"
+"  adjustment is still part of the Stock Variation to be posted. Partial closings\n"
+"  (see the filters above) only mark the adjustments of the products in scope.\n"
+"* The variation an adjustment introduced is read from the native\n"
+"  ``product.value`` fields: ``old_value``, ``new_value`` and ``adjustment`` (new\n"
+"  minus old value, a total).\n"
+"* ``stock.move.related_account_move_id`` now also covers the revaluation: when the\n"
+"  move has a booked value adjustment, the \"Journal Entry\" column (and the search)\n"
+"  point to *that* entry, since it is the one reflecting the move's current\n"
+"  valuation. It falls back to the original entry when there is no booked\n"
+"  adjustment. The original entry always stays available in the native\n"
+"  ``account_move_id``.\n"
+"* A \"Revaluation Not Booked\" filter on the moves search view, for the moves whose\n"
+"  value adjustment is still pending — the difference to be posted. The\n"
+"  \"With/Without Journal Entry\" pair cannot express this, since it looks at the\n"
+"  move's current entry.\n"
+"* Read access on ``product.value`` for Inventory users and Accounting readers (the\n"
+"  native ACL only grants it to Inventory and Accounting managers, which would break\n"
+"  the columns above for the accountants that actually audit valuation).\n"
+"\n"
+"Known limitations of the traceability (by design)\n"
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+"\n"
+"* **Price changes are not tied to a movement.** A standard-price or lot-price\n"
+"  change creates a ``product.value`` with no ``move_id``: it revalues the stock on\n"
+"  hand, not a specific movement, so it is traced on ``product.value`` only and the\n"
+"  moves of that product keep showing their original entry.\n"
+"* **One column, one entry.** A revalued move has two entries and\n"
+"  ``related_account_move_id`` is a Many2one, so the column shows the revaluation\n"
+"  one; use the native ``account_move_id`` to reach the original.\n"
+"\n"
+"Installation\n"
+"============\n"
+"\n"
+"To install this module, you need to:\n"
+"\n"
+"#. Just install this module.\n"
+"\n"
+"Configuration\n"
+"=============\n"
+"\n"
+"No additional configuration is required.\n"
+"\n"
+"Usage\n"
+"=====\n"
+"\n"
+"To use this module, you need to:\n"
+"\n"
+"#. Go to Inventory > Reporting > Moves Analysis.\n"
+"#. Enable the \"Asiento Contable\" column if it is hidden in optional fields.\n"
+"#. Open any move with accounting impact and click the linked journal entry.\n"
+"\n"
+"Applies to valuation entries generated by:\n"
+"\n"
+"* Automatic inventory valuation flows.\n"
+"* Internal transfers with accounting impact.\n"
+"* Scrap operations generating accounting entries.\n"
+"* Manual valuation adjustments linked to stock moves.\n"
+"\n"
+".. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas\n"
+"   :alt: Try me on Runbot\n"
+"   :target: http://runbot.adhoc.com.ar/\n"
+"\n"
+"Bug Tracker\n"
+"===========\n"
+"\n"
+"Bugs are tracked on `GitHub Issues\n"
+"<https://github.com/ingadhoc/account-financial-tools/issues>`_. In case of trouble, please\n"
+"check there if your issue has already been reported. If you spotted it first,\n"
+"help us smashing it by providing a detailed and welcomed feedback.\n"
+"\n"
+"Credits\n"
+"=======\n"
+"\n"
+"Images\n"
+"------\n"
+"\n"
+"* |company| |icon|\n"
+"\n"
+"Contributors\n"
+"------------\n"
+"\n"
+"Maintainer\n"
+"----------\n"
+"\n"
+"|company_logo|\n"
+"\n"
+"This module is maintained by the |company|.\n"
+"\n"
+"To contribute to this module, please visit https://www.adhoc.com.ar.\n"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_account_account
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__account_id
 msgid "Account"
@@ -88,7 +418,7 @@ msgid "Book Value Adjustments"
 msgstr "Contabilizar ajustes de valor"
 
 #. module: stock_account_ux
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 msgid "Booked"
 msgstr "Contabilizado"
 
@@ -105,13 +435,9 @@ msgstr "Cierre: Reclasificación de Ubicación - [%(account)s]"
 
 #. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_res_company
-msgid "Companies"
-msgstr "Compañías"
-
-#. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__company_id
 msgid "Company"
-msgstr "Compañía"
+msgstr "Empresa"
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__create_uid
@@ -138,7 +464,7 @@ msgstr "Moneda"
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__date
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 msgid "Date"
 msgstr "Fecha"
 
@@ -153,23 +479,18 @@ msgid "Debit"
 msgstr "Debe"
 
 #. module: stock_account_ux
-#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__delta
-msgid "Delta"
-msgstr "Delta"
-
-#. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_account__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:stock_account_ux.field_account_stock_valuation_report__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_product_value__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_res_company__display_name
-#: model:ir.model.fields,field_description:stock_account_ux.field_stock_account_stock_valuation_report__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__display_name
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__display_name
 msgid "Display Name"
-msgstr "Nombre a Mostrar"
+msgstr "Mostrar nombre"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -192,9 +513,9 @@ msgstr "Primero en Entrar, Primero en Salir (FIFO)"
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_account__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_account_move_line__id
+#: model:ir.model.fields,field_description:stock_account_ux.field_account_stock_valuation_report__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_product_value__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_res_company__id
-#: model:ir.model.fields,field_description:stock_account_ux.field_stock_account_stock_valuation_report__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__id
@@ -221,18 +542,12 @@ msgid "Inventory Adjustments"
 msgstr "Ajustes de Inventario"
 
 #. module: stock_account_ux
+#. odoo-javascript
 #. odoo-python
 #: code:addons/stock_account_ux/report/stock_valuation_report.py:0
+#: code:addons/stock_account_ux/static/src/stock_valuation_report/inventory_loss_patch.js:0
 msgid "Inventory Loss"
 msgstr "Pérdida de Inventario"
-
-#. module: stock_account_ux
-#: model:ir.model.fields,help:stock_account_ux.field_product_value__account_move_id
-msgid ""
-"Inventory valuation closing entry that booked this value adjustment. Empty "
-"means the adjustment is not booked yet: it is part of the difference to "
-"adjust shown by the valuation report's variation."
-msgstr "Asiento de cierre de valuación de inventario que contabilizó este ajuste de valor. Vacío significa que el ajuste todavía no está contabilizado: forma parte de la diferencia a ajustar que muestra la variación del reporte de valuación."
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__journal_id
@@ -243,17 +558,18 @@ msgstr "Diario"
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 #: model:ir.model,name:stock_account_ux.model_account_move
-#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__account_move_id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__related_account_move_id
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_line__related_account_move_id
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_form_view_entry_link
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_list_view_entry_link
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_line_view_search_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_line_view_tree_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_view_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_view_search_account_link
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_view_tree_account_link
 msgid "Journal Entry"
-msgstr "Asiento Contable"
+msgstr "Asiento contable"
 
 #. module: stock_account_ux
 #: model_terms:ir.ui.view,arch_db:stock_account_ux.stock_move_valuation_form_view
@@ -263,7 +579,7 @@ msgstr "Borrador de Asiento Contable"
 #. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_account_move_line
 msgid "Journal Item"
-msgstr "Apunte Contable"
+msgstr "Apunte contable"
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__line_ids
@@ -306,7 +622,12 @@ msgid "Manufacturing"
 msgstr "Fabricación"
 
 #. module: stock_account_ux
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model:ir.module.module,summary:base.module_stock_account_ux
+msgid "Mejoras en la experiencia de usuario para los movimientos de stock"
+msgstr ""
+
+#. module: stock_account_ux
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 msgid "Move Adjustment"
 msgstr "Ajuste de Movimiento"
 
@@ -317,23 +638,13 @@ msgid "Movement Type"
 msgstr "Tipo de Movimiento"
 
 #. module: stock_account_ux
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_list
-msgid "New Value"
-msgstr "Nuevo Valor"
-
-#. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/report/stock_valuation_report.py:0
 msgid "No records - %(account)s"
 msgstr "Sin registros - %(account)s"
 
 #. module: stock_account_ux
-#: model_terms:ir.actions.act_window,help:stock_account_ux.product_value_action_list
-msgid "No value adjustments yet"
-msgstr "Todavía no hay ajustes de valor"
-
-#. module: stock_account_ux
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 msgid "Not Booked"
 msgstr "No Contabilizado"
 
@@ -362,6 +673,15 @@ msgid "Only done moves can be valued."
 msgstr "Solo se pueden valuar movimientos hechos."
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
+msgid ""
+"Only moves and value adjustments of %(company)s can be booked in this entry."
+msgstr ""
+"Solo se pueden contabilizar en este asiento los movimientos y los ajustes de "
+"valor de %(company)s."
+
+#. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__partial_lines_warning
 msgid "Partial Lines Warning"
 msgstr "Advertencia de Líneas Parciales"
@@ -372,18 +692,12 @@ msgid "Post Journal Entry"
 msgstr "Contabilizar Asiento"
 
 #. module: stock_account_ux
-#: model:ir.model.fields,field_description:stock_account_ux.field_product_value__previous_value
-msgid "Previous Value"
-msgstr "Valor Anterior"
-
-#. module: stock_account_ux
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 msgid "Price Change"
 msgstr "Cambio de Precio"
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__product_id
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
 msgid "Product"
 msgstr "Producto"
 
@@ -396,14 +710,14 @@ msgstr "Categorías de Producto"
 #. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_stock_move_line
 msgid "Product Moves (Stock Move Line)"
-msgstr "Movimientos de Producto (Línea de Movimiento de Stock)"
+msgstr "Movimientos de producto (línea de movimiento de stock)"
 
 #. module: stock_account_ux
 #. odoo-javascript
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters_patch.js:0
 #: model:ir.model,name:stock_account_ux.model_product_value
 msgid "Product Value"
-msgstr "Valor de Producto"
+msgstr "Valor del producto"
 
 #. module: stock_account_ux
 #. odoo-javascript
@@ -449,13 +763,18 @@ msgstr "Costo"
 #. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_stock_move
 msgid "Stock Move"
-msgstr "Movimiento de Stock"
+msgstr "Movimiento de stock"
 
 #. module: stock_account_ux
 #. odoo-javascript
 #: code:addons/stock_account_ux/static/src/stock_valuation_report/filters.xml:0
 msgid "Stock Move Types"
 msgstr "Tipos de Movimientos de Stock"
+
+#. module: stock_account_ux
+#: model:ir.module.module,shortdesc:base.module_stock_account_ux
+msgid "Stock Move UX"
+msgstr "UX de movimientos de stock"
 
 #. module: stock_account_ux
 #. odoo-javascript
@@ -467,9 +786,9 @@ msgstr "Movimientos de Stock"
 #. module: stock_account_ux
 #. odoo-python
 #: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
-#: model:ir.model,name:stock_account_ux.model_stock_account_stock_valuation_report
+#: model:ir.model,name:stock_account_ux.model_account_stock_valuation_report
 msgid "Stock Valuation"
-msgstr "Valuación de Stock"
+msgstr "Valoración de existencias"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -540,11 +859,14 @@ msgid "The selection has no value to book."
 msgstr "La selección no tiene valor para contabilizar."
 
 #. module: stock_account_ux
-#: model_terms:ir.actions.act_window,help:stock_account_ux.product_value_action_list
+#. odoo-python
+#: code:addons/stock_account_ux/wizard/stock_move_valuation.py:0
 msgid ""
-"This is where product cost changes and manual value\n"
-"                adjustments of a move are recorded."
-msgstr "Acá se registran los cambios de costo de la ficha del producto y\n                los ajustes manuales del valor de un movimiento."
+"These records were booked after the wizard was opened. Open it again: "
+"%(records)s"
+msgstr ""
+"Estos registros se contabilizaron después de abrir el asistente. Ábralo de "
+"nuevo: %(records)s"
 
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__total
@@ -604,14 +926,10 @@ msgid "Valuation Type"
 msgstr "Tipo de Valuación"
 
 #. module: stock_account_ux
-#: model:ir.actions.act_window,name:stock_account_ux.product_value_action_list
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__product_value_ids
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__product_value_ids
-#: model:ir.ui.menu,name:stock_account_ux.product_value_menu
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_list
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
 msgid "Value Adjustments"
-msgstr "Ajustes de Valor"
+msgstr "Valor del producto"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -629,26 +947,11 @@ msgid "Value Stock Moves Line"
 msgstr "Línea de Valuación de Movimientos de Stock"
 
 #. module: stock_account_ux
-#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_view_search
+#: model_terms:ir.ui.view,arch_db:stock_account_ux.product_value_search_view_entry_link
 msgid ""
 "Value adjustments not booked yet: they are the ones making up the difference"
 " to adjust in the valuation report."
 msgstr "Ajustes de valor todavía no contabilizados: son los que forman la diferencia a ajustar en el reporte de valuación."
-
-#. module: stock_account_ux
-#: model:ir.model.fields,help:stock_account_ux.field_product_value__previous_value
-msgid ""
-"Value in force right before this adjustment. Captured when it is recorded, "
-"because afterwards it can no longer be rebuilt."
-msgstr "Valor vigente justo antes de este ajuste. Se captura al registrarlo, porque después ya no se puede reconstruir."
-
-#. module: stock_account_ux
-#: model:ir.model.fields,help:stock_account_ux.field_product_value__delta
-msgid ""
-"Variation this adjustment introduced, in the SAME unit as the Value field: "
-"the move total value when the adjustment is on a move, the unit price when "
-"it is a product or lot price change."
-msgstr "Variación que introdujo este ajuste, en la MISMA unidad que el campo Valor: el valor total del movimiento cuando el ajuste es sobre un movimiento, el precio unitario cuando es un cambio de precio de producto o lote."
 
 #. module: stock_account_ux
 #. odoo-javascript
