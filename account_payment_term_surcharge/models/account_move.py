@@ -12,6 +12,14 @@ class AccountMove(models.Model):
     next_surcharge_date = fields.Date(compute="_compute_next_surcharge", store=True)
     next_surcharge_percent = fields.Float(compute="_compute_next_surcharge", store=True)
     avoid_surcharge_invoice = fields.Boolean()
+    surcharge_id = fields.Many2one(
+        "account.payment.term.surcharge",
+        string="Payment Term Surcharge",
+        readonly=True,
+        copy=False,
+        index="btree_not_null",
+        ondelete="set null",
+    )
 
     def _cron_recurring_surcharges_invoices(self, batch_size=60):
         current_date = fields.Date.context_today(self)
@@ -31,10 +39,14 @@ class AccountMove(models.Model):
 
     def create_surcharges_invoices(self):
         invoice_with_errors = []
+        current_date = fields.Date.context_today(self)
         for rec in self:
+            pending = rec._get_pending_surcharges()
+            if not pending or pending[0][0] > current_date:
+                continue
             _logger.info("Creating Surcharges Invoices (id: %s, company: %s)", rec.id, rec.company_id.name)
             try:
-                rec.create_surcharge_invoice(rec.next_surcharge_date, rec.next_surcharge_percent)
+                rec.create_surcharge_invoice(pending[0][1])
                 if not tools.config["test_enable"]:
                     rec.env.cr.commit()
             except:
@@ -53,16 +65,15 @@ class AccountMove(models.Model):
             error_message = _("We couldn't run surcharges cron job in the following invoice: %s.") % invoice_with_errors
             raise UserError(error_message)
 
-    def create_surcharge_invoice(self, surcharge_date, surcharge_percent):
+    def create_surcharge_invoice(self, surcharge):
         self.ensure_one()
         product = self.company_id.payment_term_surcharge_product_id
         if not product:
             raise UserError(
                 "Atención, debes configurar un producto por defecto para que aplique a la hora de crear las facturas de recargo"
             )
-        validate_percent = self._validate_next_surcharge_percent(surcharge_date, surcharge_percent)
-        if not validate_percent:
-            raise UserError("Atención,el next surcharge date no es compatible con el next surcharge percent.")
+        surcharge_date = surcharge._calculate_date(self.invoice_date)
+        surcharge_percent = surcharge.surcharge
         debt = self.amount_residual
         move_debit_note_wiz = (
             self.env["account.debit.note"]
@@ -75,6 +86,7 @@ class AccountMove(models.Model):
             )
         )
         debit_note = self.env["account.move"].browse(move_debit_note_wiz.create_debit().get("res_id"))
+        debit_note.surcharge_id = surcharge
         debit_note.narration = product.name + ".\n" + self.prepare_info(surcharge_date, debt, surcharge_percent)
         self._add_surcharge_line(debit_note, product, debt, surcharge_date, surcharge_percent)
         if self.company_id.payment_term_surcharge_invoice_auto_post:
@@ -109,26 +121,36 @@ class AccountMove(models.Model):
         ]
         debit_note.write({"invoice_line_ids": line_vals, "is_move_sent": True})
 
-    @api.depends("invoice_payment_term_id", "invoice_date")
+    def _get_pending_surcharges(self):
+        """Return the (date, surcharge) pairs of the payment term not charged yet, sorted by date.
+        A surcharge is charged when a debit note of the invoice was created for it, in any state."""
+        self.ensure_one()
+        debit_notes = self.debit_note_ids
+        product = self.company_id.payment_term_surcharge_product_id
+        # Surcharge debit notes created before surcharge_id existed are matched by date
+        legacy_dates = debit_notes.filtered(
+            lambda n: not n.surcharge_id and product in n.invoice_line_ids.product_id
+        ).mapped("invoice_date")
+        pending = []
+        for surcharge in self.invoice_payment_term_id.surcharge_ids - debit_notes.surcharge_id:
+            surcharge_date = surcharge._calculate_date(self.invoice_date)
+            if surcharge_date not in legacy_dates:
+                pending.append((surcharge_date, surcharge))
+        return sorted(pending, key=lambda p: p[0])
+
+    @api.depends(
+        "invoice_date",
+        "invoice_payment_term_id.surcharge_ids.option",
+        "invoice_payment_term_id.surcharge_ids.days",
+        "invoice_payment_term_id.surcharge_ids.day_of_the_month",
+        "invoice_payment_term_id.surcharge_ids.surcharge",
+        "debit_note_ids.surcharge_id",
+    )
     def _compute_next_surcharge(self):
         for rec in self:
-            if rec.invoice_payment_term_id.surcharge_ids != False:
-                surcharges = []
-                debit_note_dates = rec.debit_note_ids.mapped("invoice_date")
-                for surcharge in rec.invoice_payment_term_id.surcharge_ids:
-                    tentative_date = surcharge._calculate_date(rec.invoice_date)
-                    if tentative_date not in debit_note_dates:
-                        surcharges.append({"date": tentative_date, "surcharge": surcharge.surcharge})
-                surcharges.sort(key=lambda x: x["date"])
-                if len(surcharges) > 0:
-                    rec.next_surcharge_date = surcharges[0].get("date")
-                    rec.next_surcharge_percent = surcharges[0].get("surcharge")
-                else:
-                    rec.next_surcharge_date = False
-                    rec.next_surcharge_percent = False
-            else:
-                rec.next_surcharge_date = False
-                rec.next_surcharge_percent = False
+            pending = rec._get_pending_surcharges()
+            rec.next_surcharge_date = pending[0][0] if pending else False
+            rec.next_surcharge_percent = pending[0][1].surcharge if pending else False
 
     def action_post(self):
         res = super().action_post()
@@ -139,20 +161,3 @@ class AccountMove(models.Model):
         """Filtramos solamente las facturas que no cuenta con el is_move_sent seteado en True"""
         self = self.filtered(lambda x: not x.is_move_sent)
         super().action_send_invoice_mail()
-
-    def _validate_next_surcharge_percent(self, surcharge_date, surcharge_percent):
-        self.ensure_one()
-        if len(self.invoice_payment_term_id.surcharge_ids) > 1:
-            surcharges = []
-            for surcharge in self.invoice_payment_term_id.surcharge_ids:
-                tentative_date = surcharge._calculate_date(self.invoice_date)
-                surcharges.append({"surcharge_date": tentative_date, "surcharge_percent": surcharge.surcharge})
-
-            closest_surcharge = max(
-                (s for s in surcharges if s["surcharge_date"] <= surcharge_date),
-                key=lambda s: s["surcharge_date"],
-                default=None,
-            )
-            if closest_surcharge.get("surcharge_percent") != surcharge_percent:
-                return False
-        return True
