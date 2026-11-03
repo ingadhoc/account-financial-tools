@@ -198,5 +198,8 @@ class TestLegalEntityFiscalYear(TransactionCase):
         with self.assertRaises(ValidationError):
             self.other_entity.currency_id = other_currency
 
-    def test_the_currency_is_the_only_field_left_delegated_to_the_root(self):
-        self.assertEqual(self.parent._get_company_root_delegated_field_names(), ["currency_id"])
+    def test_only_the_currency_is_left_delegated_to_the_root(self):
+        # Localizations add their own fields to this list (l10n_cl_edi does)
+        delegated = self.parent._get_company_root_delegated_field_names()
+        self.assertIn("currency_id", delegated)
+        self.assertFalse(set(self.parent._get_legal_entity_delegated_field_names()) & set(delegated))
