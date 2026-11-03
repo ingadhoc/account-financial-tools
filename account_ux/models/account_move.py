@@ -77,9 +77,10 @@ class AccountMove(models.Model):
 
     def copy(self, default=None):
         res = super().copy(default=default)
-        for line in res.line_ids:
-            if to_remove := line.move_id._get_archived_taxes_to_remove_on_copy(line.tax_ids):
-                line.tax_ids = [Command.unlink(x.id) for x in to_remove]
+        for move in res:
+            for line in move.line_ids.filtered(lambda x: False in x.mapped("tax_ids.active")):
+                if to_remove := move._get_archived_taxes_to_remove_on_copy(line.tax_ids):
+                    line.tax_ids = [Command.unlink(x.id) for x in to_remove]
         res._onchange_partner_commercial()
         return res
 
