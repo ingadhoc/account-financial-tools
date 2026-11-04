@@ -225,16 +225,20 @@ class StockMove(models.Model):
         100, not 50, and the price difference goes to its own account). There is no need
         to rebuild the cost in force at the move's date.
 
-        A ``value`` differing from quantity × standard cost means there was a manual
-        adjustment, and then a ``product.value`` points at the move: that move is left out
-        of the Stock Moves component (see ``_get_line_type_move_domain``) and its value is
-        contributed by the value adjustments component, which is where it belongs.
+        A manual adjustment (a ``product.value`` pointing at the move) is part of that
+        value under AVCO/FIFO, where it does move the product valuation. Under standard
+        cost it does not: the inventory stays at quantity × standard cost, so the move
+        contributes what it was worth before its first adjustment.
 
         Single home of this criterion, shared by the report's breakdown of the variation
         (Movement Type filter) and by the manual valuation of moves, so both measure the
         same thing.
         """
         self.ensure_one()
+        if self.product_id.with_company(self.company_id).cost_method == "standard":
+            first_adjustment = self.sudo().product_value_ids.sorted(lambda pv: (pv.date, pv.id))[:1]
+            if first_adjustment:
+                return first_adjustment.previous_value
         return self.value
 
     def _get_valuation_labels(self):
