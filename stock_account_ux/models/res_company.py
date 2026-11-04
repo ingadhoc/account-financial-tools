@@ -145,12 +145,13 @@ class ResCompany(models.Model):
             # left out by the search; the ones whose entry was left unposted, e.g. a
             # cancelled and regenerated closing, are re-linked.
             moves = self._get_periodic_closing_stock_moves(at_date)
-            if booked_line_types:
-                # The Stock Moves component leaves revalued moves out (the other origin
-                # takes their value), so they are not linked either.
-                revalued = self.env["product.value"].sudo().search([("move_id", "in", moves.ids)]).move_id
-                moves -= revalued
             if moves:
+                if not books_product_values:
+                    # A move's adjustments are part of its value, so they are booked with it.
+                    adjustments = self._get_periodic_closing_product_values(at_date).filtered(
+                        lambda value: value.move_id in moves
+                    )
+                    adjustments.account_move_id = closing_move.id
                 # The write reads the previous entry of every move to trigger the
                 # dependencies; with prefetching it loads the whole move instead.
                 moves.with_context(prefetch_fields=False).account_move_id = closing_move.id
@@ -160,6 +161,11 @@ class ResCompany(models.Model):
         # points at its original entry.
         if books_product_values:
             product_values = self._get_periodic_closing_product_values(at_date)
+            if not books_moves:
+                # The adjustments of unaccounted moves belong to the Stock Moves origin.
+                product_values = product_values.filtered(
+                    lambda value: not value.move_id or value.move_id.related_account_move_id
+                )
             if product_values:
                 product_values.account_move_id = closing_move.id
         return action

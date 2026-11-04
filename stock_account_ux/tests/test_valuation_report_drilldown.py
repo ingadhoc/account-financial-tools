@@ -73,7 +73,7 @@ class TestValuationReportDrilldown(TestStockValuationCommon):
         self.assertEqual(action["res_model"], "product.value")
         adjustments = self._records(action)
         self.assertIn(price_change, adjustments, "Cost change on the product")
-        self.assertIn(move_adjustment, adjustments, "Value adjustment of a move")
+        self.assertNotIn(move_adjustment, adjustments, "Part of its unaccounted move, a Stock Move")
 
     def test_variation_product_values_excludes_booked(self):
         self.product_standard.standard_price = 13.0

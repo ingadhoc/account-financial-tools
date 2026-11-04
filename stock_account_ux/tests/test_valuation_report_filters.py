@@ -74,9 +74,7 @@ class TestValuationReportFilters(TestStockValuationCommon):
 
     # -- The Movement Type filter only affects the Variation -------------------
     def test_line_type_stock_move_vs_product_value(self):
-        # A REAL revaluation of the avco move: what makes it one is the DELTA, so an
-        # adjustment recording the same value would change nothing and would leave the move
-        # in Stock Moves (see ``test_revaluation_criterion``).
+        # A REAL revaluation of the avco move (100 to 150).
         self.env["product.value"].create(
             {
                 "move_id": self.move_avco.id,
@@ -84,14 +82,12 @@ class TestValuationReportFilters(TestStockValuationCommon):
             }
         )
         native = self._data()["stock_variation"]["value"]
-        # Stock Moves: standard (100) + fifo (20). The revalued avco move is out whatever
-        # its new value is.
+        # Stock Moves: standard (100) + avco with its adjustment (150) + fifo (20).
         vsm = self._data(line_types=["stock_move"])["stock_variation"]["value"]
-        self.assertAlmostEqual(vsm, 120.0)
-        # Product Value takes what the revalued move contributes, as the remainder.
+        self.assertAlmostEqual(vsm, 270.0)
+        # The adjustment is part of its move, so nothing is left for Product Value.
         vpv = self._data(line_types=["product_value"])["stock_variation"]["value"]
-        self.assertNotAlmostEqual(vpv, 0.0)
-        # The two components add up to the native variation, with no spurious remainder.
+        self.assertAlmostEqual(vpv, 0.0)
         self.assertAlmostEqual(vsm + vpv, native)
 
     def test_line_type_without_adjustments_is_all_stock_moves(self):
@@ -106,21 +102,17 @@ class TestValuationReportFilters(TestStockValuationCommon):
         vsm = self._data(line_types=["stock_move"], **scope)["stock_variation"]["value"]
         self.assertAlmostEqual(vsm, 100.0)
 
-    def test_line_type_move_adjustment_goes_to_product_value(self):
-        """A move with a manual adjustment is left OUT of Stock Moves and what it
-        contributes goes to the adjustments component.
-
-        The amount stays 100 and not 150: under standard cost the inventory is worth
-        quantity × standard cost, so adjusting a move's ``value`` does not move the product
-        valuation, as it would under AVCO/FIFO. What changes is which component it hangs
-        from."""
+    def test_line_type_standard_move_adjustment_stays_in_stock_moves(self):
+        """A move with a manual adjustment stays in Stock Moves. Under standard cost the
+        inventory is worth quantity × standard cost, so the adjustment does not move the
+        product valuation and the move keeps counting 100, not 150."""
         scope = {"categ_ids": [self.category_standard.id]}
         self.env["product.value"].create({"move_id": self.move_standard.id, "value": 150.0})
         self.assertAlmostEqual(self.product_standard.with_company(self.company).total_value, 100.0)
         vsm = self._data(line_types=["stock_move"], **scope)["stock_variation"]["value"]
-        self.assertAlmostEqual(vsm, 0.0, msg="The revalued move leaves the stock component")
+        self.assertAlmostEqual(vsm, 100.0)
         vpv = self._data(line_types=["product_value"], **scope)["stock_variation"]["value"]
-        self.assertAlmostEqual(vpv, 100.0, msg="The adjustments component takes its contribution")
+        self.assertAlmostEqual(vpv, 0.0)
 
     def test_line_type_does_not_touch_the_initial_balance(self):
         """The Initial Balance is the already booked starting point, a balance with no
