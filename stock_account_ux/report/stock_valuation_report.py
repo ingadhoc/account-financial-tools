@@ -4,6 +4,7 @@ from collections import defaultdict
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Domain
+from odoo.tools import SQL
 
 # Valid values of the Movement Type filter.
 LINE_TYPE_STOCK_MOVE = "stock_move"
@@ -472,10 +473,54 @@ class StockValuationReport(models.AbstractModel):
 
     def _get_variation_product_values_product_ids(self, company, products, date):
         """Products with unaccounted value adjustments, same scope as
-        ``_get_variation_product_values_domain``."""
-        domain = self._get_variation_product_values_domain(company, products, date)
-        product_values = self.env["product.value"].sudo().search(list(domain))
-        return {product_value._get_valuation_product().id for product_value in product_values} & set(products.ids)
+        ``_get_variation_product_values_domain``, resolved in SQL as far as possible: it
+        runs for every product of the report.
+
+        The ``delta`` filter goes to SQL: it is ``value - previous_value``, both stored,
+        and ``is_zero`` means below half the currency rounding. A missing
+        ``previous_value`` reads as zero, as in the ORM. A move adjustment books its
+        ``delta`` when the move is incoming or outgoing and nothing otherwise
+        (``product.value._get_booking_value``), so it is settled in SQL too. Only price
+        changes need the quantity on hand at their date: that is checked in Python, for
+        the products not found yet, stopping at the first one with something to book.
+        """
+        ProductValue = self.env["product.value"].sudo()
+        query = ProductValue._search(self._get_unaccounted_product_values_base_domain(company, products, date))
+        table = query.table
+        move_alias = query.left_join(table, "move_id", "stock_move", "id", "move_id")
+        query.add_where(
+            SQL(
+                "ABS(%s - COALESCE(%s, 0)) >= %s",
+                SQL.identifier(table, "value"),
+                SQL.identifier(table, "previous_value"),
+                company.currency_id.rounding / 2,
+            )
+        )
+        query.add_where(
+            SQL(
+                "(%s IS NULL OR %s OR %s)",
+                SQL.identifier(table, "move_id"),
+                SQL.identifier(move_alias, "is_in"),
+                SQL.identifier(move_alias, "is_out"),
+            )
+        )
+        rows = self.env.execute_query(
+            query.select(
+                SQL.identifier(table, "id"),
+                SQL.identifier(table, "product_id"),
+                SQL.identifier(move_alias, "product_id"),
+            )
+        )
+        product_ids = {move_product_id for __, __, move_product_id in rows if move_product_id}
+        price_change_ids = defaultdict(list)
+        for value_id, product_id, move_product_id in rows:
+            if not move_product_id and product_id not in product_ids:
+                price_change_ids[product_id].append(value_id)
+        currency = company.currency_id
+        for product_id, value_ids in price_change_ids.items():
+            if any(not currency.is_zero(value._get_booking_value()) for value in ProductValue.browse(value_ids)):
+                product_ids.add(product_id)
+        return product_ids & set(products.ids)
 
     def _get_drilldown_scope(self, account_id, date, filters):
         """Company, products and account of the drill-down. The products are the
