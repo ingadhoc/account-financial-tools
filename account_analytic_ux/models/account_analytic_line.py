@@ -37,10 +37,14 @@ class AccountAnalyticLine(models.Model):
         set the Hours plan column and clear the Materials one. Uses super().write to
         avoid recursing through this override.
         """
+        segmented = self.filtered(lambda l: l.category != "picking_entry" and l.project_id.use_segmented_analytics)
+        # search the plans only when needed: users without access to them must still post analytic lines
+        if not segmented:
+            return
         hours_fname, materials_fname = self.env["project.project"]._get_segmented_plan_fnames()
         if not hours_fname:
             return
-        for line in self.filtered(lambda l: l.category != "picking_entry" and l.project_id.use_segmented_analytics):
+        for line in segmented:
             fixed = {}
             hours_account = line.project_id._get_hours_analytic_account()
             if hours_account and line[hours_fname] != hours_account:
