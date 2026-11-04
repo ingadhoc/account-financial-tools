@@ -17,7 +17,8 @@ class TestValuationDrilldownTour(HttpCase):
     def _setup_pending_variation(self):
         """Leave a valued, unaccounted move in the admin's company: that is what makes the
         report draw an account line in the Variation, and with no line there is no menu to
-        click."""
+        click. A cost change with stock on hand adds an adjustment with something to book,
+        so the menu also offers the Product Value origin."""
         company = self.env.ref("base.user_admin").company_id
         env = self.env(context=dict(self.env.context, allowed_company_ids=company.ids))
         env = env["res.company"].with_company(company).env
@@ -67,11 +68,16 @@ class TestValuationDrilldownTour(HttpCase):
         move.quantity = 5
         move.picked = True
         move._action_done()
+        product.standard_price = 45.0
         return move
 
     def test_variation_drilldown(self):
         move = self._setup_pending_variation()
         self.assertFalse(move.related_account_move_id, "It has to stay unaccounted")
+        report = self.env["stock_account.stock.valuation.report"].with_company(move.company_id)
+        lines = report.get_report_values()["data"]["stock_variation"]["lines"]
+        drilldown_types = {t for line in lines for t in line.get("drilldown_types", [])}
+        self.assertEqual(drilldown_types, {"stock_move", "product_value"})
         self.start_tour(
             "/odoo/stock-valuation-closing",
             "stock_account_ux_valuation_drilldown",
