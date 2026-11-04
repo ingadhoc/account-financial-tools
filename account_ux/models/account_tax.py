@@ -20,11 +20,13 @@ class AccountTax(models.Model):
 
         A twin is the only active tax of the same company, scope, rate and group: that is what an
         archived tax becomes when a company merges or replaces its chart. Archived taxes without a
-        single clear twin are dropped, which is the behaviour we had before.
+        single clear twin are dropped, which is the behaviour we had before. Backward taxes
+        (is_backward_tax, added by another module) are kept as they are.
         """
+        has_backward = "is_backward_tax" in self._fields
         taxes = self.browse()
         for tax in self:
-            if tax.active:
+            if tax.active or (has_backward and tax.is_backward_tax):
                 taxes |= tax
                 continue
             equivalent = self.search(
