@@ -3,6 +3,12 @@ from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
 
 
+def drilldown_types(report):
+    """Drill-down types offered by the variation lines of the report."""
+    data = report.get_report_values()["data"]
+    return {t for line in data["stock_variation"]["lines"] for t in line.get("drilldown_types", [])}
+
+
 @tagged("post_install", "-at_install")
 class TestValuationReportRevaluedMoves(TestStockValuationCommon):
     """Where the report puts an adjustment of value.
@@ -38,6 +44,7 @@ class TestValuationReportRevaluedMoves(TestStockValuationCommon):
             self._drilldown("action_open_variation_stock_moves", stock_move_types=["purchase"]), self.receipt
         )
         self.assertFalse(self._drilldown("action_open_variation_product_values"))
+        self.assertNotIn("product_value", drilldown_types(self.report))
 
     def test_closing_by_type_books_the_move_with_its_adjustment(self):
         action = self.company.action_close_stock_valuation(auto_post=True, stock_move_types=["purchase"])
@@ -73,6 +80,7 @@ class TestValuationReportRevaluedMoves(TestStockValuationCommon):
         self.assertAlmostEqual(self._variation(line_types=["stock_move"]), 0.0)
         self.assertAlmostEqual(self._variation(line_types=["product_value"]), 40.0)
         self.assertEqual(self._drilldown("action_open_variation_product_values"), late_adjustment)
+        self.assertIn("product_value", drilldown_types(self.report))
 
     def test_standard_cost_move_keeps_its_value(self):
         """Under standard cost an adjustment of the move does not move the inventory, so
@@ -120,3 +128,4 @@ class TestValuationReportAdjustmentsWithNothingToBook(TestStockValuationCommon):
         self.env["product.value"].search([("move_id", "=", receipt.id)]).unlink()
         change = self._price_change(self.product_standard, 13.0)
         self.assertIn(change, self._product_values())
+        self.assertIn("product_value", drilldown_types(self.report))
