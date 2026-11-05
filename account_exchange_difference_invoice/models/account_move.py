@@ -37,5 +37,22 @@ class AccountMove(models.Model):
                 continue
 
             reverse_moves.exchange_reversed_move_ids.write({"ref": move.name})
-            move._reconcile_reversed_moves(reverse_moves, move_reverse_cancel=False)
+            move._reconcile_exchange_reversed_move(reverse_moves[:1])
         return res
+
+    def _reconcile_exchange_reversed_move(self, reverse_move):
+        # Replaces account.move._reconcile_reversed_moves, removed in 20.0, keeping its pairing and conditions
+        self.ensure_one()
+        groups = (
+            (self.line_ids + reverse_move.line_ids)
+            .filtered(lambda line: not line.reconciled)
+            .sorted(lambda line: line.account_type not in ("asset_receivable", "liability_payable"))
+            .grouped(lambda line: (line.account_id, line.currency_id))
+        )
+        for (account, _currency), lines in groups.items():
+            if (
+                all(not line.reconciled for line in lines)
+                and account.reconcile
+                or account.account_type in ("asset_cash", "liability_credit_card")
+            ):
+                lines.with_context(move_reverse_cancel=False).reconcile()
