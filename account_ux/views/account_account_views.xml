@@ -5,9 +5,30 @@
         <field name="model">account.account</field>
         <field name="inherit_id" ref="account.view_account_list"/>
         <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute name="decoration-muted">not active and not is_parent_account</attribute>
+                <attribute name="decoration-bf">is_parent_account</attribute>
+            </list>
             <xpath expr="//field[@name='account_type']" position="after">
                 <field name="is_monetary" optional="hide"/>
             </xpath>
+            <field name="parent_id" position="after">
+                <field name="is_parent_account" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="account_ux_view_search" model="ir.ui.view">
+        <field name="name">account.account.search.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_search"/>
+        <field name="arch" type="xml">
+            <filter name="inactiveacc" position="attributes">
+                <attribute name="domain">[('active', '=', False), ('is_parent_account', '=', False)]</attribute>
+            </filter>
+            <filter name="inactiveacc" position="after">
+                <filter string="Parent Accounts" name="parentacc" domain="[('is_parent_account', '=', True), ('active', 'in', [True, False])]"/>
+            </filter>
         </field>
     </record>
 
@@ -16,9 +37,31 @@
         <field name="model">account.account</field>
         <field name="inherit_id" ref="account.view_account_form"/>
         <field name="arch" type="xml">
+            <div name="button_box" position="after">
+                <widget name="web_ribbon" title="Parent Account" bg_color="text-bg-info" invisible="not is_parent_account"/>
+                <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active or is_parent_account"/>
+            </div>
+            <button name="account.action_move_line_select" position="attributes">
+                <attribute name="invisible">is_parent_account</attribute>
+            </button>
             <xpath expr="//field[@name='tag_ids']" position="after">
-                <field name="is_monetary"/>
+                <field name="is_monetary" invisible="is_parent_account"/>
             </xpath>
+            <field name="tax_ids" position="attributes">
+                <attribute name="invisible" add="is_parent_account" separator=" or "/>
+            </field>
+            <field name="account_stock_variation_id" position="attributes">
+                <attribute name="invisible" add="is_parent_account" separator=" or "/>
+            </field>
+            <field name="account_stock_expense_id" position="attributes">
+                <attribute name="invisible" add="is_parent_account" separator=" or "/>
+            </field>
+            <field name="currency_id" position="attributes">
+                <attribute name="invisible">is_parent_account</attribute>
+            </field>
+            <field name="parent_id" position="after">
+                <field name="is_parent_account"/>
+            </field>
         </field>
     </record>
 </odoo>
