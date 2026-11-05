@@ -1020,6 +1020,14 @@ msgstr ""
 
 #. module: account_ux
 #. odoo-python
+#: code:addons/account_ux/models/account_move_line.py:0
+msgid ""
+"The account %(name)s (%(code)s) is a parent account and only groups other "
+"accounts."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid "The date and invoice date of a sale invoice must be the same: %s"
 msgstr ""
@@ -1234,6 +1242,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/models/account_payment.py:0
 msgid "You cannot delete this payment, you should set it back to draft first."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot use an account with journal items as parent account."
 msgstr ""
 
 #. module: account_ux
