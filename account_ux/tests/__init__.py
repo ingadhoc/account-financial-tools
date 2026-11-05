@@ -16,3 +16,4 @@ from . import test_copy_inactive_tax
 from . import test_invoice_salesperson
 from . import test_branch_debt_read
 from . import test_account_is_monetary
+from . import test_parent_accounts
