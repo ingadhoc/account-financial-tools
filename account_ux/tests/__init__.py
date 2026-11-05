@@ -14,3 +14,4 @@ from . import test_currency_rounding
 from . import test_payment_available_journals
 from . import test_copy_inactive_tax
 from . import test_invoice_salesperson
+from . import test_parent_accounts
