@@ -11,7 +11,7 @@
         "l10n_ar_tax",  # ex por data demo (y la realidad es el único país que usa esta funcionalidad por ahora)
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "views/account_move_line_views.xml",
         "wizards/exchange_difference_wizard_views.xml",
         "views/res_config_settings.xml",
