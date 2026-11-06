@@ -4,8 +4,7 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestRevaluationCriterion(TestStockValuationCommon):
-    """Which value adjustments take a move OUT of the Stock Moves component of the
-    variation. The criterion is the delta in company currency, not the mere existence of
+    """Which value adjustments changed the value of their move. The criterion is the delta in company currency, not the mere existence of
     a ``product.value`` pointing at the move (task 64440, clarification Q2)."""
 
     def setUp(self):

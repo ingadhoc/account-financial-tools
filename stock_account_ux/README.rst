@@ -124,10 +124,11 @@ Known limitations (by design)
   Stock Moves component adds up the ``value`` of the unaccounted moves, which is
   what the inventory is worth for the three costing methods — including standard
   cost, where a normal receipt is already valued at the standard cost and not at
-  what was paid. Moves that carry a manual adjustment are left out (a
-  ``product.value`` points at them) and their contribution is taken by the other
-  component. "Product Value" is then the remainder, so besides the value
-  adjustments it also absorbs location reclassifications and FIFO/AVCO rounding.
+  what was paid. A move with a manual adjustment stays in its type with its final
+  value, adjustment included; under standard cost, where the adjustment does not
+  move the inventory, with the value it had before it. "Product Value" is then the
+  remainder: the adjustments with no unaccounted move (cost changes, adjustments of
+  moves already booked), plus location reclassifications and FIFO/AVCO rounding.
   Both components always add up to the native variation.
 
 Drill-down from the report to the underlying detail
@@ -142,7 +143,8 @@ adds:
   origins of the difference: **Unaccounted Stock Moves** (same scope as the Stock
   Moves component: done moves inside the valued perimeter, with no entry, up to
   the report date) and **Unaccounted Value Adjustments** (the ``product.value``
-  records with no entry). Both are scoped to the account of the line and honour
+  records with no entry and something to book, left out the ones of unaccounted
+  moves, which are part of the move). Both are scoped to the account of the line and honour
   the report's active filters.
 * **Initial Balance** account lines now open the **General Ledger** of *that*
   account up to the report date. The General Ledger lives in ``account_reports``

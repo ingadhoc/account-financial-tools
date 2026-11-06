@@ -77,13 +77,13 @@ class TestValuationReportStockMoveTypes(TestStockValuationCommon):
         self.assertFalse(self.receipt.account_move_id)
         self.assertAlmostEqual(self._variation(), 100.0, msg="The receipt stays pending")
 
-    def test_drilldown_leaves_out_revalued_moves(self):
-        """The section leaves revalued moves out, so the drill-down does too."""
+    def test_drilldown_brings_revalued_moves(self):
+        """A revalued move stays in its type, so the drill-down brings it."""
         self.env["product.value"].create({"move_id": self.receipt.id, "value": 120.0, "company_id": self.company.id})
         action = self.report.action_open_variation_stock_moves(
             self.account_stock_valuation.id, filters={"stock_move_types": ["purchase"]}
         )
-        self.assertNotIn(self.receipt, self.env["stock.move"].search(action["domain"]))
+        self.assertIn(self.receipt, self.env["stock.move"].search(action["domain"]))
 
     def test_product_with_no_stock_left(self):
         """Selling the rest leaves the product at zero, but its pending receipt still

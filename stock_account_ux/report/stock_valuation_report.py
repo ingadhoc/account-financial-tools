@@ -368,34 +368,47 @@ class StockValuationReport(models.AbstractModel):
         domain = self._get_unaccounted_moves_base_domain(company, products, date)
         domain &= self._get_valued_directions_domain()
         if self.env.context.get(STOCK_MOVE_TYPES_CTX):
-            # Same scope as the Stock Moves component: the selected types, no revalued moves.
+            # Same scope as the Stock Moves component: the selected types.
             domain &= self._get_line_type_move_domain(products, [LINE_TYPE_STOCK_MOVE])
         return domain
 
     def _get_variation_product_values_domain(self, company, products, date):
-        """Unaccounted value adjustments of those products, up to the report date. An
-        adjustment points either at the product (price change) or at one of its moves
-        (move value adjustment).
+        """Unaccounted value adjustments of those products, up to the report date: the
+        ones making up the Product Value component.
 
-        Adjustments with no variation are left out, as in the closing
-        (``res.company._get_periodic_closing_product_values``): they have nothing
-        pending, so a product with only those gets no drill-down."""
+        Left out:
+
+        - The adjustments of unaccounted moves: they are part of the move's value, in
+          the Stock Moves component.
+        - The adjustments with nothing to book (``product.value._get_booking_value``),
+          such as a cost change with no stock on hand. A product with only those gets
+          no drill-down.
+        """
         domain = self._get_unaccounted_product_values_base_domain(company, products, date)
-        # ``delta`` is computed, so it cannot be a domain leaf. In ``sudo()``, as the
-        # drill-down runs for accounting users.
+        # The booking value is computed, so it cannot be a domain leaf. The cheap ``delta``
+        # check goes first: the booking value reads the quantity on hand at each date. In
+        # ``sudo()``, as the drill-down runs for accounting users.
+        currency = company.currency_id
         product_values = self.env["product.value"].sudo().search(domain)
-        product_values = product_values.filtered(lambda value: not company.currency_id.is_zero(value.delta))
+        product_values = product_values.filtered(
+            lambda value: not currency.is_zero(value.delta) and not currency.is_zero(value._get_booking_value())
+        )
         return Domain([("id", "in", product_values.ids)])
 
     def _get_unaccounted_product_values_base_domain(self, company, products, date):
         """Unaccounted value adjustments of those products up to the report date, before
-        leaving out the ones with no variation."""
+        leaving out the ones with nothing to book. An adjustment points either at the
+        product (price change) or at one of its moves; the latter only when the move is
+        already booked."""
         domain = Domain(
             [
                 ("account_move_id", "=", False),
                 ("company_id", "=", company.id),
             ]
-        ) & (Domain([("product_id", "in", products.ids)]) | Domain([("move_id.product_id", "in", products.ids)]))
+        ) & (
+            Domain([("move_id", "=", False), ("product_id", "in", products.ids)])
+            | Domain([("move_id.product_id", "in", products.ids), ("move_id.related_account_move_id", "!=", False)])
+        )
         if date:
             domain &= Domain([("date", "<=", date)])
         return domain
@@ -460,12 +473,21 @@ class StockValuationReport(models.AbstractModel):
 
     def _get_variation_product_values_product_ids(self, company, products, date):
         """Products with unaccounted value adjustments, same scope as
-        ``_get_variation_product_values_domain``. The ``delta`` filter goes to SQL: it is
-        ``value - previous_value``, both stored, and ``is_zero`` means below half the
-        currency rounding. A missing ``previous_value`` reads as zero, as in the ORM."""
+        ``_get_variation_product_values_domain``, resolved in SQL as far as possible: it
+        runs for every product of the report.
+
+        The ``delta`` filter goes to SQL: it is ``value - previous_value``, both stored,
+        and ``is_zero`` means below half the currency rounding. A missing
+        ``previous_value`` reads as zero, as in the ORM. A move adjustment books its
+        ``delta`` when the move is incoming or outgoing and nothing otherwise
+        (``product.value._get_booking_value``), so it is settled in SQL too. Only price
+        changes need the quantity on hand at their date: that is checked in Python, for
+        the products not found yet, stopping at the first one with something to book.
+        """
         ProductValue = self.env["product.value"].sudo()
         query = ProductValue._search(self._get_unaccounted_product_values_base_domain(company, products, date))
         table = query.table
+        move_alias = query.left_join(table, "move_id", "stock_move", "id", "move_id")
         query.add_where(
             SQL(
                 "ABS(%s - COALESCE(%s, 0)) >= %s",
@@ -474,11 +496,31 @@ class StockValuationReport(models.AbstractModel):
                 company.currency_id.rounding / 2,
             )
         )
-        move_alias = query.left_join(table, "move_id", "stock_move", "id", "move_id")
-        rows = self.env.execute_query(
-            query.select(SQL.identifier(table, "product_id"), SQL.identifier(move_alias, "product_id"))
+        query.add_where(
+            SQL(
+                "(%s IS NULL OR %s OR %s)",
+                SQL.identifier(table, "move_id"),
+                SQL.identifier(move_alias, "is_in"),
+                SQL.identifier(move_alias, "is_out"),
+            )
         )
-        return {product_id for row in rows for product_id in row if product_id} & set(products.ids)
+        rows = self.env.execute_query(
+            query.select(
+                SQL.identifier(table, "id"),
+                SQL.identifier(table, "product_id"),
+                SQL.identifier(move_alias, "product_id"),
+            )
+        )
+        product_ids = {move_product_id for __, __, move_product_id in rows if move_product_id}
+        price_change_ids = defaultdict(list)
+        for value_id, product_id, move_product_id in rows:
+            if not move_product_id and product_id not in product_ids:
+                price_change_ids[product_id].append(value_id)
+        currency = company.currency_id
+        for product_id, value_ids in price_change_ids.items():
+            if any(not currency.is_zero(value._get_booking_value()) for value in ProductValue.browse(value_ids)):
+                product_ids.add(product_id)
+        return product_ids & set(products.ids)
 
     def _get_drilldown_scope(self, account_id, date, filters):
         """Company, products and account of the drill-down. The products are the
@@ -767,13 +809,14 @@ class StockValuationReport(models.AbstractModel):
         """Balance of the filtered component, per valuation account. The two components
         add up to the native total variation, to the cent:
 
-        - ``stock_move``: what the unaccounted, non-revalued physical moves contribute,
-          taken from ``stock.move.value`` (in adds, out subtracts).
+        - ``stock_move``: what the unaccounted physical moves contribute, revalued ones
+          included with their final value (``stock.move._get_inventory_value``; in adds,
+          out subtracts).
         - ``product_value``: the REMAINDER, i.e. total variation minus the stock
-          component. Taking it as a remainder is what catches every revaluation: the ones
-          with ``move_id`` (a move revalued) and the ones without (standard price or lot
-          price changes, which store the new unit price and not a delta, so they cannot
-          be added up directly), plus location reclassifications and FIFO/AVCO rounding.
+          component. Taking it as a remainder is what catches the adjustments with no
+          unaccounted move (standard price or lot price changes, which store the new unit
+          price and not a delta, so they cannot be added up directly, and adjustments of
+          moves already booked), plus location reclassifications and FIFO/AVCO rounding.
 
         Kept apart from the conversion to AML vals because the balances also feed the
         projected Ending Stock and the per-origin closing entry (``res.company``).
@@ -879,7 +922,31 @@ class StockValuationReport(models.AbstractModel):
                 account = account_by_product_id.get(product.id)
                 if account:
                     self._accumulate_move_balance(account, product, sign, aggregates, account_balance, by_product)
+            for move, correction in self._get_inventory_value_corrections(
+                company, products, base_domain & direction_domain
+            ).items():
+                account = account_by_product_id.get(move.product_id.id)
+                if account:
+                    account_balance[account] += sign * correction
+                    if by_product is not None:
+                        by_product[account.id, move.product_id.id] += sign * correction
         return account_balance
+
+    def _get_inventory_value_corrections(self, company, products, domain):
+        """``{move: amount}`` to add to the ``value`` aggregated for the moves of that
+        domain, so each one counts what it contributes to the inventory
+        (``stock.move._get_inventory_value``). They only differ on revalued moves of
+        standard cost products, whose adjustment does not move the inventory."""
+        reval_move_ids = self._get_revalued_move_ids(products)
+        if not reval_move_ids:
+            return {}
+        moves = self.env["stock.move"].sudo().search(domain & Domain([("id", "in", reval_move_ids)]))
+        corrections = {}
+        for move in moves:
+            correction = move._get_inventory_value() - move.value
+            if not company.currency_id.is_zero(correction):
+                corrections[move] = correction
+        return corrections
 
     def _get_unaccounted_move_aggregates(self):
         """Aggregate specs read per product to build the variation.
@@ -953,22 +1020,23 @@ class StockValuationReport(models.AbstractModel):
         )
 
     def _get_line_type_move_domain(self, products, line_types):
-        """Narrow the Stock Moves component down to the NON revalued physical moves: a
-        revalued ``stock.move`` stays out, taken by the Product Value remainder. Only
-        called with ``[stock_move]``; any other case restricts nothing. The Stock Move
-        Types filter narrows it further."""
+        """Narrow the Stock Moves component down to the Stock Move Types filter. Only
+        called with ``[stock_move]``; any other case restricts nothing.
+
+        A revalued move stays in: it is shown in its type with its final value
+        (``stock.move._get_inventory_value``), adjustment included. Product Value is left
+        with the adjustments that have no unaccounted move to belong to."""
         if line_types != [LINE_TYPE_STOCK_MOVE]:
             return Domain.TRUE
-        domain = self._get_stock_move_types_domain()
-        reval_move_ids = self._get_revalued_move_ids(products)
-        # With no revaluations, every move is a Stock Move.
-        return domain & Domain([("id", "not in", reval_move_ids)]) if reval_move_ids else domain
+        return self._get_stock_move_types_domain()
 
     def _get_revalued_move_ids(self, products):
-        """Moves of those products carrying an adjustment that CHANGED their value.
+        """Moves of those products carrying an adjustment that CHANGED their value: the
+        ones whose ``value`` may differ from what they contribute to the inventory (see
+        ``_get_inventory_value_corrections``).
 
-        Split from the domain so the criterion —``_is_revaluation``— can be refined
-        without touching the query, and so a module can widen the search."""
+        Split so the criterion —``_is_revaluation``— can be refined without touching the
+        query, and so a module can widen the search."""
         product_values = (
             self.env["product.value"]
             .sudo()
@@ -982,14 +1050,11 @@ class StockValuationReport(models.AbstractModel):
         return product_values.filtered(self._is_revaluation).move_id.ids
 
     def _is_revaluation(self, product_value):
-        """Does this adjustment take its move out of the Stock Moves component?
+        """Did this adjustment change the value of its move?
 
         Only if it moved the value IN COMPANY CURRENCY. Merely pointing at a move is not
         enough: a module can record an adjustment that leaves ``value`` untouched —a
-        secondary-currency correction, task 58212— and excluding that move would hand its
-        whole value to the Product Value remainder without anything having changed. The
-        total still adds up, because that remainder is a residue, so the breakdown would
-        lie in silence.
+        secondary-currency correction, task 58212.
 
         Compared with the currency's own rounding, not against ``0``. An adjustment with
         no ``previous_value`` (recorded before that field existed) reads as a delta equal
