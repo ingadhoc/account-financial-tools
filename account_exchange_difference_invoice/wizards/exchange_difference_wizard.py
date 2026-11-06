@@ -427,11 +427,11 @@ class ExchangeDifferenceWizardLine(models.TransientModel):
             ams = ams_all.filtered(lambda m: m.partner_id == line.partner_id).mapped("move_id")
             if all(bool(m.reversed_entry_id) for m in ams):
                 line.show_warning = _(
-                    '<i class="fa fa-exclamation-triangle text-warning" title="All selected entries for this partner are reversals"></i>'
+                    '<i class="oi text-warning" data-icon="warning" title="All selected entries for this partner are reversals"></i>'
                 )
             elif line.balance == 0.0:
                 line.show_warning = _(
-                    '<i class="fa fa-exclamation-triangle text-warning" title="The balance for this partner is zero, so no debit/credit note will be created."></i>'
+                    '<i class="oi text-warning" data-icon="warning" title="The balance for this partner is zero, so no debit/credit note will be created."></i>'
                 )
             else:
                 line.show_warning = ""

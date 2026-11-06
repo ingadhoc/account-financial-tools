@@ -170,7 +170,7 @@ class AccountChartTemplate(models.AbstractModel):
                 "amount": amount_residual,
                 "date": payment_date,
                 "journal_id": self.ref("demo_cash_usd").id,
-                "l10n_ar_withholding_line_ids": l10n_ar_withholding_vals,
+                "withholding_line_ids": l10n_ar_withholding_vals,
             }
             action_context = invoices.action_register_payment()["context"]
             payment = self.env["account.payment"].with_context(**action_context).create(vals)
