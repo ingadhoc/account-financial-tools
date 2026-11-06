@@ -101,6 +101,36 @@ class ResCompany(models.Model):
             candidates &= current.root_id._accessible_branches()
         return self.browse([current.id] + (candidates - current).ids)
 
+    def _get_filing_company(self):
+        """The one of ``self`` that books an entry for all of them, empty if none can.
+
+        ``self`` must be a single legal entity —an entry never mixes Tax IDs— and one of
+        its companies must be an ancestor of all the others: that one files. Two sisters
+        without their parent are rejected because an account living only in one branch is
+        not reachable from the other (``account.account`` checks companies with
+        ``check_companies_domain_parent_of``), so the entry would fail the company check.
+
+        ``parent_ids`` holds the company itself, so a single company is its own filing
+        company and at most one company can satisfy it.
+        """
+        # Sudo: the selector may hold companies whose ancestors the user cannot read.
+        companies = self.sudo()
+        if len(companies.legal_entity_root_id) != 1:
+            return self.browse()
+        head = companies.filtered(lambda company: all(company in other.parent_ids for other in companies))
+        return self.browse(head.ids)
+
+    def _get_legal_entity_companies_left_out(self, selectable_only=False):
+        """The companies of the active company's legal entity that ``self`` leaves out.
+
+        :param selectable_only: keep only the ones the user can tick in the company selector.
+        """
+        # Sudo: they are outside the selection, so record rules hide them from non-managers.
+        missing = self.env.company._get_legal_entity_companies().sudo() - self.sudo()
+        if selectable_only:
+            missing &= self.env.user.sudo().company_ids
+        return missing
+
     @api.constrains("parent_id")
     def _check_legal_entity_chain_on_hierarchy(self):
         self._check_legal_entity_vat_chain()
