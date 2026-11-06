@@ -36,6 +36,11 @@ class AccountMove(models.Model):
 
     fiscal_position_id = fields.Many2one(tracking=True)
 
+    def _compute_show_reset_to_draft_button(self):
+        super()._compute_show_reset_to_draft_button()
+        # The documents of other branches are read-only, see account_move_read_rule.
+        self.filtered(lambda m: m.company_id not in self.env.companies).show_reset_to_draft_button = False
+
     def get_invoice_report(self):
         self.ensure_one()
         bin_data, __ = self.env["ir.actions.report"]._render_qweb_pdf("account.account_invoices", self.id)
