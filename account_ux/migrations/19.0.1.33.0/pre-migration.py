@@ -1,14 +1,13 @@
 def migrate(cr, version):
     """``block_intercompany_conciliation`` stops being a boolean and becomes a scope.
 
-    Every existing company starts in *block always*, the same as the default for new
-    ones; opening it up to the tree or to the legal entity is an explicit decision per
-    tree. The field comes from ``account_accountant_ux``, so the column may already exist
-    before this module ever defined it.
+    The value is kept: the box ticked is *block always*, unticked is *don't block*, so
+    nothing changes on update. Reading other branches needs a group nobody has yet.
 
     It has to happen before the registry loads: left alone, the ORM casts the boolean
     column to varchar by itself and leaves ``'true'`` / ``'false'`` in it, which are not
-    values of the selection. Without the column, the ORM creates it with the default.
+    values of the selection. The column comes from ``account_accountant_ux``: without it,
+    the ORM creates it with the default.
     """
     cr.execute(
         """
@@ -18,15 +17,11 @@ def migrate(cr, version):
         """
     )
     row = cr.fetchone()
-    if not row:
-        return
-    if row[0] == "boolean":
+    if row and row[0] == "boolean":
         cr.execute(
             """
             ALTER TABLE res_company
             ALTER COLUMN block_intercompany_conciliation TYPE varchar
-            USING 'all'
+            USING CASE WHEN block_intercompany_conciliation THEN 'all' ELSE 'none' END
             """
         )
-    else:
-        cr.execute("UPDATE res_company SET block_intercompany_conciliation = 'all'")

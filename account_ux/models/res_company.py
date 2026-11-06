@@ -25,11 +25,11 @@ class ResCompany(models.Model):
             ("other_legal_entity", "Block between different legal entities"),
         ],
         string="Block Inter-Company Reconciliation",
-        default="all",
+        default="none",
         required=True,
         help="Set on the root of a branch tree. It decides which journal items of different companies can be "
-        "reconciled together, and whose debt a branch can read and collect, even from companies its users have "
-        "no access to:\n"
+        "reconciled together, and whose debt the users of the 'Read and collect the debt of other branches' group "
+        "can read and collect, even from companies they have no access to:\n"
         "* Don't block: every company of the tree.\n"
         "* Block always: none, each company only reconciles its own journal items.\n"
         "* Block between different legal entities: only the companies of the same legal entity.",
