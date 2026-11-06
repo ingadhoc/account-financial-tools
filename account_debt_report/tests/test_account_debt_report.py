@@ -131,7 +131,8 @@ class DebtReportCommon(TransactionCase):
 
     def _report_move_names(self, **currency_flags):
         """Names of the moves that made it into the report for the given flags."""
-        return [line["name"] for line in self._report_lines(**currency_flags)]
+        # the label is "<move name> - <ref>": since 20 the exchange difference moves carry a ref
+        return [line["name"].split(" - ")[0] for line in self._report_lines(**currency_flags)]
 
     def _reconcile_on_company_currency(self):
         """Enable the setting, which account_ux only allows on Argentinian companies.

@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="account.view_move_line_payment_tree"/>
         <field name="arch" type="xml">
             <groupby name="partner_id">
-                <button type="object" name="action_open_debt_report_wizard" icon="fa-file-o" title="Debt Report"/>
+                <button type="object" name="action_open_debt_report_wizard" icon="description" title="Debt Report"/>
             </groupby>
         </field>
     </record>
