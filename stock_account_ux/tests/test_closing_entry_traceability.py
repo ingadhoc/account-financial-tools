@@ -1,11 +1,12 @@
 from dateutil.relativedelta import relativedelta
 from odoo import fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestClosingEntryTraceability(TestStockValuationCommon):
+class TestClosingEntryTraceability(TestStockValuationUXCommon):
     """Reading a global valuation entry: which moves it booked, and which line is whose.
 
     Both come from the functional testing of task 64440. Three periodic products sharing
@@ -14,7 +15,7 @@ class TestClosingEntryTraceability(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move_standard = self._make_in_move(self.product_standard, 10, 10)  # value 100
         self.move_avco = self._make_in_move(self.product_avco, 4, 25)  # value 100
         self.move_fifo = self._make_in_move(self.product_fifo, 2, 10)  # value 20
@@ -161,8 +162,8 @@ class TestClosingEntryTraceability(TestStockValuationCommon):
         changed = self.env["product.value"].search(
             [("product_id", "=", self.product_standard.id)], order="id desc", limit=1
         )
-        self.assertAlmostEqual(unchanged.delta, 0.0)
-        self.assertNotAlmostEqual(changed.delta, 0.0)
+        self.assertAlmostEqual(unchanged.adjustment, 0.0)
+        self.assertNotAlmostEqual(changed.adjustment, 0.0)
 
         entry = self._close()
 
