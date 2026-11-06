@@ -517,6 +517,79 @@ class TestDebtReportExchangeDifference(DebtReportCommon):
                     self.assertNotIn(name, names)
 
 
+class TestDebtReportInvoiceDetail(DebtReportCommon):
+    """Every move keeps its detail, and only the product lines of an invoice carry a quantity."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # the foreign currency loses value between its rates, which leaves an exchange difference
+        cls._set_foreign_rate("2024-06-01", 4.0)
+        cls.uom = cls.env["uom.uom"].search([], limit=1)
+
+    def _detail_by_move_name(self):
+        lines = self._report_lines(show_invoice_detail=True)
+        return {line["name"].split(" - ")[0]: line["detail_lines"] for line in lines}
+
+    def _post_invoice(self, *lines):
+        invoice = self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "partner_id": self.partner.id,
+                "invoice_date": "2024-06-15",
+                "invoice_line_ids": [
+                    Command.create({"account_id": self.counterpart_account.id, "price_unit": 50.0, **vals})
+                    for vals in lines
+                ],
+            }
+        )
+        invoice.action_post()
+        return invoice
+
+    def test_invoice_product_line_shows_quantity_and_unit(self):
+        invoice = self._post_invoice({"name": "Detailed service", "quantity": 2.0, "product_uom_id": self.uom.id})
+        self.assertEqual(self._detail_by_move_name()[invoice.name], ["* Detailed service x 2.0 %s" % self.uom.name])
+
+    def test_invoice_product_line_without_unit_shows_only_the_quantity(self):
+        invoice = self._post_invoice({"name": "Loose item", "quantity": 3.0, "product_uom_id": False})
+        self.assertEqual(self._detail_by_move_name()[invoice.name], ["* Loose item x 3.0"])
+
+    def test_invoice_section_shows_only_its_text(self):
+        invoice = self._post_invoice(
+            {"display_type": "line_section", "name": "A section", "price_unit": 0.0},
+            {"name": "Item", "quantity": 1.0, "product_uom_id": self.uom.id},
+        )
+        self.assertEqual(self._detail_by_move_name()[invoice.name][0], "* A section")
+
+    def test_entry_shows_its_descriptions_without_quantity(self):
+        entry = self._create_debt_move(100.0)
+        self.assertEqual(self._detail_by_move_name()[entry.name], ["* debt", "* debt counterpart"])
+
+    def test_entry_does_not_repeat_a_description(self):
+        entry = self._create_debt_move(100.0)
+        entry.line_ids.write({"name": "Same text"})
+        self.assertEqual(self._detail_by_move_name()[entry.name], ["* Same text"])
+
+    def test_exchange_difference_keeps_its_description_without_quantity(self):
+        foreign_move = self._create_debt_move(
+            50.0, amount_currency=100.0, currency=self.foreign_currency, date="2024-01-10"
+        )
+        payment_move = self._create_debt_move(-60.0, date="2024-06-15")
+        lines = self._receivable_line(foreign_move) + self._receivable_line(payment_move)
+        lines.reconcile()
+        exchange_moves = lines.exchange_move_ids
+        self.assertTrue(exchange_moves)
+        detail = self._detail_by_move_name()
+        for name in exchange_moves.mapped("name"):
+            with self.subTest(name=name):
+                self.assertTrue(detail[name])
+                self.assertEqual(len(detail[name]), len(set(detail[name])))
+                for text in detail[name]:
+                    self.assertTrue(text.startswith("* "))
+                    self.assertNotIn(" x ", text)
+                    self.assertNotIn("Sin unidad de medida", text)
+
+
 class TestAccountDebtReportWizard(TransactionCase):
     def setUp(self):
         super(TestAccountDebtReportWizard, self).setUp()

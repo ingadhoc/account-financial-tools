@@ -135,6 +135,27 @@ class ResPartner(models.Model):
             domain |= Domain("company_id", "in", unfiltered.ids)
         return list(domain)
 
+    def _get_debt_report_detail_lines(self, move):
+        """Text lines that detail a move in the report.
+
+        Only the product lines of an invoice have a quantity, and a unit when they carry one.
+        The rest (sections, notes, payments, exchange differences) show their description.
+        """
+        is_invoice = move.is_invoice(include_receipts=True)
+        detail_lines = []
+        for line in move.invoice_line_ids:
+            text = (line.name or "Sin descripción").replace("\n", " ").replace("\r", "")
+            if is_invoice and line.display_type == "product":
+                text = "%s x %s" % (text, line.quantity)
+                if line.product_uom_id:
+                    text = "%s %s" % (text, line.product_uom_id.name)
+            text = "* " + text
+            # an entry repeats the same description on both sides of its lines
+            if not is_invoice and text in detail_lines:
+                continue
+            detail_lines.append(text)
+        return detail_lines
+
     def _get_debt_report_lines(self):
         # TODO ver si borramos este metodo que no tiene mucho sentido (get_line_vals)
         def get_line_vals(
@@ -257,19 +278,7 @@ class ResPartner(models.Model):
         # construimos una nueva lista con los valores que queremos y de
         # manera mas facil
         for record in records:
-            detail_lines = []
-            if show_invoice_detail:
-                for inv_line in record.move_id.invoice_line_ids:
-                    inv_line_name = inv_line.name or "Sin descripción"
-                    inv_line_product_uom_id_name = inv_line.product_uom_id.name or "Sin unidad de medida"
-                    detail_lines.append(
-                        "* %s x %s %s"
-                        % (
-                            inv_line_name.replace("\n", " ").replace("\r", ""),
-                            inv_line.quantity,
-                            inv_line_product_uom_id_name,
-                        )
-                    )
+            detail_lines = self._get_debt_report_detail_lines(record.move_id) if show_invoice_detail else []
             name = record.move_id.name
             # similar to _format_aml_name
             if record.ref and record.ref != "/":
