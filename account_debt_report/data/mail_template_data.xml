@@ -5,7 +5,7 @@
         <field name="model_id" ref="base.model_res_partner"/>
         <field name="auto_delete" eval="True"/>
         <field name="partner_to">{{ object.id }}</field>
-        <field name="report_template_ids" eval="[(4, ref('account_debt_report'))]"/>
+        <field name="report_template_ids" eval="[(6, 0, [ref('account_debt_report_pdf')])]"/>
         <field name="subject">Debt Detail {{ object.company_id.name }}</field>
         <field name="lang">{{ object.lang }}</field>
         <field name="email_from">{{ object.user_id.email or '' }}</field>

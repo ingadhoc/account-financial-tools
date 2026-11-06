@@ -630,6 +630,15 @@ class TestAccountDebtReportWizard(TransactionCase):
         with self.assertRaises(ValidationError):
             self.wizard.write({"company_currency": False, "secondary_currency": False})
 
+    def test_the_email_attaches_the_pdf_and_the_download_keeps_the_spreadsheet(self):
+        template = self.env.ref("account_debt_report.email_template_debt_detail")
+        email_report = template.report_template_ids
+        download_report = self.env.ref("account_debt_report.account_debt_report")
+        self.assertEqual(email_report.out_format.code, "oo-pdf")
+        self.assertEqual(download_report.out_format.code, "oo-xls")
+        self.assertEqual(email_report.report_file, download_report.report_file)
+        self.assertEqual(email_report.in_format, download_report.in_format)
+
     def test_send_by_email_method_single_partner_uses_comment(self):
         action = self.wizard.with_context(active_id=self.partner.id).send_by_email()
         self.assertTrue(action, "El método send_by_email debería retornar una acción de ventana")
