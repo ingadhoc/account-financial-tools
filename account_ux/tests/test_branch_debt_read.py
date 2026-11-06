@@ -3,7 +3,7 @@
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.exceptions import AccessError
-from odoo.tests import tagged
+from odoo.tests import Form, tagged
 
 
 @tagged("post_install", "-at_install")
@@ -47,7 +47,14 @@ class TestBranchDebtRead(AccountTestInvoicingCommon):
                 "login": "branch_a_accountant",
                 "company_id": cls.branch_a.id,
                 "company_ids": [Command.set(cls.branch_a.ids)],
-                "group_ids": [Command.set(cls.env.ref("account.group_account_manager").ids)],
+                "group_ids": [
+                    Command.set(
+                        (
+                            cls.env.ref("account.group_account_manager")
+                            + cls.env.ref("account_ux.group_read_branch_debt")
+                        ).ids
+                    )
+                ],
             }
         )
 
@@ -63,6 +70,67 @@ class TestBranchDebtRead(AccountTestInvoicingCommon):
             [("partner_id", "=", self.partner_a.id), ("account_type", "=", "asset_receivable")]
         )
         self.assertIn(self.invoice_b.line_ids.filtered(lambda l: l.account_type == "asset_receivable"), receivable)
+
+    def _sibling_journal(self):
+        return self.env["account.journal"].create(
+            {"name": "Sales B", "code": "ZSB", "type": "sale", "company_id": self.branch_b.id}
+        )
+
+    def test_reads_the_journal_of_a_sibling_branch_without_finding_it(self):
+        journal = self._sibling_journal()
+        self.env.invalidate_all()
+        self.assertEqual(self._as_user_a(journal).name, "Sales B")
+        journals = self._as_user_a(self.env["account.journal"])
+        self.assertNotIn(journal, journals.search([]))
+        self.assertFalse(journals.search_count([("id", "=", journal.id)]))
+
+    def test_the_invoice_of_another_branch_opens_without_the_reset_button(self):
+        invoice = self._as_user_a(self.invoice_b)
+        self.assertEqual(Form(invoice).partner_id, self.partner_a)
+        self.assertFalse(invoice.show_reset_to_draft_button)
+
+    def test_the_full_invoice_of_another_branch_opens(self):
+        """With product, payment term, tax and account of the sibling branch, not of the root."""
+        tax = self.env["account.tax"].create(
+            {"name": "Tax B", "amount": 21.0, "type_tax_use": "sale", "company_id": self.branch_b.id}
+        )
+        payment_term = self.env["account.payment.term"].create(
+            {
+                "name": "30 days B",
+                "company_id": self.branch_b.id,
+                "line_ids": [Command.create({"value": "percent", "value_amount": 100.0, "nb_days": 30})],
+            }
+        )
+        account = self.company_data["default_account_revenue"].copy(
+            {"code": "ZB4000", "company_ids": [Command.set(self.branch_b.ids)]}
+        )
+        invoice = self.init_invoice("out_invoice", products=self.product_a, taxes=tax, company=self.branch_b)
+        invoice.write({"invoice_payment_term_id": payment_term.id})
+        invoice.invoice_line_ids.account_id = account
+        invoice.action_post()
+        self.env.invalidate_all()
+
+        # Form reads every field of the view, the lines included, as the web client does.
+        invoice_form = Form(self._as_user_a(invoice))
+        self.assertEqual(invoice_form.invoice_payment_term_id, payment_term)
+        line = self._as_user_a(invoice).invoice_line_ids
+        self.assertEqual(line.product_id.display_name, self.product_a.display_name)
+        self.assertEqual(line.account_id, account)
+        self.assertTrue(line.account_id.display_name)
+        self.assertEqual(line.tax_ids.display_name, tax.display_name)
+        # Selectors keep the scope of the native rules.
+        self.assertNotIn(tax, self._as_user_a(self.env["account.tax"]).search([]))
+        self.assertNotIn(account, self._as_user_a(self.env["account.account"]).search([]))
+        self.assertNotIn(payment_term, self._as_user_a(self.env["account.payment.term"]).search([]))
+        self.assertNotIn(self.branch_b, self._as_user_a(self.env["res.company"]).search([]))
+
+    def test_without_the_group_other_branches_stay_hidden(self):
+        journal = self._sibling_journal()
+        self.user_a.group_ids -= self.env.ref("account_ux.group_read_branch_debt")
+        with self.assertRaises(AccessError):
+            self._as_user_a(self.invoice_b).check_access("read")
+        with self.assertRaises(AccessError):
+            self._as_user_a(journal).check_access("read")
 
     def test_cannot_write_other_branch_debt(self):
         with self.assertRaises(AccessError):
