@@ -34,14 +34,41 @@
         </field>
     </record>
 
+    <record model="res.groups" id="group_read_branch_debt">
+        <field name="name">Read and collect the debt of other branches</field>
+    </record>
+
     <!-- Global rules are combined with AND, so a permissive one is not enough: read moves
          to the rules below, and the native ones keep write/create/unlink as they were.
          A function and not a record: the native rules are noupdate, so a record would only
          apply on install and never reach databases where this module is updated. -->
     <function model="ir.rule" name="write">
-        <value eval="[ref('account.account_move_comp_rule'), ref('account.account_move_line_comp_rule')]"/>
+        <value eval="[ref('account.account_move_comp_rule'), ref('account.account_move_line_comp_rule'), ref('account.journal_comp_rule')]"/>
         <value eval="{'perm_read': False}"/>
     </function>
+
+    <!-- Opening another branch's document reads its journal. Searches don't find these, see account.journal._search. -->
+    <record model="ir.rule" id="account_journal_read_rule">
+        <field name="name">Journal: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">
+            [
+                '|',
+                ('company_id', 'in', company_ids + user._get_branch_debt_company_ids(company_ids)),
+                '&amp;',
+                ('company_id', 'parent_of', company_ids),
+                '|',
+                ('shared_to_branches', '=', 'all'),
+                '&amp;',
+                ('shared_to_branches', '=', 'legal_entity'),
+                ('legal_entity_root_id', 'in', user.company_id.browse(company_ids).legal_entity_root_id.ids)
+            ]
+        </field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
 
     <!-- Other branches' entries with receivable/payable lines, whole so the document opens. -->
     <record model="ir.rule" id="account_move_read_rule">

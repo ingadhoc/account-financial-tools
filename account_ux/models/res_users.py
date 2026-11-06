@@ -16,6 +16,8 @@ class ResUsers(models.Model):
         its ``env.companies`` is not the selection of the company switcher.
         """
         companies = self.env["res.company"]
+        if not self.has_group("account_ux.group_read_branch_debt"):
+            return companies.ids
         for company in self.env["res.company"].sudo().browse(company_ids):
             companies |= company._get_branch_debt_companies()
         return companies.ids

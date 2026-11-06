@@ -13,6 +13,21 @@ class AccountJournal(models.Model):
     _inherit = ["account.journal", "shared.to.branches.mixin"]
     _order = "branch_order,sequence, type, code"
 
+    def _search(self, domain, *args, **kwargs):
+        # account_journal_read_rule lets a document of another branch open. Searches, like the dashboard and the
+        # selectors, keep the scope of the native rule, that still applies to write.
+        if (
+            not self.env.su
+            and not self.env.context.get("journal_fetch")
+            and self.env.user._get_branch_debt_company_ids(self.env.companies.ids)
+        ):
+            domain = Domain(domain) & Domain(self.env["ir.rule"]._compute_domain(self._name, "write"))
+        return super()._search(domain, *args, **kwargs)
+
+    def fetch(self, field_names=None):
+        # fetch goes through _search, but reading records already in hand is not a search.
+        return super(AccountJournal, self.with_context(journal_fetch=True)).fetch(field_names)
+
     mail_template_id = fields.Many2one(
         "mail.template",
         "Email Template",
