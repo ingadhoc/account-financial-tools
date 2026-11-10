@@ -29,8 +29,6 @@ class AccountDebtReportWizard(models.TransientModel):
     from_date = fields.Date()
     to_date = fields.Date()
     show_invoice_detail = fields.Boolean()
-    # TODO implementar
-    # show_receipt_detail = fields.Boolean('Show Receipt Detail')
     historical_full = fields.Boolean(
         help="If true, then it will show all partner history. If not, only unreconciled items will be shown."
     )
@@ -62,44 +60,9 @@ class AccountDebtReportWizard(models.TransientModel):
         required=True,
     )
 
-    def confirm(self):
-        active_ids = self.env.context.get("active_ids", False)
-        if not active_ids:
-            return True
-        partners = self.env["res.partner"].browse(active_ids)
-        data = {
-            "secondary_currency": self.secondary_currency,
-            "result_selection": self.result_selection,
-            "company_id": self.company_id.id,
-            "from_date": self.from_date,
-            "to_date": self.to_date,
-            "historical_full": self.historical_full,
-            "show_invoice_detail": self.show_invoice_detail,
-        }
-        return (
-            self.env["ir.actions.report"]
-            .search([("report_name", "=", "account_debt_report")], limit=1)
-            .with_context(
-                company_currency=self.company_currency,
-                secondary_currency=self.secondary_currency,
-                result_selection=self.result_selection,
-                company_id=self.company_id.id,
-                from_date=self.from_date,
-                to_date=self.to_date,
-                historical_full=self.historical_full,
-                show_invoice_detail=self.show_invoice_detail,
-                # show_receipt_detail=self.show_receipt_detail,
-            )
-            .report_action(partners, data=data)
-        )
-
-    def send_by_email(self):
-        active_ids = self.env.context.get("active_ids", [])
-        active_id = self.env.context.get("active_id", False)
-        partner_ids = active_ids or ([active_id] if active_id else [])
-        composition_mode = "comment" if len(partner_ids) == 1 else "mass_mail"
-        context = {
-            # report keys
+    def _get_report_context(self):
+        """Options of the report. The context is the only channel, so the email gets them too."""
+        return {
             "company_currency": self.company_currency,
             "secondary_currency": self.secondary_currency,
             "result_selection": self.result_selection,
@@ -108,7 +71,26 @@ class AccountDebtReportWizard(models.TransientModel):
             "to_date": self.to_date,
             "historical_full": self.historical_full,
             "show_invoice_detail": self.show_invoice_detail,
-            # email keys
+        }
+
+    def confirm(self):
+        active_ids = self.env.context.get("active_ids", False)
+        if not active_ids:
+            return True
+        partners = self.env["res.partner"].browse(active_ids)
+        return (
+            self.env.ref("account_debt_report.account_debt_report")
+            .with_context(**self._get_report_context())
+            .report_action(partners)
+        )
+
+    def send_by_email(self):
+        active_ids = self.env.context.get("active_ids", [])
+        active_id = self.env.context.get("active_id", False)
+        partner_ids = active_ids or ([active_id] if active_id else [])
+        composition_mode = "comment" if len(partner_ids) == 1 else "mass_mail"
+        context = {
+            **self._get_report_context(),
             "active_ids": active_ids,
             "active_id": active_id,
             "active_model": "res.partner",
@@ -123,17 +105,13 @@ class AccountDebtReportWizard(models.TransientModel):
             ).id,
             "default_partner_to": "{{ object.id or '' }}",
         }
-        self = self.with_context(**context)
         return {
             "name": _("Send by Email"),
             "type": "ir.actions.act_window",
             "res_model": "mail.compose.message",
-            "src_model": "res.partner",
-            "view_type": "form",
             "context": context,
             "view_mode": "form",
             "target": "new",
-            "auto_refresh": 1,
         }
 
     @api.constrains("company_currency", "secondary_currency")

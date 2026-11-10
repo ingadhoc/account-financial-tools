@@ -4,37 +4,6 @@ from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
 
-class TestAccountDebtReport(TransactionCase):
-    def setUp(self):
-        super(TestAccountDebtReport, self).setUp()
-        # Set up test data, e.g., a partner and invoices
-        self.partner = self.env["res.partner"].create({"name": "Test Partner", "email": "test@example.com"})
-
-    def test_format_debt_report_amount(self):
-        amount = self.partner._format_debt_report_amount(-278300, self.env.company.currency_id)
-        self.assertTrue(amount.startswith("- "))
-        self.assertIn(self.env.company.currency_id.symbol, amount)
-
-    def test_format_debt_report_line_keeps_raw_values(self):
-        formatted_line = self.partner._format_debt_report_line(
-            {
-                "amount": 1500.0,
-                "amount_residual": 500.0,
-                "balance": 2000.0,
-                "amount_currency": 100.0,
-                "amount_residual_currency": 50.0,
-                "balance_currency": 150.0,
-                "currency_name": "USD",
-            },
-            company_currency=self.env.company.currency_id,
-            secondary_currency=self.env.ref("base.USD"),
-        )
-        self.assertEqual(formatted_line["amount_raw"], 1500.0)
-        self.assertEqual(formatted_line["amount_currency_raw"], 100.0)
-        self.assertIn(self.env.company.currency_id.symbol, formatted_line["amount"])
-        self.assertTrue(formatted_line["amount_currency"].startswith("USD "))
-
-
 class DebtReportCommon(TransactionCase):
     """A partner with its own receivable account, plus helpers to post debt entries."""
 
@@ -127,7 +96,11 @@ class DebtReportCommon(TransactionCase):
         return move.line_ids.filtered(lambda line: line.account_id == cls.receivable_account)
 
     def _report_lines(self, historical_full=True, **context):
-        return self.partner.with_context(historical_full=historical_full, **context)._get_debt_report_lines()
+        return (
+            self.env["account.debt.report"]
+            .with_context(historical_full=historical_full, **context)
+            ._compute_lines(self.partner)
+        )
 
     def _report_move_names(self, **currency_flags):
         """Names of the moves that made it into the report for the given flags."""
@@ -150,6 +123,57 @@ class DebtReportCommon(TransactionCase):
             }
         )
         self.company.reconcile_on_company_currency = True
+
+
+class TestDebtReportAmounts(DebtReportCommon):
+    """Amounts are computed as numbers and reach the template as text with their symbol."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._create_debt_move(-100.0, date="2024-01-10")
+        cls.foreign_move = cls._create_debt_move(50.0, amount_currency=100.0, currency=cls.foreign_currency)
+
+    def test_amounts_are_numbers_with_their_currency(self):
+        lines = self._report_lines(company_currency=True, secondary_currency=True)
+        local_line, foreign_line = lines
+        self.assertEqual(local_line["amount"], -100.0)
+        self.assertEqual(local_line["balance"], -100.0)
+        self.assertEqual(local_line["company_currency"], self.company_currency)
+        self.assertFalse(local_line["currency"])
+        self.assertIs(local_line["amount_currency"], False)
+        self.assertEqual(foreign_line["amount"], 50.0)
+        self.assertEqual(foreign_line["balance"], -50.0)
+        self.assertEqual(foreign_line["amount_currency"], 100.0)
+        self.assertEqual(foreign_line["currency"], self.foreign_currency)
+
+    def test_template_gets_the_amounts_with_their_currency(self):
+        lines = (
+            self.env["account.debt.report"]
+            .with_context(historical_full=True, company_currency=True, secondary_currency=True)
+            ._get_lines(self.partner)
+        )
+        local_line, foreign_line = lines
+        report = self.env["account.debt.report"]
+        self.assertEqual(local_line["amount"], report._format_amount(-100.0, self.company_currency))
+        self.assertTrue(local_line["amount"].startswith(f"- {self.company_currency.symbol} "))
+        self.assertIs(local_line["amount_currency"], False)
+        self.assertTrue(foreign_line["amount_currency"].startswith(self.foreign_currency.display_name))
+
+    def test_running_balance_carries_no_float_noise(self):
+        """Summed as floats, -50 + 0.1 + 0.2 is not -49.7."""
+        self.assertNotEqual(-50.0 + 0.1 + 0.2, -49.7)
+        self._create_debt_move(0.1, date="2024-07-01")
+        self._create_debt_move(0.2, date="2024-07-02")
+        lines = self._report_lines(company_currency=True, secondary_currency=True)
+        self.assertEqual(lines[-1]["balance"], -49.7)
+
+    def test_initial_balance_leaves_the_amounts_empty(self):
+        """An empty cell has to stay empty: aeroo renders False as nothing, a 0.0 as a number."""
+        initial_line = self._report_lines(from_date="2024-06-01")[0]
+        self.assertEqual(initial_line["balance"], -100.0)
+        for key in ("amount", "amount_residual", "amount_currency", "amount_residual_currency"):
+            self.assertIs(initial_line[key], False)
 
 
 class TestDebtReportCurrencyMode(DebtReportCommon):
@@ -182,8 +206,8 @@ class TestDebtReportCurrencyMode(DebtReportCommon):
         ]
         for context, expected_mode in cases:
             with self.subTest(context=context):
-                partner = self.partner.with_context(**context)
-                self.assertEqual(partner._get_debt_report_currency_mode(), expected_mode)
+                report = self.env["account.debt.report"].with_context(**context)
+                self.assertEqual(report._get_currency_mode(), expected_mode)
 
     def test_both_currencies_include_all_lines(self):
         names = self._report_move_names(company_currency=True, secondary_currency=True)
@@ -200,20 +224,20 @@ class TestDebtReportCurrencyMode(DebtReportCommon):
 
     def test_currency_domain_pairs_each_company_with_its_own_currency(self):
         """Every company is judged against its own currency, not against a shared list."""
-        company_only = self.partner._get_debt_report_currency_domain("company", self.company)
+        company_only = self.env["account.debt.report"]._get_currency_domain("company", self.company)
         self.assertIn(("company_currency_id", "=", self.company_currency.id), company_only)
         self.assertIn(("currency_id", "=", self.company_currency.id), company_only)
         self.assertIn(("company_id", "in", self.company.ids), company_only)
-        secondary = self.partner._get_debt_report_currency_domain("secondary", self.company)
+        secondary = self.env["account.debt.report"]._get_currency_domain("secondary", self.company)
         self.assertIn(("amount_currency", "!=", 0.0), secondary)
         self.assertIn(("company_currency_id", "!=", self.company_currency.id), secondary)
 
     def test_no_currency_mode_means_no_clause(self):
-        self.assertEqual(self.partner._get_debt_report_currency_domain(False, self.company), [])
+        self.assertEqual(self.env["account.debt.report"]._get_currency_domain(False, self.company), [])
 
     def test_no_company_is_exempt_by_default(self):
         """Nothing is exempt unless a company explicitly reconciles on its own currency."""
-        self.assertFalse(self.partner._get_debt_report_unfiltered_companies(self.company))
+        self.assertFalse(self.env["account.debt.report"]._get_unfiltered_companies(self.company))
 
     def test_foreign_line_without_amount_currency_only_shows_consolidated(self):
         """This is the shape of an exchange rate difference on a foreign item.
@@ -267,8 +291,8 @@ class TestDebtReportUnfilteredCompanies(DebtReportCommon):
     def test_reconciling_on_company_currency_skips_the_company_currency_filter(self):
         self._reconcile_on_company_currency()
 
-        self.assertEqual(self.partner._get_debt_report_unfiltered_companies(self.company), self.company)
-        self.assertEqual(self.partner._get_debt_report_currency_domain("company", self.company), [])
+        self.assertEqual(self.env["account.debt.report"]._get_unfiltered_companies(self.company), self.company)
+        self.assertEqual(self.env["account.debt.report"]._get_currency_domain("company", self.company), [])
         # end to end: every item comes through when "company currency" is ticked alone
         names = self._report_move_names(company_currency=True, secondary_currency=False)
         self.assertIn(self.local_move.name, names)
@@ -311,35 +335,35 @@ class TestDebtReportInitialBalance(DebtReportCommon):
 
     def test_initial_balance_both_currencies(self):
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
-        self.assertEqual(line["balance_raw"], 150.0)
-        self.assertEqual(line["balance_currency_raw"], 100.0)
+        self.assertEqual(line["balance"], 150.0)
+        self.assertEqual(line["balance_currency"], 100.0)
 
     def test_initial_balance_only_company_currency(self):
         line = self._initial_balance_line(company_currency=True, secondary_currency=False)
-        self.assertEqual(line["balance_raw"], 100.0)
-        self.assertEqual(line["balance_currency_raw"], 0.0)
+        self.assertEqual(line["balance"], 100.0)
+        self.assertEqual(line["balance_currency"], 0.0)
 
     def test_initial_balance_only_secondary_currency(self):
         line = self._initial_balance_line(company_currency=False, secondary_currency=True)
-        self.assertEqual(line["balance_raw"], 50.0)
-        self.assertEqual(line["balance_currency_raw"], 100.0)
+        self.assertEqual(line["balance"], 50.0)
+        self.assertEqual(line["balance_currency"], 100.0)
 
     def test_initial_balance_states_no_amount_in_currency(self):
         """The row stands for no document, so the period starts from a balance alone."""
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
-        self.assertFalse(line["amount_currency_raw"])
+        self.assertFalse(line["amount_currency"])
 
     def test_balance_in_currency_continues_from_the_initial_one(self):
         """The currency balance column has to carry over what happened before from_date."""
         lines = self._report_lines(from_date="2024-06-01", company_currency=True, secondary_currency=True)
-        self.assertEqual(lines[0]["balance_currency_raw"], 100.0)
-        foreign_rows = [line for line in lines if line["amount_currency_raw"] == 40.0]
+        self.assertEqual(lines[0]["balance_currency"], 100.0)
+        foreign_rows = [line for line in lines if line["amount_currency"] == 40.0]
         self.assertEqual(len(foreign_rows), 1)
-        self.assertEqual(foreign_rows[0]["balance_currency_raw"], 140.0)
+        self.assertEqual(foreign_rows[0]["balance_currency"], 140.0)
 
     def test_initial_balance_in_currency_carries_its_label(self):
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
-        self.assertTrue(line["balance_currency"].startswith(self.foreign_currency.display_name))
+        self.assertEqual(line["currency_name"], self.foreign_currency.display_name)
 
     def test_initial_balance_mixing_currencies_carries_no_label(self):
         """A sum of several foreign currencies cannot be attributed to any single one."""
@@ -347,8 +371,8 @@ class TestDebtReportInitialBalance(DebtReportCommon):
         third_currency.active = True
         self._create_debt_move(10.0, amount_currency=20.0, currency=third_currency, date="2024-01-10")
         line = self._initial_balance_line(company_currency=True, secondary_currency=True)
-        self.assertEqual(line["balance_currency_raw"], 120.0)
-        self.assertFalse(line["balance_currency"].startswith(self.foreign_currency.display_name))
+        self.assertEqual(line["balance_currency"], 120.0)
+        self.assertFalse(line["currency_name"])
 
 
 @tagged("post_install", "-at_install")
@@ -376,15 +400,15 @@ class TestDebtReportInitialCurrencyCarryOver(DebtReportCommon):
 
     def _initial_and_first_row(self):
         lines = self._report_lines(from_date="2024-06-01", company_currency=True, secondary_currency=True)
-        foreign_rows = [line for line in lines if line["amount_currency_raw"] == 40.0]
+        foreign_rows = [line for line in lines if line["amount_currency"] == 40.0]
         self.assertEqual(len(foreign_rows), 1)
         return lines[0], foreign_rows[0]
 
     def _assert_initial_row_seeds_the_column(self):
         initial_line, first_row = self._initial_and_first_row()
-        self.assertFalse(initial_line["amount_currency_raw"])
-        self.assertEqual(initial_line["balance_currency_raw"], 100.0)
-        self.assertEqual(first_row["balance_currency_raw"], 140.0)
+        self.assertFalse(initial_line["amount_currency"])
+        self.assertEqual(initial_line["balance_currency"], 100.0)
+        self.assertEqual(first_row["balance_currency"], 140.0)
 
     def test_the_balance_is_carried_over(self):
         self._assert_initial_row_seeds_the_column()
