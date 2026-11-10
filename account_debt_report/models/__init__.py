@@ -3,3 +3,4 @@
 # directory
 ##############################################################################
 from . import res_partner
+from . import account_debt_report
