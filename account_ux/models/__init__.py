@@ -8,6 +8,7 @@ from . import account_account
 from . import account_group
 from . import account_journal
 from . import account_move_line
+from . import account_full_reconcile
 from . import res_company
 from . import res_partner
 from . import res_currency

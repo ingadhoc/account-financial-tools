@@ -105,3 +105,23 @@ class TestReconcileOnCompanyCurrency(AccountTestInvoicingCommon):
         # El partial cancela 99,50 de compañía = 99.500 EUR a la cotización del recibo.
         self.assertAlmostEqual(res["partial_values"]["amount"], 99.50)
         self.assertAlmostEqual(res["partial_values"]["credit_amount_currency"], 99500.0)
+
+    def test_no_full_reconcile_with_company_currency_residual(self):
+        """Both lines in the foreign currency, 0,04 short in company currency (less than half a foreign cent):
+        the foreign amounts round to zero, but the residual in company currency keeps the reconcile partial."""
+        debit_line = self._receivable_line(100.0, self.foreign_currency, 1.0)
+        credit_line = self._receivable_line(-99.96, self.foreign_currency, -1.0)
+
+        (debit_line + credit_line).reconcile()
+
+        self.assertAlmostEqual(debit_line.amount_residual, 0.04)
+        self.assertTrue(self.foreign_currency.is_zero(debit_line.amount_residual_currency))
+        self.assertFalse(debit_line.reconciled)
+        self.assertFalse(debit_line.full_reconcile_id)
+        self.assertFalse(credit_line.full_reconcile_id)
+        self.assertTrue(debit_line.matched_credit_ids)
+
+        # Closing the residual still ends in a full reconcile.
+        adjustment = self._receivable_line(-0.04, self.company_currency, -0.04)
+        (debit_line + adjustment).reconcile()
+        self.assertTrue(debit_line.full_reconcile_id)
