@@ -630,6 +630,23 @@ class TestAccountDebtReportWizard(TransactionCase):
         with self.assertRaises(ValidationError):
             self.wizard.write({"company_currency": False, "secondary_currency": False})
 
+    def test_the_email_attaches_the_spreadsheet_or_its_pdf(self):
+        download_report = self.env.ref("account_debt_report.account_debt_report")
+        for email_format, template_xmlid, out_format in (
+            ("xls", "account_debt_report.email_template_debt_detail", "oo-xls"),
+            ("pdf", "account_debt_report.email_template_debt_detail_pdf", "oo-pdf"),
+        ):
+            with self.subTest(email_format=email_format):
+                self.wizard.email_format = email_format
+                action = self.wizard.with_context(active_id=self.partner.id).send_by_email()
+                template = self.env["mail.template"].browse(action["context"]["default_template_id"])
+                self.assertEqual(template, self.env.ref(template_xmlid))
+                self.assertEqual(template.report_template_ids.out_format.code, out_format)
+                self.assertEqual(template.report_template_ids.report_file, download_report.report_file)
+
+    def test_the_email_attaches_the_spreadsheet_by_default(self):
+        self.assertEqual(self.wizard.email_format, "xls")
+
     def test_send_by_email_method_single_partner_uses_comment(self):
         action = self.wizard.with_context(active_id=self.partner.id).send_by_email()
         self.assertTrue(action, "El método send_by_email debería retornar una acción de ventana")
