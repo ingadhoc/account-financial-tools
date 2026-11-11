@@ -46,6 +46,19 @@ class StockMove(models.Model):
         readonly=True,
     )
 
+    # Every posted entry tied to the move, while ``related_account_move_id`` keeps only
+    # the one reflecting its current valuation. Computed on read: it only feeds the list
+    # button, so it is never searched or grouped by.
+    all_account_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_all_account_move_ids",
+        string="All Journal Entries",
+    )
+    account_move_count = fields.Integer(
+        compute="_compute_all_account_move_ids",
+        string="Journal Entries Count",
+    )
+
     def _related_account_move_depends(self):
         """Dependencies of ``related_account_move_id``. The related invoices are reached
         the way ``_get_related_invoice_by_picking`` reaches them, through the picking —its
@@ -96,6 +109,46 @@ class StockMove(models.Model):
                 move.related_account_move_id = invoice_by_picking.get(move.picking_id.id, False)
             else:
                 move.related_account_move_id = False
+
+    @api.depends("related_account_move_id")
+    def _compute_all_account_move_ids(self):
+        # sudo: same reason as ``_get_booked_revaluation_entries``, the column is shown in
+        # lists that people without access to value adjustments or invoices also open.
+        real_time_moves = self.sudo()._filter_real_time_valuation()
+        for move in self:
+            sudo_move = move.sudo()
+            entries = sudo_move.related_account_move_id | sudo_move.account_move_id
+            entries |= sudo_move.product_value_ids.account_move_id
+            if sudo_move in real_time_moves:
+                entries |= sudo_move._get_order_line_invoices()
+            entries = entries.filtered(lambda entry: entry.state == "posted")
+            move.all_account_move_ids = entries.sorted(lambda entry: (entry.date, entry.name or "", entry.id))
+            move.account_move_count = len(entries)
+
+    def _get_order_line_invoices(self):
+        """Invoices of the move's own sale or purchase line. Unlike
+        ``_get_related_invoice_by_picking``, an invoice of another product of the same
+        picking is not listed."""
+        self.ensure_one()
+        invoice_lines = self.env["account.move.line"]
+        if "sale_line_id" in self._fields:
+            invoice_lines |= self.sale_line_id.invoice_lines
+        if "purchase_line_id" in self._fields:
+            invoice_lines |= self.purchase_line_id.invoice_lines
+        return invoice_lines.move_id
+
+    def action_view_account_moves(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Journal Entries of %s", self._get_valuation_labels()[0]),
+            "res_model": "account.move",
+            "view_mode": "list,form",
+            "views": [(self.env.ref("account.view_move_tree").id, "list"), (False, "form")],
+            "domain": [("id", "in", self.all_account_move_ids.ids)],
+            "context": {"create": False, "edit": False},
+            "target": "new",
+        }
 
     def _recompute_related_account_move(self, batch_size=1000):
         """Recompute ``related_account_move_id`` in batches, flushing and freeing the cache
