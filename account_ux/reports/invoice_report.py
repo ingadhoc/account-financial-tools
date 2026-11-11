@@ -12,6 +12,13 @@ class AccountInvoiceReport(models.Model):
         string="Untaxed Total (CC)",
         help="Untaxed Total in the company's currency where it is set",
     )
+<<<<<<< d64fab4e9f7cbfcb8d7b1496e70d3635a5b8cdb5
+||||||| ee09f1d995460b166519368b6ae82b2eede973f1
+    price_total = fields.Monetary(string="Total", currency_field="currency_id")
+=======
+    price_total = fields.Monetary(string="Total (Company Currency)", currency_field="company_currency_id")
+    price_total_currency = fields.Monetary(string="Total in Currency", currency_field="currency_id")
+>>>>>>> 2a2d43743f5098ab509408fb8509638e0063ed38
     price_average = fields.Monetary(
         string="Average Price (CC)",
         help="Average Price in the company's currency where it is set",
