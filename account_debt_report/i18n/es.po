@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 17:11+0000\n"
-"PO-Revision-Date: 2026-11-02 17:11+0000\n"
+"POT-Creation-Date: 2026-11-11 20:59+0000\n"
+"PO-Revision-Date: 2026-11-11 20:59+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-financial-tools-20-0/account-financial-tools-20-0-account_debt_report/es/>\n"
 "Language: es\n"
@@ -163,20 +163,21 @@ msgstr ""
 
 #. module: account_debt_report
 #: model:mail.template,body_html:account_debt_report.email_template_debt_detail
+#: model:mail.template,body_html:account_debt_report.email_template_debt_detail_pdf
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "                    Dear\n"
 "                    <t t-if=\"object.parent_id\">\n"
-"                        <t t-out=\"object.name or ''\"/>\n"
-"                        (<t t-out=\"object.parent_id.name or ''\"/>),\n"
+"                        <t t-out=\"object.name or ''\"></t>\n"
+"                        (<t t-out=\"object.parent_id.name or ''\"></t>),\n"
 "                    </t>\n"
 "                    <t t-else=\"\">\n"
-"                        <t t-out=\"object.name or ''\"/>,\n"
+"                        <t t-out=\"object.name or ''\"></t>,\n"
 "                    </t>\n"
-"                    <br/><br/>\n"
-"                    Please find attached your debt detail from <t t-out=\"object.company_id.name or ''\"/>.\n"
-"                    <br/><br/>\n"
+"                    <br><br>\n"
+"                    Please find attached your debt detail from <t t-out=\"object.company_id.name or ''\"></t>.\n"
+"                    <br><br>\n"
 "                    Do not hesitate to contact us if you have any questions.\n"
 "                </p>\n"
 "            </div>\n"
@@ -193,8 +194,7 @@ msgstr ""
 "                        <t t-out=\"object.name or ''\"/>,\n"
 "                    </t>\n"
 "                    <br/><br/>\n"
-"                    Adjunto encontrará el detalle de su deuda <t t-"
-"out=\"object.company_id.name or ''\"/>.\n"
+"                    Adjunto encontrará el detalle de su deuda <t t-out=\"object.company_id.name or ''\"/>.\n"
 "                    <br/><br/>\n"
 "                    No dudes en contactarnos si tienes alguna pregunta..\n"
 "                </p>\n"
@@ -206,6 +206,11 @@ msgstr ""
 #: model:ir.module.module,shortdesc:base.module_account_debt_report
 msgid "Account Debt Report"
 msgstr "Informe de Deuda de Cuenta"
+
+#. module: account_debt_report
+#: model:ir.actions.report,name:account_debt_report.account_debt_report_pdf
+msgid "Account Debt Report (PDF)"
+msgstr "Informe de Deuda de Cuenta (PDF)"
 
 #. module: account_debt_report
 #: model:ir.model,name:account_debt_report.model_account_debt_report_wizard
@@ -265,7 +270,13 @@ msgid "Debt Detail Mail"
 msgstr "Correo de detalle de deuda"
 
 #. module: account_debt_report
+#: model:mail.template,name:account_debt_report.email_template_debt_detail_pdf
+msgid "Debt Detail Mail (PDF)"
+msgstr "Correo de detalle de deuda (PDF)"
+
+#. module: account_debt_report
 #: model:mail.template,subject:account_debt_report.email_template_debt_detail
+#: model:mail.template,subject:account_debt_report.email_template_debt_detail_pdf
 msgid "Debt Detail {{ object.company_id.name }}"
 msgstr "Detalle de la deuda {{ object.company_id.name }}"
 
@@ -290,6 +301,11 @@ msgstr "Detallar hasta"
 #: model:ir.model.fields,field_description:account_debt_report.field_res_partner__display_name
 msgid "Display Name"
 msgstr "Mostrar nombre"
+
+#. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__email_format
+msgid "Email Attachment"
+msgstr "Adjunto del email"
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__from_date
@@ -377,6 +393,11 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: account_debt_report
+#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__pdf
+msgid "PDF"
+msgstr "PDF"
+
+#. module: account_debt_report
 #: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__result_selection__payable
 msgid "Payable Accounts"
 msgstr "Cuentas a Pagar"
@@ -407,6 +428,11 @@ msgstr "Enviar por Email"
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__show_invoice_detail
 msgid "Show Invoice Detail"
 msgstr "Mostrar detalle de Facturas"
+
+#. module: account_debt_report
+#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__xls
+msgid "Spreadsheet (.xls)"
+msgstr "Planilla (.xls)"
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__to_date

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 17:10+0000\n"
-"PO-Revision-Date: 2026-11-02 17:10+0000\n"
+"POT-Creation-Date: 2026-11-11 20:59+0000\n"
+"PO-Revision-Date: 2026-11-11 20:59+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -158,20 +158,21 @@ msgstr ""
 
 #. module: account_debt_report
 #: model:mail.template,body_html:account_debt_report.email_template_debt_detail
+#: model:mail.template,body_html:account_debt_report.email_template_debt_detail_pdf
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "                    Dear\n"
 "                    <t t-if=\"object.parent_id\">\n"
-"                        <t t-out=\"object.name or ''\"/>\n"
-"                        (<t t-out=\"object.parent_id.name or ''\"/>),\n"
+"                        <t t-out=\"object.name or ''\"></t>\n"
+"                        (<t t-out=\"object.parent_id.name or ''\"></t>),\n"
 "                    </t>\n"
 "                    <t t-else=\"\">\n"
-"                        <t t-out=\"object.name or ''\"/>,\n"
+"                        <t t-out=\"object.name or ''\"></t>,\n"
 "                    </t>\n"
-"                    <br/><br/>\n"
-"                    Please find attached your debt detail from <t t-out=\"object.company_id.name or ''\"/>.\n"
-"                    <br/><br/>\n"
+"                    <br><br>\n"
+"                    Please find attached your debt detail from <t t-out=\"object.company_id.name or ''\"></t>.\n"
+"                    <br><br>\n"
 "                    Do not hesitate to contact us if you have any questions.\n"
 "                </p>\n"
 "            </div>\n"
@@ -182,6 +183,11 @@ msgstr ""
 #: model:ir.actions.report,name:account_debt_report.account_debt_report
 #: model:ir.module.module,shortdesc:base.module_account_debt_report
 msgid "Account Debt Report"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.actions.report,name:account_debt_report.account_debt_report_pdf
+msgid "Account Debt Report (PDF)"
 msgstr ""
 
 #. module: account_debt_report
@@ -242,7 +248,13 @@ msgid "Debt Detail Mail"
 msgstr ""
 
 #. module: account_debt_report
+#: model:mail.template,name:account_debt_report.email_template_debt_detail_pdf
+msgid "Debt Detail Mail (PDF)"
+msgstr ""
+
+#. module: account_debt_report
 #: model:mail.template,subject:account_debt_report.email_template_debt_detail
+#: model:mail.template,subject:account_debt_report.email_template_debt_detail_pdf
 msgid "Debt Detail {{ object.company_id.name }}"
 msgstr ""
 
@@ -269,6 +281,11 @@ msgid "Display Name"
 msgstr ""
 
 #. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__email_format
+msgid "Email Attachment"
+msgstr ""
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__from_date
 msgid "From Date"
 msgstr ""
@@ -286,6 +303,7 @@ msgstr ""
 
 #. module: account_debt_report
 #. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
 #: code:addons/account_debt_report/models/res_partner.py:0
 msgid "INITIAL BALANCE"
 msgstr ""
@@ -330,6 +348,11 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: account_debt_report
+#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__pdf
+msgid "PDF"
+msgstr ""
+
+#. module: account_debt_report
 #: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__result_selection__payable
 msgid "Payable Accounts"
 msgstr ""
@@ -359,6 +382,11 @@ msgstr ""
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__show_invoice_detail
 msgid "Show Invoice Detail"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__xls
+msgid "Spreadsheet (.xls)"
 msgstr ""
 
 #. module: account_debt_report

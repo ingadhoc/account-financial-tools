@@ -55,6 +55,13 @@ class AccountDebtReportWizard(models.TransientModel):
         "amount, exchange rate differences included.",
     )
 
+    email_format = fields.Selection(
+        [("xls", "Spreadsheet (.xls)"), ("pdf", "PDF")],
+        string="Email Attachment",
+        default="xls",
+        required=True,
+    )
+
     def confirm(self):
         active_ids = self.env.context.get("active_ids", False)
         if not active_ids:
@@ -109,7 +116,11 @@ class AccountDebtReportWizard(models.TransientModel):
             "default_res_ids": partner_ids,
             "default_composition_mode": composition_mode,
             "default_use_template": True,
-            "default_template_id": self.env.ref("account_debt_report.email_template_debt_detail").id,
+            "default_template_id": self.env.ref(
+                "account_debt_report.email_template_debt_detail_pdf"
+                if self.email_format == "pdf"
+                else "account_debt_report.email_template_debt_detail"
+            ).id,
             "default_partner_to": "{{ object.id or '' }}",
         }
         self = self.with_context(**context)

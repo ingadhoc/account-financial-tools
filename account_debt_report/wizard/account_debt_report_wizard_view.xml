@@ -17,6 +17,7 @@
                         <field name="company_currency"/>
                         <field name="secondary_currency"/>
                         <field name="show_invoice_detail"/>
+                        <field name="email_format"/>
                         <!-- <field name="show_receipt_detail" attrs="{'invisible': [('group_by_move', '=', False)]}"/> -->
                     </group>
                 </group>
