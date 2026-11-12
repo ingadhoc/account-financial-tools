@@ -4,9 +4,9 @@ from urllib.parse import quote
 
 import openpyxl
 from odoo import Command
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import tagged
-from odoo.tests.common import HttpCase, TransactionCase
+from odoo.tests.common import HttpCase, TransactionCase, new_test_user
 
 
 class DebtReportCommon(TransactionCase):
@@ -233,6 +233,13 @@ class TestDebtReportOutputs(DebtReportCommon):
         self.assertEqual(report._get_xlsx_amount_format(currency), '"$ "#,##0.00;"- $ "#,##0.00')
         self.assertEqual(report._get_xlsx_amount_format(False, "USD"), '"USD "#,##0.00;"- USD "#,##0.00')
         self.assertEqual(report._get_xlsx_amount_format(), '#,##0.00;"- "#,##0.00')
+
+    def test_spreadsheet_writes_free_text_as_text(self):
+        self.partner.name = '=HYPERLINK("http://example.com")'
+        sheet = self._sheet()
+        # row 2 is the subtitle, which starts with the partner name
+        self.assertEqual(sheet.cell(2, 1).data_type, "s")
+        self.assertTrue(sheet.cell(2, 1).value.startswith(self.partner.name))
 
     def test_pdf_shows_the_amounts_as_text(self):
         html, _format = (
@@ -654,6 +661,32 @@ class TestDebtReportInvoiceDetail(DebtReportCommon):
         )
         self.assertEqual(self._detail_by_move_name()[invoice.name][0], "* A section")
 
+    def test_invoice_with_installments_shows_its_detail_once(self):
+        term = self.env["account.payment.term"].create(
+            {
+                "name": "Two installments",
+                "line_ids": [
+                    Command.create({"value": "percent", "value_amount": 50.0, "nb_days": 0}),
+                    Command.create({"value": "percent", "value_amount": 50.0, "nb_days": 30}),
+                ],
+            }
+        )
+        invoice = self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "partner_id": self.partner.id,
+                "invoice_date": "2024-06-15",
+                "invoice_payment_term_id": term.id,
+                "invoice_line_ids": [
+                    Command.create({"account_id": self.counterpart_account.id, "name": "Item", "price_unit": 100.0})
+                ],
+            }
+        )
+        invoice.action_post()
+        lines = [line for line in self._report_lines(show_invoice_detail=True) if line["name"].startswith(invoice.name)]
+        self.assertEqual(len(lines), 2)
+        self.assertEqual([bool(line["detail_lines"]) for line in lines], [True, False])
+
     def test_entry_shows_its_descriptions_without_quantity(self):
         entry = self._create_debt_move(100.0)
         self.assertEqual(self._detail_by_move_name()[entry.name], ["* debt", "* debt counterpart"])
@@ -681,6 +714,66 @@ class TestDebtReportInvoiceDetail(DebtReportCommon):
                     self.assertTrue(text.startswith("* "))
                     self.assertNotIn(" x ", text)
                     self.assertNotIn("Sin unidad de medida", text)
+
+
+class TestDebtReportAccess(DebtReportCommon):
+    """Lines are read with sudo, so the report itself limits what a user without invoicing rights gets."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = new_test_user(
+            cls.env,
+            login="debt_report_user",
+            groups="base.group_user",
+            company_id=cls.company.id,
+            company_ids=[Command.set(cls.company.ids)],
+        )
+        cls.receivable_move = cls._create_debt_move(100.0)
+        payable_account = cls.partner.with_company(cls.company).property_account_payable_id
+        cls.payable_move = cls.env["account.move"].create(
+            {
+                "move_type": "entry",
+                "journal_id": cls.journal.id,
+                "date": "2024-06-15",
+                "line_ids": [
+                    Command.create({"account_id": payable_account.id, "partner_id": cls.partner.id, "balance": -80.0}),
+                    Command.create({"account_id": cls.counterpart_account.id, "balance": 80.0}),
+                ],
+            }
+        )
+        cls.payable_move.action_post()
+
+    def _move_names(self, env, **context):
+        lines = env["account.debt.report"].with_context(historical_full=True, **context)._compute_lines(self.partner)
+        return {line["name"].split(" - ")[0] for line in lines}
+
+    def test_a_company_of_another_user_is_ignored(self):
+        other_company = self.env["res.company"].create({"name": "Debt Report Other Company"})
+        report = self.env["account.debt.report"].with_user(self.user)
+        self.assertEqual(report.with_context(company_id=self.company.id)._get_companies(), self.company)
+        self.assertFalse(report.with_context(company_id=other_company.id)._get_companies())
+
+    def test_without_invoicing_rights_only_the_customer_debt_comes_out(self):
+        for result_selection in ("payable", "all"):
+            with self.subTest(result_selection=result_selection):
+                names = self._move_names(self.env(user=self.user), result_selection=result_selection)
+                self.assertEqual(names, {self.receivable_move.name})
+        self.assertEqual(self._move_names(self.env, result_selection="payable"), {self.payable_move.name})
+
+    def test_a_partner_the_user_cannot_read_gives_no_sheet(self):
+        self.env["ir.access"].create(
+            {
+                "name": "Hide the debt report partner",
+                "model_id": self.env.ref("base.model_res_partner").id,
+                "operation": "r",
+                "domain": "[('id', '!=', %d)]" % self.partner.id,
+            }
+        )
+        with self.assertRaises(AccessError):
+            self.env["ir.actions.report"].with_user(self.user).with_context(historical_full=True)._render(
+                "account_debt_report.account_debt_report", self.partner.ids
+            )
 
 
 class TestAccountDebtReportWizard(TransactionCase):
