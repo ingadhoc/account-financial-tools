@@ -8,13 +8,7 @@ from odoo.tools.misc import format_date, formatLang
 
 
 class AccountDebtReport(models.AbstractModel):
-    """Lines of the debt report of a partner.
-
-    Every option comes from the context, which is the only channel shared by the
-    download and the email. The spreadsheet gets the amounts as numbers, each cell
-    formatted with its own currency, since one sheet can mix currencies; the PDF
-    gets them as text with their symbol.
-    """
+    """Lines of the debt report of a partner, with every option taken from the context."""
 
     _name = "account.debt.report"
     _description = "Account Debt Report"
@@ -105,7 +99,11 @@ class AccountDebtReport(models.AbstractModel):
     @api.model
     def _get_companies(self):
         company_id = self.env.context.get("company_id")
-        return self.env["res.company"].browse(company_id) if company_id else self.env.companies
+        if not company_id:
+            return self.env.companies
+        companies = self.env["res.company"].browse(company_id)
+        # the context can come from the download URL, and the lines are read with sudo
+        return companies if self.env.su else companies & self.env.user.company_ids
 
     @api.model
     def _get_domain(self, partner, companies, currency_mode):
@@ -120,6 +118,9 @@ class AccountDebtReport(models.AbstractModel):
         if not ctx.get("historical_full"):
             domain += [("reconciled", "=", False), ("full_reconcile_id", "=", False)]
         result_selection = ctx.get("result_selection")
+        # the lines are read with sudo: without invoicing rights only the customer debt is allowed
+        if not self.env.su and not self.env.user.has_group("account.group_account_invoice"):
+            result_selection = "receivable"
         if result_selection == "receivable":
             domain += [("account_type", "=", "asset_receivable")]
         elif result_selection == "payable":
@@ -136,19 +137,20 @@ class AccountDebtReport(models.AbstractModel):
             ._read_group(initial_domain, groupby=["partner_id"], aggregates=["balance:sum"])
         )
         balance = groups[0][1] if groups else 0.0
+        company_currencies = companies.mapped("currency_id")
+        if len(company_currencies) == 1:
+            balance = company_currencies.round(balance)
         balance_currency, currency_name = 0.0, ""
         # asking only for the company currency leaves no secondary amount to show,
         # and the domain of _get_currency_balance would contradict the one above
         if currency_mode != "company":
             balance_currency, currency_name = self._get_currency_balance(initial_domain, companies)
-        company_currencies = companies.mapped("currency_id")
         return {
             "date": False,
             "date_maturity": False,
             "name": _("INITIAL BALANCE"),
             "detail_lines": [],
-            # the row stands for no document, so what the period starts from is
-            # stated as a balance and the amount columns are left empty
+            # no document behind this row, so only the balance columns are filled
             "amount": False,
             "amount_residual": False,
             "balance": balance,
@@ -161,12 +163,16 @@ class AccountDebtReport(models.AbstractModel):
         }
 
     @api.model
+    def _get_currency_label(self, currency=False, label=False):
+        return label or (currency and (currency.symbol or currency.name)) or ""
+
+    @api.model
     def _format_amount(self, amount, currency=False, label=False):
         if amount is False or amount is None:
             return False
         digits = currency.decimal_places if currency else 2
         number = formatLang(self.env, abs(amount), digits=digits).replace("\N{NO-BREAK SPACE}", " ")
-        label = label or (currency and (currency.symbol or currency.name))
+        label = self._get_currency_label(currency, label)
         text = f"{label} {number}" if label else number
         return f"- {text}" if amount < 0 else text
 
@@ -224,9 +230,20 @@ class AccountDebtReport(models.AbstractModel):
         """Spreadsheet date format matching the date format of the user language."""
         lang = self.env["res.lang"]._get_data(code=self.env.lang or "en_US")
         date_format = lang.date_format or "%m/%d/%Y"
-        for posix, excel in (("%d", "dd"), ("%m", "mm"), ("%Y", "yyyy"), ("%y", "yy"), ("%b", "mmm"), ("%B", "mmmm")):
+        for posix, excel in (
+            ("%d", "dd"),
+            ("%e", "d"),
+            ("%m", "mm"),
+            ("%Y", "yyyy"),
+            ("%y", "yy"),
+            ("%b", "mmm"),
+            ("%B", "mmmm"),
+            ("%a", "ddd"),
+            ("%A", "dddd"),
+        ):
             date_format = date_format.replace(posix, excel)
-        return date_format
+        # a directive with no spreadsheet equivalent would leave a broken format
+        return "yyyy-mm-dd" if "%" in date_format else date_format
 
     @api.model
     def _get_xlsx_amount_format(self, currency=False, label=False):
@@ -236,7 +253,7 @@ class AccountDebtReport(models.AbstractModel):
         """
         digits = currency.decimal_places if currency else 2
         number = "#,##0" + ("." + "0" * digits if digits else "")
-        label = (label or (currency and (currency.symbol or currency.name)) or "").replace('"', "")
+        label = self._get_currency_label(currency, label).replace('"', "")
         prefix = f"{label} " if label else ""
         positive = f'"{prefix}"{number}' if prefix else number
         return f'{positive};"- {prefix}"{number}'
@@ -249,13 +266,6 @@ class AccountDebtReport(models.AbstractModel):
         header = workbook.add_format({"bold": True, "bottom": 1})
         date_format = workbook.add_format({"num_format": self._get_xlsx_date_format()})
         amount_formats = {}
-
-        def amount_format(currency, label):
-            key = (currency.id if currency else False, label or "")
-            if key not in amount_formats:
-                amount_formats[key] = workbook.add_format({"num_format": self._get_xlsx_amount_format(currency, label)})
-            return amount_formats[key]
-
         columns = self._get_columns()
         headers = [_("Date"), _("Due Date"), _("Description")] + [title for _key, title in columns]
         sheet.set_column(0, 1, 12)
@@ -278,10 +288,13 @@ class AccountDebtReport(models.AbstractModel):
                     if line[key] is False:
                         continue
                     if key.endswith("_currency"):
-                        cell_format = amount_format(line["currency"], line["currency_name"])
+                        currency, label = line["currency"], line["currency_name"]
                     else:
-                        cell_format = amount_format(line["company_currency"], False)
-                    sheet.write_number(row, col, line[key], cell_format)
+                        currency, label = line["company_currency"], False
+                    num_format = self._get_xlsx_amount_format(currency, label)
+                    if num_format not in amount_formats:
+                        amount_formats[num_format] = workbook.add_format({"num_format": num_format})
+                    sheet.write_number(row, col, line[key], amount_formats[num_format])
                 row += 1
                 for detail_line in line["detail_lines"]:
                     sheet.write(row, 2, detail_line)
@@ -323,7 +336,11 @@ class AccountDebtReport(models.AbstractModel):
             .sudo()
             .search(domain, order="date asc, name, move_id desc, date_maturity asc, id")
         )
+        detailed_moves = set()
         for record in records:
+            # a move with several installments shows its detail only once
+            show_detail = show_invoice_detail and record.move_id.id not in detailed_moves
+            detailed_moves.add(record.move_id.id)
             name = record.move_id.name
             if record.ref and record.ref != "/":
                 name += " - " + record.ref
@@ -340,7 +357,7 @@ class AccountDebtReport(models.AbstractModel):
                     "date": record.date,
                     "date_maturity": record.date_maturity,
                     "name": name,
-                    "detail_lines": self._get_detail_lines(record.move_id) if show_invoice_detail else [],
+                    "detail_lines": self._get_detail_lines(record.move_id) if show_detail else [],
                     "amount": record.balance,
                     "amount_residual": record.amount_residual,
                     "balance": balance,
@@ -372,4 +389,6 @@ class AccountDebtReport(models.AbstractModel):
         # only label the amount when every item shares one currency: the sum of
         # several foreign currencies cannot be attributed to any single one
         currencies = self.env["res.currency"].browse(set(currency_ids or []))
-        return balance_currency, currencies.display_name if len(currencies) == 1 else ""
+        if len(currencies) != 1:
+            return balance_currency, ""
+        return currencies.round(balance_currency), currencies.display_name
