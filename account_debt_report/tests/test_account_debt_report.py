@@ -1,7 +1,12 @@
+import io
+import json
+from urllib.parse import quote
+
+import openpyxl
 from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import HttpCase, TransactionCase
 
 
 class DebtReportCommon(TransactionCase):
@@ -169,11 +174,75 @@ class TestDebtReportAmounts(DebtReportCommon):
         self.assertEqual(lines[-1]["balance"], -49.7)
 
     def test_initial_balance_leaves_the_amounts_empty(self):
-        """An empty cell has to stay empty: aeroo renders False as nothing, a 0.0 as a number."""
+        """An empty cell has to stay empty: the sheet leaves False out, a 0.0 is a number."""
         initial_line = self._report_lines(from_date="2024-06-01")[0]
         self.assertEqual(initial_line["balance"], -100.0)
         for key in ("amount", "amount_residual", "amount_currency", "amount_residual_currency"):
             self.assertIs(initial_line[key], False)
+
+
+class TestDebtReportOutputs(DebtReportCommon):
+    """The spreadsheet gets numbers formatted with their currency, the PDF gets text."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.local_move = cls._create_debt_move(-100.0, date="2024-01-10")
+        cls.foreign_move = cls._create_debt_move(50.0, amount_currency=100.0, currency=cls.foreign_currency)
+        cls.report_context = {"historical_full": True, "company_currency": True, "secondary_currency": True}
+
+    def _sheet(self, **context):
+        content, report_format = (
+            self.env["ir.actions.report"]
+            .with_context(**{**self.report_context, **context})
+            ._render("account_debt_report.account_debt_report", self.partner.ids)
+        )
+        self.assertEqual(report_format, "xlsx")
+        return openpyxl.load_workbook(io.BytesIO(content)).active
+
+    def _row_of(self, sheet, text):
+        return next(row for row in sheet.iter_rows() if row[2].value and str(row[2].value).startswith(text))
+
+    def test_spreadsheet_amounts_are_numbers_with_their_currency(self):
+        sheet = self._sheet()
+        local_row = self._row_of(sheet, self.local_move.name)
+        foreign_row = self._row_of(sheet, self.foreign_move.name)
+        # date, due date, description, amount, balance, amount in currency, balance in currency
+        self.assertEqual(local_row[3].value, -100.0)
+        self.assertIn(self.company_currency.symbol, local_row[3].number_format)
+        self.assertIsNone(local_row[5].value)
+        self.assertEqual(foreign_row[4].value, -50.0)
+        self.assertEqual(foreign_row[5].value, 100.0)
+        self.assertIn(self.foreign_currency.display_name, foreign_row[5].number_format)
+        self.assertEqual(foreign_row[0].value.date(), self.foreign_move.date)
+        self.assertTrue(foreign_row[0].is_date)
+
+    def test_spreadsheet_columns_follow_the_options(self):
+        header = [cell.value for cell in self._row_of(self._sheet(), "Description")]
+        self.assertEqual(len(header), 7)
+        header = [
+            cell.value
+            for cell in self._row_of(self._sheet(historical_full=False, secondary_currency=False), "Description")
+        ]
+        # amount, residual and balance in the company currency only
+        self.assertEqual(len([value for value in header if value]), 6)
+
+    def test_amount_format_keeps_the_currency_and_the_sign(self):
+        report = self.env["account.debt.report"]
+        currency = self.env["res.currency"].new({"name": "TST", "symbol": "$", "rounding": 0.01})
+        self.assertEqual(report._get_xlsx_amount_format(currency), '"$ "#,##0.00;"- $ "#,##0.00')
+        self.assertEqual(report._get_xlsx_amount_format(False, "USD"), '"USD "#,##0.00;"- USD "#,##0.00')
+        self.assertEqual(report._get_xlsx_amount_format(), '#,##0.00;"- "#,##0.00')
+
+    def test_pdf_shows_the_amounts_as_text(self):
+        html, _format = (
+            self.env["ir.actions.report"]
+            .with_context(**self.report_context)
+            ._render_qweb_html("account_debt_report.account_debt_report_pdf", self.partner.ids)
+        )
+        html = html.decode()
+        self.assertIn(self.partner.name, html)
+        self.assertIn(self.env["account.debt.report"]._format_amount(-100.0, self.company_currency), html)
 
 
 class TestDebtReportCurrencyMode(DebtReportCommon):
@@ -640,36 +709,42 @@ class TestAccountDebtReportWizard(TransactionCase):
         self.assertTrue(wizard.company_currency)
         self.assertTrue(wizard.secondary_currency)
 
-    def test_confirm_passes_currency_flags_in_context(self):
-        """The report reads the flags from the context, so they have to travel there."""
-        action = self.wizard.with_context(
-            active_ids=[self.partner.id],
-            # otherwise report_action returns the report layout wizard instead
-            discard_logo_check=True,
-        ).confirm()
-        self.assertTrue(action["context"]["company_currency"])
-        self.assertTrue(action["context"]["secondary_currency"])
+    def test_confirm_downloads_the_spreadsheet_of_the_partners(self):
+        """The action carries the partners and the wizard options in its context."""
+        partner_ids = [self.partner.id, self.partner_2.id]
+        action = self.wizard.with_context(active_ids=partner_ids).confirm()
+        self.assertEqual(action["type"], "ir.actions.report")
+        self.assertEqual(action["report_type"], "xlsx")
+        self.assertEqual(action["report_name"], "account_debt_report.debt_xlsx")
+        self.assertEqual(action["context"]["active_ids"], partner_ids)
+        self.assertEqual(action["context"]["company_id"], self.wizard.company_id.id)
+        # the web client sends the action context only when data is not empty
+        self.assertTrue(action["data"])
 
     def test_at_least_one_currency_is_required(self):
         with self.assertRaises(ValidationError):
             self.wizard.write({"company_currency": False, "secondary_currency": False})
 
     def test_the_email_attaches_the_spreadsheet_or_its_pdf(self):
-        download_report = self.env.ref("account_debt_report.account_debt_report")
-        for email_format, template_xmlid, out_format in (
-            ("xls", "account_debt_report.email_template_debt_detail", "oo-xls"),
-            ("pdf", "account_debt_report.email_template_debt_detail_pdf", "oo-pdf"),
+        # tests render QWeb PDF reports as HTML, there is no PDF engine in test mode
+        for email_format, template_xmlid, extension in (
+            ("xlsx", "account_debt_report.email_template_debt_detail", ".xlsx"),
+            ("pdf", "account_debt_report.email_template_debt_detail_pdf", ".html"),
         ):
             with self.subTest(email_format=email_format):
                 self.wizard.email_format = email_format
                 action = self.wizard.with_context(active_id=self.partner.id).send_by_email()
                 template = self.env["mail.template"].browse(action["context"]["default_template_id"])
                 self.assertEqual(template, self.env.ref(template_xmlid))
-                self.assertEqual(template.report_template_ids.out_format.code, out_format)
-                self.assertEqual(template.report_template_ids.report_file, download_report.report_file)
+                values = template.with_context(**self.wizard._get_report_context())._generate_template(
+                    [self.partner.id], ["report_template_ids"]
+                )
+                ((name, content),) = values[self.partner.id]["attachments"]
+                self.assertTrue(name.endswith(extension), name)
+                self.assertTrue(content)
 
     def test_the_email_attaches_the_spreadsheet_by_default(self):
-        self.assertEqual(self.wizard.email_format, "xls")
+        self.assertEqual(self.wizard.email_format, "xlsx")
 
     def test_send_by_email_method_single_partner_uses_comment(self):
         action = self.wizard.with_context(active_id=self.partner.id).send_by_email()
@@ -688,3 +763,16 @@ class TestAccountDebtReportWizard(TransactionCase):
         self.assertEqual(action["context"]["active_ids"], [self.partner.id, self.partner_2.id])
         self.assertEqual(action["context"]["default_res_ids"], [self.partner.id, self.partner_2.id])
         self.assertEqual(action["context"]["default_partner_to"], "{{ object.id or '' }}")
+
+
+@tagged("post_install", "-at_install")
+class TestDebtReportDownload(HttpCase):
+    def test_the_downloaded_sheet_is_named_after_the_partner(self):
+        """The wizard download names the file like the email attachment does."""
+        partner = self.env["res.partner"].create({"name": "Debt Report Partner"})
+        self.authenticate("admin", "admin")
+        context = quote(json.dumps({"active_ids": [partner.id], "active_model": "res.partner"}))
+        options = quote(json.dumps({"partner_ids": [partner.id]}))
+        response = self.url_open(f"/report/xlsx/account_debt_report.debt_xlsx?options={options}&context={context}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(quote("Debt Report - Debt Report Partner.xlsx"), response.headers["Content-Disposition"])
