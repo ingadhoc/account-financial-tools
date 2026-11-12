@@ -1,9 +1,10 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestValuationRevaluationEntry(TestStockValuationCommon):
+class TestValuationRevaluationEntry(TestStockValuationUXCommon):
     """When the inventory variation comes from a ``product.value`` change (a cost change
     on the product or a manual adjustment of a move's value), the entry the valuation
     closing generates has to be reachable.
@@ -87,36 +88,37 @@ class TestValuationRevaluationEntry(TestStockValuationCommon):
         self.move_avco.value_manual = 130.0
         self.assertEqual(self.move_avco.related_account_move_id, first_closing)
 
-    # -- Delta ---------------------------------------------------------------
-    def test_delta_of_move_adjustment(self):
+    # -- Adjustment ---------------------------------------------------------------
+    def test_adjustment_of_move_adjustment(self):
         # With no previous adjustment the base is the value the system had computed for
         # the move (10 units at 10 = 100).
         self.move_standard.value_manual = 150.0
         first = self._last_product_value([("move_id", "=", self.move_standard.id)])
-        self.assertAlmostEqual(first.delta, 50.0)
+        self.assertAlmostEqual(first.adjustment, 50.0)
         # With a previous adjustment the base is that adjustment value.
         self.move_standard.value_manual = 170.0
         second = self._last_product_value([("move_id", "=", self.move_standard.id)])
         self.assertNotEqual(second, first)
-        self.assertAlmostEqual(second.delta, 20.0)
+        self.assertAlmostEqual(second.adjustment, 20.0)
 
-    def test_delta_of_move_adjustment_on_avco(self):
+    def test_adjustment_of_move_adjustment_on_avco(self):
         """Under AVCO/FIFO the move adjustment drags the product's ``standard_price``
-        along, so the previous value cannot be recomputed afterwards: it is captured when
-        the adjustment is recorded."""
+        along, so the old value cannot be recomputed afterwards: it is captured when the
+        adjustment is recorded."""
         self.move_avco.value_manual = 130.0
         adjustment = self._last_product_value([("move_id", "=", self.move_avco.id)])
-        self.assertAlmostEqual(adjustment.previous_value, 100.0)
-        self.assertAlmostEqual(adjustment.delta, 30.0)
+        self.assertAlmostEqual(adjustment.old_value, 100.0)
+        self.assertAlmostEqual(adjustment.adjustment, 30.0)
 
-    def test_delta_of_price_change(self):
+    def test_adjustment_of_price_change(self):
         # Creating the product already left a product.value with the initial price (10),
-        # so the delta of the change to 13 is a unit one: 3.
+        # so the change to 13 is 3 per unit, times the quantity on hand.
         self.product_standard.standard_price = 13.0
         price_change = self._last_product_value(
             [("product_id", "=", self.product_standard.id), ("move_id", "=", False)]
         )
-        self.assertAlmostEqual(price_change.delta, 3.0)
+        self.assertAlmostEqual(price_change.new_cost - price_change.old_cost, 3.0)
+        self.assertAlmostEqual(price_change.adjustment, 3.0 * price_change.quantity)
 
     # -- Search ----------------------------------------------------------------
     def test_search_related_entry_covers_the_revaluation(self):

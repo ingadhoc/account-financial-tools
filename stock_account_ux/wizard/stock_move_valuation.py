@@ -165,7 +165,7 @@ class StockMoveValuation(models.TransientModel):
         for wizard in self:
             aml_vals_list = wizard._get_account_move_line_vals()
             wizard.line_ids = [fields.Command.create(wizard._get_draft_line_vals(vals)) for vals in aml_vals_list]
-            wizard.total = sum(vals["debit"] for vals in aml_vals_list)
+            wizard.total = sum(vals["balance"] for vals in aml_vals_list if vals["balance"] > 0)
 
     def _get_draft_line_vals(self, aml_vals):
         """One line of the draft shown before posting, out of the journal item vals.
@@ -179,8 +179,8 @@ class StockMoveValuation(models.TransientModel):
             "account_id": aml_vals["account_id"],
             "product_id": aml_vals.get("product_id"),
             "name": aml_vals["name"],
-            "debit": aml_vals["debit"],
-            "credit": aml_vals["credit"],
+            "debit": max(aml_vals["balance"], 0.0),
+            "credit": max(-aml_vals["balance"], 0.0),
         }
 
     def _get_balances_by_accounts(self):
@@ -217,7 +217,7 @@ class StockMoveValuation(models.TransientModel):
                 continue
             value = move._get_inventory_value()
             key = self._get_balance_key(move, valuation_account, counterpart)
-            balances[key] += value if move.is_in else -value
+            balances[key] += value
         for product_value in self.product_value_ids:
             product = product_value._get_valuation_product()
             if product.id not in accounts_by_product:
@@ -272,15 +272,13 @@ class StockMoveValuation(models.TransientModel):
             counterpart,
             balance,
             self.env._("Stock Valuation - [%(account)s]", account=valuation_account.display_name),
-            product_id=product.id,
         )
         # The valuation account is the category's, so an entry over moves of several
         # products has several lines on it. Naming the product in the LABEL is what
         # tells the user which line is whose; the counterpart keeps the generic label
-        # (functional feedback, task 64440). ``_prepare_inventory_aml_vals`` swaps the
-        # legs when the balance is negative, hence matching by account instead of by
-        # position.
+        # (functional feedback, task 64440).
         for vals in aml_vals:
+            vals["product_id"] = product.id
             if vals["account_id"] == valuation_account.id:
                 vals["name"] = self.env._("%(label)s - %(product)s", label=vals["name"], product=product.display_name)
         return aml_vals
@@ -295,7 +293,7 @@ class StockMoveValuation(models.TransientModel):
         # Adjustments with no variation are left out, as in the closing
         # (``res.company._get_periodic_closing_product_values``).
         pending_move_values = self.move_ids.product_value_ids.filtered(
-            lambda pv: pv.account_move_id.state != "posted" and not self.currency_id.is_zero(pv.delta)
+            lambda pv: pv.account_move_id.state != "posted" and not self.currency_id.is_zero(pv.adjustment)
         )
         self._check_bookable()
         late_values = (self.product_value_ids | pending_move_values).filtered(

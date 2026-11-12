@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="stock_account_ux.StockMoveEntriesField">
+        <button t-if="this.entriesCount > 1"
+            type="button"
+            class="btn btn-sm btn-outline-primary py-0"
+            t-on-click="this.openEntries">
+            <i class="fa fa-list-ul me-1"/>
+            <t t-out="this.buttonLabel"/>
+        </button>
+        <Many2One t-else="" t-props="this.m2oProps"/>
+    </t>
+
+</templates>

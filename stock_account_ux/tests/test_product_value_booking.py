@@ -1,13 +1,14 @@
 from datetime import timedelta
 
 from odoo import Command, fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
+from .common import TestStockValuationUXCommon
+
 
 @tagged("post_install", "-at_install")
-class TestProductValueBooking(TestStockValuationCommon):
+class TestProductValueBooking(TestStockValuationUXCommon):
     """Booking selected value adjustments from the Value Adjustments list: each one books
     exactly what it added to the inventory, and none can be booked twice.
 
@@ -17,7 +18,7 @@ class TestProductValueBooking(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move = self._make_in_move(self.product_standard, 10, 10)
         # A real receipt carries no manual adjustment; the helper uses it to value.
         self.env["product.value"].search([("move_id", "=", self.move.id)]).unlink()
@@ -71,7 +72,7 @@ class TestProductValueBooking(TestStockValuationCommon):
         """A move adjustment stores the move's total value: what it adds is new minus
         previous value. The move has to be booked first."""
         self.env["stock.move.valuation"].with_context(default_move_ids=self.move.ids).create({}).action_post()
-        adjustment = self.env["product.value"].create({"move_id": self.move.id, "value": 125.0})
+        adjustment = self.env["product.value"].create({"move_id": self.move.id, "value": self.move.value + 25.0})
         self.assertAlmostEqual(self._wizard(adjustment).total, 25.0)
 
     def test_outgoing_move_adjustment_credits_the_valuation_account(self):
@@ -79,7 +80,7 @@ class TestProductValueBooking(TestStockValuationCommon):
         out_move = self._make_out_move(self.product_standard, 1)
         self.env["product.value"].search([("move_id", "=", out_move.id)]).unlink()
         self.env["stock.move.valuation"].with_context(default_move_ids=out_move.ids).create({}).action_post()
-        adjustment = self.env["product.value"].create({"move_id": out_move.id, "value": out_move.value + 5.0})
+        adjustment = self.env["product.value"].create({"move_id": out_move.id, "value": out_move.value - 5.0})
         credit_line = self._wizard(adjustment).line_ids.filtered("credit")
         self.assertEqual(credit_line.account_id, self.account_stock_valuation)
         self.assertAlmostEqual(credit_line.credit, 5.0)
@@ -95,11 +96,23 @@ class TestProductValueBooking(TestStockValuationCommon):
         self.assertFalse(later_change.account_move_id, "Not selected, stays pending")
         self.assertFalse(self.move.account_move_id, "The moves are not booked")
 
+    def test_entry_with_several_adjustments_opens_them_all(self):
+        """The native button of the entry opens one adjustment and fails with several."""
+        self.product_standard.standard_price = 15.0
+        later_change = self._last_price_change(self.product_standard)
+        adjustments = self.price_change | later_change
+        entry = self._post(adjustments)
+        action = entry.action_show_product_value()
+        self.assertEqual(self.env["product.value"].search(action["domain"]), adjustments)
+
     def test_booked_adjustment_leaves_the_pending_variation(self):
+        """The receipt is open, so the cost change is already inside its value (130).
+        Booking the adjustment leaves 100 pending, and the value adjustments origin
+        shows the -30 that the moves origin counts twice."""
         self.assertAlmostEqual(self._variation(), 130.0)
         self._post(self.price_change)
         self.assertAlmostEqual(self._variation(), 100.0)
-        self.assertAlmostEqual(self._variation(line_types=["product_value"]), 0.0)
+        self.assertAlmostEqual(self._variation(line_types=["product_value"]), -30.0)
 
     def test_full_closing_after_booking_books_the_rest(self):
         entry = self._post(self.price_change)

@@ -14,7 +14,7 @@ class TestValuationDrilldownTour(HttpCase):
     own accounts, so the tour does not depend on the database's valuation setup.
     """
 
-    def _setup_pending_variation(self):
+    def _setup_pending_variation(self, cost_method="average", code="TDSV"):
         """Leave a valued, unaccounted move in the admin's company: that is what makes the
         report draw an account line in the Variation, and with no line there is no menu to
         click."""
@@ -24,29 +24,29 @@ class TestValuationDrilldownTour(HttpCase):
 
         valuation_account = env["account.account"].create(
             {
-                "name": "Test Drilldown Stock Valuation",
-                "code": "TDSV01",
+                "name": "Test Drilldown Stock Valuation" if cost_method == "average" else f"Test {code} Valuation",
+                "code": f"{code}01",
                 "account_type": "asset_current",
             }
         )
         valuation_account.account_stock_variation_id = env["account.account"].create(
             {
-                "name": "Test Drilldown Stock Variation",
-                "code": "TDSV02",
+                "name": f"Test {code} Stock Variation",
+                "code": f"{code}02",
                 "account_type": "expense",
             }
         )
         category = env["product.category"].create(
             {
-                "name": "Test Drilldown Category",
+                "name": f"Test {code} Category",
                 "property_valuation": "periodic",
-                "property_cost_method": "average",
+                "property_cost_method": cost_method,
                 "property_stock_valuation_account_id": valuation_account.id,
             }
         )
         product = env["product.product"].create(
             {
-                "name": "Test Drilldown Product",
+                "name": f"Test {code} Product",
                 "is_storable": True,
                 "type": "consu",
                 "categ_id": category.id,
@@ -67,6 +67,8 @@ class TestValuationDrilldownTour(HttpCase):
         move.quantity = 5
         move.picked = True
         move._action_done()
+        # A cost change is the pending value adjustment the second origin of the menu shows.
+        product.standard_price = 50.0
         return move
 
     def test_variation_drilldown(self):
@@ -77,3 +79,14 @@ class TestValuationDrilldownTour(HttpCase):
             "stock_account_ux_valuation_drilldown",
             login="admin",
         )
+
+    def test_generate_entries_books_the_filtered_report(self):
+        average_move = self._setup_pending_variation()
+        standard_move = self._setup_pending_variation(cost_method="standard", code="TDSS")
+        self.start_tour(
+            "/odoo/stock-valuation-closing",
+            "stock_account_ux_valuation_generate_entries",
+            login="admin",
+        )
+        self.assertEqual(average_move.related_account_move_id.state, "posted", "The filtered move is booked")
+        self.assertFalse(standard_move.related_account_move_id, "What the filter leaves out stays open")

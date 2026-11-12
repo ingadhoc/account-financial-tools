@@ -13,3 +13,5 @@ from . import test_revaluation_criterion
 from . import test_product_value_booking
 from . import test_related_entry_search
 from . import test_valuation_report_stock_move_types
+from . import test_revaluation_split
+from . import test_accrual_stock_lines

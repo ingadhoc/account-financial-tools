@@ -1,0 +1,6 @@
+// The added filters make the actions slot wide enough to squeeze the buttons slot to
+// zero on large screens, leaving "Generate Entries" under the filters. Keep the buttons
+// at their own width and let the filters wrap.
+.o_control_panel:has(#filter_products) .o_control_panel_breadcrumbs {
+    min-width: max-content;
+}
