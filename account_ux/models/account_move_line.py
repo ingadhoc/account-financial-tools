@@ -2,8 +2,7 @@
 # © 2016 ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import models, fields, api
 from odoo.tools.misc import unquote
 
 
@@ -183,15 +182,3 @@ class AccountMoveLine(models.Model):
         elif exchange_date:
             res["move_values"]["date"] = exchange_date
         return res
-
-    def _check_constrains_account_id_journal_id(self):
-        lines = self.browse() if self.env.context.get("skip_account_deprecation_check") else self
-        if parent := lines.filtered(lambda x: not x.is_imported).account_id.filtered("is_parent_account")[:1]:
-            raise UserError(
-                _(
-                    "The account %(name)s (%(code)s) is a parent account and only groups other accounts.",
-                    name=parent.name,
-                    code=parent.code,
-                )
-            )
-        return super()._check_constrains_account_id_journal_id()
