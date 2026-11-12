@@ -1176,16 +1176,6 @@ msgstr ""
 
 #. module: account_ux
 #. odoo-python
-#: code:addons/account_ux/models/account_move_line.py:0
-msgid ""
-"The account %(name)s (%(code)s) is a parent account and only groups other "
-"accounts."
-msgstr ""
-"La cuenta %(name)s (%(code)s) es una cuenta padre y solo agrupa otras "
-"cuentas."
-
-#. module: account_ux
-#. odoo-python
 #: code:addons/account_ux/models/account_move.py:0
 msgid "The date and invoice date of a sale invoice must be the same: %s"
 msgstr "La fecha contable y fecha de la factura deben ser la misma: %s"
@@ -1441,8 +1431,15 @@ msgstr ""
 #. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot unarchive an account that has child accounts."
+msgstr "No podés desarchivar una cuenta que tiene cuentas hijas."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
 msgid "You cannot use an account with journal items as parent account."
-msgstr "No podés usar una cuenta con apuntes contables como cuenta padre."
+msgstr ""
+"No podés usar una cuenta con apuntes contables como cuenta principal."
 
 #. module: account_ux
 #. odoo-python
