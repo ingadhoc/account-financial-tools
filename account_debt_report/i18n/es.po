@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 20:59+0000\n"
-"PO-Revision-Date: 2026-11-11 20:59+0000\n"
+"POT-Creation-Date: 2026-11-12 13:25+0000\n"
+"PO-Revision-Date: 2026-11-12 13:25+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-financial-tools-20-0/account-financial-tools-20-0-account_debt_report/es/>\n"
 "Language: es\n"
@@ -19,6 +19,18 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0) ? 1 : 2);\n"
 "X-Generator: Weblate 5.10.4\n"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "%(partner)s as of %(date)s"
+msgstr "%(partner)s al %(date)s"
+
+#. module: account_debt_report
+#: model:ir.actions.report,print_report_name:account_debt_report.account_debt_report
+#: model:ir.actions.report,print_report_name:account_debt_report.account_debt_report_pdf
+msgid "'Debt Report - %s' % object.commercial_partner_id.name"
+msgstr "'Detalle de Deuda - %s' % object.commercial_partner_id.name"
 
 #. module: account_debt_report
 #: model:ir.module.module,description:base.module_account_debt_report
@@ -218,9 +230,39 @@ msgid "Account Debt Report Wizard"
 msgstr "Asistente de informe de deuda de cuenta"
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Account Summary (%s)"
+msgstr "Resumen de cuenta (%s)"
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__result_selection
 msgid "Account Type's"
 msgstr "Tipos de Cuentas"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Amount"
+msgstr "Importe"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Amount in Currency"
+msgstr "Monto Divisa"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Balance"
+msgstr "Saldo"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Balance in Currency"
+msgstr "Saldo Divisa"
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
@@ -260,6 +302,19 @@ msgstr "Creado en"
 
 #. module: account_debt_report
 #. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Current Account"
+msgstr "Cuenta Corriente"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+#: model_terms:ir.ui.view,arch_db:account_debt_report.report_debt_document
+msgid "Date"
+msgstr "Fecha"
+
+#. module: account_debt_report
+#. odoo-python
 #: code:addons/account_debt_report/wizard/account_debt_report_wizard.py:0
 msgid "Debe seleccionar por lo menos una moneda para el informe"
 msgstr "Debe seleccionar por lo menos una moneda para el informe"
@@ -287,6 +342,13 @@ msgid "Debt Report"
 msgstr "Detalle de Deuda"
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+#: model_terms:ir.ui.view,arch_db:account_debt_report.report_debt_document
+msgid "Description"
+msgstr "Descripción"
+
+#. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form
 msgid "Detallar desde"
 msgstr "Detallar desde"
@@ -303,9 +365,21 @@ msgid "Display Name"
 msgstr "Mostrar nombre"
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+#: model_terms:ir.ui.view,arch_db:account_debt_report.report_debt_document
+msgid "Due Date"
+msgstr "Venc."
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__email_format
 msgid "Email Attachment"
 msgstr "Adjunto del email"
+
+#. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_ir_actions_report__report_type
+msgid "Format"
+msgstr "Formato"
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__from_date
@@ -315,6 +389,12 @@ msgstr "Desde"
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__historical_full
 msgid "Historical Full"
+msgstr "Histórico"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "History"
 msgstr "Histórico"
 
 #. module: account_debt_report
@@ -413,6 +493,23 @@ msgid "Receivable and Payable Accounts"
 msgstr "Cuentas a Cobrar y Pagar"
 
 #. module: account_debt_report
+#: model:ir.model,name:account_debt_report.model_ir_actions_report
+msgid "Report Action"
+msgstr "Acción de reporte"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Residual"
+msgstr "Residual"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Residual in Currency"
+msgstr "Residual Divisa"
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__secondary_currency
 msgid "Secondary Currency"
 msgstr "Moneda Secundaria"
@@ -430,14 +527,31 @@ msgid "Show Invoice Detail"
 msgstr "Mostrar detalle de Facturas"
 
 #. module: account_debt_report
-#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__xls
-msgid "Spreadsheet (.xls)"
-msgstr "Planilla (.xls)"
+#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__xlsx
+msgid "Spreadsheet (.xlsx)"
+msgstr "Planilla (.xlsx)"
+
+#. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_ir_actions_report__report_type
+msgid ""
+"The type of the report that will be rendered, each one having its own "
+"rendering method. HTML means the report will be opened directly in your "
+"browser, PDF means the report will be generated and downloaded by the user."
+msgstr ""
+"El tipo de reporte que se renderizará. Cada uno tiene su propio método de "
+"renderizado. HTML significa que el reporte se abrirá directamente en tu "
+"navegador. PDF significa que el reporte se generará y el usuario lo "
+"descargará."
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__to_date
 msgid "To Date"
 msgstr "Hasta"
+
+#. module: account_debt_report
+#: model:ir.model.fields.selection,name:account_debt_report.selection__ir_actions_report__report_type__xlsx
+msgid "XLSX"
+msgstr "XLSX"
 
 #. module: account_debt_report
 #: model_terms:ir.ui.view,arch_db:account_debt_report.account_debt_report_wizard_form

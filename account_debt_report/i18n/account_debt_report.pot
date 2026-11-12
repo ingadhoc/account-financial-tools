@@ -4,16 +4,28 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 20.0+e\n"
+"Project-Id-Version: Odoo Server 20.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 20:59+0000\n"
-"PO-Revision-Date: 2026-11-11 20:59+0000\n"
+"POT-Creation-Date: 2026-11-12 13:24+0000\n"
+"PO-Revision-Date: 2026-11-12 13:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "%(partner)s as of %(date)s"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.actions.report,print_report_name:account_debt_report.account_debt_report
+#: model:ir.actions.report,print_report_name:account_debt_report.account_debt_report_pdf
+msgid "'Debt Report - %s' % object.commercial_partner_id.name"
+msgstr ""
 
 #. module: account_debt_report
 #: model:ir.module.module,description:base.module_account_debt_report
@@ -181,6 +193,7 @@ msgstr ""
 
 #. module: account_debt_report
 #: model:ir.actions.report,name:account_debt_report.account_debt_report
+#: model:ir.model,name:account_debt_report.model_account_debt_report
 #: model:ir.module.module,shortdesc:base.module_account_debt_report
 msgid "Account Debt Report"
 msgstr ""
@@ -196,8 +209,38 @@ msgid "Account Debt Report Wizard"
 msgstr ""
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Account Summary (%s)"
+msgstr ""
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__result_selection
 msgid "Account Type's"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Amount"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Amount in Currency"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Balance"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Balance in Currency"
 msgstr ""
 
 #. module: account_debt_report
@@ -238,6 +281,19 @@ msgstr ""
 
 #. module: account_debt_report
 #. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Current Account"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+#: model_terms:ir.ui.view,arch_db:account_debt_report.report_debt_document
+msgid "Date"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
 #: code:addons/account_debt_report/wizard/account_debt_report_wizard.py:0
 msgid "Debe seleccionar por lo menos una moneda para el informe"
 msgstr ""
@@ -259,9 +315,18 @@ msgid "Debt Detail {{ object.company_id.name }}"
 msgstr ""
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
 #: model:ir.actions.act_window,name:account_debt_report.action_account_debt_report_wizard
 #: model_terms:ir.ui.view,arch_db:account_debt_report.view_move_line_payment_tree
 msgid "Debt Report"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+#: model_terms:ir.ui.view,arch_db:account_debt_report.report_debt_document
+msgid "Description"
 msgstr ""
 
 #. module: account_debt_report
@@ -275,14 +340,28 @@ msgid "Detallar hasta"
 msgstr ""
 
 #. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report__display_name
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__display_name
+#: model:ir.model.fields,field_description:account_debt_report.field_ir_actions_report__display_name
 #: model:ir.model.fields,field_description:account_debt_report.field_res_partner__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+#: model_terms:ir.ui.view,arch_db:account_debt_report.report_debt_document
+msgid "Due Date"
+msgstr ""
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__email_format
 msgid "Email Attachment"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_ir_actions_report__report_type
+msgid "Format"
 msgstr ""
 
 #. module: account_debt_report
@@ -296,7 +375,15 @@ msgid "Historical Full"
 msgstr ""
 
 #. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "History"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report__id
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__id
+#: model:ir.model.fields,field_description:account_debt_report.field_ir_actions_report__id
 #: model:ir.model.fields,field_description:account_debt_report.field_res_partner__id
 msgid "ID"
 msgstr ""
@@ -304,7 +391,6 @@ msgstr ""
 #. module: account_debt_report
 #. odoo-python
 #: code:addons/account_debt_report/models/account_debt_report.py:0
-#: code:addons/account_debt_report/models/res_partner.py:0
 msgid "INITIAL BALANCE"
 msgstr ""
 
@@ -368,6 +454,23 @@ msgid "Receivable and Payable Accounts"
 msgstr ""
 
 #. module: account_debt_report
+#: model:ir.model,name:account_debt_report.model_ir_actions_report
+msgid "Report Action"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Residual"
+msgstr ""
+
+#. module: account_debt_report
+#. odoo-python
+#: code:addons/account_debt_report/models/account_debt_report.py:0
+msgid "Residual in Currency"
+msgstr ""
+
+#. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__secondary_currency
 msgid "Secondary Currency"
 msgstr ""
@@ -385,13 +488,26 @@ msgid "Show Invoice Detail"
 msgstr ""
 
 #. module: account_debt_report
-#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__xls
-msgid "Spreadsheet (.xls)"
+#: model:ir.model.fields.selection,name:account_debt_report.selection__account_debt_report_wizard__email_format__xlsx
+msgid "Spreadsheet (.xlsx)"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields,help:account_debt_report.field_ir_actions_report__report_type
+msgid ""
+"The type of the report that will be rendered, each one having its own "
+"rendering method. HTML means the report will be opened directly in your "
+"browser, PDF means the report will be generated and downloaded by the user."
 msgstr ""
 
 #. module: account_debt_report
 #: model:ir.model.fields,field_description:account_debt_report.field_account_debt_report_wizard__to_date
 msgid "To Date"
+msgstr ""
+
+#. module: account_debt_report
+#: model:ir.model.fields.selection,name:account_debt_report.selection__ir_actions_report__report_type__xlsx
+msgid "XLSX"
 msgstr ""
 
 #. module: account_debt_report
