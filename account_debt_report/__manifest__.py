@@ -26,9 +26,10 @@
     "license": "AGPL-3",
     "depends": [
         "account",
-        "report_aeroo",
+        "report_xlsx",
     ],
     "data": [
+        "report/account_debt_report_templates.xml",
         "report/account_debt_report.xml",
         "data/mail_template_data.xml",
         "security/ir.access.csv",

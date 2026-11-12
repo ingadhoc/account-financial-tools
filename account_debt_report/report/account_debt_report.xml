@@ -2,23 +2,16 @@
     <record id="account_debt_report" model="ir.actions.report">
         <field name="name">Account Debt Report</field>
         <field name="model">res.partner</field>
-        <field name="report_name">account_debt_report</field>
-        <field name="report_type">aeroo</field>
-        <field name="in_format">oo-ods</field>
-        <field name="out_format" ref="report_aeroo.report_mimetypes_xls_odt"/>
-        <field name="report_file">account_debt_report/report/account_debt_report.ods</field>
-        <field name="tml_source">file</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">account_debt_report.debt_xlsx</field>
+        <field name="print_report_name">'Debt Report - %s' % object.commercial_partner_id.name</field>
     </record>
 
-    <!-- same sheet, converted to PDF: it is what the email attaches -->
     <record id="account_debt_report_pdf" model="ir.actions.report">
         <field name="name">Account Debt Report (PDF)</field>
         <field name="model">res.partner</field>
-        <field name="report_name">account_debt_report_pdf</field>
-        <field name="report_type">aeroo</field>
-        <field name="in_format">oo-ods</field>
-        <field name="out_format" ref="report_aeroo.report_mimetypes_pdf_ods"/>
-        <field name="report_file">account_debt_report/report/account_debt_report.ods</field>
-        <field name="tml_source">file</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">account_debt_report.report_debt</field>
+        <field name="print_report_name">'Debt Report - %s' % object.commercial_partner_id.name</field>
     </record>
 </odoo>

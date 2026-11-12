@@ -54,9 +54,9 @@ class AccountDebtReportWizard(models.TransientModel):
     )
 
     email_format = fields.Selection(
-        [("xls", "Spreadsheet (.xls)"), ("pdf", "PDF")],
+        [("xlsx", "Spreadsheet (.xlsx)"), ("pdf", "PDF")],
         string="Email Attachment",
-        default="xls",
+        default="xlsx",
         required=True,
     )
 
@@ -78,10 +78,11 @@ class AccountDebtReportWizard(models.TransientModel):
         if not active_ids:
             return True
         partners = self.env["res.partner"].browse(active_ids)
+        # report_xlsx only sends the action context, where the options go, when data is not empty
         return (
             self.env.ref("account_debt_report.account_debt_report")
             .with_context(**self._get_report_context())
-            .report_action(partners)
+            .report_action(partners, data={"partner_ids": partners.ids}, config=False)
         )
 
     def send_by_email(self):

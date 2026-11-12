@@ -2,17 +2,18 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.fields import Domain
-from odoo.tools.misc import formatLang
+from odoo.tools.misc import format_date, formatLang
 
 
 class AccountDebtReport(models.AbstractModel):
     """Lines of the debt report of a partner.
 
     Every option comes from the context, which is the only channel shared by the
-    download and the email. Amounts are computed as numbers and handed to the
-    template as text with their currency symbol, since one sheet can mix currencies.
+    download and the email. The spreadsheet gets the amounts as numbers, each cell
+    formatted with its own currency, since one sheet can mix currencies; the PDF
+    gets them as text with their symbol.
     """
 
     _name = "account.debt.report"
@@ -180,6 +181,112 @@ class AccountDebtReport(models.AbstractModel):
             for key in ("amount_currency", "amount_residual_currency", "balance_currency"):
                 line[key] = self._format_amount(line[key], line["currency"], line["currency_name"])
         return lines
+
+    @api.model
+    def _get_columns(self):
+        """Amount columns of the report as (key, title), following the wizard options."""
+        ctx = self.env.context
+        company_currency = ctx.get("company_currency")
+        secondary_currency = ctx.get("secondary_currency")
+        # without any of the two, as when rendered with no context, both are shown
+        if not company_currency and not secondary_currency:
+            company_currency = secondary_currency = True
+        historical_full = ctx.get("historical_full")
+        columns = []
+        if company_currency:
+            columns.append(("amount", _("Amount")))
+            if not historical_full:
+                columns.append(("amount_residual", _("Residual")))
+            columns.append(("balance", _("Balance")))
+        if secondary_currency:
+            columns.append(("amount_currency", _("Amount in Currency")))
+            if not historical_full:
+                columns.append(("amount_residual_currency", _("Residual in Currency")))
+            columns.append(("balance_currency", _("Balance in Currency")))
+        return columns
+
+    @api.model
+    def _get_title(self, partner):
+        ctx = self.env.context
+        kind = _("History") if ctx.get("historical_full") else _("Current Account")
+        to_date = fields.Date.to_date(ctx.get("to_date")) or fields.Date.context_today(self)
+        return (
+            _("Account Summary (%s)", kind),
+            _("%(partner)s as of %(date)s", partner=partner.name, date=self._format_date(to_date)),
+        )
+
+    @api.model
+    def _format_date(self, date):
+        return format_date(self.env, date)
+
+    @api.model
+    def _get_xlsx_date_format(self):
+        """Spreadsheet date format matching the date format of the user language."""
+        lang = self.env["res.lang"]._get_data(code=self.env.lang or "en_US")
+        date_format = lang.date_format or "%m/%d/%Y"
+        for posix, excel in (("%d", "dd"), ("%m", "mm"), ("%Y", "yyyy"), ("%y", "yy"), ("%b", "mmm"), ("%B", "mmmm")):
+            date_format = date_format.replace(posix, excel)
+        return date_format
+
+    @api.model
+    def _get_xlsx_amount_format(self, currency=False, label=False):
+        """Number format with the currency inside the cell, so the number stays a number.
+
+        Negatives read "- $ 1.234,56" and the label always goes first, as in the PDF.
+        """
+        digits = currency.decimal_places if currency else 2
+        number = "#,##0" + ("." + "0" * digits if digits else "")
+        label = (label or (currency and (currency.symbol or currency.name)) or "").replace('"', "")
+        prefix = f"{label} " if label else ""
+        positive = f'"{prefix}"{number}' if prefix else number
+        return f'{positive};"- {prefix}"{number}'
+
+    @api.model
+    def _write_xlsx(self, workbook, partners):
+        """Debt of the commercial partner of each partner, one after the other."""
+        sheet = workbook.add_worksheet(_("Debt Report"))
+        bold = workbook.add_format({"bold": True})
+        header = workbook.add_format({"bold": True, "bottom": 1})
+        date_format = workbook.add_format({"num_format": self._get_xlsx_date_format()})
+        amount_formats = {}
+
+        def amount_format(currency, label):
+            key = (currency.id if currency else False, label or "")
+            if key not in amount_formats:
+                amount_formats[key] = workbook.add_format({"num_format": self._get_xlsx_amount_format(currency, label)})
+            return amount_formats[key]
+
+        columns = self._get_columns()
+        headers = [_("Date"), _("Due Date"), _("Description")] + [title for _key, title in columns]
+        sheet.set_column(0, 1, 12)
+        sheet.set_column(2, 2, 50)
+        sheet.set_column(3, 2 + len(columns), 18)
+        row = 0
+        for partner in partners.commercial_partner_id:
+            title, subtitle = self._get_title(partner)
+            sheet.write(row, 0, title, bold)
+            sheet.write(row + 1, 0, subtitle, bold)
+            row += 3
+            sheet.write_row(row, 0, headers, header)
+            row += 1
+            for line in self._compute_lines(partner):
+                for col, key in enumerate(("date", "date_maturity")):
+                    if line[key]:
+                        sheet.write_datetime(row, col, fields.Datetime.to_datetime(line[key]), date_format)
+                sheet.write(row, 2, line["name"])
+                for col, (key, _title) in enumerate(columns, start=3):
+                    if line[key] is False:
+                        continue
+                    if key.endswith("_currency"):
+                        cell_format = amount_format(line["currency"], line["currency_name"])
+                    else:
+                        cell_format = amount_format(line["company_currency"], False)
+                    sheet.write_number(row, col, line[key], cell_format)
+                row += 1
+                for detail_line in line["detail_lines"]:
+                    sheet.write(row, 2, detail_line)
+                    row += 1
+            row += 1
 
     @api.model
     def _compute_lines(self, partner):
