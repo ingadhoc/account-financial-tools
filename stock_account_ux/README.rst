@@ -101,6 +101,8 @@ Known limitations (by design)
   therefore identical to the standard entry: same entry, attributed. Right after the
   closing, each product's booked balance equals its inventory value. The manual
   "Value Stock Moves" wizard groups by account **and product** for the same reason.
+  The accrual entries generated with the closing name the product on their stock
+  lines too (one per order line); their counterpart stays grouped by account.
 
   A closing done with the *Movement Type* filter is attributed the same way, but
   with the contribution of **that origin** —the stock moves one is exact, since it
