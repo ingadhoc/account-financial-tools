@@ -54,6 +54,9 @@
         <field name="model">product.value</field>
         <field name="inherit_id" ref="stock_account.product_value_form_view"/>
         <field name="arch" type="xml">
+            <field name="value" position="attributes">
+                <attribute name="readonly">id</attribute>
+            </field>
             <field name="description" position="after">
                 <field name="adjustment"
                     widget="monetary"

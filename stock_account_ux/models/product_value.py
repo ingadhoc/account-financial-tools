@@ -5,6 +5,15 @@ from odoo.exceptions import UserError
 class ProductValue(models.Model):
     _inherit = "product.value"
 
+    def write(self, vals):
+        # The adjustment and the booked amount are set on create only, so a new value
+        # would not be followed by them.
+        if "value" in vals and any(pv.currency_id.compare_amounts(pv.value, vals["value"] or 0.0) for pv in self):
+            raise UserError(
+                self.env._("A value adjustment cannot be changed once created: create a new adjustment to correct it.")
+            )
+        return super().write(vals)
+
     def _get_booking_value(self):
         """Value this adjustment added to the inventory: what booking it on its own
         posts.

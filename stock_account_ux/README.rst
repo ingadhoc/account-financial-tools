@@ -162,6 +162,10 @@ adds:
   description, "Booked / Not Booked" and "Price Change / Move Adjustment" filters,
   and grouping by journal entry or date. A row opens the adjustment form, which
   also shows the adjustment and its journal entry.
+* An adjustment's value cannot be changed once it is created: a wrong one is
+  corrected with a new adjustment. Out of the box the form let it be edited, but
+  the edit only stored the new value: the adjustment and what gets booked kept the
+  old one, and the move took the new value only when something revalued it later.
 
 The domains live in Python (``action_open_variation_stock_moves``,
 ``action_open_variation_product_values``, ``action_open_account_ledger``), so the
