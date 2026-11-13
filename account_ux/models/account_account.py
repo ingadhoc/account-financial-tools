@@ -1,6 +1,7 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -35,3 +36,25 @@ class AccountAccount(models.Model):
                 rec.is_monetary = False
             else:
                 rec.is_monetary = True
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records.parent_id._set_as_parent_account()
+        return records
+
+    def write(self, vals):
+        if vals.get("active") and self.with_context(active_test=False).search_count(
+            [("parent_id", "in", self.ids)], limit=1
+        ):
+            raise UserError(_("You cannot unarchive an account that has child accounts."))
+        res = super().write(vals)
+        if vals.get("parent_id"):
+            self.parent_id._set_as_parent_account()
+        return res
+
+    def _set_as_parent_account(self):
+        """Parent accounts only group other accounts, so they are kept archived like the core charts do."""
+        if self.env["account.move.line"].sudo().search_count([("account_id", "in", self.ids)], limit=1):
+            raise UserError(_("You cannot use an account with journal items as parent account."))
+        self.filtered("active").write({"active": False})
