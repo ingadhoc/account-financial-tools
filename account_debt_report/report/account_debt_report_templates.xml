@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_debt_document">
+        <t t-call="web.external_layout">
+            <t t-set="report" t-value="partner.env['account.debt.report']"/>
+            <t t-set="columns" t-value="report._get_columns()"/>
+            <t t-set="title" t-value="report._get_title(partner)"/>
+            <div class="page">
+                <h4 t-out="title[0]"/>
+                <p><strong t-out="title[1]"/></p>
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th class="text-start">Date</th>
+                            <th class="text-start">Due Date</th>
+                            <th class="text-start">Description</th>
+                            <th t-foreach="columns" t-as="column" class="text-end" t-out="column[1]"/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="report._get_lines(partner)" t-as="line">
+                            <tr>
+                                <td class="text-nowrap"><t t-if="line['date']" t-out="report._format_date(line['date'])"/></td>
+                                <td class="text-nowrap"><t t-if="line['date_maturity']" t-out="report._format_date(line['date_maturity'])"/></td>
+                                <td t-out="line['name']"/>
+                                <td t-foreach="columns" t-as="column" class="text-end text-nowrap" t-out="line[column[0]] or ''"/>
+                            </tr>
+                            <tr t-foreach="line['detail_lines']" t-as="detail_line">
+                                <td/>
+                                <td/>
+                                <td t-out="detail_line"/>
+                                <td t-foreach="columns" t-as="column"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_debt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs.commercial_partner_id" t-as="partner">
+                <t t-set="o" t-value="partner"/>
+                <t t-call="account_debt_report.report_debt_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>
