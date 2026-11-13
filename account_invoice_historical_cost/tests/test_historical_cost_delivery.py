@@ -1,6 +1,10 @@
 # © 2026 ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import timedelta
+
+from freezegun import freeze_time
+from odoo import fields
 from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import new_test_user, tagged
 
@@ -311,9 +315,12 @@ class TestHistoricalCostDelivery(TestStockValuationCommon):
 
     def test_return_credit_note_uses_return_move_value(self):
         product = self.product_standard
-        product.standard_price = 50000.0
-        order = self._confirm_and_deliver(product, 1)
-        invoice = self._invoice_order(order)
+        # The delivery must be clearly before the cost change: the valuation
+        # replay compares dates truncated to the second.
+        with freeze_time(fields.Datetime.now() - timedelta(days=1)):
+            product.standard_price = 50000.0
+            order = self._confirm_and_deliver(product, 1)
+            invoice = self._invoice_order(order)
         line = self._product_line(invoice)
         self.assertAlmostEqual(line.historical_cost, 50000.0)
 
