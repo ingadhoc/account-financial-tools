@@ -144,10 +144,13 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
         self.assertEqual(len(invoice.debit_note_ids), 2)
         self.assertEqual((invoice.debit_note_ids - manual_note).surcharge_id, self.surcharge)
 
-        # A surcharge debit note created before surcharge_id existed is matched by date
+        # A surcharge debit note created before surcharge_id existed counts as charged, even with another date
+        # and after the rule changes
         legacy_invoice = self._create_posted_invoice(invoice_date)
-        legacy_note = self._create_debit_note(legacy_invoice, surcharge_date)
+        legacy_note = self._create_debit_note(legacy_invoice, self.today)
         legacy_note.invoice_line_ids = [Command.create({"product_id": self.product_surcharge.id, "price_unit": 100})]
+        self._run_cron()
+        self.surcharge.surcharge = 5
         self._run_cron()
         self.assertEqual(legacy_invoice.debit_note_ids, legacy_note)
 

@@ -127,16 +127,16 @@ class AccountMove(models.Model):
         self.ensure_one()
         debit_notes = self.debit_note_ids
         product = self.company_id.payment_term_surcharge_product_id
-        # Surcharge debit notes created before surcharge_id existed are matched by date
-        legacy_dates = debit_notes.filtered(
-            lambda n: not n.surcharge_id and product in n.invoice_line_ids.product_id
-        ).mapped("invoice_date")
-        pending = []
-        for surcharge in self.invoice_payment_term_id.surcharge_ids - debit_notes.surcharge_id:
-            surcharge_date = surcharge._calculate_date(self.invoice_date)
-            if surcharge_date not in legacy_dates:
-                pending.append((surcharge_date, surcharge))
-        return sorted(pending, key=lambda p: p[0])
+        # Surcharge debit notes created before surcharge_id existed may have another date than their rule
+        # (e.g. changed when posted), so each one covers the earliest rule not charged yet
+        legacy_count = len(
+            debit_notes.filtered(lambda n: not n.surcharge_id and product in n.invoice_line_ids.product_id)
+        )
+        pending = [
+            (surcharge._calculate_date(self.invoice_date), surcharge)
+            for surcharge in self.invoice_payment_term_id.surcharge_ids - debit_notes.surcharge_id
+        ]
+        return sorted(pending, key=lambda p: p[0])[legacy_count:]
 
     @api.depends(
         "invoice_date",
