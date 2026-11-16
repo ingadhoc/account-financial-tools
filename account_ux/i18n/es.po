@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 12:15+0000\n"
-"PO-Revision-Date: 2026-04-13 22:41+0000\n"
+"POT-Creation-Date: 2026-11-16 18:07+0000\n"
+"PO-Revision-Date: 2026-11-16 18:07+0000\n"
 "Last-Translator: carla spiaggi <sca@adhoc.inc>\n"
 "Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-"
 "financial-tools-19-0/account-financial-tools-19-0-account_ux/es/>\n"
@@ -107,7 +107,7 @@ msgstr "Grupo de cuenta"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_move_reversal
 msgid "Account Move Reversal"
-msgstr ""
+msgstr "Reversión de movimiento de cuenta"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_company_form
@@ -178,6 +178,21 @@ msgstr "Precio Promedio en moneda de la compañía"
 #: code:addons/account_ux/models/res_company.py:0
 msgid "Batch Payment Number Sequence"
 msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_res_company__block_intercompany_conciliation
+msgid "Block Inter-Company Reconciliation"
+msgstr "Bloquear conciliación entre compañías"
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__res_company__block_intercompany_conciliation__all
+msgid "Block always"
+msgstr "Bloquear siempre"
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__res_company__block_intercompany_conciliation__other_legal_entity
+msgid "Block between different legal entities"
+msgstr "Bloquear entre entidades fiscales distintas"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__branch_order
@@ -254,7 +269,7 @@ msgstr "Ajustes de configuración"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Contacto"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_move_line__user_id
@@ -296,7 +311,7 @@ msgstr "Entrada en el Diario de Crédito"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_currency
 msgid "Currency"
-msgstr ""
+msgstr "Moneda"
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_change_currency__currency_from_id
@@ -426,6 +441,11 @@ msgstr "Importe de Descuento"
 #: model:ir.model.fields,field_description:account_ux.field_validate_account_move__display_name
 msgid "Display Name"
 msgstr "Nombre para mostrar"
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__res_company__block_intercompany_conciliation__none
+msgid "Don't block"
+msgstr "No bloquear"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_move_line_filter
@@ -690,7 +710,7 @@ msgstr "Contacto"
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment_register
 msgid "Pay"
-msgstr ""
+msgstr "Pagar"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_account_payment_method_line
@@ -718,6 +738,16 @@ msgid ""
 msgstr ""
 "Secuencia de prioridad para sucursales. Número bajo si soy una sucursal, "
 "número alto si soy una matriz"
+
+#. module: account_ux
+#: model:res.groups,name:account_ux.group_read_branch_debt
+msgid "Read and collect the debt of other branches"
+msgstr "Ver y cobrar la deuda de otras sucursales"
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_branch_debt_read_mixin
+msgid "Readable from the debt of other branches"
+msgstr "Legible desde la deuda de otras sucursales"
 
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
@@ -791,6 +821,19 @@ msgstr "Enviar recibo por correo electrónico"
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__sequence
 msgid "Sequence"
 msgstr "Secuencia"
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_res_company__block_intercompany_conciliation
+msgid ""
+"Set on the root of a branch tree. It decides which journal items of different companies can be reconciled together, and whose debt the users of the 'Read and collect the debt of other branches' group can read and collect, even from companies they have no access to:\n"
+"* Don't block: every company of the tree.\n"
+"* Block always: none, each company only reconciles its own journal items.\n"
+"* Block between different legal entities: only the companies of the same legal entity."
+msgstr ""
+"Se configura en la raíz de un árbol de sucursales. Define qué apuntes de compañías distintas se pueden conciliar entre sí, y qué deuda pueden ver y cobrar los usuarios del grupo 'Ver y cobrar la deuda de otras sucursales', incluso de compañías a las que no tienen acceso:\n"
+"* No bloquear: todas las compañías del árbol.\n"
+"* Bloquear siempre: ninguna, cada compañía concilia solo sus propios apuntes.\n"
+"* Bloquear entre entidades fiscales distintas: solo las compañías de la misma entidad fiscal."
 
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__shared_to_branches
@@ -986,9 +1029,14 @@ msgid "Update Taxes"
 msgstr "Actualizar impuestos"
 
 #. module: account_ux
+#: model:ir.model,name:account_ux.model_res_users
+msgid "User"
+msgstr "Usuario"
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_validate_account_move
 msgid "Validate Account Move"
-msgstr ""
+msgstr "Validar asiento contable"
 
 #. module: account_ux
 #: model:ir.actions.act_window,name:account_ux.action_account_moves_vendors_ledger
@@ -1176,81 +1224,3 @@ msgid ""
 "ID cannot reappear below a break: «%(company)s» has to declare the same as «%"
 "(parent)s» or something other than %(vat)s."
 msgstr ""
-
-#~ msgid ""
-#~ "When reconciling debt with secondary currency, if the account doesn't "
-#~ "have a currency configured, then reconcile on company currency. This will "
-#~ "avoid all the automatic exchange rates journal entries by forcing  same "
-#~ "rate of the original document being reconcile"
-#~ msgstr ""
-#~ "Al conciliar deuda con moneda secundaria, si la cuenta contable no tiene "
-#~ "una moneda configurada, conciliará en la moneda de la compañía. Esto "
-#~ "evitará el registro automático de diferencias de cambio al forzar el tipo "
-#~ "de cambio a la del documento original conciliado"
-
-#~ msgid ""
-#~ "If enabled, this journal will be available for use in child companies "
-#~ "(branches). This allows subsidiaries to use the parent company's journals "
-#~ "for their transactions."
-#~ msgstr ""
-#~ "Si está habilitado, este diario estará disponible para su uso en las "
-#~ "compañías hijas (sucursales). Esto permite que las subsidiarias utilicen "
-#~ "los diarios de la compañía principal para sus transacciones."
-
-#~ msgid "Shared To Branches"
-#~ msgstr "Compartido con Sucursales"
-
-#~ msgid ""
-#~ "<b>Error sending the invoice</b>: partner %s does not have an email "
-#~ "address defined."
-#~ msgstr ""
-#~ "<b>Error al enviar la factura</b>: el contacto %s no tiene una dirección "
-#~ "de correo electrónico definida."
-
-#~ msgid "ERROR: Invoice was not sent via email"
-#~ msgstr "ERROR: La factura no fue enviada por correo electrónico"
-
-#~ msgid "Please check the email template associated with the invoice journal."
-#~ msgstr ""
-#~ "Compruebe la plantilla de correo electrónico asociada con el diario de "
-#~ "facturas."
-
-#~ msgid ""
-#~ "The accounting plan will be reloaded, creating accounts, taxes, and other "
-#~ "records that may be missing. It is recommended to perform this action in "
-#~ "a testing environment before implementing it in production to avoid "
-#~ "potential inconsistencies"
-#~ msgstr ""
-#~ "El plan contable se recargará, creando cuentas, impuestos y otros "
-#~ "registros que puedan faltar. Se recomienda realizar esta acción en un "
-#~ "entorno de prueba antes de implementarla en producción para evitar "
-#~ "posibles inconsistencias"
-
-#~ msgid ""
-#~ "<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
-#~ "                    <span> </span>"
-#~ msgstr ""
-#~ "<span invisible=\"inverse_invoice_currency_rate != 1.0\">1.00</span>\n"
-#~ "                    <span> </span>"
-
-#~ msgid "<span> = </span>"
-#~ msgstr "<span> = </span>"
-
-#~ msgid "<span>1.00 </span>"
-#~ msgstr "<span>1.00 </span>"
-
-#~ msgid "Change Currency Rate"
-#~ msgstr "Modificar Tipo de Cambio"
-
-#~ msgid "Change Rate"
-#~ msgstr "Modificar Tipo de Cambio"
-
-#~ msgid "Currency rate changed from '%s' to '%s' . Currency rate forced"
-#~ msgstr ""
-#~ "El tipo de cambio se modificó de '%s' a '%s' . Tipo de cambio forzado"
-
-#~ msgid "Edit Rate"
-#~ msgstr "Modificar Tasa"
-
-#~ msgid "account.move.change.rate"
-#~ msgstr "Cambio de tipo de cambio en el asiento contable"
