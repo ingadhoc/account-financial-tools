@@ -8,7 +8,7 @@
             <div class="page">
                 <h4 t-out="title[0]"/>
                 <p><strong t-out="title[1]"/></p>
-                <table class="table table-sm o_main_table">
+                <table class="table table-sm o_main_table" style="font-size: 10px;">
                     <thead>
                         <tr>
                             <th class="text-start">Date</th>
