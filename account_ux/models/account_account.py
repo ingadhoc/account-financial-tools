@@ -15,6 +15,13 @@ class AccountAccount(models.Model):
         compute="_compute_is_monetary",
         readonly=False,
     )
+    child_ids = fields.One2many("account.account", "parent_id", string="Child Accounts", context={"active_test": False})
+    is_parent_account = fields.Boolean(compute="_compute_is_parent_account", store=True)
+
+    @api.depends("child_ids")
+    def _compute_is_parent_account(self):
+        for rec in self:
+            rec.is_parent_account = bool(rec.child_ids)
 
     @api.depends("account_type")
     def _compute_is_monetary(self):

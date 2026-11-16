@@ -56,3 +56,25 @@ class TestParentAccounts(AccountTestInvoicingCommon):
         child.parent_id = False
         parent.active = True
         self.assertTrue(parent.active)
+
+    def test_is_parent_account_follows_children(self):
+        parent = self._new_account("9100")
+        self.assertFalse(parent.is_parent_account)
+        child = self._new_account("9101", parent_id=parent.id)
+        self.assertTrue(parent.is_parent_account)
+        child.active = False
+        self.assertTrue(parent.is_parent_account)
+        child.parent_id = False
+        self.assertFalse(parent.is_parent_account)
+
+    def test_inactive_filter_excludes_parents(self):
+        parent = self._new_account("9100")
+        self._new_account("9101", parent_id=parent.id)
+        unused = self._new_account("9200", active=False)
+        Account = self.env["account.account"]
+        inactive = Account.search([("active", "=", False), ("is_parent_account", "=", False)])
+        self.assertIn(unused, inactive)
+        self.assertNotIn(parent, inactive)
+        parents = Account.search([("is_parent_account", "=", True), ("active", "in", [True, False])])
+        self.assertIn(parent, parents)
+        self.assertNotIn(unused, parents)
