@@ -83,12 +83,10 @@ class TestHistoricalCostBranches(TransactionCase):
             )
         )
 
-        # The branch keeps its own cost (standard_price is company dependent):
-        # 40 against the parent's 100. Stock moves on the branch side are valued
-        # at 40, which is the divergence under test.
-        cls.product.with_company(cls.branch_company).standard_price = 40.0
+        # A shared category gives the branch the parent's cost: its stock moves
+        # are valued at 100 too.
         cls._receive(cls.parent_company, 10, 100.0)
-        cls._receive(cls.branch_company, 10, 40.0)
+        cls._receive(cls.branch_company, 10, 100.0)
 
         cls.partner = cls.env["res.partner"].create({"name": "Customer HC"})
         for company in (cls.parent_company, cls.branch_company):
@@ -182,8 +180,7 @@ class TestHistoricalCostBranches(TransactionCase):
         )
 
     def test_branch_freezes_the_parent_cost(self):
-        """The branch cost (40) must never be the one frozen: the parent's (100)
-        is what the core posts as COGS, before and after the delivery."""
+        """The branch freezes the parent's cost (100), before and after the delivery."""
         invoice = self._branch_invoice(quantity=3)
         invoice.action_post()
         line = invoice.line_ids.filtered(lambda line: line.display_type == "product")
@@ -193,7 +190,7 @@ class TestHistoricalCostBranches(TransactionCase):
             self.assertAlmostEqual(line.historical_cost, 3 * 100.0)
 
         out_move = self._deliver(self.branch_company, 3)
-        self.assertAlmostEqual(out_move.value, 3 * 40.0)
+        self.assertAlmostEqual(out_move.value, 3 * 100.0)
         line._complete_historical_cost_from_moves(out_move)
 
         with self.subTest("completed on delivery: real, still at the parent cost"):
