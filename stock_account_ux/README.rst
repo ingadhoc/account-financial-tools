@@ -35,6 +35,9 @@ audit inventory valuation from the same product movement view.
   a move an earlier closing left out — because that closing was filtered by product
   or by Movement Type — is booked by the next full closing and is linked to it,
   however old it is. Moves already booked by a posted entry keep it.
+* Under perpetual valuation the invoice is searched through the move's own sale or
+  purchase line, not through the picking: in a delivery of two products where only
+  one is invoiced, the other move stays not booked.
 
 Filters on the Inventory Valuation report
 ------------------------------------------
@@ -49,8 +52,9 @@ report (``account.stock.valuation.report``):
   Stock Variation section and is limited to *unaccounted* records.
 
 Product, Category, Valuation Method and Valuation Type scope the three sections
-(Initial Balance, Stock Variation, Ending Stock). With no filters selected the
-report behaves exactly like the standard one.
+(Initial Balance, Stock Variation, Ending Stock) and the Accruals section. Movement
+Type leaves the Accruals out: they are neither stock moves nor value adjustments.
+With no filters selected the report behaves exactly like the standard one.
 
 **Movement Type keeps the report balanced.** It breaks the Stock Variation down by
 origin, and Ending Stock is then projected as *Initial Balance + filtered
@@ -65,7 +69,7 @@ flow. The two projections are complementary and add up to the real state.
 report posts what is on screen:
 
 * Product / Category / Method / Valuation Type → a *partial closing* limited to
-  those products; the rest stays open.
+  those products, with the accruals of those products; the rest stays open.
 * Movement Type → a closing limited to that *origin* of the variation (only the
   stock moves portion, or only the value adjustments one), leaving the other one
   pending. Both origins are complementary and add up to the full closing, and each
@@ -101,6 +105,8 @@ Known limitations (by design)
   therefore identical to the standard entry: same entry, attributed. Right after the
   closing, each product's booked balance equals its inventory value. The manual
   "Value Stock Moves" wizard groups by account **and product** for the same reason.
+  The accrual entries generated with the closing name the product on their stock
+  lines too (one per order line); their counterpart stays grouped by account.
 
   A closing done with the *Movement Type* filter is attributed the same way, but
   with the contribution of **that origin** —the stock moves one is exact, since it
@@ -122,13 +128,14 @@ Known limitations (by design)
   generated with no filter.
 * **Movement Type is a breakdown, and "Product Value" is the remainder.** The
   Stock Moves component adds up the ``value`` of the unaccounted moves, which is
-  what the inventory is worth for the three costing methods — including standard
-  cost, where a normal receipt is already valued at the standard cost and not at
-  what was paid. A move with a manual adjustment stays in its type with its final
-  value, adjustment included; under standard cost, where the adjustment does not
-  move the inventory, with the value it had before it. "Product Value" is then the
-  remainder: the adjustments with no unaccounted move (cost changes, adjustments of
-  moves already booked), plus location reclassifications and FIFO/AVCO rounding.
+  what the inventory is worth for the three costing methods. Under standard cost a
+  purchase receipt is valued at what was paid (the purchase order price, then the
+  bill price), not at the standard cost, as in Odoo 20. A move with a manual
+  adjustment stays in its type with its final value, adjustment included; under
+  standard cost, where the adjustment does not move the inventory, with the value it
+  had before it. "Product Value" is then the remainder: the adjustments with no
+  unaccounted move (cost changes, adjustments of moves already booked), plus location
+  reclassifications and FIFO/AVCO rounding.
   Both components always add up to the native variation.
 * **A cost change revalues the unaccounted moves.** Its difference on stock not
   booked yet stays inside the value of those moves (Stock Moves); "Product Value"
@@ -162,6 +169,10 @@ adds:
   description, "Booked / Not Booked" and "Price Change / Move Adjustment" filters,
   and grouping by journal entry or date. A row opens the adjustment form, which
   also shows the adjustment and its journal entry.
+* An adjustment's value cannot be changed once it is created: a wrong one is
+  corrected with a new adjustment. Out of the box the form let it be edited, but
+  the edit only stored the new value: the adjustment and what gets booked kept the
+  old one, and the move took the new value only when something revalued it later.
 
 The domains live in Python (``action_open_variation_stock_moves``,
 ``action_open_variation_product_values``, ``action_open_account_ledger``), so the

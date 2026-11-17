@@ -197,3 +197,16 @@ class TestProductValueBooking(TestStockValuationUXCommon):
         action = self.price_change.action_value_product_values()
         self.assertEqual(action["res_model"], "stock.move.valuation")
         self.assertEqual(action["context"]["default_product_value_ids"], self.price_change.ids)
+
+    # -- Edition -----------------------------------------------------------------
+    def test_adjustment_value_cannot_be_changed(self):
+        """A wrong adjustment is corrected with a new one: an edited value would not be
+        followed by the adjustment nor by what gets booked."""
+        adjustment = self.env["product.value"].create({"move_id": self.move.id, "value": 150.0})
+        booking_value = adjustment._get_booking_value()
+        with self.assertRaises(UserError):
+            adjustment.value = 400.0
+        # Saving the form with the same value, or other fields, still works.
+        adjustment.write({"value": 150.0, "description": "Checked"})
+        self.assertAlmostEqual(adjustment.value, 150.0)
+        self.assertAlmostEqual(adjustment._get_booking_value(), booking_value)

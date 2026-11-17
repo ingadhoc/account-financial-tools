@@ -6,7 +6,12 @@ from odoo.fields import Domain
 from odoo.tools import SQL
 from odoo.tools.misc import formatLang
 
-from ..report.stock_valuation_report import LINE_TYPE_PRODUCT_VALUE, LINE_TYPE_STOCK_MOVE, STOCK_MOVE_TYPES_CTX
+from ..report.stock_valuation_report import (
+    ACCRUAL_PRODUCT_CTX,
+    LINE_TYPE_PRODUCT_VALUE,
+    LINE_TYPE_STOCK_MOVE,
+    STOCK_MOVE_TYPES_CTX,
+)
 
 # Context key scoping the closing to a set of products (partial closing).
 CLOSING_PRODUCT_CTX = "stock_valuation_closing_product_ids"
@@ -157,6 +162,8 @@ class ResCompany(models.Model):
             self = self.with_context(**{STOCK_MOVE_TYPES_CTX: stock_move_types})
         if line_types:
             self = self.with_context(**{CLOSING_LINE_TYPES_CTX: line_types})
+            # Accruals are neither stock moves nor value adjustments.
+            include_accruals = False
         # Partial closing: scope it to the products matching the filters.
         if any([product_ids, categ_ids, cost_methods, valuations]):
             date = fields.Date.from_string(at_date) if isinstance(at_date, str) else at_date
@@ -167,7 +174,7 @@ class ResCompany(models.Model):
                 self, date, product_ids, categ_ids, cost_methods, valuations
             )
             self._check_partial_closing_attribution(products, date)
-            self = self.with_context(**{CLOSING_PRODUCT_CTX: products.ids})
+            self = self.with_context(**{CLOSING_PRODUCT_CTX: products.ids, ACCRUAL_PRODUCT_CTX: products.ids})
         action = super().action_close_stock_valuation(
             at_date=at_date,
             auto_post=auto_post,
@@ -212,6 +219,19 @@ class ResCompany(models.Model):
             if product_values:
                 product_values.account_move_id = closing_move.id
         return action
+
+    def _get_accrual_candidate_lines(self, date=False):
+        """Accruals limited to the products of the report filters or of the partial
+        closing (``ACCRUAL_PRODUCT_CTX``)."""
+        candidates = super()._get_accrual_candidate_lines(date=date)
+        product_ids = self.env.context.get(ACCRUAL_PRODUCT_CTX)
+        if product_ids is None:
+            return candidates
+        product_ids = set(product_ids)
+        return {
+            accrual_type: lines.filtered(lambda line: line.product_id.id in product_ids)
+            for accrual_type, lines in candidates.items()
+        }
 
     def _get_closing_move_from_action(self, action):
         """The inventory closing entry the standard action opens, among the accrual entries

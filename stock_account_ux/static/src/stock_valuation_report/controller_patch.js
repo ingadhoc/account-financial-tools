@@ -252,10 +252,9 @@ patch(StockValuationReportController.prototype, {
             stock_move_types: state.stockMoveTypes,
             auto_post: true,
         };
-        // The accruals are company-wide: they are only booked by an unfiltered closing.
-        kwargs.include_accruals = !Object.values(kwargs).some(
-            (value) => Array.isArray(value) && value.length
-        );
+        // The accruals follow the product filters, and are left out with the Movement
+        // Type filter: they are neither stock moves nor value adjustments.
+        kwargs.include_accruals = !state.lineTypes.length && !state.stockMoveTypes.length;
         const date = serializeDate(this.state.date);
         if (date != serializeDate(DateTime.now())) {
             kwargs.at_date = date;

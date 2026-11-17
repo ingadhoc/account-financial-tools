@@ -17,6 +17,9 @@ STOCK_MOVE_TYPES_CTX = "stock_valuation_stock_move_types"
 # Context key making the quantity search of products include archived ones, like
 # ``_get_valuation_product_domain`` does.
 INCLUDE_ARCHIVED_QTY_CTX = "stock_valuation_include_archived_qty"
+# Context key scoping the accruals to a set of products (report filters and partial
+# closing), read by ``res.company._get_accrual_candidate_lines``.
+ACCRUAL_PRODUCT_CTX = "stock_valuation_accrual_product_ids"
 
 
 class StockValuationReport(models.AbstractModel):
@@ -85,7 +88,9 @@ class StockValuationReport(models.AbstractModel):
         MAINTENANCE NOTE: the filtered path is a copy of
         ``account/report/account_stock_valuation_report.py::_get_report_data`` (v20.0) and
         has to be re-synced on Odoo upgrades. ``test_no_filters_matches_filter_all``
-        covers that drift. The standard Accruals section is not built here.
+        covers that drift. The Accruals section follows the product filters, and is left
+        out with the Movement Type filter: accruals are neither stock moves nor value
+        adjustments.
 
         Being a copy, it does NOT go through the standard ``_get_report_data``: a module
         that extends the report by overriding that method would be silently skipped
@@ -161,6 +166,17 @@ class StockValuationReport(models.AbstractModel):
             report_data["inventory_loss"] = inventory_loss
             account_ids.update(line["account_id"] for line in inventory_loss["lines"])
 
+        pending_cogs_vals = []
+        if not line_types:
+            accrual, pending_cogs_vals = self._format_accrual_data(
+                company.with_context(**{ACCRUAL_PRODUCT_CTX: valued_products.ids})._get_accrual_data(
+                    date=date, post=False
+                )
+            )
+            if accrual:
+                account_ids.update(self._get_line_account_ids(accrual["lines"]))
+                report_data["accrual"] = accrual
+
         # -- (B) Stock Variation section ---------------------------------------
         if line_types:
             # Movement Type filter: the variation is broken down per origin. Stock
@@ -192,8 +208,16 @@ class StockValuationReport(models.AbstractModel):
             # computed above, not by delegating to the standard: that one recomputes the
             # balance on its own, so it would bring back the whole account balance and the
             # report would not add up.
+            # The pending COGS of the accruals are netted as in the standard report.
             stock_valuation_account_vals = self._get_variation_aml_vals(
-                company, self._get_total_variation_balance(company, date, inventory_data, accounting_data)
+                company,
+                self._get_total_variation_balance(
+                    company,
+                    date,
+                    inventory_data,
+                    accounting_data,
+                    extra_aml_vals_list=company._get_location_valuation_vals(date) + pending_cogs_vals,
+                ),
             )
 
         account_ids.update(vals["account_id"] for vals in stock_valuation_account_vals)
