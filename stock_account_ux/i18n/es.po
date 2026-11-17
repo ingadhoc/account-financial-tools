@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-30 18:15+0000\n"
-"PO-Revision-Date: 2026-10-30 18:15+0000\n"
+"POT-Creation-Date: 2026-11-17 14:24+0000\n"
+"PO-Revision-Date: 2026-11-17 14:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -63,6 +63,12 @@ msgid "%(label)s - %(product)s"
 msgstr "%(label)s - %(product)s"
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_move_entries/move_entries_field.js:0
+msgid "%s Journal Entries"
+msgstr "%s asientos contables"
+
+#. module: stock_account_ux
 #: model:ir.module.module,description:base.module_stock_account_ux
 msgid ""
 ".. |company| replace:: ADHOC SA\n"
@@ -102,6 +108,9 @@ msgid ""
 "  a move an earlier closing left out — because that closing was filtered by product\n"
 "  or by Movement Type — is booked by the next full closing and is linked to it,\n"
 "  however old it is. Moves already booked by a posted entry keep it.\n"
+"* Under perpetual valuation the invoice is searched through the move's own sale or\n"
+"  purchase line, not through the picking: in a delivery of two products where only\n"
+"  one is invoiced, the other move stays not booked.\n"
 "\n"
 "Filters on the Inventory Valuation report\n"
 "------------------------------------------\n"
@@ -116,8 +125,9 @@ msgid ""
 "  Stock Variation section and is limited to *unaccounted* records.\n"
 "\n"
 "Product, Category, Valuation Method and Valuation Type scope the three sections\n"
-"(Initial Balance, Stock Variation, Ending Stock). With no filters selected the\n"
-"report behaves exactly like the standard one.\n"
+"(Initial Balance, Stock Variation, Ending Stock) and the Accruals section. Movement\n"
+"Type leaves the Accruals out: they are neither stock moves nor value adjustments.\n"
+"With no filters selected the report behaves exactly like the standard one.\n"
 "\n"
 "**Movement Type keeps the report balanced.** It breaks the Stock Variation down by\n"
 "origin, and Ending Stock is then projected as *Initial Balance + filtered\n"
@@ -132,7 +142,7 @@ msgid ""
 "report posts what is on screen:\n"
 "\n"
 "* Product / Category / Method / Valuation Type → a *partial closing* limited to\n"
-"  those products; the rest stays open.\n"
+"  those products, with the accruals of those products; the rest stays open.\n"
 "* Movement Type → a closing limited to that *origin* of the variation (only the\n"
 "  stock moves portion, or only the value adjustments one), leaving the other one\n"
 "  pending. Both origins are complementary and add up to the full closing, and each\n"
@@ -168,6 +178,8 @@ msgid ""
 "  therefore identical to the standard entry: same entry, attributed. Right after the\n"
 "  closing, each product's booked balance equals its inventory value. The manual\n"
 "  \"Value Stock Moves\" wizard groups by account **and product** for the same reason.\n"
+"  The accrual entries generated with the closing name the product on their stock\n"
+"  lines too (one per order line); their counterpart stays grouped by account.\n"
 "\n"
 "  A closing done with the *Movement Type* filter is attributed the same way, but\n"
 "  with the contribution of **that origin** —the stock moves one is exact, since it\n"
@@ -189,13 +201,19 @@ msgid ""
 "  generated with no filter.\n"
 "* **Movement Type is a breakdown, and \"Product Value\" is the remainder.** The\n"
 "  Stock Moves component adds up the ``value`` of the unaccounted moves, which is\n"
-"  what the inventory is worth for the three costing methods — including standard\n"
-"  cost, where a normal receipt is already valued at the standard cost and not at\n"
-"  what was paid. Moves that carry a manual adjustment are left out (a\n"
-"  ``product.value`` points at them) and their contribution is taken by the other\n"
-"  component. \"Product Value\" is then the remainder, so besides the value\n"
-"  adjustments it also absorbs location reclassifications and FIFO/AVCO rounding.\n"
+"  what the inventory is worth for the three costing methods. Under standard cost a\n"
+"  purchase receipt is valued at what was paid (the purchase order price, then the\n"
+"  bill price), not at the standard cost, as in Odoo 20. A move with a manual\n"
+"  adjustment stays in its type with its final value, adjustment included; under\n"
+"  standard cost, where the adjustment does not move the inventory, with the value it\n"
+"  had before it. \"Product Value\" is then the remainder: the adjustments with no\n"
+"  unaccounted move (cost changes, adjustments of moves already booked), plus location\n"
+"  reclassifications and FIFO/AVCO rounding.\n"
 "  Both components always add up to the native variation.\n"
+"* **A cost change revalues the unaccounted moves.** Its difference on stock not\n"
+"  booked yet stays inside the value of those moves (Stock Moves); \"Product Value\"\n"
+"  only gets the difference on stock already booked. In v19 the whole difference\n"
+"  went to \"Product Value\".\n"
 "\n"
 "Drill-down from the report to the underlying detail\n"
 "---------------------------------------------------\n"
@@ -209,7 +227,8 @@ msgid ""
 "  origins of the difference: **Unaccounted Stock Moves** (same scope as the Stock\n"
 "  Moves component: done moves inside the valued perimeter, with no entry, up to\n"
 "  the report date) and **Unaccounted Value Adjustments** (the ``product.value``\n"
-"  records with no entry). Both are scoped to the account of the line and honour\n"
+"  records with no entry and something to book, left out the ones of unaccounted\n"
+"  moves, which are part of the move). Both are scoped to the account of the line and honour\n"
 "  the report's active filters.\n"
 "* **Initial Balance** account lines now open the **General Ledger** of *that*\n"
 "  account up to the report date. The General Ledger lives in ``account_reports``\n"
@@ -223,6 +242,10 @@ msgid ""
 "  description, \"Booked / Not Booked\" and \"Price Change / Move Adjustment\" filters,\n"
 "  and grouping by journal entry or date. A row opens the adjustment form, which\n"
 "  also shows the adjustment and its journal entry.\n"
+"* An adjustment's value cannot be changed once it is created: a wrong one is\n"
+"  corrected with a new adjustment. Out of the box the form let it be edited, but\n"
+"  the edit only stored the new value: the adjustment and what gets booked kept the\n"
+"  old one, and the move took the new value only when something revalued it later.\n"
 "\n"
 "The domains live in Python (``action_open_variation_stock_moves``,\n"
 "``action_open_variation_product_values``, ``action_open_account_ledger``), so the\n"
@@ -393,10 +416,30 @@ msgid ""
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/product_value.py:0
+msgid ""
+"A value adjustment cannot be changed once created: create a new adjustment "
+"to correct it."
+msgstr ""
+"Un ajuste de valor no se puede modificar una vez creado: cree un ajuste "
+"nuevo para corregirlo."
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_account_account
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__account_id
 msgid "Account"
 msgstr "Cuenta"
+
+#. module: stock_account_ux
+#: model:ir.model,name:stock_account_ux.model_account_accrued_orders_wizard
+msgid "Accrued Orders Wizard"
+msgstr "Asistente de órdenes devengadas"
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__all_account_move_ids
+msgid "All Journal Entries"
+msgstr "Todos los asientos contables"
 
 #. module: stock_account_ux
 #. odoo-javascript
@@ -553,6 +596,17 @@ msgstr "Pérdida de Inventario"
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__journal_id
 msgid "Journal"
 msgstr "Diario"
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__account_move_count
+msgid "Journal Entries Count"
+msgstr "Cantidad de asientos contables"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/stock_move.py:0
+msgid "Journal Entries of %s"
+msgstr "Asientos contables de %s"
 
 #. module: stock_account_ux
 #. odoo-python
@@ -978,3 +1032,9 @@ msgid ""
 "You selected only some lines of %(count)s moves. Valuation goes by move, so "
 "they are valued whole: %(references)s"
 msgstr "Seleccionaste solo algunas líneas de %(count)s movimientos. La valuación es por movimiento, así que se valúan enteros: %(references)s"
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/account_move.py:0
+msgid "id"
+msgstr ""
