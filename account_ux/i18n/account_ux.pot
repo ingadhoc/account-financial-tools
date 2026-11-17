@@ -993,7 +993,7 @@ msgid ""
 "\n"
 "Careful with how the automatic detection picks one, because it is not by sequence. Odoo sorts the candidates by how deep the owning company sits in the branch tree first, and only then by sequence: a position of the branch you are standing in wins over one of its parent whatever the sequences say, and the sequence only decides between positions of the same company.\n"
 "\n"
-"This scope only narrows the automatic detection. A position stays selectable by hand and keeps working in the company that owns it."
+"This scope narrows the automatic detection. A position keeps working in the documents that already use it and in the company that owns it."
 msgstr ""
 
 #. module: account_ux
