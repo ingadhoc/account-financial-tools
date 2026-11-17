@@ -363,6 +363,11 @@ msgid ""
 msgstr ""
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_ux_form_list
+msgid "Archived"
+msgstr ""
+
+#. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/tests/invariants.py:0
 #: code:addons/account_ux/tests/test_invariants.py:0
@@ -410,6 +415,11 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields.selection,name:account_ux.selection__account_automatic_entry_wizard__action__change_partner
 msgid "Change Partner"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__child_ids
+msgid "Child Accounts"
 msgstr ""
 
 #. module: account_ux
@@ -744,6 +754,11 @@ msgid "Is Monetary"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__is_parent_account
+msgid "Is Parent Account"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
 msgid "Journal"
 msgstr ""
@@ -852,6 +867,16 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 msgid "Paid"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_ux_form_list
+msgid "Parent Account"
+msgstr ""
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_ux_view_search
+msgid "Parent Accounts"
 msgstr ""
 
 #. module: account_ux
@@ -1234,6 +1259,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_ux/models/account_payment.py:0
 msgid "You cannot delete this payment, you should set it back to draft first."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot unarchive an account that has child accounts."
+msgstr ""
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot use an account with journal items as parent account."
 msgstr ""
 
 #. module: account_ux

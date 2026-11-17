@@ -502,6 +502,11 @@ msgid ""
 msgstr ""
 
 #. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_ux_form_list
+msgid "Archived"
+msgstr "Archivado"
+
+#. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/tests/invariants.py:0
 #: code:addons/account_ux/tests/test_invariants.py:0
@@ -561,6 +566,11 @@ msgstr ""
 "Como el comprobante no tiene fecha, la cotización mostrada podría no ser la "
 "que se aplique, ya que se actualizará al validar o asignar una fecha. Para "
 "fijar la cotización y/o editar la tasa, debe asignar una fecha al comprobante"
+
+#. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__child_ids
+msgid "Child Accounts"
+msgstr "Cuentas hijas"
 
 #. module: account_ux
 #: model:ir.model,name:account_ux.model_res_company
@@ -893,6 +903,11 @@ msgid "Is Monetary"
 msgstr "Es Monetario"
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_account_account__is_parent_account
+msgid "Is Parent Account"
+msgstr "Es cuenta principal"
+
+#. module: account_ux
 #: model:ir.model,name:account_ux.model_account_journal
 msgid "Journal"
 msgstr "Diario"
@@ -1003,6 +1018,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_ux.view_account_invoice_filter
 msgid "Paid"
 msgstr "Pagado"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_ux_form_list
+msgid "Parent Account"
+msgstr "Cuenta principal"
+
+#. module: account_ux
+#: model_terms:ir.ui.view,arch_db:account_ux.account_ux_view_search
+msgid "Parent Accounts"
+msgstr "Cuentas principales"
 
 #. module: account_ux
 #: model:ir.ui.menu,name:account_ux.menu_partial_reconciliations
@@ -1427,6 +1452,19 @@ msgstr ""
 msgid "You cannot delete this payment, you should set it back to draft first."
 msgstr ""
 "No podés eliminar este pago; primero debés volverlo al estado borrador."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot unarchive an account that has child accounts."
+msgstr "No podés desarchivar una cuenta que tiene cuentas hijas."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot use an account with journal items as parent account."
+msgstr ""
+"No podés usar una cuenta con apuntes contables como cuenta principal."
 
 #. module: account_ux
 #. odoo-python
