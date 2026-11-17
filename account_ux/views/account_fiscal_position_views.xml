@@ -21,8 +21,9 @@
         <field name="arch" type="xml">
             <field name="vat_required" position="after">
                 <field name="has_child_companies" invisible="1"/>
-                <!-- Also scopes the positions offered in vendor payments, so it matters without
-                     "Detect Automatically" too; without branches every value is the same. -->
+                <!-- Shown without "Detect Automatically" too: a module can scope the positions it
+                     offers to pick by hand with it (l10n_ar_tax in vendor payments), so it has to
+                     stay editable. Without branches every value is the same. -->
                 <field name="shared_to_branches" groups="base.group_multi_company"
                        invisible="not has_child_companies"/>
             </field>
