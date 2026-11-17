@@ -20,9 +20,9 @@ class AccountMoveLine(models.Model):
             move = line.move_id
             if not move.is_purchase_document() or line.display_type == "cogs":
                 continue
-            if not line._eligible_for_stock_account() or line.product_id.valuation != "real_time":
+            if not line._use_inventory_valuation():
                 continue
-            stock_moves = line._get_stock_moves()
+            stock_moves = line.cogs_move_ids
             if not stock_moves or not all(m.stock_valuation_migrated for m in stock_moves):
                 continue
             counterpart_account = stock_moves[:1]._get_migrated_valuation_counterpart_account()

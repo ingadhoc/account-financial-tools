@@ -1,11 +1,12 @@
 from odoo import Command, fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
+from .common import TestStockValuationUXCommon
+
 
 @tagged("post_install", "-at_install")
-class TestManualMoveValuation(TestStockValuationCommon):
+class TestManualMoveValuation(TestStockValuationUXCommon):
     """Manual booking of selected stock moves: the draft entry grouped by the accounts of
     the product categories, and no way to value the same move twice."""
 
@@ -90,7 +91,7 @@ class TestManualMoveValuation(TestStockValuationCommon):
     def test_posted_moves_leave_the_pending_variation(self):
         """Once valued, the moves are no longer part of the pending variation the report
         shows."""
-        report = self.env["stock_account.stock.valuation.report"]
+        report = self.env["account.stock.valuation.report"]
         before = report.get_report_values(line_types=["stock_move"])["data"]["stock_variation"]["value"]
         self.assertAlmostEqual(before, 120.0)
         self._wizard(self.move_avco + self.move_fifo).action_post()

@@ -1,5 +1,5 @@
 import { Dropdown } from "@web/core/dropdown/dropdown";
-import { StockValuationReportLine } from "@stock_account/stock_valuation/line/line";
+import { StockValuationReportLine } from "@account/components/stock_valuation/line/line";
 
 /**
  * Mejora 2 (tarea 64440): habilita el menú de los "3 puntitos" en las líneas del

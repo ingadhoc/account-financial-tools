@@ -1,6 +1,7 @@
 import { patch } from "@web/core/utils/patch";
+import { serializeDate } from "@web/core/l10n/dates";
 import { useSetupAction } from "@web/search/action_hook";
-import { StockValuationReport } from "@stock_account/stock_valuation/stock_valuation_report";
+import { StockValuationReport } from "@account/components/stock_valuation/stock_valuation_report";
 
 /**
  * Mantiene los filtros del reporte al ir y volver del detalle (tarea 64440).
@@ -47,5 +48,6 @@ patch(StockValuationReport.prototype, {
         // ``date`` se guarda como el objeto luxon tal cual: el estado exportado
         // queda en memoria (no se serializa), así que no hace falta reconstruirlo.
         Object.assign(this.controller.state, saved);
+        this.controller.dateAsString = serializeDate(saved.date);
     },
 });

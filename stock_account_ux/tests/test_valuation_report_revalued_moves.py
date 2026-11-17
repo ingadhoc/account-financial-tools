@@ -1,6 +1,7 @@
 from odoo import fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 def drilldown_types(report):
@@ -10,7 +11,7 @@ def drilldown_types(report):
 
 
 @tagged("post_install", "-at_install")
-class TestValuationReportRevaluedMoves(TestStockValuationCommon):
+class TestValuationReportRevaluedMoves(TestStockValuationUXCommon):
     """Where the report puts an adjustment of value.
 
     Scenario: an unaccounted receipt of the periodic AVCO product, 4 units at 50 (200),
@@ -19,7 +20,7 @@ class TestValuationReportRevaluedMoves(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.receipt = self._make_in_move(self.product_avco, 4, 50)
         # A real receipt carries no manual adjustment; the helper uses it to value.
         self.env["product.value"].search([("move_id", "=", self.receipt.id)]).unlink()
@@ -58,9 +59,11 @@ class TestValuationReportRevaluedMoves(TestStockValuationCommon):
     def test_closing_product_value_leaves_the_move_adjustment(self):
         """The adjustment of an unaccounted move belongs to the Stock Moves origin, so a
         Product Value closing neither books nor links it."""
-        # A cost change over 10 units in stock, 10 to 13: 30 pending in Product Value.
+        # A cost change over 10 units in stock, 10 to 13: 30 pending in Product Value. The
+        # receipt is booked first: on an unaccounted one the change stays inside the move.
         standard_receipt = self._make_in_move(self.product_standard, 10)
         self.env["product.value"].search([("move_id", "=", standard_receipt.id)]).unlink()
+        self.company.action_close_stock_valuation(auto_post=True, product_ids=self.product_standard.ids)
         self.product_standard.standard_price = 13.0
         self.assertAlmostEqual(self._variation(line_types=["product_value"]), 30.0)
         action = self.company.action_close_stock_valuation(auto_post=True, line_types=["product_value"])
@@ -94,12 +97,12 @@ class TestValuationReportRevaluedMoves(TestStockValuationCommon):
 
 
 @tagged("post_install", "-at_install")
-class TestValuationReportAdjustmentsWithNothingToBook(TestStockValuationCommon):
+class TestValuationReportAdjustmentsWithNothingToBook(TestStockValuationUXCommon):
     """The Product Value drill-down only brings adjustments with something to book."""
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.account = self.account_stock_valuation.id
 
     def _product_values(self):

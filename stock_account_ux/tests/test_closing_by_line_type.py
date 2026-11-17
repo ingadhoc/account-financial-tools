@@ -1,29 +1,36 @@
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestClosingByLineType(TestStockValuationCommon):
+class TestClosingByLineType(TestStockValuationUXCommon):
     """The entry generated from the report has to honour the Movement Type filter: book
     only the filtered origin of the variation and leave the other one pending.
 
-    Scenario: an unaccounted receipt (moves contribution = 100) plus a cost change (value
-    adjustments contribution = 30). Total variation = 130.
+    Scenario: a cost change on stock already booked (value adjustments contribution = 30)
+    plus a later unaccounted receipt (moves contribution = 100). Total variation = 130.
+    The cost change goes before the receipt because in 20 it revalues the open moves, so
+    on an open receipt it would stay inside the moves contribution.
     """
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
-        self.move = self._make_in_move(self.product_standard, 10, 10)  # 10 units at a standard cost of 10
+        self.report = self.env["account.stock.valuation.report"]
+        booked_move = self._make_in_move(self.product_standard, 12, 10)
         # A real receipt carries no manual adjustment; the helper uses it to value.
-        self.env["product.value"].search([("move_id", "=", self.move.id)]).unlink()
-        # Cost change: 10 to 13 over 10 units = 30 contributed by the value adjustment.
-        self.product_standard.standard_price = 13.0
+        self.env["product.value"].search([("move_id", "=", booked_move.id)]).unlink()
+        self._close()
+        # Cost change: 10 to 12.5 over the 12 booked units = 30 contributed by the value
+        # adjustment.
+        self.product_standard.standard_price = 12.5
         self.price_change = self.env["product.value"].search(
             [("product_id", "=", self.product_standard.id), ("move_id", "=", False)],
             order="id desc",
             limit=1,
         )
+        self.move = self._make_in_move(self.product_standard, 8, 12.5)  # value 100
+        self.env["product.value"].search([("move_id", "=", self.move.id)]).unlink()
 
     def _close(self, line_types=None, auto_post=True):
         action = self.company.action_close_stock_valuation(auto_post=auto_post, line_types=line_types)
@@ -116,5 +123,5 @@ class TestClosingByLineType(TestStockValuationCommon):
         what was booked and the variation only what stayed pending."""
         self._close(line_types=["stock_move"])
         data = self.report.get_report_values(product_ids=self.product_standard.ids)["data"]
-        self.assertAlmostEqual(data["initial_balance"]["value"], 100.0)
+        self.assertAlmostEqual(data["initial_balance"]["value"], 220.0, msg="120 from setUp plus 100")
         self.assertAlmostEqual(data["stock_variation"]["value"], 30.0, msg="The value adjustment is left")

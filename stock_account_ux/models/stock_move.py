@@ -117,7 +117,7 @@ class StockMove(models.Model):
         perpetual company triggered from a periodic one got the periodic answer, and the
         other way round."""
         return self.browse().union(
-            *(
+            (
                 moves.with_company(company).filtered(lambda move: move.product_id.valuation == "real_time")
                 for company, moves in self.grouped("company_id").items()
             )
@@ -238,7 +238,7 @@ class StockMove(models.Model):
         if self.product_id.with_company(self.company_id).cost_method == "standard":
             first_adjustment = self.sudo().product_value_ids.sorted(lambda pv: (pv.date, pv.id))[:1]
             if first_adjustment:
-                return first_adjustment.previous_value
+                return first_adjustment.old_value
         return self.value
 
     def _get_valuation_labels(self):
@@ -261,7 +261,7 @@ class StockMove(models.Model):
             "context": {**self.env.context, "default_move_ids": moves.ids},
         }
 
-    def _set_value(self, correction_quantity=None):
+    def _set_value(self, recompute_date=None, skip_check=False):
         """Do not revalue on invoicing the moves already valued in v18.
 
         Out of the box ``account.move._post`` calls ``_set_value`` on the invoice's
@@ -275,7 +275,7 @@ class StockMove(models.Model):
         moves = self
         if self.env.context.get("skip_migrated_stock_revaluation"):
             moves = self.filtered(lambda m: not (m.stock_valuation_migrated and (m.is_in or m.is_dropship)))
-        return super(StockMove, moves)._set_value(correction_quantity=correction_quantity)
+        return super(StockMove, moves)._set_value(recompute_date=recompute_date, skip_check=skip_check)
 
     def _get_migrated_valuation_counterpart_account(self):
         """Counterpart account of the valuation entry v18 left attached to

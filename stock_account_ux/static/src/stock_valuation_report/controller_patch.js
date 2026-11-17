@@ -1,7 +1,7 @@
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { serializeDate } from "@web/core/l10n/dates";
-import { StockValuationReportController } from "@stock_account/stock_valuation/controller";
+import { StockValuationReportController } from "@account/components/stock_valuation/controller";
 
 const { DateTime } = luxon;
 
@@ -49,7 +49,7 @@ patch(StockValuationReportController.prototype, {
             stock_move_types: state.stockMoveTypes,
         };
         const res = await this.orm.call(
-            "stock_account.stock.valuation.report",
+            "account.stock.valuation.report",
             "get_report_values",
             [],
             kwargs
@@ -75,7 +75,7 @@ patch(StockValuationReportController.prototype, {
         for (let [accountId, data] of Object.entries(this.data.initial_balance.lines_by_account_id)) {
             const account = this.data.accounts_by_id[accountId];
             this.data.initial_balance.lines.push({
-                label: account.display_name,
+                label: account?.display_name,
                 value: data.value,
                 account_id: accountId,
                 // Mejora 2 (AC2): la línea de cuenta abre el Libro Mayor de ESA
@@ -101,7 +101,7 @@ patch(StockValuationReportController.prototype, {
     async _openAccountLedger(accountId) {
         const state = this._valuationFilterState();
         const action = await this.orm.call(
-            "stock_account.stock.valuation.report",
+            "account.stock.valuation.report",
             "action_open_account_ledger",
             [accountId, this.state.date.toISODate() || false],
             {
@@ -169,7 +169,7 @@ patch(StockValuationReportController.prototype, {
     async _openVariationDetail(method, accountId) {
         const state = this._valuationFilterState();
         const action = await this.orm.call(
-            "stock_account.stock.valuation.report",
+            "account.stock.valuation.report",
             method,
             [accountId, this.reportDate],
             {
@@ -241,7 +241,7 @@ patch(StockValuationReportController.prototype, {
     // esos productos, y con "Movement Type" lo acota al origen filtrado de la
     // variación (solo movimientos de stock, o solo ajustes de valor), dejando la
     // otra porción pendiente.
-    async actionGenerateEntry() {
+    async actionGenerateEntries() {
         const state = this._valuationFilterState();
         const kwargs = {
             product_ids: state.productIds,
@@ -250,16 +250,20 @@ patch(StockValuationReportController.prototype, {
             valuations: state.valuations,
             line_types: state.lineTypes,
             stock_move_types: state.stockMoveTypes,
+            auto_post: true,
         };
-        const args = [[this.companyId]];
+        // The accruals are company-wide: they are only booked by an unfiltered closing.
+        kwargs.include_accruals = !Object.values(kwargs).some(
+            (value) => Array.isArray(value) && value.length
+        );
         const date = serializeDate(this.state.date);
         if (date != serializeDate(DateTime.now())) {
-            args.push(date);
+            kwargs.at_date = date;
         }
         const action = await this.orm.call(
             "res.company",
             "action_close_stock_valuation",
-            args,
+            [[this.companyId]],
             kwargs
         );
         if (action) {
