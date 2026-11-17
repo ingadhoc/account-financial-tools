@@ -15,7 +15,8 @@ class AccountFiscalPosition(models.Model):
     # expect it to, and this field is where they are looking when they ask.
     shared_to_branches = fields.Selection(
         default="all",
-        help="Which branches this fiscal position is automatically detected in.\n\n"
+        help="Which branches this fiscal position is automatically detected in and offered in vendor "
+        "payments.\n\n"
         "- All branches: every company below this one, whatever its Tax ID.\n"
         "- Same legal entity: only the branches that declare the same Tax ID as this company, "
         "with no break in the chain. An auxiliary company with no Tax ID of its own is a "
@@ -26,8 +27,9 @@ class AccountFiscalPosition(models.Model):
         "first, and only then by sequence: a position of the branch you are standing in wins "
         "over one of its parent whatever the sequences say, and the sequence only decides "
         "between positions of the same company.\n\n"
-        "This scope only narrows the automatic detection. A position stays selectable by hand "
-        "and keeps working in the company that owns it.",
+        "This scope narrows the automatic detection and, in vendor payments, the positions offered "
+        "to pick by hand. A position keeps working in the documents that already use it and in the "
+        "company that owns it.",
     )
 
     def _get_fpos_validation_functions(self, partner):
