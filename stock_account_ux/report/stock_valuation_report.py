@@ -14,6 +14,9 @@ VALID_LINE_TYPES = (LINE_TYPE_STOCK_MOVE, LINE_TYPE_PRODUCT_VALUE)
 # Context key carrying the Stock Move Types filter, read by every place that narrows
 # the Stock Moves component (report, drill-down and closing).
 STOCK_MOVE_TYPES_CTX = "stock_valuation_stock_move_types"
+# Context key making the quantity search of products include archived ones, like
+# ``_get_valuation_product_domain`` does.
+INCLUDE_ARCHIVED_QTY_CTX = "stock_valuation_include_archived_qty"
 
 
 class StockValuationReport(models.AbstractModel):
@@ -90,6 +93,7 @@ class StockValuationReport(models.AbstractModel):
         ``_get_report_accounting_data``, ``_get_variation_balances_by_account``,
         ``_get_variation_aml_vals`` — which both paths do share.
         """
+        self = self.with_context(**{INCLUDE_ARCHIVED_QTY_CTX: True})
         line_types = self._normalize_line_types(line_types)
         if not any([product_ids, categ_ids, cost_methods, valuations, line_types]):
             return super()._get_report_data(date=date, product_category=product_category, warehouse=warehouse)
