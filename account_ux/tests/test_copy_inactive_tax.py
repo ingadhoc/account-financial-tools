@@ -10,7 +10,7 @@ class TestCopyInactiveTax(TransactionCase):
         super().setUp()
         self.company = self.env.ref("base.main_company")
         self.partner = self.env.ref("base.res_partner_12")
-        self.journal = self.env.ref("account.1_sale")
+        self.journal = self.env.ref(f"account.{self.company.id}_sale")
         self.tax_group = self.env["account.tax.group"].create(
             {"name": "Test Group Inactive Tax", "company_id": self.company.id}
         )

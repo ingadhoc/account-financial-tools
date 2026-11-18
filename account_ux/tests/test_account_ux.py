@@ -13,7 +13,7 @@ class TestAccountUXChangeCurrency(common.TransactionCase):
         self.currency_ars = self.env.ref("base.ARS")
         self.currency_ars.write({"active": True})
 
-        self.journal_usd = self.env.ref("account.1_sale")
+        self.journal_usd = self.env.ref(f"account.{self.company_usd.id}_sale")
 
         self.journal_ars = self.journal_usd.copy()
 
