@@ -8,7 +8,7 @@ class TestInvoiceSalesperson(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        self.journal = self.env.ref("account.1_sale")
+        self.journal = self.env.ref(f"account.{self.env.ref('base.main_company').id}_sale")
         self.user_1 = new_test_user(self.env, login="salesperson_1", groups="base.group_user")
         self.user_2 = new_test_user(self.env, login="salesperson_2", groups="base.group_user")
         self.partner_1 = self.env["res.partner"].create({"name": "Contact 1", "user_id": self.user_1.id})
