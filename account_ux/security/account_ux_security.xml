@@ -34,4 +34,134 @@
         </field>
     </record>
 
+    <record model="res.groups" id="group_read_branch_debt">
+        <field name="name">Read and collect the debt of other branches</field>
+    </record>
+
+    <!-- Global rules are combined with AND, so a permissive one is not enough: read moves
+         to the rules below, and the native ones keep write/create/unlink as they were.
+         A function and not a record: the native rules are noupdate, so a record would only
+         apply on install and never reach databases where this module is updated. -->
+    <function model="ir.rule" name="write">
+        <value eval="[
+            ref('account.account_move_comp_rule'),
+            ref('account.account_move_line_comp_rule'),
+            ref('account.journal_comp_rule'),
+            ref('account.account_comp_rule'),
+            ref('account.tax_comp_rule'),
+            ref('account.tax_group_comp_rule'),
+            ref('account.tax_rep_comp_rule'),
+            ref('account.account_payment_term_comp_rule'),
+        ]"/>
+        <value eval="{'perm_read': False}"/>
+    </function>
+
+    <!-- Opening another branch's document reads its journal. Searches don't find these, see branch.debt.read.mixin. -->
+    <record model="ir.rule" id="account_journal_read_rule">
+        <field name="name">Journal: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">
+            [
+                '|',
+                ('company_id', 'in', company_ids + user._get_branch_debt_company_ids(company_ids)),
+                '&amp;',
+                ('company_id', 'parent_of', company_ids),
+                '|',
+                ('shared_to_branches', '=', 'all'),
+                '&amp;',
+                ('shared_to_branches', '=', 'legal_entity'),
+                ('legal_entity_root_id', 'in', user.company_id.browse(company_ids).legal_entity_root_id.ids)
+            ]
+        </field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Other branches' entries with receivable/payable lines, whole so the document opens. -->
+    <record model="ir.rule" id="account_move_read_rule">
+        <field name="name">Account Entry: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">['|', ('company_id', 'in', company_ids), '&amp;', ('company_id', 'in', user._get_branch_debt_company_ids(company_ids)), ('line_ids.account_type', 'in', ['asset_receivable', 'liability_payable'])]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record model="ir.rule" id="account_move_line_read_rule">
+        <field name="name">Entry lines: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">['|', ('company_id', 'in', company_ids), '&amp;', ('company_id', 'in', user._get_branch_debt_company_ids(company_ids)), ('move_id.line_ids.account_type', 'in', ['asset_receivable', 'liability_payable'])]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- The configuration a document of another branch points to (accounts, taxes, payment term),
+         so it opens. Searches don't find these, see branch.debt.read.mixin. -->
+    <record model="ir.rule" id="account_account_read_rule">
+        <field name="name">Account: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_account"/>
+        <field name="domain_force">['|', ('company_ids', 'parent_of', company_ids), ('company_ids', 'in', user._get_branch_debt_company_ids(company_ids))]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record model="ir.rule" id="account_tax_read_rule">
+        <field name="name">Tax: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_tax"/>
+        <field name="domain_force">['|', ('company_id', 'parent_of', company_ids), ('company_id', 'in', user._get_branch_debt_company_ids(company_ids))]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record model="ir.rule" id="account_tax_group_read_rule">
+        <field name="name">Tax group: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_tax_group"/>
+        <field name="domain_force">['|', ('company_id', 'parent_of', company_ids), ('company_id', 'in', user._get_branch_debt_company_ids(company_ids))]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record model="ir.rule" id="account_tax_repartition_line_read_rule">
+        <field name="name">Tax repartition line: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_tax_repartition_line"/>
+        <field name="domain_force">['|', '|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids), ('company_id', 'in', user._get_branch_debt_company_ids(company_ids))]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record model="ir.rule" id="account_payment_term_read_rule">
+        <field name="name">Payment term: read (branch debt aware)</field>
+        <field name="model_id" ref="account.model_account_payment_term"/>
+        <field name="domain_force">['|', '|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids), ('company_id', 'in', user._get_branch_debt_company_ids(company_ids))]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Not global: the native rules on companies are per group, and group rules add up. -->
+    <record model="ir.rule" id="res_company_branch_debt_read_rule">
+        <field name="name">Company: read (branch debt aware)</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="groups" eval="[Command.link(ref('group_read_branch_debt'))]"/>
+        <field name="domain_force">[('id', 'in', user._get_branch_debt_company_ids(company_ids))]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
 </odoo>

@@ -120,6 +120,20 @@ Several Improvements to accounting:
      would make every document that already references the parent's position fail its company
      check. So the position stays selectable by hand and keeps working in the company that owns
      it — only the automatic match is scoped. New positions reach all branches.
+#. Let a branch read and collect the debt of the other companies of its branch tree, for
+   customers that buy in one branch and pay in another. The option "Block Inter-Company
+   Reconciliation" on the root company of the tree sets the scope:
+
+   * **Don't block** (the default): every company of the tree.
+   * **Block always**: none, each company only reconciles and collects its own debt.
+   * **Block between different legal entities**: only the companies of the same legal entity.
+
+   Only the users of the group "Read and collect the debt of other branches" get it. They
+   read the entries with receivable or payable lines of those companies, even the ones they
+   have no access to, and only read them: the documents open read-only and the payment stays
+   in the company where it was made. To open them they also read what those documents point to
+   (journal, accounts, taxes, payment term and company), which stays out of their searches and
+   selectors.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
    * Preview and allow to change the rate thats is going to be used.
@@ -186,7 +200,18 @@ Configuration
 
 To configure this module, you need to:
 
+<<<<<<< 8bd27d6f071c7127b5f63935002d366bbf677f4e
 #. To ensure the 'reconcile on company currency' option previews the outstanding payments with the invoice rate, you will need to apply this FIX from https://github.com/odoo/odoo/pull/292530.
+||||||| 6ad9cb735c488ece5fbcf91e7455aaec99ec9148
+#. To ensure the 'reconcile on company currency' option functions correctly within this module, you will need to apply this FIX from https://github.com/odoo/odoo/pull/184611.
+=======
+#. To collect in a branch the debt of another branch, add the users to the group "Read and
+   collect the debt of other branches". Nobody has it after installing or updating the module,
+   so the users keep seeing only the debt of their own companies until someone adds them.
+   With the developer mode active, check "Block Inter-Company Reconciliation" on the root
+   company of the tree (Settings / Companies, General Information tab).
+#. To ensure the 'reconcile on company currency' option functions correctly within this module, you will need to apply this FIX from https://github.com/odoo/odoo/pull/184611.
+>>>>>>> 2b5e46c061628140efbc26f684346cb2b19f8a3c
 
 Usage
 =====
