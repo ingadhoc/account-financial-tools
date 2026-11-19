@@ -1166,6 +1166,11 @@ msgid ""
 "change it on «%(parent)s», which applies it to the whole legal entity, or "
 "give «%(company)s» its own Tax ID if it really is a different legal entity."
 msgstr ""
+"«%(company)s» y «%(parent)s» declaran el mismo CUIT (%(vat)s), por lo que "
+"son la misma entidad fiscal y su «%(field)s» tiene que ser el mismo. "
+"Cámbielo en «%(parent)s», lo que lo aplica a toda la entidad fiscal, o "
+"asígnele a «%(company)s» su propio CUIT si realmente es una entidad fiscal "
+"distinta."
 
 #. module: account_ux
 #. odoo-python
