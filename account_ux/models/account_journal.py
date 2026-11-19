@@ -10,7 +10,7 @@ from odoo.tools.safe_eval import safe_eval
 
 class AccountJournal(models.Model):
     _name = "account.journal"
-    _inherit = ["account.journal", "shared.to.branches.mixin"]
+    _inherit = ["account.journal", "shared.to.branches.mixin", "branch.debt.read.mixin"]
     _order = "branch_order,sequence, type, code"
 
     mail_template_id = fields.Many2one(
