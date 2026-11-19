@@ -132,7 +132,9 @@ Several Improvements to accounting:
    Only the users of the group "Read and collect the debt of other branches" get it. They
    read the entries with receivable or payable lines of those companies, even the ones they
    have no access to, and only read them: the documents open read-only and the payment stays
-   in the company where it was made.
+   in the company where it was made. To open them they also read what those documents point to
+   (journal, accounts, taxes, payment term and company), which stays out of their searches and
+   selectors.
 #. This replace original odoo wizard for changing currency on an invoice with serveral improvements:
 
    * Preview and allow to change the rate thats is going to be used.

@@ -714,6 +714,11 @@ msgid "Read and collect the debt of other branches"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model,name:account_ux.model_branch_debt_read_mixin
+msgid "Readable from the debt of other branches"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Recompute all taxes based on this fiscal position"
 msgstr ""
