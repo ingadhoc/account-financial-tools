@@ -9,3 +9,17 @@ def _revert_method(cls, name):
 
 def uninstall_hook(env):
     _revert_method(AccountPayment, "_compute_available_journal_ids")
+    # Without this, reading these records would be left with no company restriction at all.
+    for xml_id in (
+        "account.account_move_comp_rule",
+        "account.account_move_line_comp_rule",
+        "account.journal_comp_rule",
+        "account.account_comp_rule",
+        "account.tax_comp_rule",
+        "account.tax_group_comp_rule",
+        "account.tax_rep_comp_rule",
+        "account.account_payment_term_comp_rule",
+    ):
+        rule = env.ref(xml_id, raise_if_not_found=False)
+        if rule:
+            rule.operation = "crud"

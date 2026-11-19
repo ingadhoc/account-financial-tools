@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 14:37+0000\n"
-"PO-Revision-Date: 2026-11-04 14:37+0000\n"
+"POT-Creation-Date: 2026-11-16 18:07+0000\n"
+"PO-Revision-Date: 2026-11-16 18:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -380,6 +380,21 @@ msgid "Average Price in the company's currency where it is set"
 msgstr ""
 
 #. module: account_ux
+#: model:ir.model.fields,field_description:account_ux.field_res_company__block_intercompany_conciliation
+msgid "Block Inter-Company Reconciliation"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__res_company__block_intercompany_conciliation__all
+msgid "Block always"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__res_company__block_intercompany_conciliation__other_legal_entity
+msgid "Block between different legal entities"
+msgstr ""
+
+#. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_journal__branch_order
 msgid "Branch Order"
 msgstr ""
@@ -607,9 +622,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_res_currency__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__display_name
 #: model:ir.model.fields,field_description:account_ux.field_res_partner__display_name
+#: model:ir.model.fields,field_description:account_ux.field_res_users__display_name
 #: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__display_name
 #: model:ir.model.fields,field_description:account_ux.field_validate_account_move__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields.selection,name:account_ux.selection__res_company__block_intercompany_conciliation__none
+msgid "Don't block"
 msgstr ""
 
 #. module: account_ux
@@ -698,6 +719,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_ux.field_res_currency__id
 #: model:ir.model.fields,field_description:account_ux.field_res_currency_rate__id
 #: model:ir.model.fields,field_description:account_ux.field_res_partner__id
+#: model:ir.model.fields,field_description:account_ux.field_res_users__id
 #: model:ir.model.fields,field_description:account_ux.field_shared_to_branches_mixin__id
 #: model:ir.model.fields,field_description:account_ux.field_validate_account_move__id
 msgid "ID"
@@ -899,6 +921,16 @@ msgid ""
 msgstr ""
 
 #. module: account_ux
+#: model:res.groups,name:account_ux.group_read_branch_debt
+msgid "Read and collect the debt of other branches"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_branch_debt_read_mixin
+msgid "Readable from the debt of other branches"
+msgstr ""
+
+#. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Recompute all taxes based on this fiscal position"
 msgstr ""
@@ -969,6 +1001,15 @@ msgstr ""
 #. module: account_ux
 #: model:ir.model.fields,field_description:account_ux.field_account_fiscal_position__sequence
 msgid "Sequence"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model.fields,help:account_ux.field_res_company__block_intercompany_conciliation
+msgid ""
+"Set on the root of a branch tree. It decides which journal items of different companies can be reconciled together, and whose debt the users of the 'Read and collect the debt of other branches' group can read and collect, even from companies they have no access to:\n"
+"* Don't block: every company of the tree.\n"
+"* Block always: none, each company only reconciles its own journal items.\n"
+"* Block between different legal entities: only the companies of the same legal entity."
 msgstr ""
 
 #. module: account_ux
@@ -1140,6 +1181,11 @@ msgstr ""
 #. module: account_ux
 #: model_terms:ir.ui.view,arch_db:account_ux.view_move_form
 msgid "Update Taxes"
+msgstr ""
+
+#. module: account_ux
+#: model:ir.model,name:account_ux.model_res_users
+msgid "User"
 msgstr ""
 
 #. module: account_ux
