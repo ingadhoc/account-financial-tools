@@ -9,6 +9,7 @@ VAT_NOT_APPLICABLE = "/"
 
 
 class ResCompany(models.Model):
+    _name = "res.company"
     _inherit = ["res.company", "branch.debt.read.mixin"]
 
     reconcile_on_company_currency = fields.Boolean(

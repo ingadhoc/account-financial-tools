@@ -3,6 +3,7 @@ from odoo.exceptions import ValidationError
 
 
 class AccountTax(models.Model):
+    _name = "account.tax"
     _inherit = ["account.tax", "branch.debt.read.mixin"]
 
     @api.constrains("amount_type", "price_include_override", "include_base_amount", "is_base_affected", "amount")
@@ -48,8 +49,10 @@ class AccountTax(models.Model):
 
 
 class AccountTaxGroup(models.Model):
+    _name = "account.tax.group"
     _inherit = ["account.tax.group", "branch.debt.read.mixin"]
 
 
 class AccountTaxRepartitionLine(models.Model):
+    _name = "account.tax.repartition.line"
     _inherit = ["account.tax.repartition.line", "branch.debt.read.mixin"]

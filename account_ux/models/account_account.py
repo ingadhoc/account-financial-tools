@@ -6,6 +6,7 @@ _logger = logging.getLogger(__name__)
 
 
 class AccountAccount(models.Model):
+    _name = "account.account"
     _inherit = ["account.account", "branch.debt.read.mixin"]
 
     is_monetary = fields.Boolean(
