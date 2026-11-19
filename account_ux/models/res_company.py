@@ -9,7 +9,7 @@ VAT_NOT_APPLICABLE = "/"
 
 
 class ResCompany(models.Model):
-    _inherit = "res.company"
+    _inherit = ["res.company", "branch.debt.read.mixin"]
 
     reconcile_on_company_currency = fields.Boolean(
         help="This option enables open documents in the payment report when reconciling debt with secondary currency, "

@@ -89,6 +89,41 @@ class TestBranchDebtRead(AccountTestInvoicingCommon):
         self.assertEqual(Form(invoice).partner_id, self.partner_a)
         self.assertFalse(invoice.show_reset_to_draft_button)
 
+    def test_the_full_invoice_of_another_branch_opens(self):
+        """With product, payment term, tax and account of the sibling branch, not of the root."""
+        tax = self.env["account.tax"].create(
+            {"name": "Tax B", "amount": 21.0, "type_tax_use": "sale", "company_id": self.branch_b.id}
+        )
+        payment_term = self.env["account.payment.term"].create(
+            {
+                "name": "30 days B",
+                "company_id": self.branch_b.id,
+                "line_ids": [Command.create({"value": "percent", "value_amount": 100.0, "nb_days": 30})],
+            }
+        )
+        account = self.company_data["default_account_revenue"].copy(
+            {"code": "ZB4000", "company_ids": [Command.set(self.branch_b.ids)]}
+        )
+        invoice = self.init_invoice("out_invoice", products=self.product_a, taxes=tax, company=self.branch_b)
+        invoice.write({"invoice_payment_term_id": payment_term.id})
+        invoice.invoice_line_ids.account_id = account
+        invoice.action_post()
+        self.env.invalidate_all()
+
+        # Form reads every field of the view, the lines included, as the web client does.
+        invoice_form = Form(self._as_user_a(invoice))
+        self.assertEqual(invoice_form.invoice_payment_term_id, payment_term)
+        line = self._as_user_a(invoice).invoice_line_ids
+        self.assertEqual(line.product_id.display_name, self.product_a.display_name)
+        self.assertEqual(line.account_id, account)
+        self.assertTrue(line.account_id.display_name)
+        self.assertEqual(line.tax_ids.display_name, tax.display_name)
+        # Selectors keep the scope of the native rules.
+        self.assertNotIn(tax, self._as_user_a(self.env["account.tax"]).search([]))
+        self.assertNotIn(account, self._as_user_a(self.env["account.account"]).search([]))
+        self.assertNotIn(payment_term, self._as_user_a(self.env["account.payment.term"]).search([]))
+        self.assertNotIn(self.branch_b, self._as_user_a(self.env["res.company"]).search([]))
+
     def test_without_the_group_other_branches_stay_hidden(self):
         journal = self._sibling_journal()
         self.user_a.group_ids -= self.env.ref("account_ux.group_read_branch_debt")

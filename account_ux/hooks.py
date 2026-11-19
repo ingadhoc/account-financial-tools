@@ -16,6 +16,11 @@ def uninstall_hook(env):
         "account.account_move_comp_rule",
         "account.account_move_line_comp_rule",
         "account.journal_comp_rule",
+        "account.account_comp_rule",
+        "account.tax_comp_rule",
+        "account.tax_group_comp_rule",
+        "account.tax_rep_comp_rule",
+        "account.account_payment_term_comp_rule",
     ):
         rule = env.ref(xml_id, raise_if_not_found=False)
         if rule:
