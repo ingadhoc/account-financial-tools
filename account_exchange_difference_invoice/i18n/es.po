@@ -4,14 +4,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0+e\n"
+"Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-14 16:57+0000\n"
-"PO-Revision-Date: 2026-01-15 18:10+0000\n"
+"POT-Creation-Date: 2026-11-05 11:43+0000\n"
+"PO-Revision-Date: 2026-11-05 11:43+0000\n"
 "Last-Translator: Gonzalo Lenzi <gl@adhoc.inc>\n"
-"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/"
-"account-financial-tools-19-0/"
-"account-financial-tools-19-0-account_exchange_difference_invoice/es/>\n"
+"Language-Team: Spanish <https://translation.dev-adhoc.com/projects/account-financial-tools-20-0/account-financial-tools-20-0-account_exchange_difference_invoice/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,31 +18,114 @@ msgstr ""
 "X-Generator: Weblate 5.10.4\n"
 
 #. module: account_exchange_difference_invoice
-#. odoo-python
-#: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
+#: model:ir.module.module,description:base.module_account_exchange_difference_invoice
 msgid ""
-"<i class=\"fa fa-exclamation-triangle text-warning\" title=\"All selected "
-"entries for this partner are reversals\"></i>"
+"# Account Exchange Difference Invoice\n"
+"\n"
+"This module extends Odoo's accounting functionality to handle exchange rate differences through invoices. It provides a mechanism to generate invoices for currency exchange differences that arise from fluctuations in exchange rates between the time of invoice creation and payment.\n"
+"\n"
+"## Features\n"
+"\n"
+"- Generate exchange difference invoices automatically\n"
+"- Configure specific product for exchange difference operations\n"
+"- Wizard interface for processing exchange differences\n"
+"- Automatic reconciliation of exchange difference entries\n"
+"- Support for both positive and negative exchange differences\n"
+"- Integration with existing accounting workflows\n"
+"\n"
+"## Configuration\n"
+"\n"
+"1. Install the module\n"
+"2. Go to Accounting > Configuration > Settings\n"
+"3. Configure the exchange difference product in company settings\n"
+"   - This product will be used when generating exchange difference invoices\n"
+"\n"
+"## Usage\n"
+"\n"
+"### Generate Exchange Difference Invoice\n"
+"\n"
+"1. Navigate to Accounting > Exchange Difference List\n"
+"2. Use the filters to find entries to process:\n"
+"   - \"To Process\" filter shows entries not yet processed\n"
+"   - \"Previous Month\" and \"Current Month\" filters help narrow down the date range\n"
+"3. Select the entries you want to process\n"
+"4. Click the \"Convert to Debit/Credit Note\" button at the top of the list\n"
+"5. The wizard will show the calculated differences grouped by partner\n"
+"6. Select the journal for the exchange difference invoice\n"
+"7. Confirm to create the exchange difference invoice\n"
+"\n"
+"### Important Notes\n"
+"\n"
+"- The module will only process entries that haven't been previously processed for exchange differences\n"
+"- Exchange difference entries are automatically reconciled with their corresponding original entries\n"
+"- The system validates that all necessary configuration is in place before allowing the generation of exchange difference invoices\n"
+"\n"
+"## Technical Details\n"
+"\n"
+"### Dependencies\n"
+"\n"
+"- `account_debit_note`: For handling debit notes related to exchange differences\n"
+"\n"
+"### Models\n"
+"\n"
+"- `account.exchange.difference.wizard`: Main wizard for generating exchange difference invoices\n"
+"- `account.move`: Extended to handle exchange difference reconciliation\n"
+"- `res.company`: Extended to configure exchange difference product\n"
+"\n"
+"## Bug Tracker\n"
+"\n"
+"Bugs are tracked on [GitHub Issues](https://github.com/ingadhoc/account-financial-tools/issues). In case of trouble, please check there if your issue has already been reported.\n"
+"\n"
+"## Credits\n"
+"\n"
+"### Authors\n"
+"\n"
+"* ADHOC SA\n"
+"\n"
+"### Contributors\n"
+"\n"
+"* ADHOC SA <info@adhoc.com.ar>\n"
+"\n"
+"### Maintainers\n"
+"\n"
+"This module is maintained by ADHOC SA.\n"
+"\n"
+"## License\n"
+"\n"
+"This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
 msgstr ""
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid ""
-"<i class=\"fa fa-exclamation-triangle text-warning\" title=\"The balance for "
+"<i class=\"oi text-warning\" data-icon=\"warning\" title=\"All selected "
+"entries for this partner are reversals\"></i>"
+msgstr "<i class=\"oi text-warning\" data-icon=\"warning\" title=\"Todos los asientos seleccionados de este contacto son reversiones\"></i>"
+
+#. module: account_exchange_difference_invoice
+#. odoo-python
+#: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
+msgid ""
+"<i class=\"oi text-warning\" data-icon=\"warning\" title=\"The balance for "
 "this partner is zero, so no debit/credit note will be created.\"></i>"
-msgstr ""
+msgstr "<i class=\"oi text-warning\" data-icon=\"warning\" title=\"El saldo de este contacto es cero, por lo que no se creará ninguna nota de débito/crédito.\"></i>"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_chart_template
 msgid "Account Chart Template"
-msgstr ""
+msgstr "Plantilla de plan de cuentas"
+
+#. module: account_exchange_difference_invoice
+#: model:ir.module.module,shortdesc:base.module_account_exchange_difference_invoice
+msgid "Account Exchange Difference Invoice"
+msgstr "Factura de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid "All entries must belong to the same company"
-msgstr ""
+msgstr "Todos los asientos deben pertenecer a la misma empresa"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,help:account_exchange_difference_invoice.field_account_bank_statement_line__exchange_reversal_id
@@ -65,37 +146,33 @@ msgstr ""
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields.selection,name:account_exchange_difference_invoice.selection__account_exchange_difference_wizard__fiscal_position__automatic
 msgid "Automatic"
-msgstr ""
+msgstr "Automática"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__balance
 msgid "Balance"
-msgstr ""
+msgstr "Saldo"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_exchange_difference_wizard_form
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_res_company
-msgid "Companies"
-msgstr ""
-
-#. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__company_id
 msgid "Company"
-msgstr ""
+msgstr "Empresa"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__company_currency_id
 msgid "Company Currency"
-msgstr ""
+msgstr "Moneda de la empresa"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Ajustes de configuración"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
@@ -105,25 +182,25 @@ msgstr "Convertir a ND/NC"
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_exchange_difference_wizard_form
 msgid "Create"
-msgstr ""
+msgstr "Crear"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__create_uid
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creado por"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__create_date
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creado el"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid "Currency exchange rate difference"
-msgstr ""
+msgstr "Diferencia de tipo de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_account_move_line_filter
@@ -140,7 +217,7 @@ msgstr "Mes Corriente"
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_company__display_name
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_config_settings__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Mostrar nombre"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.actions.server,name:account_exchange_difference_invoice.action_exchange_difference_server
@@ -151,25 +228,25 @@ msgstr "Diferencia de Cambio"
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_exchange_difference_line_wizard
 msgid "Exchange Difference Line Wizard"
-msgstr ""
+msgstr "Asistente de línea de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_company__exchange_difference_product
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_config_settings__exchange_difference_product
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.res_config_settings_view_form
 msgid "Exchange Difference Product"
-msgstr ""
+msgstr "Producto de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_exchange_difference_wizard
 msgid "Exchange Difference Wizard"
-msgstr ""
+msgstr "Asistente de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_bank_statement_line__exchange_reversed_move_ids
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_move__exchange_reversed_move_ids
 msgid "Exchange Entries"
-msgstr ""
+msgstr "Asientos de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_move_line__exchange_info
@@ -180,7 +257,7 @@ msgstr "Info Diferencia de Cambio"
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_bank_statement_line__exchange_reversal_id
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_move__exchange_reversal_id
 msgid "Exchange Reversal Entry"
-msgstr ""
+msgstr "Asiento de reversión de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__fiscal_position_id
@@ -195,7 +272,7 @@ msgstr "Modo Posición Fiscal"
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,help:account_exchange_difference_invoice.field_account_exchange_difference_wizard__fiscal_position_id
 msgid "Fiscal position to use for all the customers."
-msgstr ""
+msgstr "Posición fiscal a usar para todos los clientes."
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_chart_template__id
@@ -207,119 +284,119 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_company__id
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_res_config_settings__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,help:account_exchange_difference_invoice.field_account_exchange_difference_wizard__fiscal_position
 msgid ""
 "If automatic, fiscal position will be auto detected for each customer, if "
 "manual you can force one or none fiscal position."
-msgstr ""
+msgstr "Si es automática, la posición fiscal se detecta para cada cliente; si es manual, pueden forzar una posición fiscal o ninguna."
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__journal_id
 msgid "Journal"
-msgstr ""
+msgstr "Diario"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_move
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
 msgid "Journal Entry"
-msgstr ""
+msgstr "Asiento contable"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_move_line
 msgid "Journal Item"
-msgstr ""
+msgstr "Apunte contable"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__write_uid
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Última actualización por"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__write_date
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Última actualización el"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_wizard__line_ids
 msgid "Lines"
-msgstr ""
+msgstr "Líneas"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields.selection,name:account_exchange_difference_invoice.selection__account_exchange_difference_wizard__fiscal_position__manual
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
 msgid "Matching"
-msgstr ""
+msgstr "Conciliación"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model,name:account_exchange_difference_invoice.model_account_partial_reconcile
 msgid "Partial Reconcile"
-msgstr ""
+msgstr "Conciliación parcial"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__partner_id
 msgid "Partner"
-msgstr ""
+msgstr "Contacto"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_account_move_line_filter
 msgid "Previous Month"
-msgstr ""
+msgstr "Mes anterior"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_account_move_line_filter
 msgid "Processed"
-msgstr ""
+msgstr "Procesados"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__show_warning
 msgid "Show Warning"
-msgstr ""
+msgstr "Mostrar advertencia"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid "There are no entries to process or they have already been processed"
-msgstr ""
+msgstr "No hay asientos para procesar o ya fueron procesados"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid ""
 "This debit/credit note has been reconciled with the following payments:%s"
-msgstr ""
+msgstr "Esta nota de débito/crédito se concilió con los siguientes pagos:%s"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid "This payment has been reconciled with this %s"
-msgstr ""
+msgstr "Este pago se concilió con esta %s"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.res_config_settings_view_form
 msgid "This product will be set in exchange difference debit/credit notes"
-msgstr ""
+msgstr "Este producto se usará en las notas de débito/crédito de diferencia de cambio"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_account_move_line_filter
 msgid "To Process"
-msgstr ""
+msgstr "Por procesar"
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
 #: code:addons/account_exchange_difference_invoice/wizards/exchange_difference_wizard.py:0
 msgid ""
-"To use the exchange difference wizard, the partner's receivable account must "
-"not be set to a foreign currency."
-msgstr ""
+"To use the exchange difference wizard, the partner's receivable account must"
+" not be set to a foreign currency."
+msgstr "Para usar el asistente de diferencia de cambio, la cuenta a cobrar del contacto no debe estar en una moneda extranjera."
 
 #. module: account_exchange_difference_invoice
 #. odoo-python
@@ -327,24 +404,24 @@ msgstr ""
 msgid ""
 "To use this functionality, you must configure a product for exchange "
 "differences in the company settings."
-msgstr ""
+msgstr "Para usar esta funcionalidad, deben configurar un producto de diferencia de cambio en los ajustes de la empresa."
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
 msgid "Total Balance"
-msgstr ""
+msgstr "Saldo total"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
 msgid "Total Credit"
-msgstr ""
+msgstr "Crédito total"
 
 #. module: account_exchange_difference_invoice
 #: model_terms:ir.ui.view,arch_db:account_exchange_difference_invoice.view_invoice_exchange_list
 msgid "Total Debit"
-msgstr ""
+msgstr "Débito total"
 
 #. module: account_exchange_difference_invoice
 #: model:ir.model.fields,field_description:account_exchange_difference_invoice.field_account_exchange_difference_line_wizard__wizard_id
 msgid "Wizard"
-msgstr ""
+msgstr "Asistente"
