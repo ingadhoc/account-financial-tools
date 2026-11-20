@@ -51,6 +51,21 @@ class AccountPaymentTermSurcharge(models.Model):
         if self.option in ("day_current_month", "day_following_month"):
             self.days = 0
 
+    @api.onchange("option", "days", "day_of_the_month", "surcharge")
+    def _onchange_surcharge_rule(self):
+        if self._origin and self.env["account.move"].search_count(
+            [("surcharge_id", "=", self._origin.id), ("state", "in", ("draft", "posted"))], limit=1
+        ):
+            return {
+                "warning": {
+                    "title": _("Surcharge already applied"),
+                    "message": _(
+                        "This surcharge was already applied. Invoices that already have it will not get it "
+                        "again with the new settings. The change applies to invoices that do not have it yet."
+                    ),
+                }
+            }
+
     def _calculate_date(self, date_ref=None):
         """Se retorna la fecha de un recargo segun una fecha dada, esto se hace
         teniendo en cuenta la configuracion propia del recargo."""
