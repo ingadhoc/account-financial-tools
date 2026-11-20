@@ -36,10 +36,13 @@ audit inventory valuation from the same product movement view.
   or by Movement Type — is booked by the next full closing and is linked to it,
   however old it is. Moves already booked by a posted entry keep it.
 * A perpetual move with no entry of its own is booked by the invoice of its own sale
-  or purchase line that covers its quantity, net of credit notes: a down payment
+  or purchase line that bills its quantity, net of credit notes: a down payment
   invoice, the invoice of another product or of an earlier partial delivery, or an
-  invoice cancelled by a credit note do not book it. Kit components follow the
-  delivered quantity of the whole line.
+  invoice cancelled by a credit note do not book it. A move invoiced in part takes the
+  invoice of that part. Kit components follow the delivered quantity of the whole line.
+  When a move has more than one entry (invoiced in parts, an invoice cancelled and made
+  again, a value adjustment), the Journal Entry column shows a button with the count
+  that opens all of them.
 
 Filters on the Inventory Valuation report
 ------------------------------------------

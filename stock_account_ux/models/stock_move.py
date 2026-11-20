@@ -46,6 +46,21 @@ class StockMove(models.Model):
         readonly=True,
     )
 
+    # Every posted entry tied to the move, while ``related_account_move_id`` keeps only
+    # the one reflecting its current valuation: its own entry, its value adjustments and
+    # the invoices or credit notes of its line that fall on its quantity (a move invoiced
+    # in two parts, an invoice cancelled and made again). Computed on read: it only feeds
+    # the list button, so it is never searched or grouped by.
+    all_account_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_all_account_move_ids",
+        string="All Journal Entries",
+    )
+    account_move_count = fields.Integer(
+        compute="_compute_all_account_move_ids",
+        string="Journal Entries Count",
+    )
+
     def _related_account_move_depends(self):
         """Dependencies of ``related_account_move_id``. The related invoices are reached
         the way ``_get_related_invoice_by_move`` reaches them, through the move's own sale
@@ -99,6 +114,35 @@ class StockMove(models.Model):
                 move.related_account_move_id = invoice_by_move.get(move.id, False)
             else:
                 move.related_account_move_id = False
+
+    @api.depends("related_account_move_id")
+    def _compute_all_account_move_ids(self):
+        # sudo: same reason as ``_get_booked_revaluation_entries``, the column is shown in
+        # lists that people without access to value adjustments or invoices also open.
+        sudo_moves = self.sudo()
+        # Invoices value the move only under perpetual valuation, as in the stored compute.
+        invoices_by_move = sudo_moves._filter_real_time_valuation()._get_related_invoices_by_move()
+        Entry = self.env["account.move"].sudo()
+        for move, sudo_move in zip(self, sudo_moves, strict=True):
+            entries = sudo_move.related_account_move_id | sudo_move.account_move_id
+            entries |= sudo_move.product_value_ids.account_move_id
+            entries |= Entry.browse(invoices_by_move.get(move.id, (False, ()))[1])
+            entries = entries.filtered(lambda entry: entry.state == "posted")
+            move.all_account_move_ids = entries.sorted(lambda entry: (entry.date, entry.id))
+            move.account_move_count = len(entries)
+
+    def action_view_account_moves(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Journal Entries of %s", self._get_valuation_labels()[0]),
+            "res_model": "account.move",
+            "view_mode": "list,form",
+            "views": [(self.env.ref("account.view_move_tree").id, "list"), (False, "form")],
+            "domain": [("id", "in", self.all_account_move_ids.ids)],
+            "context": {"create": False, "edit": False},
+            "target": "new",
+        }
 
     def _recompute_related_account_move(self, batch_size=1000):
         """Recompute ``related_account_move_id`` in batches, flushing and freeing the cache
@@ -183,20 +227,31 @@ class StockMove(models.Model):
         return specs
 
     def _get_related_invoice_by_move(self):
-        """Posted invoice that covers each of these moves: ``{move id: invoice id}``.
+        """Posted invoice that covers each of these moves: ``{move id: invoice id}``. See
+        ``_get_related_invoices_by_move``."""
+        return {
+            move_id: covering_id
+            for move_id, (covering_id, _entry_ids) in self._get_related_invoices_by_move().items()
+            if covering_id
+        }
+
+    def _get_related_invoices_by_move(self):
+        """``{move id: (covering invoice id or False, ids of the invoices on its quantity)}``.
 
         Read off the move's own order line —the customer invoices of its sale line, the
         vendor bills of its purchase line—, not off the picking as ``_get_related_invoices``
         (``sale_stock`` and ``purchase_stock``) does: through the picking, a move took the
         invoice of another line of the same order, such as a down payment invoice.
 
-        And matched by quantity, so a partial delivery is booked only once its quantity is
-        invoiced: the done moves of the line add up in date order (returns subtract), and
-        each move stands for the quantity of the line delivered up to it that later
-        returns did not take back. Its invoice is the one that brought the net invoiced
-        quantity (credit notes subtract) up to that quantity for good. When the line, net
-        of credit notes, does not reach it, the move has no related invoice: a delivery not
-        invoiced yet, or an invoice cancelled with a credit note and not invoiced again.
+        And matched by quantity: the done moves of the line add up in date order (returns
+        subtract), and each move stands for its stretch of the line, from what was
+        delivered before it to what was delivered up to it, less what later returns took
+        back. Its invoice is the one that brought the net invoiced quantity (credit notes
+        subtract) to where it ends up in that stretch. A later partial delivery is not
+        booked by the invoice of an earlier one, and an invoice cancelled by a credit note
+        does not book anything: when nothing of the stretch is invoiced, net of credit
+        notes, the move has no related invoice. A move invoiced in part takes the invoice
+        that bills that part.
 
         Kit components are not in the unit of the line, so they stand for the delivered
         quantity of the whole line, as computed by Odoo (``qty_delivered`` /
@@ -223,16 +278,20 @@ class StockMove(models.Model):
         if "purchase_line_id" in self.env["account.move.line"]._fields:
             self.env["account.move.line"].flush_model(["purchase_line_id"])
         self.env["stock.move"].flush_model(move_fields)
-        best = {}
+        best, entry_ids = {}, {}
         for spec in specs:
-            for move_id, entry in self._get_covering_entries(spec).items():
-                if move_id not in best or entry["key"] > best[move_id]["key"]:
-                    best[move_id] = entry
-        return {move_id: entry["id"] for move_id, entry in best.items()}
+            for move_id, (covering, contributing) in self._get_covering_entries(spec).items():
+                if covering and (move_id not in best or covering["key"] > best[move_id]["key"]):
+                    best[move_id] = covering
+                entry_ids.setdefault(move_id, set()).update(contributing)
+        return {
+            move_id: (best[move_id]["id"] if move_id in best else False, entry_ids[move_id]) for move_id in entry_ids
+        }
 
     def _get_covering_entries(self, spec):
-        """``{move id: entry}`` for the moves of ``self`` on one kind of order line, where
-        entry is the covering invoice (``id`` and its sort ``key``)."""
+        """``{move id: (covering, contributing)}`` for the moves of ``self`` on one kind
+        of order line: the covering invoice (``id`` and its sort ``key``, or None) and the
+        ids of every invoice or credit note that falls on the move's quantity."""
         field = spec["field"]
         line_ids = list(
             {
@@ -317,36 +376,64 @@ class StockMove(models.Model):
             for index in range(len(cumulative) - 2, -1, -1):
                 cumulative[index] = min(cumulative[index], cumulative[index + 1])
             required_by_move = {row[0]: cumulative[index] for index, row in enumerate(own_moves)}
+            # Where the quantity of each move starts: where the previous one ended.
+            lower_by_move = {row[0]: cumulative[index - 1] if index else 0.0 for index, row in enumerate(own_moves)}
             for move_id, _product_id, _quantity, _uom_id, direction in line_moves:
                 if move_id not in requested or not direction:
                     continue
-                required = required_by_move.get(move_id, line["delivered"])
-                entry = self._get_covering_entry(invoiced, required, line_uom)
-                if entry:
-                    result[move_id] = entry
+                if move_id in required_by_move:
+                    lower, required = lower_by_move[move_id], required_by_move[move_id]
+                else:
+                    lower, required = 0.0, line["delivered"]
+                result[move_id] = (
+                    self._get_covering_entry(invoiced, lower, required, line_uom),
+                    self._get_contributing_entries(invoiced, lower, required, line_uom),
+                )
         return result
 
     @api.model
-    def _get_covering_entry(self, invoiced, required, uom):
-        """The entry that brought the running net invoiced quantity up to ``required`` for
-        good, or None when the final net quantity does not reach it. ``invoiced`` is the
-        list of ``(entry, signed quantity)`` by date, then creation (a credit note and the
-        invoice made again the same day keep their real order, which their names do not). Nothing to cover (a move
-        whose quantity was all returned, a kit not delivered yet) takes the most recent
-        entry, as long as the line is still invoiced."""
+    def _get_covering_entry(self, invoiced, lower, upper, uom):
+        """The entry that brought the running net invoiced quantity, for good, to where it
+        ends up inside the move's stretch of the line ``(lower, upper]``: up to ``upper``
+        when the line covers the whole move, or up to the line's net total when it covers
+        part of it (the invoice still standing when another one was cancelled by a credit
+        note). None when nothing of the stretch is invoiced, net of credit notes: a
+        delivery not invoiced yet, or an invoice cancelled and not made again.
+
+        ``invoiced`` is the list of ``(entry, signed quantity)`` by date, then creation (a
+        credit note and the invoice made again the same day keep their real order, which
+        their names do not). A move standing for no quantity (all of it returned, a kit
+        not delivered yet) takes the most recent entry, as long as the line is still
+        invoiced."""
         if not invoiced:
             return None
         total = sum(quantity for _entry, quantity in invoiced)
-        if uom.compare(required, 0.0) <= 0:
+        if uom.compare(upper, lower) <= 0:
             return invoiced[-1][0] if uom.compare(total, 0.0) > 0 else None
-        if uom.compare(total, required) < 0:
+        target = min(total, upper)
+        if uom.compare(target, lower) <= 0:
             return None
         covering, running = None, 0.0
         for entry, quantity in invoiced:
             previous, running = running, running + quantity
-            if uom.compare(previous, required) < 0 <= uom.compare(running, required):
+            if uom.compare(previous, target) < 0 <= uom.compare(running, target):
                 covering = entry
         return covering
+
+    @api.model
+    def _get_contributing_entries(self, invoiced, lower, upper, uom):
+        """Ids of the entries whose quantity falls on the move's stretch of the line,
+        ``(lower, upper]``: the invoices that bill part of it and the credit notes that
+        take part of it back. A move standing for no quantity (all of it returned, a kit
+        not delivered yet) gets every entry of the line."""
+        if uom.compare(upper, lower) <= 0:
+            return {entry["id"] for entry, _quantity in invoiced}
+        ids, running = set(), 0.0
+        for entry, quantity in invoiced:
+            previous, running = running, running + quantity
+            if uom.compare(max(min(previous, running), lower), min(max(previous, running), upper)) < 0:
+                ids.add(entry["id"])
+        return ids
 
     def _get_booked_revaluation_entries(self):
         """Last entry that booked a value adjustment, per move.
