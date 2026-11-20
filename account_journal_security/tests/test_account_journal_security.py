@@ -76,6 +76,40 @@ class TestAccountJournalSecurity(common.TransactionCase):
             "Un usuario NO habilitado ve un diario restringido al registrar un pago",
         )
 
+    def test_payment_register_hides_journals_restricted_to_modification(self):
+        """El asistente de pagos no ofrece un diario que el usuario no puede modificar.
+
+        Pasa por el asistente y no por un ``search`` a mano: un override de
+        ``_get_batch_available_journals`` que no llame a ``super()`` deja sin efecto el filtro.
+        """
+        user_restricted = self._create_account_user("journal_security_wizard_restricted")
+        self.company_bank_journal.write(
+            {"journal_restriction": "modification", "modification_user_ids": [(4, self.user_admin.id)]}
+        )
+        invoice = (
+            self.env["account.move"]
+            .with_company(self.first_company)
+            .create(
+                {
+                    "move_type": "out_invoice",
+                    "partner_id": self.env.ref("base.res_partner_2").id,
+                    "invoice_line_ids": [(0, 0, {"name": "Servicio", "quantity": 1.0, "price_unit": 100.0})],
+                }
+            )
+        )
+        invoice.action_post()
+
+        wizard = (
+            self.env["account.payment.register"]
+            .with_user(user_restricted)
+            .with_company(self.first_company)
+            .with_context(active_model="account.move", active_ids=invoice.ids)
+            .create({})
+        )
+
+        self.assertNotIn(self.company_bank_journal, wizard.available_journal_ids)
+        self.assertNotEqual(wizard.journal_id, self.company_bank_journal)
+
     def test_journal_security_1(self):
         self.company_bank_journal.write(
             {"journal_restriction": "modification", "modification_user_ids": [(4, self.user_admin.id)]}
