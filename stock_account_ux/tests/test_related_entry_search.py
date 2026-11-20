@@ -346,6 +346,35 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self._assert_search_matches_field(move)
         self.assertEqual(move.related_account_move_id, new_invoice, self._related_entry_state(move))
 
+    def test_sale_move_invoiced_in_part_takes_the_standing_invoice(self):
+        """A delivery invoiced in two invoices, the second cancelled by a credit note:
+        the move takes the invoice still standing, and the column lists all three."""
+        line = self._sale_line(self.product_standard_auto, 3.0)
+        move = self._deliver_part(line, 3.0)
+        first_invoice = self._sale_line_invoice(line, 1.0)
+        second_invoice = self._sale_line_invoice(line, 2.0)
+        self._assert_search_matches_field(move)
+        self.assertEqual(move.related_account_move_id, second_invoice, "The line covers the move")
+
+        credit_note = self._sale_line_invoice(line, 2.0, move_type="out_refund")
+        self._assert_search_matches_field(move)
+        self.assertEqual(move.related_account_move_id, first_invoice, self._related_entry_state(move))
+        self.env.invalidate_all()
+        self.assertEqual(move.all_account_move_ids, first_invoice | second_invoice | credit_note)
+        self.assertEqual(move.account_move_count, 3)
+
+    def test_partial_deliveries_list_only_the_invoices_of_their_quantity(self):
+        """Each partial delivery lists the invoice of its own quantity only."""
+        line = self._sale_line(self.product_standard_auto, 2.0)
+        first_move = self._deliver_part(line, 1.0)
+        second_move = self._deliver_part(line, 1.0)
+        first_invoice = self._sale_line_invoice(line, 1.0)
+        second_invoice = self._sale_line_invoice(line, 1.0)
+        self.env.invalidate_all()
+        self.assertEqual(first_move.all_account_move_ids, first_invoice)
+        self.assertEqual(second_move.all_account_move_ids, second_invoice)
+        self.assertEqual((first_move | second_move).mapped("account_move_count"), [1, 1])
+
     def test_purchase_partial_receipt_is_booked_by_the_bill_of_its_quantity(self):
         """Same as the sale case for a receipt received and billed in two parts."""
         PurchaseOrder = self.env.get("purchase.order")
