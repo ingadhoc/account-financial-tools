@@ -35,6 +35,11 @@ audit inventory valuation from the same product movement view.
   a move an earlier closing left out — because that closing was filtered by product
   or by Movement Type — is booked by the next full closing and is linked to it,
   however old it is. Moves already booked by a posted entry keep it.
+* A perpetual move with no entry of its own is booked by the invoice of its own sale
+  or purchase line that covers its quantity, net of credit notes: a down payment
+  invoice, the invoice of another product or of an earlier partial delivery, or an
+  invoice cancelled by a credit note do not book it. Kit components follow the
+  delivered quantity of the whole line.
 
 Filters on the Inventory Valuation report
 ------------------------------------------

@@ -284,6 +284,112 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self._assert_search_matches_field(move)
         self.assertEqual(move.related_account_move_id, product_invoice, self._related_entry_state(move))
 
+    def _sale_line_invoice(self, line, quantity, move_type="out_invoice"):
+        """Posted invoice (or credit note) of ``quantity`` of ``line``."""
+        invoice = self._create_account_move(move_type, line.product_id, quantity, line.price_unit, post=False)
+        invoice.invoice_line_ids.sale_line_ids = line
+        invoice.action_post()
+        return invoice
+
+    def _deliver_part(self, line, quantity, field="sale_line_id"):
+        """Validate ``quantity`` of the pending move of ``line``; the rest goes to a
+        backorder. Returns the move done."""
+        pending = self.env["stock.move"].search([(field, "=", line.id), ("state", "not in", ("done", "cancel"))])
+        self.assertEqual(len(pending), 1, "One pending move for the line")
+        pending.write({"quantity": quantity, "picked": True})
+        pending.picking_id._action_done()
+        self.assertEqual(pending.state, "done")
+        return pending
+
+    def _sale_line(self, product, quantity):
+        if "sale_id" not in self.env["stock.picking"]._fields:
+            self.skipTest("sale_stock is not installed")
+        self._make_in_move(product, quantity, 10)
+        order = self.env["sale.order"].create(
+            {
+                "partner_id": self.env["res.partner"].create({"name": "Customer"}).id,
+                "order_line": [
+                    Command.create({"product_id": product.id, "product_uom_qty": quantity, "price_unit": 20.0})
+                ],
+            }
+        )
+        order.action_confirm()
+        return order.order_line
+
+    def test_sale_partial_delivery_is_booked_by_the_invoice_of_its_quantity(self):
+        """Invoicing by delivered quantity: the second delivery is not booked by the
+        invoice of the first one, but by its own once it is posted."""
+        line = self._sale_line(self.product_standard_auto, 2.0)
+        first_move = self._deliver_part(line, 1.0)
+        first_invoice = self._sale_line_invoice(line, 1.0)
+        self._assert_search_matches_field(first_move)
+        self.assertEqual(first_move.related_account_move_id, first_invoice, self._related_entry_state(first_move))
+
+        second_move = self._deliver_part(line, 1.0)
+        moves = first_move | second_move
+        self._assert_search_matches_field(moves)
+        self.assertEqual(first_move.related_account_move_id, first_invoice)
+        self.assertFalse(second_move.related_account_move_id, "Its quantity is not invoiced yet")
+
+        second_invoice = self._sale_line_invoice(line, 1.0)
+        self._assert_search_matches_field(moves)
+        self.assertEqual(first_move.related_account_move_id, first_invoice)
+        self.assertEqual(second_move.related_account_move_id, second_invoice, self._related_entry_state(second_move))
+
+    def test_sale_invoice_cancelled_by_credit_note_books_nothing(self):
+        """An invoice cancelled with a credit note leaves the move not booked, until the
+        line is invoiced again."""
+        line = self._sale_line(self.product_standard_auto, 1.0)
+        move = self._deliver_part(line, 1.0)
+        invoice = self._sale_line_invoice(line, 1.0)
+        self._assert_search_matches_field(move)
+        self.assertEqual(move.related_account_move_id, invoice)
+
+        self._sale_line_invoice(line, 1.0, move_type="out_refund")
+        self._assert_search_matches_field(move)
+        self.assertFalse(move.related_account_move_id, "The invoice was cancelled by the credit note")
+
+        new_invoice = self._sale_line_invoice(line, 1.0)
+        self._assert_search_matches_field(move)
+        self.assertEqual(move.related_account_move_id, new_invoice, self._related_entry_state(move))
+
+    def test_purchase_partial_receipt_is_booked_by_the_bill_of_its_quantity(self):
+        """Same as the sale case for a receipt received and billed in two parts."""
+        PurchaseOrder = self.env.get("purchase.order")
+        if PurchaseOrder is None or "picking_ids" not in PurchaseOrder._fields:
+            self.skipTest("purchase_stock is not installed")
+        order = self.env["purchase.order"].create(
+            {
+                "partner_id": self.vendor.id,
+                "order_line": [
+                    Command.create(
+                        {"product_id": self.product_standard_auto.id, "product_qty": 2.0, "price_unit": 10.0}
+                    )
+                ],
+            }
+        )
+        order.button_confirm()
+        line = order.order_line
+
+        def bill(quantity):
+            bill = self._create_bill(product=line.product_id, quantity=quantity, price_unit=line.price_unit, post=False)
+            bill.invoice_line_ids.purchase_line_id = line
+            bill.action_post()
+            return bill
+
+        first_move = self._deliver_part(line, 1.0, field="purchase_line_id")
+        first_bill = bill(1.0)
+        second_move = self._deliver_part(line, 1.0, field="purchase_line_id")
+        moves = first_move | second_move
+        self._assert_search_matches_field(moves)
+        self.assertEqual(first_move.related_account_move_id, first_bill, self._related_entry_state(first_move))
+        self.assertFalse(second_move.related_account_move_id, "Its quantity is not billed yet")
+
+        second_bill = bill(1.0)
+        self._assert_search_matches_field(moves)
+        self.assertEqual(first_move.related_account_move_id, first_bill)
+        self.assertEqual(second_move.related_account_move_id, second_bill, self._related_entry_state(second_move))
+
     def test_set_not_set_search_does_not_compute_the_field(self):
         """Resolving the related invoices move by move ran a big base out of memory: the
         set / not set search reads the stored column and must not compute anything."""
