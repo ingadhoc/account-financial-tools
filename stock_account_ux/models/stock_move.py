@@ -48,30 +48,28 @@ class StockMove(models.Model):
 
     def _related_account_move_depends(self):
         """Dependencies of ``related_account_move_id``. The related invoices are reached
-        the way ``_get_related_invoice_by_picking`` reaches them, through the picking —its
-        sale order, the purchase orders of its moves—, only when those modules are
-        installed: a move with no order line of its own also takes the picking's invoice."""
+        the way ``_get_related_invoice_by_move`` reaches them, through the move's own sale
+        or purchase line, only when those modules are installed."""
         depends = [
             "account_move_id",
             "account_move_id.state",
-            "picking_id",
             "state",
             "product_id.valuation",
             "product_value_ids.account_move_id",
             "product_value_ids.account_move_id.state",
             "product_value_ids.date",
         ]
-        if "sale_id" in self.env["stock.picking"]._fields:
-            depends.append("picking_id.sale_id.order_line.invoice_lines.move_id.state")
+        if "sale_line_id" in self._fields:
+            depends.append("sale_line_id.invoice_lines.move_id.state")
         if "purchase_line_id" in self._fields:
-            depends.append("picking_id.move_ids.purchase_line_id.order_id.order_line.invoice_lines.move_id.state")
+            depends.append("purchase_line_id.invoice_lines.move_id.state")
         return depends
 
     @api.depends(lambda self: self._related_account_move_depends())
     def _compute_related_account_move_id(self):
         # A closing links, and later posts, every unaccounted move of the company at once:
         # fetch only what is read here, or the whole move gets prefetched for each of them.
-        self.fetch(["account_move_id", "picking_id", "product_id"])
+        self.fetch(["account_move_id", "product_id"])
         # The value adjustment entry wins, as it is the one reflecting the move's CURRENT
         # valuation. The original entry stays in the standard ``account_move_id``.
         revaluation_entry_by_move = self._get_booked_revaluation_entries()
@@ -86,14 +84,14 @@ class StockMove(models.Model):
         invoice_moves = self.filtered(
             lambda move: move.id not in revaluation_entry_by_move and move.account_move_id not in posted_entries
         )._filter_real_time_valuation()
-        invoice_by_picking = invoice_moves._get_related_invoice_by_picking()
+        invoice_by_move = invoice_moves._get_related_invoice_by_move()
         for move in self:
             if move.id in revaluation_entry_by_move:
                 move.related_account_move_id = revaluation_entry_by_move[move.id]
             elif move.account_move_id in posted_entries:
                 move.related_account_move_id = move.account_move_id
             elif move in invoice_moves:
-                move.related_account_move_id = invoice_by_picking.get(move.picking_id.id, False)
+                move.related_account_move_id = invoice_by_move.get(move.id, False)
             else:
                 move.related_account_move_id = False
 
@@ -123,55 +121,47 @@ class StockMove(models.Model):
             )
         )
 
-    def _get_related_invoice_by_picking(self):
-        """Posted related invoice of these moves, per picking: ``{picking id: invoice id}``.
+    def _get_related_invoice_by_move(self):
+        """Posted related invoice of these moves: ``{move id: invoice id}``.
 
-        The batch version of ``_get_related_invoices`` (``sale_stock`` and
-        ``purchase_stock``), which resolves them one move at a time with a search each.
-        Both overrides read them off the picking —the customer invoices through its sale
-        order, the vendor bills through the purchase orders it receives for—, so they are
-        resolved once per picking, in SQL: through the ORM, ``invoice_ids`` loads every
-        line of every order and invoice. When there are several, the first one in the
-        entries order (the most recent) wins. Keep it aligned with those overrides.
+        Read off the move's own order line —the customer invoices of its sale line, the
+        vendor bills of its purchase line—, not off the picking as ``_get_related_invoices``
+        (``sale_stock`` and ``purchase_stock``) does: through the picking, a move of a
+        product nobody invoiced took the invoice of another line of the same order, such
+        as a down payment invoice. A move with no order line has no related invoice.
+        Resolved in SQL for the whole batch: through the ORM, ``invoice_lines`` loads every
+        line of every invoice. When there are several, the first one in the entries order
+        (the most recent) wins.
         """
-        picking_ids = list(set(self.picking_id.ids))
-        if not picking_ids:
+        move_ids = self.ids
+        if not move_ids:
             return {}
         queries = []
-        if "sale_id" in self.env["stock.picking"]._fields:
+        if "sale_line_id" in self._fields:
             queries.append(
                 SQL(
                     """
-                    SELECT picking.id AS picking_id, line.move_id
-                      FROM stock_picking picking
-                      JOIN sale_order_line order_line ON order_line.order_id = picking.sale_id
-                      JOIN sale_order_line_invoice_rel rel ON rel.order_line_id = order_line.id
+                    SELECT move.id AS stock_move_id, line.move_id
+                      FROM stock_move move
+                      JOIN sale_order_line_invoice_rel rel ON rel.order_line_id = move.sale_line_id
                       JOIN account_move_line line ON line.id = rel.invoice_line_id
                       JOIN account_move invoice ON invoice.id = line.move_id
-                     WHERE picking.id = ANY(%s)
+                     WHERE move.id = ANY(%s)
                        AND invoice.move_type IN ('out_invoice', 'out_refund')
                     """,
-                    picking_ids,
+                    move_ids,
                 )
             )
-        PurchaseOrder = self.env.get("purchase.order")
-        if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
-            # ``purchase.order.picking_ids`` is stored but has no inverse on the picking, so
-            # the pickings are read straight from its relation table.
-            picking_ids_field = PurchaseOrder._fields["picking_ids"]
+        if "purchase_line_id" in self._fields:
             queries.append(
                 SQL(
                     """
-                    SELECT rel.%(picking)s AS picking_id, line.move_id
-                      FROM %(relation)s rel
-                      JOIN purchase_order_line order_line ON order_line.order_id = rel.%(order)s
-                      JOIN account_move_line line ON line.purchase_line_id = order_line.id
-                     WHERE rel.%(picking)s = ANY(%(picking_ids)s)
+                    SELECT move.id AS stock_move_id, line.move_id
+                      FROM stock_move move
+                      JOIN account_move_line line ON line.purchase_line_id = move.purchase_line_id
+                     WHERE move.id = ANY(%s)
                     """,
-                    picking=SQL.identifier(picking_ids_field.column2),
-                    order=SQL.identifier(picking_ids_field.column1),
-                    relation=SQL.identifier(picking_ids_field.relation),
-                    picking_ids=picking_ids,
+                    move_ids,
                 )
             )
         if not queries:
@@ -179,11 +169,11 @@ class StockMove(models.Model):
         rows = self.env.execute_query(
             SQL(
                 """
-                SELECT DISTINCT ON (related.picking_id) related.picking_id, entry.id
+                SELECT DISTINCT ON (related.stock_move_id) related.stock_move_id, entry.id
                   FROM (%s) related
                   JOIN account_move entry ON entry.id = related.move_id
                  WHERE entry.state = 'posted'
-                 ORDER BY related.picking_id, entry.date DESC, entry.name DESC, entry.id DESC
+                 ORDER BY related.stock_move_id, entry.date DESC, entry.name DESC, entry.id DESC
                 """,
                 SQL(" UNION ALL ").join(queries),
             )
