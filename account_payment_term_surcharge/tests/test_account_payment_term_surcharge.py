@@ -154,6 +154,24 @@ class TestAccountPaymentTermSurcharge(common.TransactionCase):
         self._run_cron()
         self.assertEqual(legacy_invoice.debit_note_ids, legacy_note)
 
+    def test_rule_added_after_invoice(self):
+        invoice_date = self.today - timedelta(days=5)
+        invoice = self._create_posted_invoice(invoice_date)
+        self._run_cron()
+        # Records of one transaction share create_date: move the invoice back so the new rule is later
+        self.env.cr.execute(
+            "UPDATE account_move SET create_date = create_date - interval '1 day' WHERE id = %s", [invoice.id]
+        )
+        invoice.invalidate_recordset(["create_date"])
+
+        new_rule = self.surcharge.copy({"days": 2})
+        self._run_cron()
+        self.assertEqual(invoice.debit_note_ids.surcharge_id, self.surcharge)
+
+        new_invoice = self._create_posted_invoice(invoice_date)
+        self._run_cron(times=2)
+        self.assertEqual(new_invoice.debit_note_ids.surcharge_id, self.surcharge | new_rule)
+
     def test_rule_change_warning(self):
         def onchange_warning():
             rule = self.env["account.payment.term.surcharge"].new({"days": 2}, origin=self.surcharge)

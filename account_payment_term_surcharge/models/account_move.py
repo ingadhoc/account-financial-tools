@@ -132,9 +132,13 @@ class AccountMove(models.Model):
         legacy_count = len(
             debit_notes.filtered(lambda n: not n.surcharge_id and product in n.invoice_line_ids.product_id)
         )
+        # A rule added to the payment term after the invoice was created does not apply to it
+        surcharges = self.invoice_payment_term_id.surcharge_ids.filtered(
+            lambda s: not (s.create_date and self.create_date and s.create_date > self.create_date)
+        )
         pending = [
             (surcharge._calculate_date(self.invoice_date), surcharge)
-            for surcharge in self.invoice_payment_term_id.surcharge_ids - debit_notes.surcharge_id
+            for surcharge in surcharges - debit_notes.surcharge_id
         ]
         return sorted(pending, key=lambda p: p[0])[legacy_count:]
 
