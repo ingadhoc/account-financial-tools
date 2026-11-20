@@ -6,7 +6,7 @@
             type="button"
             class="btn btn-sm btn-outline-primary py-0"
             t-on-click="this.openEntries">
-            <i class="oi me-1" data-icon="format_list_bulleted"/>
+            <i class="fa fa-list me-1"/>
             <t t-out="this.buttonLabel"/>
         </button>
         <Many2One t-else="" t-props="this.m2oProps"/>

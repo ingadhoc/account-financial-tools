@@ -1,12 +1,9 @@
-import { Component, useProps } from "@odoo/owl";
+import { Component } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { computeM2OProps, Many2One } from "@web/views/fields/many2one/many2one";
-import {
-    buildM2OFieldDescription,
-    many2OneFieldProps,
-} from "@web/views/fields/many2one/many2one_field";
+import { buildM2OFieldDescription, Many2OneField } from "@web/views/fields/many2one/many2one_field";
 
 /**
  * The move's journal entry as a regular many2one, or a button listing all of them
@@ -15,7 +12,7 @@ import {
 export class StockMoveEntriesField extends Component {
     static template = "stock_account_ux.StockMoveEntriesField";
     static components = { Many2One };
-    props = useProps({ ...many2OneFieldProps });
+    static props = { ...Many2OneField.props };
 
     setup() {
         this.action = useService("action");
