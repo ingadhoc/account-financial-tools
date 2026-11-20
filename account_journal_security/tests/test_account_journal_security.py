@@ -82,11 +82,12 @@ class TestAccountJournalSecurity(common.TransactionCase):
         )
 
         # Genero el pago con el diario restringido desde admin
+        # With amount 0 the posted payment can be recomputed to reconciled before action_validate
         payment = (
             self.env["account.payment"]
             .with_user(self.user_admin)
             .with_company(self.first_company)
-            .create({"journal_id": self.company_bank_journal.id})
+            .create({"journal_id": self.company_bank_journal.id, "amount": 100.0})
         )
 
         # Desde demo abro el pago y confirmo que puede ingresar
