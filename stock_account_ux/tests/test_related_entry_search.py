@@ -1,12 +1,13 @@
 from unittest.mock import patch
 
 from odoo import Command, fields
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.tests import tagged
+
+from .common import TestStockValuationUXCommon
 
 
 @tagged("post_install", "-at_install")
-class TestRelatedEntrySearch(TestStockValuationCommon):
+class TestRelatedEntrySearch(TestStockValuationUXCommon):
     """``related_account_move_id`` is stored: searching it set / not set reads the column,
     which has to agree with what the compute gives, as the valuation report and the
     closing use it to find the unaccounted moves. The compute runs on the dependencies,
@@ -39,7 +40,7 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
             f" valuation={move.product_id.with_company(move.company_id).valuation}"
             f" category_column={category_column}"
             f" real_time={bool(move._filter_real_time_valuation())}"
-            f" invoice_by_picking={move._get_related_invoice_by_picking()}"
+            f" invoice_by_move={move._get_related_invoice_by_move()}"
             f" account_move={move.account_move_id.id} picking={move.picking_id.id}"
         )
 
@@ -123,34 +124,80 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
         self.assertEqual(receipt.related_account_move_id, bill)
         self.assertEqual(self.env["stock.move"].search([("related_account_move_id", "=", bill.id)]), receipt)
 
-    def test_purchase_bill_books_moves_of_other_orders_in_the_receipt(self):
-        """A receipt can gather moves of several orders, and the bill is reached through
-        the picking: posting the bill of one order also recomputes the moves of the
-        others."""
+    def test_purchase_bill_books_only_the_moves_of_its_order(self):
+        """A receipt can gather moves of several orders. The bill is reached through the
+        move's own purchase line, so posting the bill of one order leaves the moves of
+        the others not booked."""
         order, receipt = self._purchase_receipt(self.product_standard_auto, validate=False)
         other_order, other_receipt = self._purchase_receipt(self.product_fifo_auto, validate=False)
         other_move = other_receipt.move_ids
         other_move.picking_id = receipt
         moves = self._deliver(receipt)
         self.assertEqual(moves, receipt.move_ids)
-        self.assertEqual(other_order.picking_ids, receipt)
+        own_move = moves - other_move
 
         order.action_create_invoice()
         bill = order.invoice_ids
         bill.invoice_date = fields.Date.today()
         bill.action_post()
         self._assert_search_matches_field(moves)
-        self.assertEqual(other_move.related_account_move_id, bill, self._related_entry_state(other_move))
+        self.assertEqual(own_move.related_account_move_id, bill, self._related_entry_state(own_move))
+        self.assertFalse(other_move.related_account_move_id, "Its own order is not billed")
 
-        bill.button_draft()
+        other_order.action_create_invoice()
+        other_bill = other_order.invoice_ids
+        other_bill.invoice_date = fields.Date.today()
+        other_bill.action_post()
+        self._assert_search_matches_field(moves)
+        self.assertEqual(other_move.related_account_move_id, other_bill, self._related_entry_state(other_move))
+
+        other_bill.button_draft()
         self._assert_search_matches_field(moves)
         self.assertFalse(other_move.related_account_move_id, "A bill back to draft books nothing")
+
+    def test_sale_invoice_books_only_the_invoiced_line(self):
+        """A delivery of two products with only one of them invoiced: the move of the
+        other product stays not booked, instead of taking the invoice of the first."""
+        if "sale_id" not in self.env["stock.picking"]._fields:
+            self.skipTest("sale_stock is not installed")
+        products = self.product_standard_auto | self.product_fifo_auto
+        for product in products:
+            self._make_in_move(product, 1, 10)
+        customer = self.env["res.partner"].create({"name": "Customer"})
+        order = self.env["sale.order"].create(
+            {
+                "partner_id": customer.id,
+                "order_line": [
+                    Command.create({"product_id": product.id, "product_uom_qty": 1.0, "price_unit": 20.0})
+                    for product in products
+                ],
+            }
+        )
+        order.action_confirm()
+        moves = self._deliver(order.picking_ids)
+        self.assertEqual(moves.product_id, products)
+        invoiced_line = order.order_line.filtered(lambda line: line.product_id == self.product_standard_auto)
+        invoice = self._create_invoice(
+            product=invoiced_line.product_id, price_unit=invoiced_line.price_unit, post=False
+        )
+        invoice.invoice_line_ids.sale_line_ids = invoiced_line
+        invoice.action_post()
+
+        self._assert_search_matches_field(moves)
+        invoiced_move = moves.filtered(lambda move: move.product_id == self.product_standard_auto)
+        self.assertEqual(invoiced_move.related_account_move_id, invoice, self._related_entry_state(invoiced_move))
+        self.assertFalse((moves - invoiced_move).related_account_move_id, "Its product is not invoiced")
 
     def test_set_not_set_search_does_not_compute_the_field(self):
         """Resolving the related invoices move by move ran a big base out of memory: the
         set / not set search reads the stored column and must not compute anything."""
         self._make_in_move(self.product_standard_auto, 1, 10)
         move_class = type(self.env["stock.move"])
-        with patch.object(move_class, "_get_related_invoices", side_effect=AssertionError("computed")):
+        self.env.flush_all()
+
+        def _forbidden(moves):
+            raise AssertionError("computed")
+
+        with patch.object(move_class, "_compute_related_account_move_id", _forbidden):
             self.env["stock.move"].search([("related_account_move_id", "=", False)])
             self.env["stock.move"].search([("related_account_move_id", "!=", False)])

@@ -2,6 +2,7 @@ from . import account_account
 from . import account_move
 from . import account_move_line
 from . import product_product
+from . import product_template
 from . import product_value
 from . import res_company
 from . import stock_move

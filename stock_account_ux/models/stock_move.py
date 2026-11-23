@@ -46,32 +46,43 @@ class StockMove(models.Model):
         readonly=True,
     )
 
+    # Every posted entry tied to the move, while ``related_account_move_id`` keeps only
+    # the one reflecting its current valuation. Computed on read: it only feeds the list
+    # button, so it is never searched or grouped by.
+    all_account_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_all_account_move_ids",
+        string="All Journal Entries",
+    )
+    account_move_count = fields.Integer(
+        compute="_compute_all_account_move_ids",
+        string="Journal Entries Count",
+    )
+
     def _related_account_move_depends(self):
         """Dependencies of ``related_account_move_id``. The related invoices are reached
-        the way ``_get_related_invoice_by_picking`` reaches them, through the picking —its
-        sale order, the purchase orders of its moves—, only when those modules are
-        installed: a move with no order line of its own also takes the picking's invoice."""
+        the way ``_get_related_invoice_by_move`` reaches them, through the move's own sale
+        or purchase line, only when those modules are installed."""
         depends = [
             "account_move_id",
             "account_move_id.state",
-            "picking_id",
             "state",
             "product_id.valuation",
             "product_value_ids.account_move_id",
             "product_value_ids.account_move_id.state",
             "product_value_ids.date",
         ]
-        if "sale_id" in self.env["stock.picking"]._fields:
-            depends.append("picking_id.sale_id.order_line.invoice_lines.move_id.state")
+        if "sale_line_id" in self._fields:
+            depends.append("sale_line_id.invoice_lines.move_id.state")
         if "purchase_line_id" in self._fields:
-            depends.append("picking_id.move_ids.purchase_line_id.order_id.order_line.invoice_lines.move_id.state")
+            depends.append("purchase_line_id.invoice_lines.move_id.state")
         return depends
 
     @api.depends(lambda self: self._related_account_move_depends())
     def _compute_related_account_move_id(self):
         # A closing links, and later posts, every unaccounted move of the company at once:
         # fetch only what is read here, or the whole move gets prefetched for each of them.
-        self.fetch(["account_move_id", "picking_id", "product_id"])
+        self.fetch(["account_move_id", "product_id"])
         # The value adjustment entry wins, as it is the one reflecting the move's CURRENT
         # valuation. The original entry stays in the standard ``account_move_id``.
         revaluation_entry_by_move = self._get_booked_revaluation_entries()
@@ -86,16 +97,55 @@ class StockMove(models.Model):
         invoice_moves = self.filtered(
             lambda move: move.id not in revaluation_entry_by_move and move.account_move_id not in posted_entries
         )._filter_real_time_valuation()
-        invoice_by_picking = invoice_moves._get_related_invoice_by_picking()
+        invoice_by_move = invoice_moves._get_related_invoice_by_move()
         for move in self:
             if move.id in revaluation_entry_by_move:
                 move.related_account_move_id = revaluation_entry_by_move[move.id]
             elif move.account_move_id in posted_entries:
                 move.related_account_move_id = move.account_move_id
             elif move in invoice_moves:
-                move.related_account_move_id = invoice_by_picking.get(move.picking_id.id, False)
+                move.related_account_move_id = invoice_by_move.get(move.id, False)
             else:
                 move.related_account_move_id = False
+
+    @api.depends("related_account_move_id")
+    def _compute_all_account_move_ids(self):
+        # sudo: same reason as ``_get_booked_revaluation_entries``, the column is shown in
+        # lists that people without access to value adjustments or invoices also open.
+        real_time_moves = self.sudo()._filter_real_time_valuation()
+        for move in self:
+            sudo_move = move.sudo()
+            entries = sudo_move.related_account_move_id | sudo_move.account_move_id
+            entries |= sudo_move.product_value_ids.account_move_id
+            if sudo_move in real_time_moves:
+                entries |= sudo_move._get_order_line_invoices()
+            entries = entries.filtered(lambda entry: entry.state == "posted")
+            move.all_account_move_ids = entries.sorted(lambda entry: (entry.date, entry.name or "", entry.id))
+            move.account_move_count = len(entries)
+
+    def _get_order_line_invoices(self):
+        """Invoices of the move's own sale or purchase line, the same ones
+        ``_get_related_invoice_by_move`` reads."""
+        self.ensure_one()
+        invoice_lines = self.env["account.move.line"]
+        if "sale_line_id" in self._fields:
+            invoice_lines |= self.sale_line_id.invoice_lines
+        if "purchase_line_id" in self._fields:
+            invoice_lines |= self.purchase_line_id.invoice_lines
+        return invoice_lines.move_id
+
+    def action_view_account_moves(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Journal Entries of %s", self._get_valuation_labels()[0]),
+            "res_model": "account.move",
+            "view_mode": "list,form",
+            "views": [(self.env.ref("account.view_move_tree").id, "list"), (False, "form")],
+            "domain": [("id", "in", self.all_account_move_ids.ids)],
+            "context": {"create": False, "edit": False},
+            "target": "new",
+        }
 
     def _recompute_related_account_move(self, batch_size=1000):
         """Recompute ``related_account_move_id`` in batches, flushing and freeing the cache
@@ -117,61 +167,52 @@ class StockMove(models.Model):
         perpetual company triggered from a periodic one got the periodic answer, and the
         other way round."""
         return self.browse().union(
-            *(
+            (
                 moves.with_company(company).filtered(lambda move: move.product_id.valuation == "real_time")
                 for company, moves in self.grouped("company_id").items()
             )
         )
 
-    def _get_related_invoice_by_picking(self):
-        """Posted related invoice of these moves, per picking: ``{picking id: invoice id}``.
+    def _get_related_invoice_by_move(self):
+        """Posted related invoice of these moves: ``{move id: invoice id}``.
 
-        The batch version of ``_get_related_invoices`` (``sale_stock`` and
-        ``purchase_stock``), which resolves them one move at a time with a search each.
-        Both overrides read them off the picking —the customer invoices through its sale
-        order, the vendor bills through the purchase orders it receives for—, so they are
-        resolved once per picking, in SQL: through the ORM, ``invoice_ids`` loads every
-        line of every order and invoice. When there are several, the first one in the
-        entries order (the most recent) wins. Keep it aligned with those overrides.
+        Read off the move's own order line —the customer invoices of its sale line, the
+        vendor bills of its purchase line—, not off the picking as ``_get_related_invoices``
+        (``sale_stock`` and ``purchase_stock``) does: through the picking, a move of a
+        product nobody invoiced took the invoice of another product of the same picking.
+        A move with no order line has no related invoice. Resolved in SQL for the whole
+        batch: through the ORM, ``invoice_lines`` loads every line of every invoice. When
+        there are several, the first one in the entries order (the most recent) wins.
         """
-        picking_ids = list(set(self.picking_id.ids))
-        if not picking_ids:
+        move_ids = self.ids
+        if not move_ids:
             return {}
         queries = []
-        if "sale_id" in self.env["stock.picking"]._fields:
+        if "sale_line_id" in self._fields:
             queries.append(
                 SQL(
                     """
-                    SELECT picking.id AS picking_id, line.move_id
-                      FROM stock_picking picking
-                      JOIN sale_order_line order_line ON order_line.order_id = picking.sale_id
-                      JOIN sale_order_line_invoice_rel rel ON rel.order_line_id = order_line.id
+                    SELECT move.id AS stock_move_id, line.move_id
+                      FROM stock_move move
+                      JOIN sale_order_line_invoice_rel rel ON rel.order_line_id = move.sale_line_id
                       JOIN account_move_line line ON line.id = rel.invoice_line_id
                       JOIN account_move invoice ON invoice.id = line.move_id
-                     WHERE picking.id = ANY(%s)
+                     WHERE move.id = ANY(%s)
                        AND invoice.move_type IN ('out_invoice', 'out_refund')
                     """,
-                    picking_ids,
+                    move_ids,
                 )
             )
-        PurchaseOrder = self.env.get("purchase.order")
-        if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
-            # ``purchase.order.picking_ids`` is stored but has no inverse on the picking, so
-            # the pickings are read straight from its relation table.
-            picking_ids_field = PurchaseOrder._fields["picking_ids"]
+        if "purchase_line_id" in self._fields:
             queries.append(
                 SQL(
                     """
-                    SELECT rel.%(picking)s AS picking_id, line.move_id
-                      FROM %(relation)s rel
-                      JOIN purchase_order_line order_line ON order_line.order_id = rel.%(order)s
-                      JOIN account_move_line line ON line.purchase_line_id = order_line.id
-                     WHERE rel.%(picking)s = ANY(%(picking_ids)s)
+                    SELECT move.id AS stock_move_id, line.move_id
+                      FROM stock_move move
+                      JOIN account_move_line line ON line.purchase_line_id = move.purchase_line_id
+                     WHERE move.id = ANY(%s)
                     """,
-                    picking=SQL.identifier(picking_ids_field.column2),
-                    order=SQL.identifier(picking_ids_field.column1),
-                    relation=SQL.identifier(picking_ids_field.relation),
-                    picking_ids=picking_ids,
+                    move_ids,
                 )
             )
         if not queries:
@@ -179,11 +220,11 @@ class StockMove(models.Model):
         rows = self.env.execute_query(
             SQL(
                 """
-                SELECT DISTINCT ON (related.picking_id) related.picking_id, entry.id
+                SELECT DISTINCT ON (related.stock_move_id) related.stock_move_id, entry.id
                   FROM (%s) related
                   JOIN account_move entry ON entry.id = related.move_id
                  WHERE entry.state = 'posted'
-                 ORDER BY related.picking_id, entry.date DESC, entry.name DESC, entry.id DESC
+                 ORDER BY related.stock_move_id, entry.date DESC, entry.name DESC, entry.id DESC
                 """,
                 SQL(" UNION ALL ").join(queries),
             )
@@ -219,16 +260,15 @@ class StockMove(models.Model):
     def _get_inventory_value(self):
         """What the move contributes to the inventory VALUATION: its ``value``.
 
-        This holds for the three costing methods, standard cost included: a normal receipt
-        of a standard cost product is already valued at the standard cost and not at what
-        was paid (checked on v19: 10 units at 5 with a standard of 10 leaves ``value`` =
-        100, not 50, and the price difference goes to its own account). There is no need
-        to rebuild the cost in force at the move's date.
+        This holds for the three costing methods. Under standard cost a purchase receipt
+        is valued at what was paid (the purchase order price, then the bill price), not at
+        the standard cost, as Odoo 20 does. There is no need to rebuild the cost in force
+        at the move's date.
 
         A manual adjustment (a ``product.value`` pointing at the move) is part of that
         value under AVCO/FIFO, where it does move the product valuation. Under standard
-        cost it does not: the inventory stays at quantity × standard cost, so the move
-        contributes what it was worth before its first adjustment.
+        cost it does not, so the move contributes what it was worth before its first
+        adjustment.
 
         Single home of this criterion, shared by the report's breakdown of the variation
         (Movement Type filter) and by the manual valuation of moves, so both measure the
@@ -238,7 +278,7 @@ class StockMove(models.Model):
         if self.product_id.with_company(self.company_id).cost_method == "standard":
             first_adjustment = self.sudo().product_value_ids.sorted(lambda pv: (pv.date, pv.id))[:1]
             if first_adjustment:
-                return first_adjustment.previous_value
+                return first_adjustment.old_value
         return self.value
 
     def _get_valuation_labels(self):
@@ -261,7 +301,7 @@ class StockMove(models.Model):
             "context": {**self.env.context, "default_move_ids": moves.ids},
         }
 
-    def _set_value(self, correction_quantity=None):
+    def _set_value(self, recompute_date=None, skip_check=False):
         """Do not revalue on invoicing the moves already valued in v18.
 
         Out of the box ``account.move._post`` calls ``_set_value`` on the invoice's
@@ -275,7 +315,7 @@ class StockMove(models.Model):
         moves = self
         if self.env.context.get("skip_migrated_stock_revaluation"):
             moves = self.filtered(lambda m: not (m.stock_valuation_migrated and (m.is_in or m.is_dropship)))
-        return super(StockMove, moves)._set_value(correction_quantity=correction_quantity)
+        return super(StockMove, moves)._set_value(recompute_date=recompute_date, skip_check=skip_check)
 
     def _get_migrated_valuation_counterpart_account(self):
         """Counterpart account of the valuation entry v18 left attached to

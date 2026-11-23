@@ -1,12 +1,13 @@
 from dateutil.relativedelta import relativedelta
 from odoo import Command
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
+from .common import TestStockValuationUXCommon
+
 
 @tagged("post_install", "-at_install")
-class TestInitialBalanceAttribution(TestStockValuationCommon):
+class TestInitialBalanceAttribution(TestStockValuationUXCommon):
     """Initial Balance of the report while a product filter is active.
 
     Criterion: filtered, the report brings ONLY the journal items whose product is set and
@@ -20,7 +21,7 @@ class TestInitialBalanceAttribution(TestStockValuationCommon):
 
     def setUp(self):
         super().setUp()
-        self.report = self.env["stock_account.stock.valuation.report"]
+        self.report = self.env["account.stock.valuation.report"]
         self.move_standard = self._make_in_move(self.product_standard, 10, 10)  # 100
         self.move_avco = self._make_in_move(self.product_avco, 4, 25)  # 100
         self.move_fifo = self._make_in_move(self.product_fifo, 2, 10)  # 20
