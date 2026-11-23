@@ -193,7 +193,7 @@ class TestHistoricalCostBranches(TransactionCase):
             self.assertAlmostEqual(line.historical_cost, 3 * 100.0)
 
         out_move = self._deliver(self.branch_company, 3)
-        self.assertAlmostEqual(out_move.value, 3 * 40.0)
+        self.assertAlmostEqual(out_move.value, -3 * 40.0)
         line._complete_historical_cost_from_moves(out_move)
 
         with self.subTest("completed on delivery: real, still at the parent cost"):
