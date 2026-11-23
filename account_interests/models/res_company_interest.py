@@ -30,7 +30,11 @@ class ResCompanyInterest(models.Model):
         required=True,
         domain=lambda self: [
             ("account_type", "=", "asset_receivable"),
-            ("company_ids", "=", self._context.get("default_company_id") or self.env.company.id),
+            (
+                "company_ids",
+                "=",
+                self._context.get("default_company_id") or self.env.company.id,
+            ),
         ],
     )
     interest_product_id = fields.Many2one(
@@ -72,7 +76,9 @@ class ResCompanyInterest(models.Model):
         default=fields.Date.today,
     )
     domain = fields.Char(
-        "Additional Filters", default="[]", help="Extra filters that will be added to the standard search"
+        "Additional Filters",
+        default="[]",
+        help="Extra filters that will be added to the standard search",
     )
     has_domain = fields.Boolean(compute="_compute_has_domain")
     bypass_company_interest = fields.Boolean(
@@ -111,7 +117,9 @@ class ResCompanyInterest(models.Model):
                 rec.env.cr.commit()
             except Exception as e:
                 _logger.error(
-                    "Error creating interest invoices for company: %s, Error: %s", rec.company_id.name, str(e)
+                    "Error creating interest invoices for company: %s, Error: %s",
+                    rec.company_id.name,
+                    str(e),
                 )
                 rec.env.cr.rollback()
                 rec.company_id.message_post(
@@ -126,7 +134,10 @@ class ResCompanyInterest(models.Model):
         else:
             last_updated_id = 0
             avoid_companies = self.with_context(prefetch_fields=False).search(
-                [("next_date", "<=", current_date), ("bypass_company_interest", "=", True)]
+                [
+                    ("next_date", "<=", current_date),
+                    ("bypass_company_interest", "=", True),
+                ]
             )
             if avoid_companies:
                 company_names = ", ".join(avoid_companies.mapped("company_id.name"))
@@ -141,7 +152,7 @@ class ResCompanyInterest(models.Model):
         self.env.cr.commit()  # pragma pylint: disable=invalid-commit
 
         if last_updated_id:
-            cron = self.env["ir.cron"].browse(self.env.context.get("job_id")) or self.env.ref(
+            cron = self.env["ir.cron"].browse(self.env.context.get("cron_id")) or self.env.ref(
                 "account_interests.cron_recurring_interests_invoices"
             )
             cron._trigger()
@@ -160,7 +171,11 @@ class ResCompanyInterest(models.Model):
 
     def create_interest_invoices(self):
         for rec in self:
-            _logger.info("Creating Interest Invoices (id: %s, company: %s)", rec.id, rec.company_id.name)
+            _logger.info(
+                "Creating Interest Invoices (id: %s, company: %s)",
+                rec.id,
+                rec.company_id.name,
+            )
             # hacemos un commit para refrescar cache
             # TODO ver de utilizar savepoints: https://github.com/OCA/odoo-community.org/blob/master/website/Contribution/CONTRIBUTING.rst#never-commit-the-transaction
             self.env.cr.commit()  # pragma pylint: disable=invalid-commit
@@ -177,7 +192,8 @@ class ResCompanyInterest(models.Model):
             # llamamos a crear las facturas con la compañia del interes para
             # que tome correctamente las cuentas
             rec.with_company(rec.company_id).with_context(
-                default_l10n_ar_afip_asoc_period_start=from_date, default_l10n_ar_afip_asoc_period_end=to_date
+                default_l10n_ar_afip_asoc_period_start=from_date,
+                default_l10n_ar_afip_asoc_period_end=to_date,
             ).create_invoices(from_date, to_date)
             self._clear_processed_partner_ids_for_company(self.company_id)
 
@@ -247,7 +263,11 @@ class ResCompanyInterest(models.Model):
         # Intereses por el último período
         last_period_lines = self.env["account.move.line"].search(
             self._get_move_line_domains()
-            + [("amount_residual", ">", 0), ("date_maturity", ">=", from_date), ("date_maturity", "<", to_date)]
+            + [
+                ("amount_residual", ">", 0),
+                ("date_maturity", ">=", from_date),
+                ("date_maturity", "<", to_date),
+            ]
         )
         for partner, amls in last_period_lines.grouped("partner_id").items():
             interest = sum(
@@ -272,7 +292,11 @@ class ResCompanyInterest(models.Model):
 
             if self.domain:
                 partial_domain.append(
-                    ("debit_move_id", "any", safe_eval.safe_eval(self.domain, self._get_eval_context()))
+                    (
+                        "debit_move_id",
+                        "any",
+                        safe_eval.safe_eval(self.domain, self._get_eval_context()),
+                    )
                 )
 
             partials = (
@@ -297,7 +321,13 @@ class ResCompanyInterest(models.Model):
         journal = (
             self.env["account.move"]
             .with_context(internal_type="debit_note", default_move_type="out_invoice")
-            .new({"partner_id": partner.id, "move_type": "out_invoice", "company_id": self.company_id.id})
+            .new(
+                {
+                    "partner_id": partner.id,
+                    "move_type": "out_invoice",
+                    "company_id": self.company_id.id,
+                }
+            )
             .journal_id
         )
 
@@ -305,7 +335,11 @@ class ResCompanyInterest(models.Model):
         if not journal.active or self.receivable_account_ids != journal.default_account_id:
             journal = (
                 self.env["account.journal"].search(
-                    [("default_account_id", "in", self.receivable_account_ids.ids), ("active", "=", True)], limit=1
+                    [
+                        ("default_account_id", "in", self.receivable_account_ids.ids),
+                        ("active", "=", True),
+                    ],
+                    limit=1,
                 )
                 or journal
             )
@@ -342,7 +376,12 @@ class ResCompanyInterest(models.Model):
         while batch_start < total_items:
             items = list(deuda.items())
             batch = dict(items[batch_start : batch_start + batch_size])
-            _logger.info("Processing batch %s to %s of %s", batch_start + 1, batch_start + len(batch), total_items)
+            _logger.info(
+                "Processing batch %s to %s of %s",
+                batch_start + 1,
+                batch_start + len(batch),
+                total_items,
+            )
             # Crear facturas
             processed_partner_ids = self._get_processed_partner_ids_for_company(self.company_id)
 
@@ -356,7 +395,10 @@ class ResCompanyInterest(models.Model):
                     continue
 
                 _logger.info(
-                    "Creating Interest Invoice (%s of %s) for partner ID: %s", idx + 1, total_items, partner.id
+                    "Creating Interest Invoice (%s of %s) for partner ID: %s",
+                    idx + 1,
+                    total_items,
+                    partner.id,
                 )
 
                 move = self.env["account.move"].create(move_vals)
@@ -366,7 +408,7 @@ class ResCompanyInterest(models.Model):
                     try:
                         move.action_post()
                     except Exception as e:
-                        _logger.error("Something went wrong creating " f"interests invoice: {e}")
+                        _logger.error(f"Something went wrong creating interests invoice: {e}")
             self._set_processed_partner_ids_for_company(self.company_id, [p.id for p in batch])
             self.env.cr.commit()  # pragma pylint: disable=invalid-commit
             batch_start += batch_size
@@ -380,7 +422,10 @@ class ResCompanyInterest(models.Model):
         date_format = lang.date_format
         to_date_format = to_date.strftime(date_format)
         if not self.past_due_rate:
-            res = _("Deuda Vencida al %s con tasa de interés de %s") % (to_date_format, self.rate)
+            res = _("Deuda Vencida al %s con tasa de interés de %s") % (
+                to_date_format,
+                self.rate,
+            )
         else:
             res = _(
                 "Deuda Vencida al %s de periodos anteriores con tasa de interés de %s. "
