@@ -1,0 +1,44 @@
+<odoo>
+    <record id="account_journal_dashboard_kanban_view_fci" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban.fci</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view"/>
+        <field name="arch" type="xml">
+            <!-- Load the is_fci_journal field into the kanban card -->
+            <field name="type" position="after">
+                <field name="is_fci_journal"/>
+            </field>
+
+            <!--
+                Add a "Withdraw FCI / Accrue Interest" button in the kanban card body.
+                Injected at the end of the main card <t t-name="card"> template,
+                visible only when the journal is flagged as FCI.
+            -->
+            <xpath expr="//t[@t-name='card']" position="inside">
+                <t t-if="record.is_fci_journal.raw_value">
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <button
+                                type="object"
+                                name="action_fci_withdraw"
+                                class="btn-primary"
+                                groups="account.group_account_user">
+                                Withdraw FCI / Accrue Interest
+                            </button>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+
+            <!--
+                Add the FCI withdraw option in the kanban card menu (gear icon),
+                in the "New" section for bank/cash journals.
+            -->
+            <div name="kanban_manage_new" position="inside">
+                <div t-if="record.is_fci_journal.raw_value" groups="account.group_account_user">
+                    <a role="menuitem" type="object" name="action_fci_withdraw">Withdraw FCI / Accrue Interest</a>
+                </div>
+            </div>
+        </field>
+    </record>
+</odoo>
