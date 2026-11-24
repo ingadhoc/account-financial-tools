@@ -14,11 +14,13 @@ def migrate(env, version):
     is the invoice of the move's own sale or purchase line that covers the move's
     quantity, net of credit notes. The new criterion only narrows the old one, so only
     moves showing an invoice that is not their own entry can change. Among them, a move
-    stays as it is when that invoice is the only posted one of its line and the line is
-    invoiced at least as much as it was delivered: that invoice covers every move of
-    the line. The rest are found in SQL and recomputed, so a big base does not recompute
-    every invoiced move. In the end-migration so ``sale_stock`` and ``purchase_stock``
-    are loaded and the compute sees their invoices."""
+    that goes to the customer or comes from the vendor stays as it is when that invoice
+    is the only posted one of its line and the line is invoiced at least as much as it
+    was delivered: that invoice covers every move of the line. The rest, picks of a
+    multi-step delivery included (the compute gives them no invoice), are found in SQL
+    and recomputed, so a big base does not recompute every invoiced move. In the
+    end-migration so ``sale_stock`` and ``purchase_stock`` are loaded and the compute
+    sees their invoices."""
     unchanged = []
     if openupgrade.column_exists(env.cr, "stock_move", "sale_line_id"):
         unchanged.append(
@@ -28,6 +30,11 @@ def migrate(env, version):
                     SELECT 1
                       FROM sale_order_line line
                      WHERE line.id = move.sale_line_id
+                       AND 'customer' IN (
+                               SELECT location.usage
+                                 FROM stock_location location
+                                WHERE location.id IN (move.location_id, move.location_dest_id)
+                           )
                        AND line.qty_invoiced >= line.qty_delivered
                        AND ARRAY[move.related_account_move_id] = (
                                SELECT array_agg(DISTINCT invoice.id)
@@ -50,6 +57,11 @@ def migrate(env, version):
                     SELECT 1
                       FROM purchase_order_line line
                      WHERE line.id = move.purchase_line_id
+                       AND 'supplier' IN (
+                               SELECT location.usage
+                                 FROM stock_location location
+                                WHERE location.id IN (move.location_id, move.location_dest_id)
+                           )
                        AND line.qty_invoiced >= line.qty_received
                        AND ARRAY[move.related_account_move_id] = (
                                SELECT array_agg(DISTINCT bill.id)
