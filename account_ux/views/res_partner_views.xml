@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_partner_property_form_credit_limit" model="ir.ui.view">
+        <field name="name">res.partner.property.form.credit_limit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <label for="use_partner_credit_limit" position="attributes">
+                <attribute name="string">Credit Limit</attribute>
+            </label>
+            <field name="use_partner_credit_limit" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="credit_limit" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </field>
+        </field>
+    </record>
+
     <record id="view_res_partner_filter" model="ir.ui.view">
         <field name="name">res.partner.view.filter</field>
         <field name="model">res.partner</field>
