@@ -13,6 +13,13 @@ class TestRelatedEntrySearch(TestStockValuationCommon):
     the related invoices included, so a posted invoice has to show up without any
     recompute from the test."""
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # exception rules of other modules leave the order in draft on action_confirm
+        if "exception.rule" in cls.env:
+            cls.env["exception.rule"].sudo().search([("active", "=", True)]).active = False
+
     def _assert_search_matches_field(self, moves):
         Move = self.env["stock.move"]
         self.env.invalidate_all()
