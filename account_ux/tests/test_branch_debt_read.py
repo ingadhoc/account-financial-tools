@@ -3,6 +3,7 @@
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.exceptions import AccessError
+from odoo.service.model import call_kw
 from odoo.tests import Form, tagged
 
 
@@ -83,6 +84,17 @@ class TestBranchDebtRead(AccountTestInvoicingCommon):
         journals = self._as_user_a(self.env["account.journal"])
         self.assertNotIn(journal, journals.search([]))
         self.assertFalse(journals.search_count([("id", "=", journal.id)]))
+
+    def test_searches_work_over_rpc(self):
+        """RPC clients (web client, odooly, integrations) pass the domain as the first argument."""
+        journal = self._sibling_journal()
+        for model in self.env.registry.descendants(["branch.debt.read.mixin"], "_inherit") - {"branch.debt.read.mixin"}:
+            with self.subTest(model=model):
+                records = self._as_user_a(self.env[model])
+                self.assertEqual(call_kw(records, "search_count", [[]], {}), records.search_count([]))
+                call_kw(records, "search_read", [[], ["display_name"]], {"limit": 1})
+        journals = self._as_user_a(self.env["account.journal"])
+        self.assertFalse(call_kw(journals, "search_count", [[("id", "=", journal.id)]], {}))
 
     def test_the_invoice_of_another_branch_opens_without_the_reset_button(self):
         invoice = self._as_user_a(self.invoice_b)

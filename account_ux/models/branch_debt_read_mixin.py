@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models
+from odoo import api, models
 from odoo.fields import Domain
 
 
@@ -23,11 +23,14 @@ class BranchDebtReadMixin(models.AbstractModel):
             return Domain(domain) & Domain(self.env["ir.rule"]._compute_domain(self._name, "write"))
         return domain
 
+    @api.model
     def search_fetch(self, domain, *args, **kwargs):
         return super().search_fetch(self._branch_debt_search_domain(domain), *args, **kwargs)
 
+    @api.model
     def search_count(self, domain, *args, **kwargs):
         return super().search_count(self._branch_debt_search_domain(domain), *args, **kwargs)
 
+    @api.model
     def _read_group(self, domain, *args, **kwargs):
         return super()._read_group(self._branch_debt_search_domain(domain), *args, **kwargs)
