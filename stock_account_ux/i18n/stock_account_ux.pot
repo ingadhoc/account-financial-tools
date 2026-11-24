@@ -55,9 +55,20 @@ msgid "%(label)s - %(product)s"
 msgstr ""
 
 #. module: stock_account_ux
+#. odoo-javascript
+#: code:addons/stock_account_ux/static/src/stock_move_entries/move_entries_field.js:0
+msgid "%s Journal Entries"
+msgstr ""
+
+#. module: stock_account_ux
 #: model:ir.model,name:stock_account_ux.model_account_account
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation_line__account_id
 msgid "Account"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__all_account_move_ids
+msgid "All Journal Entries"
 msgstr ""
 
 #. module: stock_account_ux
@@ -229,6 +240,17 @@ msgstr ""
 #. module: stock_account_ux
 #: model:ir.model.fields,field_description:stock_account_ux.field_stock_move_valuation__journal_id
 msgid "Journal"
+msgstr ""
+
+#. module: stock_account_ux
+#: model:ir.model.fields,field_description:stock_account_ux.field_stock_move__account_move_count
+msgid "Journal Entries Count"
+msgstr ""
+
+#. module: stock_account_ux
+#. odoo-python
+#: code:addons/stock_account_ux/models/stock_move.py:0
+msgid "Journal Entries of %s"
 msgstr ""
 
 #. module: stock_account_ux

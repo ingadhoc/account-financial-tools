@@ -46,32 +46,50 @@ class StockMove(models.Model):
         readonly=True,
     )
 
+    # Every posted entry tied to the move, while ``related_account_move_id`` keeps only
+    # the one reflecting its current valuation: its own entry, its value adjustments and
+    # the invoices or credit notes of its line that fall on its quantity (a move invoiced
+    # in two parts, an invoice cancelled and made again). Computed on read: it only feeds
+    # the list button, so it is never searched or grouped by.
+    all_account_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_all_account_move_ids",
+        string="All Journal Entries",
+    )
+    account_move_count = fields.Integer(
+        compute="_compute_all_account_move_ids",
+        string="Journal Entries Count",
+    )
+
     def _related_account_move_depends(self):
         """Dependencies of ``related_account_move_id``. The related invoices are reached
-        the way ``_get_related_invoice_by_picking`` reaches them, through the picking —its
-        sale order, the purchase orders of its moves—, only when those modules are
-        installed: a move with no order line of its own also takes the picking's invoice."""
+        the way ``_get_related_invoice_by_move`` reaches them, through the move's own sale
+        or purchase line, only when those modules are installed. The other moves of the
+        line and its delivered quantity count too, as they decide which quantity of the
+        line each move stands for."""
         depends = [
             "account_move_id",
             "account_move_id.state",
-            "picking_id",
             "state",
             "product_id.valuation",
             "product_value_ids.account_move_id",
             "product_value_ids.account_move_id.state",
             "product_value_ids.date",
         ]
-        if "sale_id" in self.env["stock.picking"]._fields:
-            depends.append("picking_id.sale_id.order_line.invoice_lines.move_id.state")
-        if "purchase_line_id" in self._fields:
-            depends.append("picking_id.move_ids.purchase_line_id.order_id.order_line.invoice_lines.move_id.state")
+        for spec in self._order_line_specs():
+            field = spec["field"]
+            depends += [
+                f"{field}.invoice_lines.move_id.state",
+                f"{field}.move_ids.state",
+                f"{field}.{spec['delivered_field']}",
+            ]
         return depends
 
     @api.depends(lambda self: self._related_account_move_depends())
     def _compute_related_account_move_id(self):
         # A closing links, and later posts, every unaccounted move of the company at once:
         # fetch only what is read here, or the whole move gets prefetched for each of them.
-        self.fetch(["account_move_id", "picking_id", "product_id"])
+        self.fetch(["account_move_id", "product_id"])
         # The value adjustment entry wins, as it is the one reflecting the move's CURRENT
         # valuation. The original entry stays in the standard ``account_move_id``.
         revaluation_entry_by_move = self._get_booked_revaluation_entries()
@@ -86,16 +104,45 @@ class StockMove(models.Model):
         invoice_moves = self.filtered(
             lambda move: move.id not in revaluation_entry_by_move and move.account_move_id not in posted_entries
         )._filter_real_time_valuation()
-        invoice_by_picking = invoice_moves._get_related_invoice_by_picking()
+        invoice_by_move = invoice_moves._get_related_invoice_by_move()
         for move in self:
             if move.id in revaluation_entry_by_move:
                 move.related_account_move_id = revaluation_entry_by_move[move.id]
             elif move.account_move_id in posted_entries:
                 move.related_account_move_id = move.account_move_id
             elif move in invoice_moves:
-                move.related_account_move_id = invoice_by_picking.get(move.picking_id.id, False)
+                move.related_account_move_id = invoice_by_move.get(move.id, False)
             else:
                 move.related_account_move_id = False
+
+    @api.depends("related_account_move_id")
+    def _compute_all_account_move_ids(self):
+        # sudo: same reason as ``_get_booked_revaluation_entries``, the column is shown in
+        # lists that people without access to value adjustments or invoices also open.
+        sudo_moves = self.sudo()
+        # Invoices value the move only under perpetual valuation, as in the stored compute.
+        invoices_by_move = sudo_moves._filter_real_time_valuation()._get_related_invoices_by_move()
+        Entry = self.env["account.move"].sudo()
+        for move, sudo_move in zip(self, sudo_moves, strict=True):
+            entries = sudo_move.related_account_move_id | sudo_move.account_move_id
+            entries |= sudo_move.product_value_ids.account_move_id
+            entries |= Entry.browse(invoices_by_move.get(move.id, (False, ()))[1])
+            entries = entries.filtered(lambda entry: entry.state == "posted")
+            move.all_account_move_ids = entries.sorted(lambda entry: (entry.date, entry.id))
+            move.account_move_count = len(entries)
+
+    def action_view_account_moves(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Journal Entries of %s", self._get_valuation_labels()[0]),
+            "res_model": "account.move",
+            "view_mode": "list,form",
+            "views": [(self.env.ref("account.view_move_tree").id, "list"), (False, "form")],
+            "domain": [("id", "in", self.all_account_move_ids.ids)],
+            "context": {"create": False, "edit": False},
+            "target": "new",
+        }
 
     def _recompute_related_account_move(self, batch_size=1000):
         """Recompute ``related_account_move_id`` in batches, flushing and freeing the cache
@@ -123,72 +170,270 @@ class StockMove(models.Model):
             )
         )
 
-    def _get_related_invoice_by_picking(self):
-        """Posted related invoice of these moves, per picking: ``{picking id: invoice id}``.
+    def _order_line_specs(self):
+        """How each kind of order line reaches its moves and invoices, for the installed
+        modules. A move goes forward when it leaves towards the partner (a delivery) or
+        comes from it (a receipt), and backward when it is the return."""
+        specs = []
+        if "sale_line_id" in self._fields:
+            specs.append(
+                {
+                    "field": "sale_line_id",
+                    "line_table": "sale_order_line",
+                    "delivered_field": "qty_delivered",
+                    "partner_usage": "customer",
+                    "forward_location": "location_dest_id",
+                    "backward_location": "location_id",
+                    "refund_type": "out_refund",
+                    "entries": lambda line_ids: SQL(
+                        """
+                        SELECT rel.order_line_id AS line_id, aml.quantity, aml.product_uom_id,
+                               entry.id, entry.date, entry.move_type
+                          FROM sale_order_line_invoice_rel rel
+                          JOIN account_move_line aml ON aml.id = rel.invoice_line_id
+                          JOIN account_move entry ON entry.id = aml.move_id
+                         WHERE rel.order_line_id = ANY(%(line_ids)s)
+                           AND entry.state = 'posted'
+                           AND entry.move_type IN ('out_invoice', 'out_refund')
+                        """,
+                        line_ids=line_ids,
+                    ),
+                }
+            )
+        if "purchase_line_id" in self._fields:
+            specs.append(
+                {
+                    "field": "purchase_line_id",
+                    "line_table": "purchase_order_line",
+                    "delivered_field": "qty_received",
+                    "partner_usage": "supplier",
+                    "forward_location": "location_id",
+                    "backward_location": "location_dest_id",
+                    "refund_type": "in_refund",
+                    "entries": lambda line_ids: SQL(
+                        """
+                        SELECT aml.purchase_line_id AS line_id, aml.quantity, aml.product_uom_id,
+                               entry.id, entry.date, entry.move_type
+                          FROM account_move_line aml
+                          JOIN account_move entry ON entry.id = aml.move_id
+                         WHERE aml.purchase_line_id = ANY(%(line_ids)s)
+                           AND entry.state = 'posted'
+                           AND entry.move_type IN ('in_invoice', 'in_refund')
+                        """,
+                        line_ids=line_ids,
+                    ),
+                }
+            )
+        return specs
 
-        The batch version of ``_get_related_invoices`` (``sale_stock`` and
-        ``purchase_stock``), which resolves them one move at a time with a search each.
-        Both overrides read them off the picking —the customer invoices through its sale
-        order, the vendor bills through the purchase orders it receives for—, so they are
-        resolved once per picking, in SQL: through the ORM, ``invoice_ids`` loads every
-        line of every order and invoice. When there are several, the first one in the
-        entries order (the most recent) wins. Keep it aligned with those overrides.
-        """
-        picking_ids = list(set(self.picking_id.ids))
-        if not picking_ids:
+    def _get_related_invoice_by_move(self):
+        """Posted invoice that covers each of these moves: ``{move id: invoice id}``. See
+        ``_get_related_invoices_by_move``."""
+        return {
+            move_id: covering_id
+            for move_id, (covering_id, _entry_ids) in self._get_related_invoices_by_move().items()
+            if covering_id
+        }
+
+    def _get_related_invoices_by_move(self):
+        """``{move id: (covering invoice id or False, ids of the invoices on its quantity)}``.
+
+        Read off the move's own order line —the customer invoices of its sale line, the
+        vendor bills of its purchase line—, not off the picking as ``_get_related_invoices``
+        (``sale_stock`` and ``purchase_stock``) does: through the picking, a move took the
+        invoice of another line of the same order, such as a down payment invoice.
+
+        And matched by quantity: the done moves of the line add up in date order (returns
+        subtract), and each move stands for its stretch of the line, from what was
+        delivered before it to what was delivered up to it, less what later returns took
+        back. Its invoice is the one that brought the net invoiced quantity (credit notes
+        subtract) to where it ends up in that stretch. A later partial delivery is not
+        booked by the invoice of an earlier one, and an invoice cancelled by a credit note
+        does not book anything: when nothing of the stretch is invoiced, net of credit
+        notes, the move has no related invoice. A move invoiced in part takes the invoice
+        that bills that part.
+
+        Kit components are not in the unit of the line, so they stand for the delivered
+        quantity of the whole line, as computed by Odoo (``qty_delivered`` /
+        ``qty_received``). A move that neither leaves to nor comes from the partner (a
+        pick of a multi-step delivery) is not valued and has no related invoice. When a
+        move is on both a sale and a purchase line (dropship), the most recent invoice
+        wins. Resolved in SQL for the whole batch."""
+        if not self.ids:
             return {}
-        queries = []
-        if "sale_id" in self.env["stock.picking"]._fields:
-            queries.append(
+        specs = self._order_line_specs()
+        # Read in SQL: what the ORM still holds in cache (a move just done, an invoice just
+        # posted, the very changes that trigger this compute) has to reach the database.
+        self.env["stock.location"].flush_model(["usage"])
+        self.env["account.move"].flush_model(["state", "date", "move_type"])
+        self.env["account.move.line"].flush_model(["move_id", "quantity", "product_uom_id"])
+        move_fields = ["state", "date", "product_id", "quantity", "product_uom", "location_id", "location_dest_id"]
+        for spec in specs:
+            move_fields.append(spec["field"])
+            OrderLine = self.env[self._fields[spec["field"]].comodel_name]
+            line_fields = ["product_id", "product_uom_id", spec["delivered_field"]]
+            if OrderLine._fields["invoice_lines"].type == "many2many":
+                line_fields.append("invoice_lines")
+            OrderLine.flush_model(line_fields)
+        if "purchase_line_id" in self.env["account.move.line"]._fields:
+            self.env["account.move.line"].flush_model(["purchase_line_id"])
+        self.env["stock.move"].flush_model(move_fields)
+        best, entry_ids = {}, {}
+        for spec in specs:
+            for move_id, (covering, contributing) in self._get_covering_entries(spec).items():
+                if covering and (move_id not in best or covering["key"] > best[move_id]["key"]):
+                    best[move_id] = covering
+                entry_ids.setdefault(move_id, set()).update(contributing)
+        return {
+            move_id: (best[move_id]["id"] if move_id in best else False, entry_ids[move_id]) for move_id in entry_ids
+        }
+
+    def _get_covering_entries(self, spec):
+        """``{move id: (covering, contributing)}`` for the moves of ``self`` on one kind
+        of order line: the covering invoice (``id`` and its sort ``key``, or None) and the
+        ids of every invoice or credit note that falls on the move's quantity."""
+        field = spec["field"]
+        line_ids = list(
+            {
+                line_id
+                for (line_id,) in self.env.execute_query(
+                    SQL(
+                        "SELECT %s FROM stock_move WHERE id = ANY(%s) AND %s IS NOT NULL",
+                        SQL.identifier(field),
+                        self.ids,
+                        SQL.identifier(field),
+                    )
+                )
+            }
+        )
+        if not line_ids:
+            return {}
+        lines = {
+            line_id: {"product_id": product_id, "uom_id": uom_id, "delivered": delivered or 0.0}
+            for line_id, product_id, uom_id, delivered in self.env.execute_query(
                 SQL(
-                    """
-                    SELECT picking.id AS picking_id, line.move_id
-                      FROM stock_picking picking
-                      JOIN sale_order_line order_line ON order_line.order_id = picking.sale_id
-                      JOIN sale_order_line_invoice_rel rel ON rel.order_line_id = order_line.id
-                      JOIN account_move_line line ON line.id = rel.invoice_line_id
-                      JOIN account_move invoice ON invoice.id = line.move_id
-                     WHERE picking.id = ANY(%s)
-                       AND invoice.move_type IN ('out_invoice', 'out_refund')
-                    """,
-                    picking_ids,
+                    "SELECT id, product_id, product_uom_id, %s FROM %s WHERE id = ANY(%s)",
+                    SQL.identifier(spec["delivered_field"]),
+                    SQL.identifier(spec["line_table"]),
+                    line_ids,
                 )
             )
-        PurchaseOrder = self.env.get("purchase.order")
-        if PurchaseOrder is not None and "picking_ids" in PurchaseOrder._fields:
-            # ``purchase.order.picking_ids`` is stored but has no inverse on the picking, so
-            # the pickings are read straight from its relation table.
-            picking_ids_field = PurchaseOrder._fields["picking_ids"]
-            queries.append(
-                SQL(
-                    """
-                    SELECT rel.%(picking)s AS picking_id, line.move_id
-                      FROM %(relation)s rel
-                      JOIN purchase_order_line order_line ON order_line.order_id = rel.%(order)s
-                      JOIN account_move_line line ON line.purchase_line_id = order_line.id
-                     WHERE rel.%(picking)s = ANY(%(picking_ids)s)
-                    """,
-                    picking=SQL.identifier(picking_ids_field.column2),
-                    order=SQL.identifier(picking_ids_field.column1),
-                    relation=SQL.identifier(picking_ids_field.relation),
-                    picking_ids=picking_ids,
-                )
-            )
-        if not queries:
-            return {}
-        rows = self.env.execute_query(
+        }
+        moves_by_line = {}
+        for move_id, line_id, product_id, quantity, uom_id, direction in self.env.execute_query(
             SQL(
                 """
-                SELECT DISTINCT ON (related.picking_id) related.picking_id, entry.id
-                  FROM (%s) related
-                  JOIN account_move entry ON entry.id = related.move_id
-                 WHERE entry.state = 'posted'
-                 ORDER BY related.picking_id, entry.date DESC, entry.name DESC, entry.id DESC
+                SELECT move.id, move.%(field)s, move.product_id, move.quantity, move.product_uom,
+                       CASE WHEN forward_location.usage = %(usage)s THEN 1
+                            WHEN backward_location.usage = %(usage)s THEN -1
+                            ELSE 0 END
+                  FROM stock_move move
+                  JOIN stock_location forward_location ON forward_location.id = move.%(forward)s
+                  JOIN stock_location backward_location ON backward_location.id = move.%(backward)s
+                 WHERE move.%(field)s = ANY(%(line_ids)s)
+                   AND move.state = 'done'
+                 ORDER BY move.date, move.id
                 """,
-                SQL(" UNION ALL ").join(queries),
+                field=SQL.identifier(field),
+                forward=SQL.identifier(spec["forward_location"]),
+                backward=SQL.identifier(spec["backward_location"]),
+                usage=spec["partner_usage"],
+                line_ids=line_ids,
             )
-        )
-        return dict(rows)
+        ):
+            moves_by_line.setdefault(line_id, []).append((move_id, product_id, quantity, uom_id, direction))
+        entries_by_line = {}
+        for line_id, quantity, uom_id, entry_id, date, move_type in self.env.execute_query(
+            SQL(
+                "SELECT * FROM (%s) entries ORDER BY entries.date, entries.id",
+                spec["entries"](line_ids),
+            )
+        ):
+            sign = -1 if move_type == spec["refund_type"] else 1
+            entries_by_line.setdefault(line_id, []).append(
+                {"id": entry_id, "key": (date, entry_id), "quantity": sign * quantity, "uom_id": uom_id}
+            )
+        Uom = self.env["uom.uom"]
+        requested = set(self.ids)
+        result = {}
+        for line_id, line_moves in moves_by_line.items():
+            line = lines[line_id]
+            line_uom = Uom.browse(line["uom_id"])
+            entries = entries_by_line.get(line_id, [])
+            invoiced = []
+            for entry in entries:
+                quantity = entry["quantity"]
+                if entry["uom_id"] and entry["uom_id"] != line_uom.id:
+                    quantity = Uom.browse(entry["uom_id"])._compute_quantity(quantity, line_uom, round=False)
+                invoiced.append((entry, quantity))
+            # Quantity of the line each move of the line's own product stands for: the
+            # running delivered quantity, capped by what later returns leave of it.
+            own_moves = [row for row in line_moves if row[1] == line["product_id"] and row[4]]
+            running, cumulative = 0.0, []
+            for _move_id, _product_id, quantity, uom_id, direction in own_moves:
+                running += direction * Uom.browse(uom_id)._compute_quantity(quantity, line_uom, round=False)
+                cumulative.append(running)
+            for index in range(len(cumulative) - 2, -1, -1):
+                cumulative[index] = min(cumulative[index], cumulative[index + 1])
+            required_by_move = {row[0]: cumulative[index] for index, row in enumerate(own_moves)}
+            # Where the quantity of each move starts: where the previous one ended.
+            lower_by_move = {row[0]: cumulative[index - 1] if index else 0.0 for index, row in enumerate(own_moves)}
+            for move_id, _product_id, _quantity, _uom_id, direction in line_moves:
+                if move_id not in requested or not direction:
+                    continue
+                if move_id in required_by_move:
+                    lower, required = lower_by_move[move_id], required_by_move[move_id]
+                else:
+                    lower, required = 0.0, line["delivered"]
+                result[move_id] = (
+                    self._get_covering_entry(invoiced, lower, required, line_uom),
+                    self._get_contributing_entries(invoiced, lower, required, line_uom),
+                )
+        return result
+
+    @api.model
+    def _get_covering_entry(self, invoiced, lower, upper, uom):
+        """The entry that brought the running net invoiced quantity, for good, to where it
+        ends up inside the move's stretch of the line ``(lower, upper]``: up to ``upper``
+        when the line covers the whole move, or up to the line's net total when it covers
+        part of it (the invoice still standing when another one was cancelled by a credit
+        note). None when nothing of the stretch is invoiced, net of credit notes: a
+        delivery not invoiced yet, or an invoice cancelled and not made again.
+
+        ``invoiced`` is the list of ``(entry, signed quantity)`` by date, then creation (a
+        credit note and the invoice made again the same day keep their real order, which
+        their names do not). A move standing for no quantity (all of it returned, a kit
+        not delivered yet) takes the most recent entry, as long as the line is still
+        invoiced."""
+        if not invoiced:
+            return None
+        total = sum(quantity for _entry, quantity in invoiced)
+        if uom.compare(upper, lower) <= 0:
+            return invoiced[-1][0] if uom.compare(total, 0.0) > 0 else None
+        target = min(total, upper)
+        if uom.compare(target, lower) <= 0:
+            return None
+        covering, running = None, 0.0
+        for entry, quantity in invoiced:
+            previous, running = running, running + quantity
+            if uom.compare(previous, target) < 0 <= uom.compare(running, target):
+                covering = entry
+        return covering
+
+    @api.model
+    def _get_contributing_entries(self, invoiced, lower, upper, uom):
+        """Ids of the entries whose quantity falls on the move's stretch of the line,
+        ``(lower, upper]``: the invoices that bill part of it and the credit notes that
+        take part of it back. A move standing for no quantity (all of it returned, a kit
+        not delivered yet) gets every entry of the line."""
+        if uom.compare(upper, lower) <= 0:
+            return {entry["id"] for entry, _quantity in invoiced}
+        ids, running = set(), 0.0
+        for entry, quantity in invoiced:
+            previous, running = running, running + quantity
+            if uom.compare(max(min(previous, running), lower), min(max(previous, running), upper)) < 0:
+                ids.add(entry["id"])
+        return ids
 
     def _get_booked_revaluation_entries(self):
         """Last entry that booked a value adjustment, per move.
