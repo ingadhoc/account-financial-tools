@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 # directory
 ##############################################################################
-from odoo import models
+from odoo import api, models
 from odoo.addons.base.models.ir_access import IN_SELECTION
 from odoo.fields import Domain
 from odoo.tools.safe_eval import safe_eval
@@ -69,11 +69,14 @@ class BranchDebtReadMixin(models.AbstractModel):
             return Domain(domain) & self._branch_debt_native_domain()
         return domain
 
+    @api.model
     def search_fetch(self, domain, *args, **kwargs):
         return super().search_fetch(self._branch_debt_search_domain(domain), *args, **kwargs)
 
+    @api.model
     def search_count(self, domain, *args, **kwargs):
         return super().search_count(self._branch_debt_search_domain(domain), *args, **kwargs)
 
+    @api.model
     def _read_group(self, domain, *args, **kwargs):
         return super()._read_group(self._branch_debt_search_domain(domain), *args, **kwargs)
