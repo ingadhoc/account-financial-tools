@@ -24,6 +24,11 @@ class AccountMoveLine(models.Model):
     def _get_frozen_historical_cost_vals(self):
         """Values to freeze on this line; the caller writes them grouped."""
         self.ensure_one()
+        # A reversal books the cost its invoice booked, not today's: otherwise
+        # the pair stops netting to zero as soon as the cost changes in between.
+        reversed_vals = self._get_reversed_historical_cost_vals()
+        if reversed_vals:
+            return reversed_vals
         # Signed as line.quantity, NOT flipped by move_type: that flip (core's
         # `-1 if move_type == 'out_refund'`) is for the COGS journal amount,
         # applied later by the report's _select_list(). _get_cogs_value() already
@@ -48,6 +53,47 @@ class AccountMoveLine(models.Model):
             "historical_cost": cogs_qty * price_unit,
             "historical_cost_provisional": True,
         }
+
+    def _get_reversed_historical_cost_vals(self):
+        """Frozen cost of the line this one reverses, scaled by quantity."""
+        self.ensure_one()
+        source_line = self._get_reversed_historical_cost_line()
+        if not source_line:
+            return {}
+        source_qty = source_line.product_uom_id._compute_quantity(source_line.quantity, source_line.product_id.uom_id)
+        if not source_qty:
+            return {}
+        cogs_qty = self.product_uom_id._compute_quantity(self.quantity, self.product_id.uom_id)
+        return {
+            "historical_cost": source_line.historical_cost * cogs_qty / source_qty,
+            "historical_cost_provisional": source_line.historical_cost_provisional,
+        }
+
+    def _get_reversed_historical_cost_line(self):
+        """Line of the reversed move this one copies, paired by position.
+
+        _reverse_moves() copies the move, so the product lines keep their order
+        — the core pairs its own storno lines the same way.
+        """
+        self.ensure_one()
+        source = self.move_id.reversed_entry_id
+        if not source:
+            return self.env["account.move.line"]
+        own_lines = self.move_id.invoice_line_ids.filtered(lambda line: line.display_type == "product")
+        source_lines = source.invoice_line_ids.filtered(lambda line: line.display_type == "product")
+        if len(own_lines) != len(source_lines) or self not in own_lines:
+            return self.env["account.move.line"]
+        source_line = source_lines[list(own_lines).index(self)]
+        if source_line.product_id != self.product_id:
+            return self.env["account.move.line"]
+        # NULL means "not frozen" and the ORM reads it as 0.0: copying that 0.0
+        # would freeze a cost the invoice never had.
+        source_line.flush_recordset(["historical_cost"])
+        self.env.cr.execute(
+            "SELECT id FROM account_move_line WHERE id = %s AND historical_cost IS NOT NULL",
+            [source_line.id],
+        )
+        return source_line if self.env.cr.fetchone() else self.env["account.move.line"]
 
     def _get_historical_cost_moves(self):
         self.ensure_one()
