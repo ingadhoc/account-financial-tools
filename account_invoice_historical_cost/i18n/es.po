@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 15:35+0000\n"
-"PO-Revision-Date: 2026-10-16 15:35+0000\n"
+"POT-Creation-Date: 2026-11-26 13:47+0000\n"
+"PO-Revision-Date: 2026-11-26 13:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -163,7 +163,7 @@ msgstr "Costo unitario histórico"
 #: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move_line__id
 #: model:ir.model.fields,field_description:account_invoice_historical_cost.field_stock_move__id
 msgid "ID"
-msgstr ""
+msgstr "ID (identificación)"
 
 #. module: account_invoice_historical_cost
 #: model:ir.model,name:account_invoice_historical_cost.model_account_invoice_report
@@ -179,6 +179,11 @@ msgstr "Asiento contable"
 #: model:ir.model,name:account_invoice_historical_cost.model_account_move_line
 msgid "Journal Item"
 msgstr "Apunte contable"
+
+#. module: account_invoice_historical_cost
+#: model:ir.model.fields,field_description:account_invoice_historical_cost.field_account_move_line__historical_cost_reversed_line_id
+msgid "Reversed Invoice Line"
+msgstr "Línea de factura revertida"
 
 #. module: account_invoice_historical_cost
 #: model:ir.model,name:account_invoice_historical_cost.model_stock_move
