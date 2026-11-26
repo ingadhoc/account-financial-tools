@@ -59,9 +59,6 @@
             <field name="currency_id" position="attributes">
                 <attribute name="invisible">is_parent_account</attribute>
             </field>
-            <field name="reconcile" position="attributes">
-                <attribute name="invisible">is_parent_account</attribute>
-            </field>
             <field name="parent_id" position="after">
                 <field name="is_parent_account"/>
             </field>

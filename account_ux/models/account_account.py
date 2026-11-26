@@ -30,6 +30,7 @@ class AccountAccount(models.Model):
         if view_type == "form":
             nodes = arch.xpath(
                 "//field[@name='fiscal_category_id' or @name='l10n_ar_arca_activity_id'] | //group[@name='asset']"
+                " | //label[@for='reconcile'] | //div[field[@name='reconcile']]"
             )
             for node in nodes:
                 invisible = node.get("invisible")

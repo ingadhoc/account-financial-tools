@@ -84,3 +84,5 @@ class TestParentAccounts(AccountTestInvoicingCommon):
         for name in ("fiscal_category_id", "l10n_ar_arca_activity_id"):
             if f'name="{name}"' in arch:
                 self.assertRegex(arch, rf'<field name="{name}"[^>]*invisible="[^"]*is_parent_account')
+        if '<label for="reconcile"' in arch:
+            self.assertRegex(arch, r'<label for="reconcile"[^>]*invisible="[^"]*is_parent_account')
