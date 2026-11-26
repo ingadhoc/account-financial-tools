@@ -220,6 +220,87 @@ class TestHistoricalCostPost(TestStockValuationCommon):
         report_credit_note = self.env["account.invoice.report"].search([("move_id", "=", credit_note.id)])
         self.assertAlmostEqual(report_invoice.price_margin, -report_credit_note.price_margin)
 
+    def test_reversal_of_provisional_invoice_nets_to_zero(self):
+        # An invoice posted before delivering freezes a provisional cost. If the
+        # product cost changes before the reversal, the credit note must reuse
+        # the cost of the invoice it reverses, not the current one, or the net
+        # margin of the pair stops being zero.
+        product = self.product_standard
+        invoice = self._create_customer_invoice(product, quantity=6, price_unit=1000)
+        line = self._product_line(invoice)
+        self.assertTrue(line.historical_cost_provisional)
+
+        product.standard_price = 150.0
+
+        credit_note = self._refund(invoice)
+        credit_line = self._product_line(credit_note)
+        self.assertAlmostEqual(credit_line.historical_cost, line.historical_cost)
+
+        report_invoice = self.env["account.invoice.report"].search([("move_id", "=", invoice.id)])
+        report_credit_note = self.env["account.invoice.report"].search([("move_id", "=", credit_note.id)])
+        self.assertAlmostEqual(report_invoice.price_margin + report_credit_note.price_margin, 0.0)
+
+    def test_reversal_variants_reuse_the_frozen_cost(self):
+        # The two open questions of the task: the "reverse and create invoice"
+        # button, and a credit note for part of the quantity.
+        product = self.product_standard
+        frozen_unit_cost = product.standard_price
+
+        with self.subTest("reverse and create invoice"):
+            invoice = self._create_customer_invoice(product, quantity=6, price_unit=1000)
+            product.standard_price = 150.0
+            reversal = (
+                self.env["account.move.reversal"]
+                .with_context(active_ids=invoice.ids, active_model="account.move")
+                .create({"journal_id": invoice.journal_id.id})
+            )
+            reversal.modify_moves()
+            credit_note = invoice.reversal_move_ids
+            self.assertAlmostEqual(self._product_line(credit_note).historical_cost, 6 * frozen_unit_cost)
+
+        product.standard_price = frozen_unit_cost
+        with self.subTest("credit note for part of the quantity"):
+            invoice = self._create_customer_invoice(product, quantity=6, price_unit=1000)
+            product.standard_price = 150.0
+            credit_note = self._refund(invoice, quantity=2)
+            # Scaled by quantity, so the margin the pair leaves is the one of
+            # the four units that stay invoiced.
+            self.assertAlmostEqual(self._product_line(credit_note).historical_cost, 2 * frozen_unit_cost)
+
+    def test_reversal_keeps_the_frozen_cost_when_a_line_is_removed(self):
+        # The draft credit note can lose lines before being posted, so the line
+        # it reverses cannot be resolved by position: the one that stays would
+        # take the cost of a different product, or today's.
+        chair = self.product_standard
+        desk = self.product_fifo
+        chair_unit_cost = chair.standard_price
+        move_form = Form(self.env["account.move"].with_context(default_move_type="out_invoice"))
+        move_form.partner_id = self.partner
+        for product, quantity in ((chair, 2), (desk, 1)):
+            with move_form.invoice_line_ids.new() as line_form:
+                line_form.product_id = product
+                line_form.quantity = quantity
+                line_form.price_unit = 1000
+                line_form.tax_ids.clear()
+        invoice = move_form.save()
+        invoice.action_post()
+
+        chair.standard_price = 300.0
+        desk.standard_price = 500.0
+
+        reversal = (
+            self.env["account.move.reversal"]
+            .with_context(active_ids=invoice.ids, active_model="account.move")
+            .create({"journal_id": invoice.journal_id.id})
+        )
+        credit_note = self.env["account.move"].browse(reversal.refund_moves()["res_id"])
+        credit_note.invoice_line_ids.filtered(lambda line: line.product_id == desk).unlink()
+        credit_note.action_post()
+
+        credit_line = self._product_line(credit_note)
+        self.assertEqual(credit_line.product_id, chair)
+        self.assertAlmostEqual(credit_line.historical_cost, 2 * chair_unit_cost)
+
     def test_move_reverse_cancel_not_excluded(self):
         # Unlike stock_account._post, our override does NOT early-return under
         # move_reverse_cancel (§2 of the spec) — a cancellation credit note
