@@ -5,6 +5,14 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+PARENT_ACCOUNT_HIDDEN_NODES = [
+    "//label[@for='reconcile']",  # account_accountant
+    "//div[field[@name='reconcile']]",  # account_accountant
+    "//group[@name='asset']",  # account_asset
+    "//field[@name='fiscal_category_id']",  # account_fiscal_categories
+    "//field[@name='l10n_ar_arca_activity_id']",  # l10n_ar
+]
+
 
 class AccountAccount(models.Model):
     _name = "account.account"
@@ -25,14 +33,16 @@ class AccountAccount(models.Model):
 
     @api.model
     def _get_view(self, view_id=None, view_type="form", **options):
-        """Hide on parent accounts the fields that modules account_ux does not depend on add to the form."""
+        """Hide on parent accounts what other modules add to the form.
+
+        account_ux can't depend on them (some are enterprise), so an XML inheritance would break
+        where they are not installed.
+        """
         arch, view = super()._get_view(view_id, view_type, **options)
-        if view_type == "form":
-            nodes = arch.xpath(
-                "//field[@name='fiscal_category_id' or @name='l10n_ar_arca_activity_id'] | //group[@name='asset']"
-                " | //label[@for='reconcile'] | //div[field[@name='reconcile']]"
-            )
-            for node in nodes:
+        if view_type != "form":
+            return arch, view
+        for xpath in PARENT_ACCOUNT_HIDDEN_NODES:
+            for node in arch.xpath(xpath):
                 invisible = node.get("invisible")
                 node.set("invisible", f"({invisible}) or is_parent_account" if invisible else "is_parent_account")
         return arch, view

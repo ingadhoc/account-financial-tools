@@ -1,6 +1,8 @@
 # © ADHOC SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from lxml import etree
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.account_ux.models.account_account import PARENT_ACCOUNT_HIDDEN_NODES
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -80,9 +82,7 @@ class TestParentAccounts(AccountTestInvoicingCommon):
         self.assertNotIn(unused, parents)
 
     def test_form_hides_fields_from_other_modules_on_parents(self):
-        arch = self.env["account.account"].get_view(view_type="form")["arch"]
-        for name in ("fiscal_category_id", "l10n_ar_arca_activity_id"):
-            if f'name="{name}"' in arch:
-                self.assertRegex(arch, rf'<field name="{name}"[^>]*invisible="[^"]*is_parent_account')
-        if '<label for="reconcile"' in arch:
-            self.assertRegex(arch, r'<label for="reconcile"[^>]*invisible="[^"]*is_parent_account')
+        arch = etree.fromstring(self.env["account.account"].get_view(view_type="form")["arch"])
+        for xpath in PARENT_ACCOUNT_HIDDEN_NODES:
+            for node in arch.xpath(xpath):
+                self.assertIn("is_parent_account", node.get("invisible", ""))
