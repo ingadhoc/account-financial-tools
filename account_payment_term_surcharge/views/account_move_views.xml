@@ -7,6 +7,7 @@
             <field name="arch" type="xml">
                 <field name="auto_post_until" position="after">
                     <field name="avoid_surcharge_invoice"/>
+                    <field name="surcharge_id" invisible="not surcharge_id"/>
                 </field>
             </field>
         </record>
