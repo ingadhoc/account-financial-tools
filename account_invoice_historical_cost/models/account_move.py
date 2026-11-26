@@ -38,6 +38,13 @@ class AccountMove(models.Model):
         for vals_items, lines in lines_by_vals.items():
             lines._write_historical_cost(dict(vals_items))
 
+    def _reverse_moves(self, default_values_list=None, cancel=False):
+        # Each copied line keeps a link to the line it reverses: the credit
+        # note is a draft and can lose or reorder lines before it is posted.
+        return super(AccountMove, self.with_context(historical_cost_reversal=True))._reverse_moves(
+            default_values_list=default_values_list, cancel=cancel
+        )
+
     def button_draft(self):
         res = super().button_draft()
         self.line_ids._clear_historical_cost()
