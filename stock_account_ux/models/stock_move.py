@@ -70,6 +70,8 @@ class StockMove(models.Model):
         depends = [
             "account_move_id",
             "account_move_id.state",
+            "account_move_id.reversal_move_ids.state",
+            "account_move_id.reversal_move_ids.reversal_move_ids.state",
             "state",
             "product_id.valuation",
             "product_value_ids.account_move_id",
@@ -96,18 +98,31 @@ class StockMove(models.Model):
         # The move's own valuation entry (perpetual) or the closing entry it belongs to
         # (periodic), both in ``account_move_id``. Unposted ones are left out.
         posted_entries = self.account_move_id.filtered(lambda entry: entry.state == "posted")
+        # A perpetual move booked by a closing whose invoice reversed that part of it: the
+        # invoice books it now, and with no invoice (cancelled by a credit note) it is
+        # pending again, so that a new closing or another invoice books it.
+        reversal_by_move = (
+            self.filtered(lambda move: move.account_move_id in posted_entries)
+            ._filter_real_time_valuation()
+            ._get_closing_reversal_by_move()
+        )
         # The related invoice only reflects the valuation of THIS move when the product is
         # valued perpetually, i.e. on invoicing. Under periodic valuation the cost is not
         # booked in the invoice but in the global closing entry, so the invoice must not
         # be shown as the related entry until that closing exists. It is only a fallback,
         # so it is resolved just for the moves with no entry of their own.
         invoice_moves = self.filtered(
-            lambda move: move.id not in revaluation_entry_by_move and move.account_move_id not in posted_entries
+            lambda move: move.id not in revaluation_entry_by_move
+            and (move.account_move_id not in posted_entries or move.id in reversal_by_move)
         )._filter_real_time_valuation()
         invoice_by_move = invoice_moves._get_related_invoice_by_move()
         for move in self:
             if move.id in revaluation_entry_by_move:
                 move.related_account_move_id = revaluation_entry_by_move[move.id]
+            elif move.id in reversal_by_move:
+                fully_reversed = reversal_by_move[move.id][1]
+                fallback = False if fully_reversed else move.account_move_id
+                move.related_account_move_id = invoice_by_move.get(move.id, fallback)
             elif move.account_move_id in posted_entries:
                 move.related_account_move_id = move.account_move_id
             elif move in invoice_moves:
@@ -121,12 +136,15 @@ class StockMove(models.Model):
         # lists that people without access to value adjustments or invoices also open.
         sudo_moves = self.sudo()
         # Invoices value the move only under perpetual valuation, as in the stored compute.
-        invoices_by_move = sudo_moves._filter_real_time_valuation()._get_related_invoices_by_move()
+        real_time_moves = sudo_moves._filter_real_time_valuation()
+        invoices_by_move = real_time_moves._get_related_invoices_by_move()
+        reversal_by_move = real_time_moves._get_closing_reversal_by_move()
         Entry = self.env["account.move"].sudo()
         for move, sudo_move in zip(self, sudo_moves, strict=True):
             entries = sudo_move.related_account_move_id | sudo_move.account_move_id
             entries |= sudo_move.product_value_ids.account_move_id
             entries |= Entry.browse(invoices_by_move.get(move.id, (False, ()))[1])
+            entries |= reversal_by_move.get(move.id, (Entry, False))[0]
             entries = entries.filtered(lambda entry: entry.state == "posted")
             move.all_account_move_ids = entries.sorted(lambda entry: (entry.date, entry.id))
             move.account_move_count = len(entries)
@@ -366,18 +384,15 @@ class StockMove(models.Model):
                 if entry["uom_id"] and entry["uom_id"] != line_uom.id:
                     quantity = Uom.browse(entry["uom_id"])._compute_quantity(quantity, line_uom, round=False)
                 invoiced.append((entry, quantity))
-            # Quantity of the line each move of the line's own product stands for: the
-            # running delivered quantity, capped by what later returns leave of it.
             own_moves = [row for row in line_moves if row[1] == line["product_id"] and row[4]]
-            running, cumulative = 0.0, []
-            for _move_id, _product_id, quantity, uom_id, direction in own_moves:
-                running += direction * Uom.browse(uom_id)._compute_quantity(quantity, line_uom, round=False)
-                cumulative.append(running)
-            for index in range(len(cumulative) - 2, -1, -1):
-                cumulative[index] = min(cumulative[index], cumulative[index + 1])
-            required_by_move = {row[0]: cumulative[index] for index, row in enumerate(own_moves)}
-            # Where the quantity of each move starts: where the previous one ended.
-            lower_by_move = {row[0]: cumulative[index - 1] if index else 0.0 for index, row in enumerate(own_moves)}
+            stretches = self._get_quantity_stretches(
+                [
+                    direction * Uom.browse(uom_id)._compute_quantity(quantity, line_uom, round=False)
+                    for _move_id, _product_id, quantity, uom_id, direction in own_moves
+                ]
+            )
+            lower_by_move = {row[0]: stretch[0] for row, stretch in zip(own_moves, stretches, strict=True)}
+            required_by_move = {row[0]: stretch[1] for row, stretch in zip(own_moves, stretches, strict=True)}
             for move_id, _product_id, _quantity, _uom_id, direction in line_moves:
                 if move_id not in requested or not direction:
                     continue
@@ -389,6 +404,116 @@ class StockMove(models.Model):
                     self._get_covering_entry(invoiced, lower, required, line_uom),
                     self._get_contributing_entries(invoiced, lower, required, line_uom),
                 )
+        return result
+
+    @api.model
+    def _get_quantity_stretches(self, quantities):
+        """``[(lower, upper)]``: the stretch of the line each move stands for, given the
+        signed quantities of the line's own moves in date order (returns subtract). It
+        runs from where the previous move ended to the running quantity, capped by what
+        later returns leave of it."""
+        running, cumulative = 0.0, []
+        for quantity in quantities:
+            running += quantity
+            cumulative.append(running)
+        for index in range(len(cumulative) - 2, -1, -1):
+            cumulative[index] = min(cumulative[index], cumulative[index + 1])
+        return [(cumulative[index - 1] if index else 0.0, upper) for index, upper in enumerate(cumulative)]
+
+    @api.model
+    def _get_order_line_stretches(self, order_line):
+        """``{stock.move: (lower, upper)}`` of the done moves that deliver (or receive) the
+        order line's own product, in the unit of the line. Returns are left out: they
+        only cap the stretches of the moves they take back."""
+        spec = next(
+            (spec for spec in self._order_line_specs() if self._fields[spec["field"]].comodel_name == order_line._name),
+            None,
+        )
+        if not spec:
+            return {}
+        line_uom = order_line.product_uom_id
+        rows = []
+        moves = order_line.move_ids.filtered(
+            lambda move: move.state == "done" and move.product_id == order_line.product_id
+        ).sorted(lambda move: (move.date, move.id))
+        for move in moves:
+            if move[spec["forward_location"]].usage == spec["partner_usage"]:
+                direction = 1
+            elif move[spec["backward_location"]].usage == spec["partner_usage"]:
+                direction = -1
+            else:
+                continue
+            rows.append((move, direction * move.product_uom._compute_quantity(move.quantity, line_uom, round=False)))
+        stretches = self._get_quantity_stretches([quantity for _move, quantity in rows])
+        return {move: stretch for (move, quantity), stretch in zip(rows, stretches, strict=True) if quantity > 0}
+
+    @api.model
+    def _get_closing_stretches(self, order_line):
+        """``{closing: [(move, lower, upper)]}``: the stretches of the order line that a
+        posted closing entry booked. Moves valued in v18 have no closing of their own."""
+        by_closing = {}
+        for move, (lower, upper) in self._get_order_line_stretches(order_line).items():
+            closing = move.account_move_id
+            if closing.state != "posted" or closing.move_type != "entry" or move.stock_valuation_migrated:
+                continue
+            if order_line.product_uom_id.compare(upper, lower) <= 0:
+                continue
+            by_closing.setdefault(closing, []).append((move, lower, upper))
+        return by_closing
+
+    def _get_closing_reversal_by_move(self):
+        """``{move id: (reversals, fully reversed)}`` for the moves whose closing entry was
+        reversed, in part, by the invoices of their order line.
+
+        A closing books the moves of a line in order, and its reversals take that booked
+        quantity back in the same order: a move is fully reversed when its whole stretch
+        falls within what the reversals of its closing add up to."""
+        result = {}
+        closings = self.account_move_id.filtered(
+            lambda entry: entry.state == "posted" and entry.move_type == "entry" and entry.reversal_move_ids
+        )
+        if not closings:
+            return result
+        AccountMoveLine = self.env["account.move.line"]
+        # A closing links every move of the period, and each reversal recomputes them all:
+        # read the reversal lines once, and go on only with the order lines they bill.
+        reversal_lines = (
+            AccountMoveLine.sudo()
+            .search(
+                [
+                    ("move_id.reversed_entry_id", "in", closings.ids),
+                    ("parent_state", "=", "posted"),
+                    ("cogs_origin_id", "!=", False),
+                ]
+            )
+            .filtered(lambda line: not line.move_id.reversal_move_ids.filtered(lambda entry: entry.state == "posted"))
+        )
+        lines_by_key = {}
+        for line in reversal_lines:
+            order_line = line.cogs_origin_id._get_stock_order_line()
+            if order_line:
+                key = (line.move_id.reversed_entry_id, order_line)
+                lines_by_key[key] = lines_by_key.get(key, AccountMoveLine) | line
+        if not lines_by_key:
+            return result
+        stretches_cache = {}
+        for move in self.filtered(lambda move: move.account_move_id in closings):
+            order_line = AccountMoveLine._get_stock_order_line_of_move(move)
+            closing = move.account_move_id
+            lines = lines_by_key.get((closing, order_line))
+            if not lines:
+                continue
+            if order_line not in stretches_cache:
+                stretches_cache[order_line] = self._get_closing_stretches(order_line)
+            reversed_quantity = sum(lines.mapped("quantity"))
+            booked = 0.0
+            fully_reversed = False
+            for stretch_move, lower, upper in stretches_cache[order_line].get(closing, []):
+                booked += upper - lower
+                if stretch_move == move:
+                    fully_reversed = order_line.product_uom_id.compare(booked, reversed_quantity) <= 0
+                    break
+            result[move.id] = (lines.move_id, fully_reversed)
         return result
 
     @api.model
