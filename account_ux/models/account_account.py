@@ -23,6 +23,19 @@ class AccountAccount(models.Model):
         for rec in self:
             rec.is_parent_account = bool(rec.child_ids)
 
+    @api.model
+    def _get_view(self, view_id=None, view_type="form", **options):
+        """Hide on parent accounts the fields that modules account_ux does not depend on add to the form."""
+        arch, view = super()._get_view(view_id, view_type, **options)
+        if view_type == "form":
+            nodes = arch.xpath(
+                "//field[@name='fiscal_category_id' or @name='l10n_ar_arca_activity_id'] | //group[@name='asset']"
+            )
+            for node in nodes:
+                invisible = node.get("invisible")
+                node.set("invisible", f"({invisible}) or is_parent_account" if invisible else "is_parent_account")
+        return arch, view
+
     @api.depends("account_type")
     def _compute_is_monetary(self):
         """Set is_monetary in False to the corresponding accounts taking into account the account type"""

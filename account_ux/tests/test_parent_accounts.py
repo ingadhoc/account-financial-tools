@@ -78,3 +78,9 @@ class TestParentAccounts(AccountTestInvoicingCommon):
         parents = Account.search([("is_parent_account", "=", True), ("active", "in", [True, False])])
         self.assertIn(parent, parents)
         self.assertNotIn(unused, parents)
+
+    def test_form_hides_fields_from_other_modules_on_parents(self):
+        arch = self.env["account.account"].get_view(view_type="form")["arch"]
+        for name in ("fiscal_category_id", "l10n_ar_arca_activity_id"):
+            if f'name="{name}"' in arch:
+                self.assertRegex(arch, rf'<field name="{name}"[^>]*invisible="[^"]*is_parent_account')

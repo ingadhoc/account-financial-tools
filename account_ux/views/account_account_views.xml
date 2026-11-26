@@ -38,7 +38,7 @@
         <field name="inherit_id" ref="account.view_account_form"/>
         <field name="arch" type="xml">
             <div name="button_box" position="after">
-                <widget name="web_ribbon" title="Parent Account" bg_color="text-bg-danger" invisible="not is_parent_account"/>
+                <widget name="web_ribbon" title="Parent Account" bg_color="text-bg-info" invisible="not is_parent_account"/>
                 <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active or is_parent_account"/>
             </div>
             <button name="account.action_move_line_select" position="attributes">
@@ -57,6 +57,9 @@
                 <attribute name="invisible" add="is_parent_account" separator=" or "/>
             </field>
             <field name="currency_id" position="attributes">
+                <attribute name="invisible">is_parent_account</attribute>
+            </field>
+            <field name="reconcile" position="attributes">
                 <attribute name="invisible">is_parent_account</attribute>
             </field>
             <field name="parent_id" position="after">
