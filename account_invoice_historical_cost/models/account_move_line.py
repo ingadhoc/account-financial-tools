@@ -20,6 +20,24 @@ class AccountMoveLine(models.Model):
         copy=False,
         groups="base.group_user",
     )
+    # Stamped when the reversal copies the line, not resolved when it is
+    # posted: the credit note is a draft and its lines can be removed or
+    # reordered before posting, so position no longer identifies the origin.
+    historical_cost_reversed_line_id = fields.Many2one(
+        "account.move.line",
+        string="Reversed Invoice Line",
+        readonly=True,
+        copy=False,
+    )
+
+    def copy_data(self, default=None):
+        vals_list = super().copy_data(default=default)
+        if not self.env.context.get("historical_cost_reversal"):
+            return vals_list
+        for line, vals in zip(self, vals_list):
+            if line.display_type == "product":
+                vals["historical_cost_reversed_line_id"] = line.id
+        return vals_list
 
     def _get_frozen_historical_cost_vals(self):
         """Values to freeze on this line; the caller writes them grouped."""
@@ -70,21 +88,10 @@ class AccountMoveLine(models.Model):
         }
 
     def _get_reversed_historical_cost_line(self):
-        """Line of the reversed move this one copies, paired by position.
-
-        _reverse_moves() copies the move, so the product lines keep their order
-        — the core pairs its own storno lines the same way.
-        """
+        """Line of the reversed move this one copies, stamped on the copy."""
         self.ensure_one()
-        source = self.move_id.reversed_entry_id
-        if not source:
-            return self.env["account.move.line"]
-        own_lines = self.move_id.invoice_line_ids.filtered(lambda line: line.display_type == "product")
-        source_lines = source.invoice_line_ids.filtered(lambda line: line.display_type == "product")
-        if len(own_lines) != len(source_lines) or self not in own_lines:
-            return self.env["account.move.line"]
-        source_line = source_lines[list(own_lines).index(self)]
-        if source_line.product_id != self.product_id:
+        source_line = self.historical_cost_reversed_line_id
+        if not source_line or source_line.product_id != self.product_id:
             return self.env["account.move.line"]
         # NULL means "not frozen" and the ORM reads it as 0.0: copying that 0.0
         # would freeze a cost the invoice never had.
