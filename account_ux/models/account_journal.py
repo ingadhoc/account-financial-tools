@@ -99,7 +99,12 @@ class AccountJournal(models.Model):
         whole subtree. The scope of the sharing lives in ``shared.to.branches.mixin``,
         together with the record rule that has to say the same thing — see
         ``account.journal_comp_rule`` in ``account_ux_security.xml``.
+
+        The payment register passes ``account_ux_payment_company_id`` when the payment is booked
+        in another company than the one of the debt.
         """
+        if company_id := self.env.context.get("account_ux_payment_company_id"):
+            companies = self.env["res.company"].browse(company_id)
         return self._shared_to_branches_domain(companies)
 
     @api.constrains(

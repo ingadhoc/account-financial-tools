@@ -38,20 +38,12 @@ class AccountPaymentRegister(models.TransientModel):
 
         Native searches them with the company of the debt, so a payment moved to the branch
         was offered the parent's journals, and one not shared to the branch failed the company
-        check on create.
+        check on create. The company travels in the context, so the overrides of other modules
+        (e.g. ``account_journal_security``) still apply.
         """
-        company = self._get_payment_company(batch_result["lines"])
-        if not company:
-            return super()._get_batch_available_journals(batch_result)
-        journals = self.env["account.journal"].search(
-            [
-                *self.env["account.journal"]._check_company_domain(company),
-                ("type", "in", ("bank", "cash", "credit")),
-            ]
+        return super(AccountPaymentRegister, self._with_payment_company(batch_result))._get_batch_available_journals(
+            batch_result
         )
-        if batch_result["payment_values"]["payment_type"] == "inbound":
-            return journals.filtered("inbound_payment_method_line_ids")
-        return journals.filtered("outbound_payment_method_line_ids")
 
     @api.model
     def _get_batch_journal(self, batch_result):
@@ -59,22 +51,13 @@ class AccountPaymentRegister(models.TransientModel):
 
         Journals are ordered by ``branch_order``, so the branch's own ones come first.
         """
+        return super(AccountPaymentRegister, self._with_payment_company(batch_result))._get_batch_journal(batch_result)
+
+    @api.model
+    def _with_payment_company(self, batch_result):
+        """Make ``account.journal._check_company_domain`` use the paying company, if any.
+
+        Without one the key is cleared, so it doesn't leak from another batch.
+        """
         company = self._get_payment_company(batch_result["lines"])
-        if not company:
-            return super()._get_batch_journal(batch_result)
-        payment_values = batch_result["payment_values"]
-        currency_domain = [("currency_id", "=", payment_values["currency_id"])]
-        partner_bank_domain = [("bank_account_id", "=", payment_values["partner_bank_id"])]
-        default_domain = [
-            *self.env["account.journal"]._check_company_domain(company),
-            ("type", "in", ("bank", "cash", "credit")),
-            ("id", "in", self.available_journal_ids.ids),
-        ]
-        if payment_values["partner_bank_id"]:
-            extra_domains = (currency_domain + partner_bank_domain, partner_bank_domain, currency_domain, [])
-        else:
-            extra_domains = (currency_domain, [])
-        for extra_domain in extra_domains:
-            if journal := self.env["account.journal"].search(default_domain + extra_domain, limit=1):
-                return journal
-        return self.env["account.journal"]
+        return self.with_context(account_ux_payment_company_id=company.id)
