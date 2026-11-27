@@ -52,6 +52,18 @@ class TestParentAccounts(AccountTestInvoicingCommon):
             self._new_account("9101", parent_id=used.id)
         self.assertTrue(used.active)
 
+    def test_account_of_a_journal_cannot_become_parent(self):
+        used = self.company_data["default_journal_sale"].default_account_id
+        with self.assertRaises(UserError):
+            self._new_account("9101", parent_id=used.id)
+        self.assertTrue(used.active)
+
+    def test_account_of_a_tax_cannot_become_parent(self):
+        used = self.company_data["default_tax_sale"].invoice_repartition_line_ids.account_id
+        with self.assertRaises(UserError):
+            self._new_account("9101", parent_id=used.id)
+        self.assertTrue(used.active)
+
     def test_account_without_children_can_be_unarchived(self):
         parent = self._new_account("9100")
         child = self._new_account("9101", parent_id=parent.id)

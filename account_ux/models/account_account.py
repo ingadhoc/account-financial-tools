@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.fields import Domain
 
 _logger = logging.getLogger(__name__)
 
@@ -11,6 +12,14 @@ PARENT_ACCOUNT_HIDDEN_NODES = [
     "//group[@name='asset']",  # account_asset
     "//field[@name='fiscal_category_id']",  # account_fiscal_categories
     "//field[@name='l10n_ar_arca_activity_id']",  # l10n_ar
+]
+
+JOURNAL_ACCOUNT_FIELDS = [
+    "default_account_id",
+    "suspense_account_id",
+    "non_deductible_account_id",
+    "profit_account_id",
+    "loss_account_id",
 ]
 
 
@@ -91,4 +100,23 @@ class AccountAccount(models.Model):
         """Parent accounts only group other accounts, so they are kept archived like the core charts do."""
         if self.env["account.move.line"].sudo().search_count([("account_id", "in", self.ids)], limit=1):
             raise UserError(_("You cannot use an account with journal items as parent account."))
+        journal = (
+            self.env["account.journal"]
+            .sudo()
+            .search(Domain.OR(Domain(field, "in", self.ids) for field in JOURNAL_ACCOUNT_FIELDS), limit=1)
+        )
+        if journal:
+            raise UserError(
+                _("You cannot use an account of the journal %(journal)s as parent account.", journal=journal.name)
+            )
+        repartition_line = (
+            self.env["account.tax.repartition.line"].sudo().search([("account_id", "in", self.ids)], limit=1)
+        )
+        if repartition_line:
+            raise UserError(
+                _(
+                    "You cannot use an account of the tax %(tax)s as parent account.",
+                    tax=repartition_line.tax_id.name,
+                )
+            )
         self.filtered("active").write({"active": False})
