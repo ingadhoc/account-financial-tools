@@ -124,6 +124,8 @@ class AccountMoveLine(models.Model):
         no_company = self.env["res.company"]
         if not parent_company or "shared_to_branches" not in self.env["product.category"]._fields:
             return no_company
-        if not self.product_id.categ_id.with_company(parent_company).shared_to_branches:
+        shared = self.product_id.categ_id.with_company(parent_company).shared_to_branches
+        # True is the boolean that stock_account_multicompany_ux used before 19.0.1.8.0.
+        if shared not in (True, "parent_stock"):
             return no_company
         return company

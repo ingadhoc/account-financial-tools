@@ -68,7 +68,7 @@ class TestHistoricalCostBranches(TransactionCase):
                     "name": "Shared Standard HC",
                     "property_cost_method": "standard",
                     "property_valuation": "real_time",
-                    "shared_to_branches": True,
+                    "shared_to_branches": "parent_stock",
                     "property_account_income_categ_id": cls.account_income.id,
                     "property_account_expense_categ_id": cls.account_expense.id,
                     "property_stock_valuation_account_id": cls.account_stock_valuation.id,
