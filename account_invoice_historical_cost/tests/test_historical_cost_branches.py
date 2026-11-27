@@ -7,7 +7,10 @@ from odoo.tests import TransactionCase, tagged
 
 @tagged("post_install", "-at_install")
 class TestHistoricalCostBranches(TransactionCase):
-    """Branch selling a product whose valuation lives in the parent company.
+    """Branch invoicing a product whose stock and valuation live in the parent company.
+
+    It is the setup 'Shared Stock Valuation to Branches' is meant for: the parent
+    keeps the stock and the branch only invoices (it has no warehouse).
 
     Data is created by hand (no chart of accounts, no demo data) so the test
     runs both on a minimal database and on a full OBA one, same as the
@@ -28,6 +31,10 @@ class TestHistoricalCostBranches(TransactionCase):
         cls.env = cls.env(
             context=dict(cls.env.context, allowed_company_ids=[cls.branch_company.id, cls.parent_company.id])
         )
+
+        # In tests Odoo creates a warehouse for every new company: the branch only
+        # invoices, so it has none.
+        cls.env["stock.warehouse"].search([("company_id", "=", cls.branch_company.id)]).active = False
 
         cls.account_receivable = cls._create_account("ARHC", "Receivable", "asset_receivable")
         cls.account_income = cls._create_account("INHC", "Income", "income")
@@ -61,7 +68,7 @@ class TestHistoricalCostBranches(TransactionCase):
                     "name": "Shared Standard HC",
                     "property_cost_method": "standard",
                     "property_valuation": "real_time",
-                    "shared_to_branches": True,
+                    "shared_to_branches": "parent_stock",
                     "property_account_income_categ_id": cls.account_income.id,
                     "property_account_expense_categ_id": cls.account_expense.id,
                     "property_stock_valuation_account_id": cls.account_stock_valuation.id,
@@ -83,12 +90,9 @@ class TestHistoricalCostBranches(TransactionCase):
             )
         )
 
-        # The branch keeps its own cost (standard_price is company dependent):
-        # 40 against the parent's 100. Stock moves on the branch side are valued
-        # at 40, which is the divergence under test.
-        cls.product.with_company(cls.branch_company).standard_price = 40.0
+        # standard_price is company dependent: the branch's own cost stays at 0,
+        # and only the parent's (100) is the one to freeze.
         cls._receive(cls.parent_company, 10, 100.0)
-        cls._receive(cls.branch_company, 10, 40.0)
 
         cls.partner = cls.env["res.partner"].create({"name": "Customer HC"})
         for company in (cls.parent_company, cls.branch_company):
@@ -182,8 +186,8 @@ class TestHistoricalCostBranches(TransactionCase):
         )
 
     def test_branch_freezes_the_parent_cost(self):
-        """The branch cost (40) must never be the one frozen: the parent's (100)
-        is what the core posts as COGS, before and after the delivery."""
+        """The branch's own cost (0) must never be the one frozen: the parent's
+        (100) is what the core posts as COGS, before and after the delivery."""
         invoice = self._branch_invoice(quantity=3)
         invoice.action_post()
         line = invoice.line_ids.filtered(lambda line: line.display_type == "product")
@@ -192,8 +196,10 @@ class TestHistoricalCostBranches(TransactionCase):
             self.assertTrue(line.historical_cost_provisional)
             self.assertAlmostEqual(line.historical_cost, 3 * 100.0)
 
-        out_move = self._deliver(self.branch_company, 3)
-        self.assertAlmostEqual(out_move.value, 3 * 40.0)
+        self.assertFalse(self.product.with_company(self.branch_company).standard_price)
+        # The goods leave the parent's warehouse.
+        out_move = self._deliver(self.parent_company, 3)
+        self.assertAlmostEqual(out_move.value, 3 * 100.0)
         line._complete_historical_cost_from_moves(out_move)
 
         with self.subTest("completed on delivery: real, still at the parent cost"):
