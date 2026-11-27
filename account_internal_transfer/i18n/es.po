@@ -135,7 +135,7 @@ msgstr "Dominio Diario Destino"
 #. module: account_internal_transfer
 #: model:ir.model.fields,field_description:account_internal_transfer.field_account_payment__destination_payment_method_line_id
 msgid "Destination Journal Payment Method"
-msgstr ""
+msgstr "Método de pago del diario destino"
 
 #. module: account_internal_transfer
 #. odoo-python
@@ -203,7 +203,7 @@ msgstr "Reporte de Transferencia"
 #. odoo-python
 #: code:addons/account_internal_transfer/models/account_payment.py:0
 msgid "The destination journal must be different from the source journal."
-msgstr ""
+msgstr "El diario destino debe ser distinto del diario origen."
 
 #. module: account_internal_transfer
 #. odoo-python
