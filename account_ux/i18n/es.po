@@ -1529,6 +1529,18 @@ msgstr "No podés desarchivar una cuenta que tiene cuentas hijas."
 #. module: account_ux
 #. odoo-python
 #: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot use an account of the journal %(journal)s as parent account."
+msgstr "No podés usar una cuenta del diario %(journal)s como cuenta principal."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
+msgid "You cannot use an account of the tax %(tax)s as parent account."
+msgstr "No podés usar una cuenta del impuesto %(tax)s como cuenta principal."
+
+#. module: account_ux
+#. odoo-python
+#: code:addons/account_ux/models/account_account.py:0
 msgid "You cannot use an account with journal items as parent account."
 msgstr ""
 "No podés usar una cuenta con apuntes contables como cuenta principal."
